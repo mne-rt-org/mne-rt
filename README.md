@@ -5,7 +5,7 @@
 <br>
 <br>
 
-**ANT** is an open-source Python package for **real-time processing and visualization of M/EEG neurofeedback experiments**, developed in the context of the *Advancing Neurofeedback in Tinnitus* (ANT) project. (see [Documentation](https://payamsash.github.io/ANT/)). 
+**ANT** is an open-source Python package for **real-time processing and visualization of M/EEG neurofeedback experiments**, developed in the context of the *Adaptive Neurofeedback Toolbox* (ANT) project. (see [Documentation](https://payamsash.github.io/ANT/)). 
 
 
 - 🧠 **Real-time M/EEG** neural feature extraction
@@ -21,7 +21,7 @@ ANT supports `python ≥ 3.10` and is available on
 
 
 ## Acknowledgment
-The work is done under SNS grant *Advancing Neurofeedback in Tinnitus (ANT) Closing the loop with stimulus design and neural feature training* (grant number: 208164)
+The work is done under SNF grant *Advancing Neurofeedback in Tinnitus (ANT) Closing the loop with stimulus design and neural feature training* (grant number: 208164)
 
 ## Copyright and license
 The code is released under the
