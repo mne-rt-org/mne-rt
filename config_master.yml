@@ -6,9 +6,6 @@ audiometry_dir:
 subjects_dir:
   "/Users/payamsadeghishabestari/temp_folder/antares_test" # path to a folder where subject information will be stored
 
-imgs_dir:
-  "/Users/payamsadeghishabestari/ANT/imgs" # path to a folder where background images are stored
-
 videos_dir:
   "/Users/payamsadeghishabestari/ANT/imgs" # path to a folder where videos are stored
 
