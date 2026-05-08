@@ -1,19 +1,15 @@
-﻿ant.tools.ORICA
+ant.tools.ORICA
 ===============
 
 .. currentmodule:: ant.tools
 
 .. autoclass:: ORICA
 
-   
-   .. automethod:: __init__
 
-   
    .. rubric:: Methods
 
    .. autosummary::
-   
-      ~ORICA.__init__
+
       ~ORICA.denoise
       ~ORICA.find_blink_ic
       ~ORICA.fit_transform
@@ -21,9 +17,3 @@
       ~ORICA.partial_fit
       ~ORICA.transform
       ~ORICA.update_and_denoise
-   
-   
-
-   
-   
-   

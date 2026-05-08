@@ -8,7 +8,7 @@ What's new
 Version 1.0.0
 -------------
 
-*Released: 2025*
+*Released: May 2026*
 
 New features
 ^^^^^^^^^^^^
@@ -22,7 +22,7 @@ New features
   verbosity conventions.
 - Four new NF modalities: ``erd_ers``, ``laterality``, ``hjorth``,
   ``spectral_centroid``.
-- :class:`~ant.viz.BrainPlot` — interactive 3-D cortical surface with
+- :class:`~ant.viz.BrainPlot` — interactive 3D cortical surface with
   threshold, opacity, and colour-map sliders; hemisphere toggles; surface
   switching (``inflated``, ``pial``, ``white``, ``sphere``) via keyboard
   shortcuts; dark navy background.
@@ -34,6 +34,9 @@ New features
   installation paths.
 - Bundled ``config_methods.yml`` so installed wheels work without the
   source tree.
+- :meth:`~ant.NFRealtime.get_blink_template` now exposes full MNE ICA
+  constructor parameters (``n_components``, ``fit_params``, ``random_state``)
+  and an ICAlabel confidence ``threshold``.
 
 Improvements
 ^^^^^^^^^^^^
@@ -46,14 +49,3 @@ Improvements
   ``Parameters``, ``Returns``, ``Examples``, and ``See Also`` sections.
 - Brain and NF signal plots now run in separate Qt timer loops (33 ms signal,
   200 ms brain) so VTK renders never block the signal display.
-
-Bug fixes
-^^^^^^^^^
-
-- ``pyunlocbox`` import now guarded with ``try/except`` to handle scipy ≥ 1.11
-  compatibility breakage in ``pyunlocbox`` ≤ 0.5.2.
-- EEG channels with missing location data (e.g. ``FPz``, ``HRli``, ``HRre``
-  from the ``easycap-M1`` montage) are dropped before ``make_forward_solution``
-  to prevent ``RuntimeError: Missing EEG channel location``.
-- Colormap slider in :class:`~ant.viz.BrainPlot` now updates the scalar bar
-  in-place via the VTK lookup table rather than rebuilding the actor.

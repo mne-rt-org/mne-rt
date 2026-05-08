@@ -95,7 +95,7 @@ Optional extras
      - What it adds
      - Install command
    * - ``viz``
-     - 3-D brain visualisation (pyvista, pyvistaqt) — needed for BrainPlot
+     - 3D brain visualisation (pyvista, pyvistaqt) — needed for BrainPlot
      - ``pip install "ANT[viz]"``
    * - ``dev``
      - Testing only (pytest, pytest-cov)

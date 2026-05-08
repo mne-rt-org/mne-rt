@@ -11,7 +11,7 @@
 **Advanced Neurofeedback Toolbox (ANT)** is an open-source Python package for
 **real-time M/EEG neurofeedback**, built on MNE-Python and the Lab Streaming
 Layer (LSL).  It covers the full closed-loop pipeline — from amplifier to
-3-D brain display — in a single, researcher-friendly API.
+3D brain display — in a single, researcher-friendly API.
 
 .. raw:: html
 
@@ -25,7 +25,7 @@ Key capabilities
 - **Sensor-space & source-space** processing with MNE inverse operators
 - **Live artifact correction** — ORICA, adaptive LMS, GEDAI
 - **Three parallel visualisation windows** — StreamViewer, NF signal plot,
-  3-D brain surface
+  3D brain surface
 - **OSC output** — send feedback values to Max/MSP, SuperCollider, Pure Data
 - **CLI** — run full sessions with a single ``ANT run`` command
 
@@ -146,4 +146,4 @@ If you use ANT, please cite :footcite:`shabestari2025advances`.
     :width: 320
 
 Development was supported by the
-`Swiss National Science Foundation <https://www.snf.ch/en>`_ (grant 208164).
+`Swiss National Science Foundation <https://www.snf.ch/en>`_ (grant number - 208164).

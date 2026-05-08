@@ -5,7 +5,7 @@ NF signal monitor & brain activation display
 ANT provides two live visualisation windows during a closed-loop session:
 
 * :class:`~ant.viz.NFSignalPlot` — scrolling multi-modality NF time-series
-* :class:`~ant.viz.BrainPlot` — interactive 3-D cortical activation surface
+* :class:`~ant.viz.BrainPlot` — interactive 3D cortical activation surface
 
 Because both windows are Qt-based they cannot be captured by Sphinx-Gallery
 automatically.  Instead this example generates synthetic NF data, re-renders
@@ -334,6 +334,6 @@ if not _brain_ok:
 # * **NF signal monitor** — 30-fps scrolling display with fine graph-paper
 #   grid; per-modality auto-range; linear interpolation between window
 #   estimates for a smooth trace.
-# * **Brain activation display** — PyVista 3-D cortical surface updated at
+# * **Brain activation display** — PyVista 3D cortical surface updated at
 #   ~5 fps; interactive threshold, opacity, and colour-map sliders; hemisphere
 #   toggles; keyboard shortcuts for view presets.

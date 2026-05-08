@@ -8,7 +8,7 @@ neurofeedback session:
 1. **Raw signal** — live scrolling M/EEG channel traces (mne-lsl StreamViewer).
 2. **NF signal** — scrolling plot of the extracted neurofeedback feature
    (:class:`~ant.viz.NFSignalPlot`).
-3. **Brain activation** — interactive 3-D cortical surface coloured by
+3. **Brain activation** — interactive 3D cortical surface coloured by
    estimated source power (:class:`~ant.viz.BrainPlot`).
 
 This example runs a short mock session headlessly and reproduces all three
@@ -138,7 +138,7 @@ plt.show()
 # %%
 # Window 3 — Brain activation (2-D topomap)
 # ------------------------------------------
-# In a live session the :class:`~ant.viz.BrainPlot` displays a 3-D cortical
+# In a live session the :class:`~ant.viz.BrainPlot` displays a 3D cortical
 # surface coloured by source power.  We reproduce the spatial intuition with
 # an EEG sensor-space topomap, computing alpha-band power per channel from
 # the sample recording.
@@ -178,7 +178,7 @@ plt.show()
 # * **Window 2** shows the closed-loop feedback signal the participant
 #   responds to, scrolling in real time.
 # * **Window 3** provides spatial context — which brain regions are driving
-#   the feedback signal — updated every second from the 3-D surface model.
+#   the feedback signal — updated every second from the 3D surface model.
 #
 # During a live session all three windows run in parallel, driven by a shared
 # Qt event loop at ~30 fps, without blocking M/EEG acquisition.

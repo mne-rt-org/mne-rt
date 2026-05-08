@@ -27,7 +27,7 @@ neurofeedback session:
 1. **Raw signal** — live scrolling M/EEG channel traces (mne-lsl StreamViewer).
 2. **NF signal** — scrolling plot of the extracted neurofeedback feature
    (:class:`~ant.viz.NFSignalPlot`).
-3. **Brain activation** — interactive 3-D cortical surface coloured by
+3. **Brain activation** — interactive 3D cortical surface coloured by
    estimated source power (:class:`~ant.viz.BrainPlot`).
 
 This example runs a short mock session headlessly and reproduces all three
@@ -90,7 +90,7 @@ non-interactively.
 
  .. code-block:: none
 
-    /Users/payamsadeghishabestari/ANT/docs/source/../../src/ant/realtime_nf.py:376: RuntimeWarning: DigMontage is only a subset of info. There are 3 channel positions not present in the DigMontage. The channels missing from the montage are:
+    /Users/payamsadeghishabestari/ANT/docs/source/../../src/ant/realtime_nf.py:370: RuntimeWarning: DigMontage is only a subset of info. There are 3 channel positions not present in the DigMontage. The channels missing from the montage are:
 
     ['FPz', 'HRli', 'HRre'].
 
@@ -98,7 +98,7 @@ non-interactively.
       stream.set_montage(self.montage, on_missing="warn")
     Session complete.
     Modalities: ['sensor_power', 'band_ratio', 'entropy']
-    Samples per modality: {'sensor_power': 7562, 'band_ratio': 7562, 'entropy': 7562}
+    Samples per modality: {'sensor_power': 7876, 'band_ratio': 7876, 'entropy': 7876}
 
 
 
@@ -220,7 +220,7 @@ second for a clean representation.
 
 Window 3 — Brain activation (2-D topomap)
 ------------------------------------------
-In a live session the :class:`~ant.viz.BrainPlot` displays a 3-D cortical
+In a live session the :class:`~ant.viz.BrainPlot` displays a 3D cortical
 surface coloured by source power.  We reproduce the spatial intuition with
 an EEG sensor-space topomap, computing alpha-band power per channel from
 the sample recording.
@@ -278,7 +278,7 @@ All three windows provide complementary views of the same real-time signal:
 * **Window 2** shows the closed-loop feedback signal the participant
   responds to, scrolling in real time.
 * **Window 3** provides spatial context — which brain regions are driving
-  the feedback signal — updated every second from the 3-D surface model.
+  the feedback signal — updated every second from the 3D surface model.
 
 During a live session all three windows run in parallel, driven by a shared
 Qt event loop at ~30 fps, without blocking M/EEG acquisition.
@@ -286,7 +286,7 @@ Qt event loop at ~30 fps, without blocking M/EEG acquisition.
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (0 minutes 22.656 seconds)
+   **Total running time of the script:** (0 minutes 23.648 seconds)
 
 
 .. _sphx_glr_download_auto_examples_plot_realtime_three_windows.py:
