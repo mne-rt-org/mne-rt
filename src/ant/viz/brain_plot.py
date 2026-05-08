@@ -16,9 +16,14 @@ from pathlib import Path
 from typing import Union
 
 import numpy as np
-import pyvista as pv
+try:
+    import pyvista as pv
+    _pyvista_available = True
+except ImportError:
+    pv = None  # type: ignore[assignment]
+    _pyvista_available = False
 
-from ant._logging import logger, verbose
+from ant._logging import logger
 from ant.tools import setup_surface
 
 
@@ -114,7 +119,7 @@ class BrainPlot:
     >>> bp = BrainPlot("/path/to/freesurfer/subjects")
     >>> bp.update_from_arrays(lh_scalars, rh_scalars)
 
-    .. versionadded:: 0.1.0
+    .. versionadded:: 1.0.0
     """
 
     def __init__(
@@ -128,6 +133,11 @@ class BrainPlot:
         window_size: tuple[int, int] = (1600, 1000),
         verbose: Union[bool, str, None] = None,
     ) -> None:
+        if not _pyvista_available:
+            raise ImportError(
+                "pyvista is required for BrainPlot. "
+                "Install it with:  pip install 'ANT[viz]'"
+            )
         from ant._logging import set_log_level
         set_log_level(verbose)
 
@@ -187,7 +197,7 @@ class BrainPlot:
             lighting="three lights",
             title="Advanced Neurofeedback Toolbox — Brain Activation",
         )
-        p.set_background("#0a0a14")
+        p.set_background("#060c18")
 
         self._base_actor = p.add_mesh(
             self._mesh,
@@ -239,7 +249,8 @@ class BrainPlot:
             value=0.0,
             title="Threshold",
             pointa=(0.04, 0.90), pointb=(0.28, 0.90),
-            style="modern", color="white", title_opacity=0.85,
+            style="modern", color="#4ECDC4", title_opacity=0.9,
+            tube_width=0.003, slider_width=0.012,
         )
 
         def _on_opacity(val: float) -> None:
@@ -253,7 +264,8 @@ class BrainPlot:
             value=self._opacity,
             title="Opacity",
             pointa=(0.32, 0.90), pointb=(0.56, 0.90),
-            style="modern", color="white", title_opacity=0.85,
+            style="modern", color="#FFD93D", title_opacity=0.9,
+            tube_width=0.003, slider_width=0.012,
         )
 
         def _on_cmap(val: float) -> None:
@@ -261,19 +273,8 @@ class BrainPlot:
             if idx == self._cmap_idx:
                 return
             self._cmap_idx = idx
-            p.remove_actor(self._act_actor)
-            self._act_actor = p.add_mesh(
-                self._mesh,
-                scalars="activity",
-                cmap=_CMAPS[idx],
-                opacity=self._opacity,
-                clim=self._clim,
-                smooth_shading=True,
-                show_scalar_bar=False,
-                interpolate_before_map=True,
-                nan_opacity=0.0,
-            )
-            self._cmap_label.SetInput(f"Cmap: {_CMAPS[idx]}")
+            self._sync_scalar_bar_lut()
+            self._cmap_label.SetInput(f"Colormap: {_CMAPS[idx]}")
             p.render()
 
         p.add_slider_widget(
@@ -282,22 +283,23 @@ class BrainPlot:
             value=float(self._cmap_idx),
             title="Colormap  (0–5)",
             pointa=(0.60, 0.90), pointb=(0.84, 0.90),
-            style="modern", color="white", title_opacity=0.85,
+            style="modern", color="#CC5DE8", title_opacity=0.9,
             fmt="%.0f",
+            tube_width=0.003, slider_width=0.012,
         )
         self._cmap_label = p.add_text(
-            f"Cmap: {_CMAPS[self._cmap_idx]}",
-            position=(10, 60),
+            f"Colormap: {_CMAPS[self._cmap_idx]}",
+            position=(10, 48),
             font_size=9,
-            color="#aaaacc",
+            color="#CC5DE8",
         )
 
         # Surface label (updated by set_surface)
         self._surf_label = p.add_text(
             f"Surface: {self._surf}",
-            position=(10, 80),
+            position=(10, 28),
             font_size=9,
-            color="#aaccaa",
+            color="#4ECDC4",
         )
 
     def _add_hemisphere_toggles(self) -> None:
@@ -312,16 +314,16 @@ class BrainPlot:
             self._refresh_scalars()
 
         p.add_checkbox_button_widget(
-            callback=_toggle_lh, value=True, position=(10, 10),
-            size=28, border_size=3, color_on="#4ECDC4", color_off="#333355",
+            callback=_toggle_lh, value=True, position=(12, 12),
+            size=24, border_size=3, color_on="#4ECDC4", color_off="#1a2744",
         )
-        p.add_text("LH", position=(48, 14), font_size=9, color="#4ECDC4")
+        p.add_text("LH", position=(42, 16), font_size=9, color="#4ECDC4")
 
         p.add_checkbox_button_widget(
-            callback=_toggle_rh, value=True, position=(90, 10),
-            size=28, border_size=3, color_on="#FF6B6B", color_off="#333355",
+            callback=_toggle_rh, value=True, position=(82, 12),
+            size=24, border_size=3, color_on="#FF6B6B", color_off="#1a2744",
         )
-        p.add_text("RH", position=(128, 14), font_size=9, color="#FF6B6B")
+        p.add_text("RH", position=(112, 16), font_size=9, color="#FF6B6B")
 
     def _add_key_bindings(self) -> None:
         p = self._plotter
@@ -342,14 +344,14 @@ class BrainPlot:
             _KEY_HELP,
             position="upper_right",
             font_size=8,
-            color="#606080",
+            color="#5a6a8a",
         )
 
     # ------------------------------------------------------------------
     # Internal helpers
     # ------------------------------------------------------------------
 
-    def _refresh_scalars(self) -> None:
+    def _refresh_scalars(self, deferred: bool = False) -> None:
         """Recompute display scalars respecting threshold and hemisphere masks."""
         display = self._scalars_full.copy()
         display[display < self._threshold] = np.nan
@@ -358,8 +360,8 @@ class BrainPlot:
         if not self._hemi_visible["rh"]:
             display[self._n_lh :] = np.nan
         self._mesh["activity"] = display
-        self._mesh.Modified()
-        self._plotter.update_scalars(display, render=True)
+        if not deferred:
+            self._plotter.render()
 
     def _set_view(self, preset: str) -> None:
         if preset not in _VIEW_PRESETS:
@@ -389,7 +391,20 @@ class BrainPlot:
             interpolate_before_map=True,
             nan_opacity=0.0,
         )
+        # Re-sync scalar bar LUT to the new actor's mapper
+        self._sync_scalar_bar_lut()
         p.render()
+
+    def _sync_scalar_bar_lut(self) -> None:
+        """Point the scalar bar's LUT at the current activity actor's mapper."""
+        import matplotlib
+        cmap_obj = matplotlib.colormaps[_CMAPS[self._cmap_idx]]
+        lut = self._act_actor.GetMapper().GetLookupTable()
+        lut.SetNumberOfColors(256)
+        for i in range(256):
+            r, g, b, a = cmap_obj(i / 255.0)
+            lut.SetTableValue(i, r, g, b, a)
+        lut.Build()
 
     # ------------------------------------------------------------------
     # Public interface
@@ -442,6 +457,7 @@ class BrainPlot:
         lh_scalars: np.ndarray,
         rh_scalars: np.ndarray,
         mode: str = "power",
+        deferred: bool = False,
     ) -> None:
         """Update the brain display from pre-computed per-vertex scalars.
 
@@ -464,7 +480,7 @@ class BrainPlot:
         self._scalars_full[
             self._verts_stc["rh"] + self._hemi_offsets["rh"]
         ] = rh_scalars
-        self._refresh_scalars()
+        self._refresh_scalars(deferred=deferred)
 
     def update(
         self,
