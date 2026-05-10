@@ -14,24 +14,53 @@ from ant.tools.tools import butter_bandpass
 
 
 class GEDAIDenoiser:
-    """Artifact removal via Generalized Eigendecomposition (GED).
+    """Artifact removal via Generalised Eigendecomposition-based Artifact Identification (GEDAI).
 
-    Solves ``R_band @ v = λ R_broad @ v``.  Components with the largest λ
-    values capture the most band-specific activity.  Artifact components are
-    identified either by template matching (blink topography) or by their
-    eigenvalue rank (lowest-λ components are the least band-specific and
-    most likely to reflect broadband noise/artifacts).
+    Solves the generalised eigenvalue problem (GEP):
+
+    .. math::
+
+        \\mathbf{C}\\,\\mathbf{w} = \\lambda\\,\\mathbf{R}\\,\\mathbf{w}
+
+    where :math:`\\mathbf{C}` is the signal covariance and :math:`\\mathbf{R}`
+    is a reference covariance.  Two modes are supported:
+
+    * **Leadfield mode** (recommended, true GEDAI):
+      :math:`\\mathbf{R} = \\mathbf{L}\\mathbf{L}^\\top`, where
+      :math:`\\mathbf{L}` is the EEG forward/leadfield gain matrix.
+      Components with *large* :math:`\\lambda` are well-explained by the
+      brain's theoretical source model and are kept; components with *small*
+      :math:`\\lambda` are not leadfield-aligned and are treated as artifacts.
+      Use :meth:`fit_from_leadfield` to fit in this mode.
+
+    * **Band-filter mode** (Cohen-style GED):
+      :math:`\\mathbf{C} = \\mathbf{R}_{\\mathrm{band}}` and
+      :math:`\\mathbf{R} = \\mathbf{R}_{\\mathrm{broad}}` (broadband EEG
+      covariance, Tikhonov-regularised).  Components with large :math:`\\lambda`
+      maximise the target-band-to-broadband ratio.
+      Use :meth:`fit` or :meth:`fit_from_raw` for this mode.
+
+    In both modes the unmixing matrix :math:`\\mathbf{W}` (spatial filters)
+    and activation patterns :math:`\\mathbf{A} = (\\mathbf{W}^\\top)^+` are
+    stored after fitting.  Denoising zeroes the selected artifact columns of
+    :math:`\\mathbf{A}` and reconstructs clean sensor data as
+    :math:`\\hat{\\mathbf{x}} = \\mathbf{A}_{\\mathrm{clean}}\\,\\mathbf{W}^\\top\\mathbf{x}`.
 
     Parameters
     ----------
     n_channels : int
         Number of EEG/MEG channels.
     shrinkage : float, default 0.01
-        Tikhonov regularisation strength applied to the broadband covariance
-        before solving the GEP.  Prevents ill-conditioning.
+        Tikhonov regularisation strength applied to the reference covariance
+        before solving the GEP.  Prevents ill-conditioning when the
+        covariance matrix is rank-deficient.
 
     References
     ----------
+    Ros, T., Férat, V., Huang, Y., et al. (2025). Return of the GEDAI:
+    Unsupervised EEG Denoising based on Leadfield Filtering. *bioRxiv*.
+    https://doi.org/10.1101/2025.10.04.680449
+
     Cohen, M. X. (2022). A tutorial on generalized eigendecomposition for
     denoising, contrast enhancement, and dimension reduction in multichannel
     electrophysiology. *NeuroImage*, 247, 118809.
@@ -87,6 +116,64 @@ class GEDAIDenoiser:
         eigenvalues, W = linalg.eigh(R_band, R_broad)
 
         # Sort descending: largest λ = most band-specific
+        order = np.argsort(eigenvalues)[::-1]
+        self._eigenvalues = eigenvalues[order]
+        self._W = W[:, order]
+        self._A = np.linalg.pinv(self._W.T)
+
+        return self
+
+    def fit_from_leadfield(
+        self,
+        data: np.ndarray,
+        leadfield: np.ndarray,
+    ) -> "GEDAIDenoiser":
+        """Fit using the forward/leadfield matrix as the reference covariance.
+
+        This is the **true GEDAI** mode described in Ros et al. (2025).
+        The reference covariance is constructed as
+        :math:`\\mathbf{R} = \\mathbf{L}\\mathbf{L}^\\top` where
+        :math:`\\mathbf{L}` is the leadfield gain matrix.  Components
+        whose eigenvalues are large are well-aligned with the theoretical
+        brain source model and are treated as signal; components with small
+        eigenvalues are artifact candidates.
+
+        Parameters
+        ----------
+        data : ndarray, shape (n_channels, n_samples)
+            Broadband baseline EEG/MEG recording.
+        leadfield : ndarray, shape (n_channels, n_sources)
+            Forward solution gain matrix :math:`\\mathbf{L}` — the
+            ``fwd['sol']['data']`` array from an MNE forward solution.
+
+        Returns
+        -------
+        self
+        """
+        if data.shape[0] != self.n_channels:
+            raise ValueError(
+                f"Expected {self.n_channels} channels, got {data.shape[0]}"
+            )
+        if leadfield.shape[0] != self.n_channels:
+            raise ValueError(
+                f"Leadfield row count ({leadfield.shape[0]}) must equal n_channels ({self.n_channels})"
+            )
+
+        n_samples = data.shape[1]
+        Xb = data - data.mean(axis=1, keepdims=True)
+        C = (Xb @ Xb.T) / n_samples
+
+        # Leadfield-based reference: R = L @ L.T (normalised)
+        R_lead = leadfield @ leadfield.T
+        R_lead /= np.trace(R_lead) / self.n_channels  # scale to unit average power
+
+        # Tikhonov regularisation
+        reg = self.shrinkage * np.trace(R_lead) / self.n_channels
+        R_lead += reg * np.eye(self.n_channels)
+
+        eigenvalues, W = linalg.eigh(C, R_lead)
+
+        # Descending order: largest λ = most leadfield-aligned = brain signal
         order = np.argsort(eigenvalues)[::-1]
         self._eigenvalues = eigenvalues[order]
         self._W = W[:, order]
