@@ -11,7 +11,7 @@ Main entry points
 :class:`~ant.viz.NFSignalPlot`
     Scrolling multi-channel NF signal monitor (PyQt6 + pyqtgraph).
 :class:`~ant.viz.BrainPlot`
-    Interactive 3-D cortical surface with activity overlay (PyVista).
+    Interactive 3D cortical surface with activity overlay (PyVista).
 :class:`~ant.tools.ORICA`
     Online Recursive ICA for real-time artifact removal.
 :class:`~ant.tools.GEDAIDenoiser`
