@@ -170,7 +170,7 @@ class NFSignalPlot(QMainWindow):
 
     See Also
     --------
-    ant.viz.BrainPlot : 3-D brain activation display.
+    ant.viz.BrainPlot : 3D brain activation display.
     ant.NFRealtime.record_main : Drives both plots from the NF loop.
 
     Notes
@@ -257,7 +257,7 @@ class NFSignalPlot(QMainWindow):
             is_bottom = (i == self._n - 1)
 
             pi = glw.addPlot(row=i, col=0)
-            pi.showGrid(x=True, y=True, alpha=0.3)
+            self._apply_grid_style(pi, visible=True)
             pi.setMouseEnabled(x=False, y=False)
 
             # Label the left axis with the modality name in its colour
@@ -359,9 +359,7 @@ class NFSignalPlot(QMainWindow):
         # Grid toggle
         chk = QCheckBox("Show grid")
         chk.setChecked(True)
-        chk.stateChanged.connect(
-            lambda s: [pi.showGrid(x=bool(s), y=bool(s), alpha=0.3) for pi in self._plots]
-        )
+        chk.toggled.connect(self._set_grid)
         lay.addWidget(chk)
 
         # Auto-range button
@@ -426,6 +424,20 @@ class NFSignalPlot(QMainWindow):
         else:
             major, minor = 10.0, 2.0
         pi.getAxis("bottom").setTickSpacing(major=major, minor=minor)
+
+    @staticmethod
+    def _apply_grid_style(pi: pg.PlotItem, visible: bool = True) -> None:
+        """Show grid with white lines and set pen directly on the GridItem."""
+        pi.showGrid(x=visible, y=visible, alpha=0.45 if visible else 0.0)
+        if visible:
+            grid_pen = pg.mkPen(color=(220, 220, 255, 110), width=1, style=Qt.PenStyle.SolidLine)
+            for item in pi.items:
+                if isinstance(item, pg.GridItem):
+                    item.setPen(grid_pen)
+
+    def _set_grid(self, checked: bool) -> None:
+        for pi in self._plots:
+            self._apply_grid_style(pi, visible=checked)
 
     def _toggle_pause(self, checked: bool) -> None:
         self._paused = checked
