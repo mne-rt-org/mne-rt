@@ -36,7 +36,10 @@ from ant._logging import logger, set_log_level  # noqa: F401 — public API
 from ant.realtime_nf import NFRealtime
 from ant.viz import BrainPlot, NFSignalPlot
 from ant.tools import ORICA, GEDAIDenoiser
+from ant.tools.asr import ASRDenoiser
+from ant.tools.maxwell import RTMaxwellFilter
 from ant.osc import OSCSender
+from ant.protocols import ThresholdProtocol
 
 __all__ = [
     "NFRealtime",
@@ -44,6 +47,9 @@ __all__ = [
     "NFSignalPlot",
     "ORICA",
     "GEDAIDenoiser",
+    "ASRDenoiser",
+    "RTMaxwellFilter",
+    "ThresholdProtocol",
     "OSCSender",
     "set_log_level",
     "logger",
