@@ -64,7 +64,9 @@ from ant.tools import (
     plot_glass_brain,
     remove_blinks_lms,
 )
+from ant.tools.asr import ASRDenoiser
 from ant.tools.gedai import GEDAIDenoiser
+from ant.tools.maxwell import RTMaxwellFilter
 from ant.tools.orica import ORICA
 from ant.viz import BrainPlot, NFSignalPlot
 
@@ -124,6 +126,12 @@ class NFRealtime(ModalityMixin):
         * ``"gedai"``   — GED-based decomposition
           (:class:`~ant.tools.GEDAIDenoiser`); requires
           :meth:`fit_gedai` to be called after baseline.
+        * ``"asr"``     — Artifact Subspace Reconstruction
+          (:class:`~ant.tools.ASRDenoiser`); requires
+          :meth:`fit_asr` to be called after baseline.
+        * ``"maxwell"`` — Signal Space Separation / tSSS for MEG
+          (:class:`~ant.tools.RTMaxwellFilter`); requires
+          :meth:`fit_maxwell` (no baseline needed; MEG only).
 
     ref_channel : str, default "Fp1"
         Reference channel for LMS artifact correction.
@@ -168,7 +176,7 @@ class NFRealtime(ModalityMixin):
     """
 
     _VALID_SESSIONS = {"baseline", "main"}
-    _VALID_ARTIFACT_METHODS = {False, "orica", "lms", "gedai"}
+    _VALID_ARTIFACT_METHODS = {False, "orica", "lms", "gedai", "asr", "maxwell"}
     _VALID_DATA_TYPES = {"eeg", "meg"}
 
     _SENSOR_POWER_SCALE: dict[str, float] = {"eeg": 1e-12, "meg": 1e-24}
@@ -227,6 +235,8 @@ class NFRealtime(ModalityMixin):
             )
         if artifact_correction == "lms" and data_type == "meg":
             raise ValueError("LMS artifact correction is only supported for EEG.")
+        if artifact_correction == "maxwell" and data_type != "meg":
+            raise ValueError("Maxwell filtering is only supported for MEG data.")
         if not isinstance(save_nf_signal, bool):
             raise ValueError("`save_nf_signal` must be a boolean.")
 
@@ -257,6 +267,7 @@ class NFRealtime(ModalityMixin):
         self.save_nf_signal = save_nf_signal
         self.config_file = config
         self.verbose = verbose
+        self.subject_dir = Path(subjects_dir) / subject_id
 
         set_log_level(verbose)
 
@@ -290,8 +301,9 @@ class NFRealtime(ModalityMixin):
             Stream a pre-recorded file instead of live hardware.
             Requires ``fname`` or uses the bundled sample file.
         fname : str | None, default None
-            File path for mock streaming.  ``None`` uses the bundled
-            sample recording at ``data/sample/sample_data.vhdr``.
+            Path to any MNE-readable recording for mock streaming
+            (.fif, .vhdr, .edf, .bdf, .set, …).
+            ``None`` uses the bundled sample recording.
         n_repeat : int | float, default ``np.inf``
             How many times to loop the mock recording.
         bufsize_baseline : int, default 4
@@ -303,7 +315,7 @@ class NFRealtime(ModalityMixin):
         timeout : float, default 5.0
             Maximum wait time in seconds for the LSL connection.
         stream_name : str | None, default None
-            Connect by stream name (e.g. ``"neuromag2lsl"`` for MEG devices).
+            Connect by stream name (e.g. ``neuromag2lsl`` for MEG devices).
         stream_source_id : str | None, default None
             Connect by stream source ID.
         pick_types : str | None, default None
@@ -330,13 +342,11 @@ class NFRealtime(ModalityMixin):
 
             nf.connect_to_lsl()
 
-        Simulate from a BrainVision file::
+        Simulate from any MNE-readable file::
 
-            nf.connect_to_lsl(mock_lsl=True, fname="path/to/data.vhdr")
+            nf.connect_to_lsl(mock_lsl=True, fname="path/to/data.fif")
+            nf.connect_to_lsl(mock_lsl=True, fname="path/to/data.edf")
         """
-        self.subject_dir = Path(self.subjects_dir) / self.subject_id
-        self.subject_dir.mkdir(parents=True, exist_ok=True)
-
         if hasattr(self, "stream") and getattr(self.stream, "connected", False):
             self.stream.disconnect()
 
@@ -385,6 +395,15 @@ class NFRealtime(ModalityMixin):
                 attr = getattr(self.stream, name)
                 if callable(attr):
                     setattr(self, name, attr)
+
+    # ------------------------------------------------------------------
+    # Directory helpers
+    # ------------------------------------------------------------------
+
+    def _ensure_dirs(self) -> None:
+        """Create all standard session subdirectories under ``subject_dir``."""
+        for sub in ("baseline", "inv", "neurofeedback", "delays", "raw", "reports"):
+            (self.subject_dir / sub).mkdir(parents=True, exist_ok=True)
 
     # ------------------------------------------------------------------
     # Recording
@@ -437,12 +456,12 @@ class NFRealtime(ModalityMixin):
         data = np.concatenate(chunks, axis=1)
         raw_baseline = RawArray(data, self.rec_info)
 
-        baseline_dir = self.subject_dir / "baseline"
-        baseline_dir.mkdir(parents=True, exist_ok=True)
-        raw_baseline.save(baseline_dir / f"visit_{self.visit}-raw.fif", overwrite=True)
+        self._ensure_dirs()
+        raw_baseline.save(
+            self.subject_dir / "baseline" / f"visit_{self.visit}-raw.fif",
+            overwrite=True,
+        )
         self.raw_baseline = raw_baseline
-
-        (self.subject_dir / "inv").mkdir(parents=True, exist_ok=True)
         self.compute_inv_operator()
 
     @verbose
@@ -462,7 +481,11 @@ class NFRealtime(ModalityMixin):
         brain_mode: str = "power",
         brain_freq_range: tuple[float, float] = (8.0, 13.0),
         use_ring_buffer: bool = False,
+        zscore_normalize: bool = False,
+        zscore_warmup: int = 10,
+        zscore_alpha: float = 0.0,
         osc_sender: Optional[Any] = None,
+        save_raw: bool = False,
         verbose: Union[bool, str, None] = None,
     ) -> None:
         """Stream M/EEG, extract neural features, and drive NF visualisation.
@@ -529,10 +552,32 @@ class NFRealtime(ModalityMixin):
             Use a sliding ring-buffer acquisition loop (50 % overlap) instead
             of discrete fixed-length window pulls.  Increases update rate at
             the cost of higher CPU load.
+        zscore_normalize : bool, default False
+            Apply online z-score normalisation to each NF feature value
+            before storing and displaying it.  During the first
+            ``zscore_warmup`` windows the raw value is passed through
+            unchanged; once warmup completes, each value is normalised as
+            ``z = (x − μ) / σ`` where μ and σ are estimated from the
+            warmup windows.  If ``zscore_alpha > 0`` the statistics are
+            updated after every window with an exponential moving average
+            so the normaliser slowly tracks drift.
+        zscore_warmup : int, default 10
+            Number of windows to collect before activating normalisation.
+            The mean and standard deviation of these windows are used as
+            the initial statistics.
+        zscore_alpha : float, default 0.0
+            EMA forgetting factor for updating μ and σ each window.
+            ``0.0`` freezes statistics after warmup (recommended for most
+            NF protocols).  Values in [0.01, 0.1] add slow adaptation.
         osc_sender : OSCSender | None, default None
             If provided, each computed NF value is also broadcast over OSC
             to the configured host/port after every update cycle.
             See :class:`~ant.osc.OSCSender`.
+        save_raw : bool, default False
+            Persist the raw pre-correction M/EEG acquired during the main
+            session to ``raw/<stem>-raw.fif``.  Off by default because FIF
+            files can be large; enable when the raw continuous signal is
+            needed for offline re-analysis or provenance.
         verbose : bool | str | None, default None
             Override the instance-level verbosity for this call.
 
@@ -550,13 +595,17 @@ class NFRealtime(ModalityMixin):
 
         Notes
         -----
-        Output files written to ``<subjects_dir>/<subject_id>/``:
+        Output files written to ``<subjects_dir>/<subject_id>/``.  All names
+        include an ISO-8601 timestamp so that multiple runs never overwrite
+        each other:
 
-        * ``raw/visit_<N>-raw.fif`` — full raw NF recording
-        * ``nf/visit_<N>-nf.json`` — NF feature time-series (if
-          ``save_nf_signal=True``)
-        * ``delays/visit_<N>-delays.json`` — timing breakdown (if
-          ``estimate_delays=True``)
+        * ``neurofeedback/<stem>_nf.json`` — NF feature time-series plus
+          full session metadata (modalities, sfreq, duration, artifact
+          correction used, start/end timestamps)
+        * ``delays/<stem>_delays.json`` — per-step timing summary with
+          mean / std / max / p95 in ms (only when ``estimate_delays=True``)
+        * ``raw/<stem>-raw.fif`` — pre-correction M/EEG (only when
+          ``save_raw=True``)
 
         Examples
         --------
@@ -589,6 +638,19 @@ class NFRealtime(ModalityMixin):
         self._sfreq = self.rec_info["sfreq"]
         self.show_nf_signal = show_nf_signal
         self.use_ring_buffer = use_ring_buffer
+        if zscore_alpha < 0.0 or zscore_alpha >= 1.0:
+            raise ValueError("`zscore_alpha` must be in [0, 1).")
+        if zscore_warmup < 2:
+            raise ValueError("`zscore_warmup` must be ≥ 2.")
+
+        # Timestamp once — all output files share this stem so they are
+        # grouped together and never overwrite an earlier run.
+        self._session_start_time = datetime.datetime.now(datetime.timezone.utc)
+        self._session_stem = (
+            f"sub-{self.subject_id}_vis-{self.visit:02d}_ses-{self.session}"
+            f"_{self._session_start_time.strftime('%Y%m%dT%H%M%S')}"
+        )
+        self._ensure_dirs()
 
         # Artifact correction setup
         ref_ch_idx: Optional[int] = None
@@ -600,6 +662,16 @@ class NFRealtime(ModalityMixin):
             if not hasattr(self, "gedai") or self.gedai is None:
                 raise RuntimeError(
                     "Call fit_gedai() after baseline recording before starting a gedai session."
+                )
+        elif self.artifact_correction == "asr":
+            if not hasattr(self, "asr") or self.asr is None:
+                raise RuntimeError(
+                    "Call fit_asr() after baseline recording before starting an ASR session."
+                )
+        elif self.artifact_correction == "maxwell":
+            if not hasattr(self, "maxwell_filter") or self.maxwell_filter is None:
+                raise RuntimeError(
+                    "Call fit_maxwell() before record_main() to initialise Maxwell filtering."
                 )
 
         # Modality preparation
@@ -694,6 +766,33 @@ class NFRealtime(ModalityMixin):
         _meth_delays:    dict[str, list] = {m: [] for m in mods}
         _plot_delays:    list[float] = []  # only used when viz runs inline
 
+        # ---- Z-score normalisation state ----
+        _z_buf:   dict[str, list] = {m: [] for m in mods}
+        _z_mean:  dict[str, float] = {}
+        _z_std:   dict[str, float] = {}
+
+        def _apply_zscore(mod: str, val: float) -> float:
+            if not zscore_normalize:
+                return val
+            buf = _z_buf[mod]
+            buf.append(float(val))
+            n = len(buf)
+            if n < zscore_warmup:
+                return val                          # pass-through during warmup
+            if n == zscore_warmup:
+                arr = np.array(buf, dtype=float)
+                _z_mean[mod] = float(arr.mean())
+                _z_std[mod]  = max(float(arr.std()), 1e-6)
+            elif zscore_alpha > 0.0:
+                m_prev = _z_mean[mod]
+                _z_mean[mod] += zscore_alpha * (val - m_prev)
+                _z_std[mod]   = max(
+                    _z_std[mod] * (1.0 - zscore_alpha)
+                    + zscore_alpha * abs(val - m_prev),
+                    1e-6,
+                )
+            return (val - _z_mean[mod]) / _z_std[mod]
+
         # ---- Shared artifact-correction helper ----
 
         def _correct(data: np.ndarray) -> np.ndarray:
@@ -710,6 +809,16 @@ class NFRealtime(ModalityMixin):
             elif self.artifact_correction == "gedai":
                 art_tic = time.time()
                 data = self.gedai.update_and_denoise(data, self.blink_template, threshold=0.7)
+                if estimate_delays:
+                    _art_delays.append(time.time() - art_tic)
+            elif self.artifact_correction == "asr":
+                art_tic = time.time()
+                data = self.asr.transform(data)
+                if estimate_delays:
+                    _art_delays.append(time.time() - art_tic)
+            elif self.artifact_correction == "maxwell":
+                art_tic = time.time()
+                data = self.maxwell_filter.transform(data)
                 if estimate_delays:
                     _art_delays.append(time.time() - art_tic)
             return data
@@ -740,6 +849,7 @@ class NFRealtime(ModalityMixin):
 
         def _acquire() -> None:
             t_start = local_clock()
+            _raw_chunks: list[np.ndarray] = []
 
             if not use_ring_buffer:
                 # Fixed-window loop
@@ -751,6 +861,7 @@ class NFRealtime(ModalityMixin):
                     if data.shape[1] != self.window_size_s:
                         continue
 
+                    _raw_chunks.append(data.copy())
                     data = _correct(data)
 
                     futures = [
@@ -759,6 +870,7 @@ class NFRealtime(ModalityMixin):
                     ]
                     for m, fut in zip(mods, futures):
                         nf_val, m_delay = fut.result()
+                        nf_val = _apply_zscore(m, float(nf_val))
                         nf_data[m].append(nf_val)
                         if estimate_delays:
                             _meth_delays[m].append(m_delay)
@@ -801,16 +913,16 @@ class NFRealtime(ModalityMixin):
 
                     while ring.shape[1] >= self.window_size_s:
                         window = ring[:, : self.window_size_s].copy()
+                        _raw_chunks.append(window.copy())
                         window = _correct(window)
 
                         for i, mod in enumerate(mods):
                             meth_tic = time.time()
                             nf_val, m_delay = nf_fns[i](window, **precomps[i])
+                            nf_val = _apply_zscore(mod, float(nf_val))
                             nf_data[mod].append(nf_val)
                             if estimate_delays:
-                                _meth_delays[mod].append(
-                                    {"measured": time.time() - meth_tic, "reported": m_delay}
-                                )
+                                _meth_delays[mod].append(time.time() - meth_tic)
 
                         _vals = [nf_data[m][-1] for m in mods]
                         try:
@@ -828,6 +940,7 @@ class NFRealtime(ModalityMixin):
                         ring = ring[:, hop:]
 
             done_event.set()
+            self._raw_chunks = _raw_chunks
 
         # ---- Start acquisition thread ----
 
@@ -902,6 +1015,7 @@ class NFRealtime(ModalityMixin):
                             updated = True
                         if updated:
                             brain_plot.plotter.render()
+                            brain_plot.write_frame_if_recording()
                     except Exception:
                         pass
 
@@ -924,11 +1038,17 @@ class NFRealtime(ModalityMixin):
             self.acq_delays      = _acq_delays
             self.artifact_delays = _art_delays
             self.method_delays   = _meth_delays
-            self.save(nf_data=True, acq_delay=True, artifact_delay=True,
-                      method_delay=True, format="json")
-        else:
-            self.save(nf_data=True, acq_delay=False, artifact_delay=False,
-                      method_delay=False, format="json")
+
+        saved_files = self.save(
+            nf_data=True,
+            acq_delay=True,
+            artifact_delay=True,
+            method_delay=True,
+            raw_data=save_raw,
+            format="json",
+        )
+        for kind, path in saved_files.items():
+            logger.info("Saved %s → %s", kind, path)
 
         if signal_plot is not None:
             signal_plot.close()
@@ -1194,6 +1314,236 @@ class NFRealtime(ModalityMixin):
             )
             logger.info("GEDAI fitted in band-filter mode.")
 
+    @verbose
+    def fit_asr(
+        self,
+        cutoff: float = 5.0,
+        window_len: float = 1.0,
+        max_dropout_fraction: float = 0.1,
+        verbose: Union[bool, str, None] = None,
+    ) -> None:
+        """Fit an :class:`~ant.tools.ASRDenoiser` from the recorded baseline.
+
+        Must be called after :meth:`record_baseline` and before
+        :meth:`record_main` when ``artifact_correction="asr"``.
+
+        Parameters
+        ----------
+        cutoff : float, default 5.0
+            Rejection threshold in standard deviations above the clean-data
+            RMS per component.  Lower values (e.g. 3) are more aggressive;
+            higher values (e.g. 10) are more conservative.
+            The Mullen et al. (2015) default is 5.0.
+        window_len : float, default 1.0
+            Calibration window length in seconds.  Shorter windows give more
+            estimates but with higher variance.  Recommend 0.5–1.0 s.
+        max_dropout_fraction : float, default 0.1
+            Fraction of calibration windows with the highest total power
+            to discard before estimating clean statistics.  ``0.1`` keeps
+            the 90 % cleanest windows.
+        verbose : bool | str | None, default None
+            Override the instance-level verbosity for this call.
+
+        Raises
+        ------
+        RuntimeError
+            If :meth:`record_baseline` has not been called yet.
+
+        See Also
+        --------
+        ant.tools.ASRDenoiser : The underlying ASR implementation.
+        NFRealtime.record_baseline : Records and stores the baseline segment.
+
+        References
+        ----------
+        Mullen, T. R., et al. (2015). Real-Time Neuroimaging and Cognitive
+        Monitoring Using Wearable Dry EEG. *IEEE Trans. Biomed. Eng.*,
+        62(11), 2553–2567.
+
+        Examples
+        --------
+        >>> nf.record_baseline(baseline_duration=120)
+        >>> nf.fit_asr(cutoff=5.0)
+        >>> nf.record_main(duration=600, artifact_correction="asr")
+        """
+        if not hasattr(self, "raw_baseline") or self.raw_baseline is None:
+            raise RuntimeError("Run record_baseline() before calling fit_asr().")
+
+        self.asr = ASRDenoiser(
+            cutoff=cutoff,
+            max_dropout_fraction=max_dropout_fraction,
+        )
+        self.asr.fit(
+            self.raw_baseline.get_data(),
+            sfreq=float(self.raw_baseline.info["sfreq"]),
+            window_len=window_len,
+        )
+        logger.info("ASR fitted (cutoff=%.1f) from baseline.", cutoff)
+
+    @verbose
+    def fit_maxwell(
+        self,
+        int_order: int = 8,
+        ext_order: int = 3,
+        origin: Union[str, tuple] = "auto",
+        st_duration: Optional[float] = None,
+        st_correlation: float = 0.98,
+        st_update_interval: int = 1,
+        calibration: Optional[str] = None,
+        cross_talk: Optional[str] = None,
+        coord_frame: str = "head",
+        regularize: Optional[str] = "in",
+        mag_scale: float = 100.0,
+        empty_room_raw: Optional[Any] = None,
+        verbose: Union[bool, str, None] = None,
+    ) -> None:
+        """Prepare real-time Maxwell filtering (SSS / tSSS) for MEG data.
+
+        Computes the Signal Space Separation (SSS) projection operator once
+        from sensor geometry.  No baseline recording is required — the SSS
+        basis is entirely geometric.  Call this method at any point before
+        :meth:`record_main` when ``artifact_correction="maxwell"``.
+
+        Parameters
+        ----------
+        int_order : int, default 8
+            Internal spherical-harmonic expansion order.
+            ``8`` → 80 internal moments (MNE default, adequate for all
+            standard MEG systems).
+        ext_order : int, default 3
+            External expansion order (``3`` → 16 external moments).
+        origin : array-like of shape (3,) | "auto", default "auto"
+            SSS expansion origin in metres (head frame).  ``"auto"`` places
+            it at the geometric centre of the sensor array.
+        st_duration : float | None, default None
+            Temporal SSS (tSSS) buffer duration in seconds.
+
+            * ``None`` — spatial SSS only.  The pre-computed projector is
+              applied per chunk via a single matrix multiply.
+            * ``float`` — tSSS mode.  A rolling buffer of ``st_duration``
+              seconds feeds MNE's full tSSS every ``st_update_interval``
+              chunks for temporal interference suppression.  The spatial SSS
+              projector is always applied first (zero-latency stage 1).
+
+            Typical values: 10 s for persistent shielding leakage, 1–4 s
+            for moving subjects.
+        st_correlation : float, default 0.98
+            Minimum inside-outside correlation for tSSS suppression.
+        st_update_interval : int, default 1
+            Apply tSSS every *N* chunks.  Increase to reduce CPU load
+            when ``winsize`` is small.
+        calibration : str | None, default None
+            Path to the fine-calibration ``.dat`` file.  Strongly
+            recommended for Elekta/MEGIN systems — it corrects sensor
+            position and orientation errors.
+        cross_talk : str | None, default None
+            Path to the cross-talk ``.fif`` file.  Compensates for flux
+            leakage between adjacent sensors.
+        coord_frame : {"head", "meg"}, default "head"
+            Coordinate frame for the spherical-harmonic expansion.
+        regularize : {"in", None}, default "in"
+            Internal-moment regularisation passed to MNE.  ``"in"``
+            (Tikhonov) is recommended for most datasets.
+        mag_scale : float, default 100.0
+            Magnetometer/gradiometer balance factor in the SSS decomposition.
+        empty_room_raw : mne.io.Raw | None, default None
+            Empty-room recording (shielded room, no subject).  When
+            provided, the SSS operator is extracted via **system
+            identification** so that noise-informed regularisation from the
+            empty room is incorporated into the cached matrix.  This
+            improves suppression of spatially correlated sensor noise and
+            is equivalent to passing ``noise_cov`` to
+            :func:`~mne.preprocessing.maxwell_filter`.
+
+            When ``None``, geometric regularisation only is used via
+            :func:`~mne.preprocessing.compute_maxwell_basis` (faster,
+            adequate when shielding is good).
+        verbose : bool | str | None, default None
+            Override instance-level verbosity.
+
+        Raises
+        ------
+        RuntimeError
+            If no LSL stream has been connected yet (``connect_to_lsl()``
+            must be called first so that ``self.rec_info`` is populated).
+        ValueError
+            If this instance was initialised with ``data_type="eeg"``
+            (Maxwell filtering is MEG-only).
+
+        Notes
+        -----
+        See :class:`~ant.tools.RTMaxwellFilter` for the underlying filter
+        class and :meth:`fit_asr` for the EEG alternative (ASR).
+
+        Unlike :meth:`fit_asr` and :meth:`fit_gedai`, **no baseline
+        recording is needed**.  The SSS operator depends only on sensor
+        positions, not on brain signal statistics.  Simply call::
+
+            nf.connect_to_lsl()
+            nf.fit_maxwell()          # operator ready in seconds
+            nf.record_main(duration=600, artifact_correction="maxwell")
+
+        If a fine-calibration file is available, passing it via
+        ``calibration`` typically reduces the RMS noise floor by 10–20 %
+        compared to the uncalibrated SSS.
+
+        References
+        ----------
+        Taulu, S., Kajola, M., & Simola, J. (2004). Suppression of
+        interference and artifacts by the Signal Space Separation Method.
+        *Brain Topogr.*, 16(4), 269–275.
+
+        Taulu, S., & Simola, J. (2006). Spatiotemporal signal space
+        separation method for rejecting nearby interference in MEG
+        measurements. *Phys. Med. Biol.*, 51(7), 1759–1768.
+
+        Examples
+        --------
+        SSS-only (fastest, no latency):
+
+        >>> nf.connect_to_lsl()
+        >>> nf.fit_maxwell()
+        >>> nf.record_main(duration=600, artifact_correction="maxwell")
+
+        tSSS with fine calibration and empty room:
+
+        >>> import mne
+        >>> er_raw = mne.io.read_raw_fif("empty_room.fif", preload=True)
+        >>> nf.connect_to_lsl()
+        >>> nf.fit_maxwell(
+        ...     st_duration=10.0,
+        ...     calibration="sss_cal.dat",
+        ...     cross_talk="ct_sparse.fif",
+        ...     empty_room_raw=er_raw,
+        ... )
+        >>> nf.record_main(duration=600, artifact_correction="maxwell")
+        """
+        if not hasattr(self, "rec_info") or self.rec_info is None:
+            raise RuntimeError(
+                "connect_to_lsl() must be called before fit_maxwell() "
+                "so that sensor info is available."
+            )
+
+        self.maxwell_filter = RTMaxwellFilter(
+            int_order=int_order,
+            ext_order=ext_order,
+            origin=origin,
+            st_duration=st_duration,
+            st_correlation=st_correlation,
+            st_update_interval=st_update_interval,
+            calibration=calibration,
+            cross_talk=cross_talk,
+            coord_frame=coord_frame,
+            regularize=regularize,
+            mag_scale=mag_scale,
+        )
+        self.maxwell_filter.fit(self.rec_info, empty_room_raw=empty_room_raw)
+        logger.info(
+            "Maxwell filter ready: mode=%s, n_internal=%d.",
+            self.maxwell_filter.mode,
+            self.maxwell_filter.n_use_in,
+        )
+
     def compute_inv_operator(
         self,
         loose: float = 0.2,
@@ -1243,6 +1593,7 @@ class NFRealtime(ModalityMixin):
         mne.make_inverse_operator : Underlying MNE function.
         mne.compute_raw_covariance : Noise covariance estimation.
         """
+        self._ensure_dirs()
         self.inv, self.fwd, self.noise_cov = _compute_inv_operator(
             self.raw_baseline,
             subject_fs_id=self.subject_fs_id,
@@ -1307,54 +1658,198 @@ class NFRealtime(ModalityMixin):
         method_delay: bool = True,
         raw_data: bool = False,
         format: str = "json",
-    ) -> None:
-        """Save session data and disconnect the LSL stream.
+        delay_include_trace: bool = False,
+    ) -> dict[str, Path]:
+        """Save session outputs and disconnect the LSL stream.
+
+        All output files share the stem
+        ``sub-<ID>_vis-<N>_ses-<session>_<ISO-timestamp>`` set at the
+        start of :meth:`record_main`, so multiple runs in a day never
+        overwrite each other.
 
         Parameters
         ----------
         nf_data : bool, default True
+            Save NF feature time-series as
+            ``neurofeedback/<stem>_nf.json``.  The JSON contains a
+            ``"meta"`` block (subject, modalities, sfreq, duration,
+            artifact correction, start/end timestamps) and a ``"data"``
+            block with per-modality value lists.
         acq_delay : bool, default True
+            Include acquisition-loop timing in the delays file (only
+            written when ``estimate_delays=True`` was set in
+            :meth:`record_main`).
         artifact_delay : bool, default True
+            Include artifact-correction timing in the delays file.
         method_delay : bool, default True
+            Include per-modality feature-extraction timing in the delays
+            file.
         raw_data : bool, default False
-            Not yet implemented.
+            Save the pre-correction M/EEG acquired during the main
+            session as ``raw/<stem>-raw.fif``.
         format : str, default "json"
+            Serialisation format for NF data and delays.  Currently only
+            ``"json"`` is supported.
+        delay_include_trace : bool, default False
+            Embed the full per-window delay trace (ms) in the delays JSON
+            alongside the summary statistics.  Can be large for long sessions.
+
+        Returns
+        -------
+        saved : dict[str, Path]
+            Maps output type (``"nf_data"``, ``"delays"``, ``"raw"``) to
+            the saved file path.  Only keys for files actually written are
+            included.
+
+        Notes
+        -----
+        Disconnects the LSL stream as a side effect — the stream is not
+        needed after the session ends.
         """
-        if self.stream.connected:
+        if hasattr(self, "stream") and getattr(self.stream, "connected", False):
             self.stream.disconnect()
-        for folder in ("neurofeedback", "delays", "main", "reports"):
-            (self.subject_dir / folder).mkdir(parents=True, exist_ok=True)
 
-        if format == "json":
+        self._ensure_dirs()
 
-            def _write(path: Path, obj: Any) -> None:
-                with open(path, "w") as fh:
-                    json.dump(obj, fh)
+        stem = getattr(
+            self, "_session_stem",
+            f"sub-{self.subject_id}_vis-{self.visit:02d}_ses-{self.session}",
+        )
+        saved: dict[str, Path] = {}
 
-            base = self.subject_dir
-            if nf_data:
-                _write(
-                    base / "neurofeedback" / f"nf_data_visit_{self.visit}.json",
-                    self.nf_data,
-                )
+        # ── helpers ──────────────────────────────────────────────────────
+
+        def _summarize(vals: list, include_trace: bool = False) -> dict:
+            """Convert a list of wall-clock seconds to a ms summary dict."""
+            if not vals:
+                return {"n": 0}
+            arr = np.asarray(vals, dtype=float) * 1000.0
+            out: dict = {
+                "mean_ms": round(float(arr.mean()), 4),
+                "std_ms":  round(float(arr.std()), 4),
+                "min_ms":  round(float(arr.min()), 4),
+                "max_ms":  round(float(arr.max()), 4),
+                "p95_ms":  round(float(np.percentile(arr, 95)), 4),
+                "n":       int(len(arr)),
+            }
+            if include_trace:
+                out["trace_ms"] = [round(v, 4) for v in arr.tolist()]
+            return out
+
+        def _ser(v: Any) -> Any:
+            if isinstance(v, np.ndarray):
+                return v.tolist()
+            if isinstance(v, (np.floating, np.integer)):
+                return float(v)
+            return v
+
+        # ── NF feature time-series ───────────────────────────────────────
+
+        if nf_data and hasattr(self, "nf_data"):
+            start_iso = (
+                self._session_start_time.isoformat()
+                if hasattr(self, "_session_start_time") else None
+            )
+            payload: dict = {
+                "meta": {
+                    "subject_id":          self.subject_id,
+                    "visit":               self.visit,
+                    "session":             self.session,
+                    "data_type":           self.data_type,
+                    "modalities":          list(self.nf_data.keys()),
+                    "sfreq_hz":            float(getattr(self, "_sfreq", 0)),
+                    "winsize_s":           float(getattr(self, "winsize", 0)),
+                    "duration_s":          float(getattr(self, "duration", 0)),
+                    "n_windows":           {m: len(v) for m, v in self.nf_data.items()},
+                    "artifact_correction": str(self.artifact_correction),
+                    "start_time":          start_iso,
+                    "end_time":            datetime.datetime.now(
+                                               datetime.timezone.utc
+                                           ).isoformat(),
+                },
+                "data": {
+                    m: [_ser(v) for v in vals]
+                    for m, vals in self.nf_data.items()
+                },
+            }
+            p = self.subject_dir / "neurofeedback" / f"{stem}_nf.json"
+            with open(p, "w") as fh:
+                json.dump(payload, fh, indent=2)
+            saved["nf_data"] = p
+
+        # ── Timing / delay statistics ────────────────────────────────────
+
+        if getattr(self, "estimate_delays", False) and (
+            acq_delay or artifact_delay or method_delay
+        ):
+            delays_payload: dict = {}
             if acq_delay and hasattr(self, "acq_delays"):
-                _write(
-                    base / "delays" / f"acq_delay_visit_{self.visit}.json",
-                    self.acq_delays,
+                delays_payload["acquisition"] = _summarize(
+                    self.acq_delays, delay_include_trace
                 )
             if artifact_delay and hasattr(self, "artifact_delays"):
-                _write(
-                    base / "delays" / f"artifact_delay_visit_{self.visit}.json",
-                    self.artifact_delays,
+                delays_payload["artifact_correction"] = _summarize(
+                    self.artifact_delays, delay_include_trace
                 )
             if method_delay and hasattr(self, "method_delays"):
-                _write(
-                    base / "delays" / f"method_delay_visit_{self.visit}.json",
-                    self.method_delays,
-                )
+                delays_payload["methods"] = {
+                    m: _summarize([float(v) for v in vals], delay_include_trace)
+                    for m, vals in self.method_delays.items()
+                }
+            p = self.subject_dir / "delays" / f"{stem}_delays.json"
+            with open(p, "w") as fh:
+                json.dump(delays_payload, fh, indent=2)
+            saved["delays"] = p
+
+        # ── Raw M/EEG (pre-correction) ───────────────────────────────────
 
         if raw_data:
-            raise NotImplementedError("Saving raw M/EEG data is not yet implemented.")
+            chunks = getattr(self, "_raw_chunks", None)
+            if chunks:
+                raw_all = np.concatenate(chunks, axis=1)
+                raw_nf = RawArray(raw_all, self.rec_info, verbose=False)
+                p = self.subject_dir / "raw" / f"{stem}-raw.fif"
+                raw_nf.save(p, overwrite=True, verbose=False)
+                saved["raw"] = p
+            else:
+                warn(
+                    "save(raw_data=True) but no raw chunks were accumulated. "
+                    "Did record_main() complete successfully?",
+                    RuntimeWarning,
+                    stacklevel=2,
+                )
+
+        return saved
+
+    @classmethod
+    def load_nf_data(cls, path: Union[str, Path]) -> dict:
+        """Load a saved NF data file produced by :meth:`save`.
+
+        Parameters
+        ----------
+        path : str | Path
+            Path to a ``*_nf.json`` file.
+
+        Returns
+        -------
+        payload : dict
+            Dict with two keys:
+
+            * ``"meta"`` — session metadata: subject ID, visit, session
+              type, modalities, sfreq, winsize, duration, n_windows,
+              artifact correction, start/end timestamps.
+            * ``"data"`` — ``{modality: [values, …]}`` per-modality lists.
+
+        Examples
+        --------
+        >>> d = NFRealtime.load_nf_data("subjects/sub01/neurofeedback/sub-sub01_..._nf.json")
+        >>> import numpy as np
+        >>> alpha = np.array(d["data"]["sensor_power"])
+        >>> print(f"Mean alpha power: {alpha.mean():.3e}")
+        >>> print(f"Session sfreq: {d['meta']['sfreq_hz']} Hz")
+        """
+        with open(Path(path)) as fh:
+            return json.load(fh)
 
     # ------------------------------------------------------------------
     # Reporting
