@@ -98,3 +98,18 @@ NF_modality:
   # Frequency-weighted centre-of-mass of the PSD within a band (Hz).
   # Tracks alpha-peak drift, SMR centre-frequency shifts, etc.
     frange: [8, 13]
+
+  laterality_erd_ers:
+  # Baseline-normalised inter-hemispheric ERD/ERS asymmetry (%).
+  # feature = ERD_ERS_right - ERD_ERS_left.
+  # Positive = right more activated; negative = left more activated.
+  # Requires a completed baseline session.
+    frange: [8, 13]
+    method: "welch"
+
+  wpli_sensor:
+  # Weighted Phase Lag Index between sensor pairs (artifact-robust connectivity).
+  # wPLI in [0, 1]; higher = more consistent phase lag between channels.
+  # More robust to volume conduction than PLV or PLI.
+    frange: [8, 13]
+    channels: [["C3", "F3"], ["C4", "F4"]]
