@@ -51,6 +51,7 @@ _KEY_HELP = (
     "  4 → Frontal\n"
     "  5 → Ventral\n"
     "  s → Screenshot\n"
+    "  v → Toggle video rec\n"
     "  r → Reset activity\n"
     "  i/p/w/h → Surface\n"
     "     (inflated/pial/white/sphere)"
@@ -158,6 +159,9 @@ class BrainPlot:
         self._threshold = 0.0
         self._cmap_idx = _CMAPS.index(cmap)
         self._hemi_visible = {"lh": True, "rh": True}
+        self._recording = False
+        self._video_writer = None
+        self._video_path: Path | None = None
 
         logger.info("Loading %s surface from %s …", surf, subjects_fs_dir)
         self._load_surface(surf)
@@ -333,6 +337,7 @@ class BrainPlot:
         p.add_key_event("4", lambda: self._set_view("frontal"))
         p.add_key_event("5", lambda: self._set_view("ventral"))
         p.add_key_event("s", self.screenshot)
+        p.add_key_event("v", self._toggle_recording)
         p.add_key_event("r", self.reset_activity)
         p.add_key_event("i", lambda: self.set_surface("inflated"))
         p.add_key_event("p", lambda: self.set_surface("pial"))
@@ -345,6 +350,12 @@ class BrainPlot:
             position="upper_right",
             font_size=8,
             color="#5a6a8a",
+        )
+        self._rec_label = self._plotter.add_text(
+            "",
+            position="lower_right",
+            font_size=12,
+            color="#FF4444",
         )
 
     # ------------------------------------------------------------------
@@ -527,6 +538,108 @@ class BrainPlot:
         """
         self._scalars_full[:] = 0.0
         self._refresh_scalars()
+
+    # ------------------------------------------------------------------
+    # Video recording
+    # ------------------------------------------------------------------
+
+    def _toggle_recording(self) -> None:
+        if self._recording:
+            self.stop_recording()
+        else:
+            self.record_video()
+
+    def record_video(self, path: Union[str, Path, None] = None) -> Path:
+        """Start recording the brain display to an MP4 video file.
+
+        Each subsequent call to :meth:`write_frame_if_recording` (issued
+        automatically by :meth:`~ant.NFRealtime.record_main`'s brain pump
+        timer) appends one frame.  Press **v** in the window or call
+        :meth:`stop_recording` to finish.
+
+        Parameters
+        ----------
+        path : str | Path | None, default None
+            Destination file path.  Defaults to
+            ``~/ant_brain_<timestamp>.mp4``.
+
+        Returns
+        -------
+        path : Path
+            Path of the video file being written.
+
+        Raises
+        ------
+        RuntimeError
+            If recording is already in progress.
+
+        Examples
+        --------
+        >>> bp.record_video("session.mp4")
+        >>> # ... run NF session ...
+        >>> bp.stop_recording()
+        """
+        import imageio
+        if self._recording:
+            raise RuntimeError(
+                "Already recording. Call stop_recording() first."
+            )
+        if path is None:
+            ts = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
+            path = Path.home() / f"ant_brain_{ts}.mp4"
+        path = Path(path)
+        self._video_writer = imageio.get_writer(
+            str(path), fps=24, macro_block_size=None
+        )
+        self._video_path = path
+        self._recording = True
+        self._rec_label.SetInput("● REC")
+        self._plotter.render()
+        logger.info("Brain video recording started: %s", path)
+        return path
+
+    def stop_recording(self) -> Union[Path, None]:
+        """Stop recording and finalise the video file.
+
+        Returns
+        -------
+        path : Path | None
+            Path of the saved video file, or ``None`` if no recording
+            was active.
+
+        Examples
+        --------
+        >>> saved = bp.stop_recording()
+        >>> print("Video saved to:", saved)
+        """
+        if not self._recording:
+            return None
+        if self._video_writer is not None:
+            self._video_writer.close()
+            self._video_writer = None
+        self._recording = False
+        self._rec_label.SetInput("")
+        self._plotter.render()
+        path = self._video_path
+        self._video_path = None
+        logger.info("Brain video saved: %s", path)
+        return path
+
+    def write_frame_if_recording(self) -> None:
+        """Capture a video frame if recording is active.
+
+        Called automatically from
+        :meth:`~ant.NFRealtime.record_main`'s brain pump timer after
+        each :meth:`~pyvista.Plotter.render` call.  Safe to call even
+        when not recording (no-op).
+        """
+        if not self._recording or self._video_writer is None:
+            return
+        try:
+            frame = self._plotter.screenshot(return_img=True)
+            self._video_writer.append_data(frame)
+        except Exception:
+            pass
 
     def screenshot(self, path: Union[str, Path, None] = None) -> Path:
         """Save a PNG screenshot of the current brain view.
