@@ -23,7 +23,7 @@ Key capabilities
 - **Real-time NF feature extraction** — 14+ modalities (alpha power,
   ERD/ERS, Hjorth, spectral centroid, CFC, graph metrics, …)
 - **Sensor-space & source-space** processing with MNE inverse operators
-- **Live artifact correction** — ORICA, adaptive LMS, GEDAI
+- **Live artifact correction** — ORICA, adaptive LMS, GEDAI, ASR, Maxwell/tSSS
 - **Three parallel visualisation windows** — StreamViewer, NF signal plot,
   3D brain surface
 - **OSC output** — send feedback values to Max/MSP, SuperCollider, Pure Data
@@ -62,7 +62,6 @@ Key capabilities
    :caption: Getting started
 
    install
-   whats_new
 
 .. toctree::
    :hidden:
@@ -70,6 +69,7 @@ Key capabilities
 
    api
    cli
+   denoising
 
 .. toctree::
    :hidden:

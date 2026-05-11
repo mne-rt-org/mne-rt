@@ -34,6 +34,17 @@ Artifact correction
 
    ant.tools.ORICA
    ant.tools.GEDAIDenoiser
+   ant.tools.ASRDenoiser
+   ant.tools.RTMaxwellFilter
+
+NF Protocols
+------------
+
+.. autosummary::
+   :toctree: generated/
+   :nosignatures:
+
+   ant.protocols.ThresholdProtocol
 
 OSC output
 ----------
@@ -51,6 +62,7 @@ Tools & utilities
    :toctree: generated/
    :nosignatures:
 
+   ant.tools.simulation.simulate_raw
    ant.tools.simulation.simulate_eeg_raw
 
 Logging

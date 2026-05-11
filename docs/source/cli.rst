@@ -142,13 +142,18 @@ Options (in addition to baseline flags):
      - Session duration in seconds
    * - ``--modality``
      - sensor_power
-     - NF modality(ies) to extract
+     - NF modality(ies): ``sensor_power``, ``band_ratio``, ``entropy``,
+       ``hjorth``, ``spectral_centroid``, ``erd_ers``, ``laterality``,
+       ``laterality_erd_ers``, ``wpli_sensor``, ``sensor_connectivity``,
+       ``source_power``, ``source_connectivity``, ``sensor_graph``,
+       ``source_graph``, ``cfc_sensor``, ``argmax_freq``,
+       ``individual_peak_power``
    * - ``--winsize``
      - 1.0
      - Analysis window length (s)
    * - ``--artifact-correction``
      - —
-     - ``lms``, ``orica``, or ``gedai``
+     - ``lms``, ``orica``, ``gedai``, ``asr``, or ``maxwell`` (MEG only)
    * - ``--ring-buffer``
      - —
      - Use sliding ring-buffer (50 % overlap)
