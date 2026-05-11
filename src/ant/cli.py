@@ -154,7 +154,7 @@ def _add_baseline_parser(sub):
     )
     p.add_argument(
         "--fname", metavar="FILE",
-        help="BrainVision .vhdr file to simulate (requires --mock).",
+        help="Any MNE-readable file to simulate (.fif, .vhdr, .edf, .bdf, .set, …) — requires --mock.",
     )
     return p
 
@@ -190,13 +190,16 @@ def _add_run_parser(sub):
     )
     p.add_argument(
         "--fname", metavar="FILE",
-        help="BrainVision .vhdr file to simulate (requires --mock).",
+        help="Any MNE-readable file to simulate (.fif, .vhdr, .edf, .bdf, .set, …) — requires --mock.",
     )
     p.add_argument(
         "--artifact-correction",
-        choices=["lms", "orica", "gedai"],
+        choices=["lms", "orica", "gedai", "asr", "maxwell"],
         default=None,
-        help="Real-time artifact correction method (default: none).",
+        help=(
+            "Real-time artifact correction method (default: none). "
+            "lms/orica/gedai/asr: EEG/MEG. maxwell: MEG only (SSS/tSSS)."
+        ),
     )
     p.add_argument(
         "--no-signal", action="store_true",
@@ -410,6 +413,13 @@ def _cmd_run(args) -> None:
         print("Fitting GEDAI denoiser from baseline …")
         nf.record_baseline(baseline_duration=60, verbose=args.verbose)
         nf.fit_gedai()
+    elif artifact_correction == "asr":
+        print("Fitting ASR denoiser from baseline …")
+        nf.record_baseline(baseline_duration=60, verbose=args.verbose)
+        nf.fit_asr()
+    elif artifact_correction == "maxwell":
+        print("Computing SSS/tSSS Maxwell filter from sensor geometry …")
+        nf.fit_maxwell()
 
     osc_sender = None
     if getattr(args, "osc_host", None):
