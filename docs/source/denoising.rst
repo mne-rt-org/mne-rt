@@ -127,7 +127,7 @@ GEDAI — GED-based Artifact Isolation
 GEDAI uses Generalized Eigendecomposition (GED) :footcite:p:`Cohen2022` to find
 spatial filters that maximally separate brain signal from artifact
 subspaces estimated from a baseline recording and (optionally) a
-leadfield-derived forward model.
+leadfield-derived forward model :footcite:p:`ROS2020`.
 
 **GED formulation.** Given a *signal* covariance :math:`\mathbf{S}` (broadband
 or band-limited EEG) and a *noise* covariance :math:`\mathbf{N}` (artifact
