@@ -1,0 +1,42 @@
+
+
+Examples using ``ant.tools.GEDAIDenoiser.find_noise_components``
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+
+.. start-sphx-glr-thumbnails
+
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbnails">
+
+.. thumbnail-parent-div-open
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="EEG recordings are routinely contaminated by ocular, muscular, and electrode artifacts.  ANT provides three complementary real-time artifact correction methods:">
+
+.. only:: html
+
+  .. image:: /auto_examples/images/thumb/sphx_glr_plot_artifact_comparison_thumb.png
+    :alt:
+
+  :doc:`/auto_examples/plot_artifact_comparison`
+
+.. raw:: html
+
+      <div class="sphx-glr-thumbnail-title">Real-time artifact correction comparison</div>
+    </div>
+
+
+.. only:: not html
+
+ * :doc:`/auto_examples/plot_artifact_comparison`
+
+.. thumbnail-parent-div-close
+
+.. raw:: html
+
+    </div>
+

@@ -1,9 +1,54 @@
 import os
 import sys
+from unittest.mock import MagicMock
+
+# Force a non-Qt matplotlib backend BEFORE any ant/pyqtgraph import so that
+# matplotlib does not try to version-check the mocked PyQt6.
+os.environ.setdefault("MPLBACKEND", "Agg")
 
 # Insert the package source so autodoc can import ant regardless of CWD
 _here = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, os.path.join(_here, '..', '..', 'src'))
+
+# ---------------------------------------------------------------------------
+# Mock heavy GUI / hardware dependencies so autodoc works without them.
+# These are installed into sys.modules HERE (at conf.py load time) so that
+# autosummary's module-import phase finds them before autodoc's own mocking.
+# ---------------------------------------------------------------------------
+_MOCK_MODULES = [
+    "PyQt6",
+    "PyQt6.QtCore",
+    "PyQt6.QtGui",
+    "PyQt6.QtWidgets",
+    "pyqtgraph",
+    "pyqtgraph.Qt",
+    "pyqtgraph.exporters",
+    "pyvista",
+    "pyvistaqt",
+    "pylsl",
+    "mne_lsl",
+    "mne_lsl.lsl",
+    "mne_lsl.player",
+    "mne_lsl.stream",
+    "pactools",
+    "pyunlocbox",
+    "python_osc",
+    "python_osc.udp_client",
+    "python_osc.dispatcher",
+    "python_osc.osc_server",
+    "nibabel",
+    "nibabel.freesurfer",
+    "mne_icalabel",
+    # matplotlib Qt backends (topo_plot.py imports FigureCanvasQTAgg directly)
+    "matplotlib.backends.backend_qtagg",
+    "matplotlib.backends.backend_qt5agg",
+    "matplotlib.backends.qt_compat",
+]
+for _mod in _MOCK_MODULES:
+    sys.modules.setdefault(_mod, MagicMock())
+
+# Also tell autodoc to mock them (belt-and-suspenders)
+autodoc_mock_imports = _MOCK_MODULES
 
 # ---------------------------------------------------------------------------
 # Project information

@@ -1,1 +1,92 @@
-{}
+{
+ "ant.ASRDenoiser": [
+  [
+   "plot_artifact_comparison.py",
+   "/Users/payamsadeghishabestari/ANT/docs/source/../../examples",
+   "/Users/payamsadeghishabestari/ANT/docs/source/auto_examples",
+   "EEG recordings are routinely contaminated by ocular, muscular, and electrode artifacts.  ANT provides three complementary real-time artifact correction methods:",
+   "Real-time artifact correction comparison"
+  ]
+ ],
+ "ant.ASRDenoiser.fit": [
+  [
+   "plot_artifact_comparison.py",
+   "/Users/payamsadeghishabestari/ANT/docs/source/../../examples",
+   "/Users/payamsadeghishabestari/ANT/docs/source/auto_examples",
+   "EEG recordings are routinely contaminated by ocular, muscular, and electrode artifacts.  ANT provides three complementary real-time artifact correction methods:",
+   "Real-time artifact correction comparison"
+  ]
+ ],
+ "ant.ASRDenoiser.transform": [
+  [
+   "plot_artifact_comparison.py",
+   "/Users/payamsadeghishabestari/ANT/docs/source/../../examples",
+   "/Users/payamsadeghishabestari/ANT/docs/source/auto_examples",
+   "EEG recordings are routinely contaminated by ocular, muscular, and electrode artifacts.  ANT provides three complementary real-time artifact correction methods:",
+   "Real-time artifact correction comparison"
+  ]
+ ],
+ "ant.AdaptiveLMSFilter": [
+  [
+   "plot_artifact_comparison.py",
+   "/Users/payamsadeghishabestari/ANT/docs/source/../../examples",
+   "/Users/payamsadeghishabestari/ANT/docs/source/auto_examples",
+   "EEG recordings are routinely contaminated by ocular, muscular, and electrode artifacts.  ANT provides three complementary real-time artifact correction methods:",
+   "Real-time artifact correction comparison"
+  ]
+ ],
+ "ant.AdaptiveLMSFilter.transform": [
+  [
+   "plot_artifact_comparison.py",
+   "/Users/payamsadeghishabestari/ANT/docs/source/../../examples",
+   "/Users/payamsadeghishabestari/ANT/docs/source/auto_examples",
+   "EEG recordings are routinely contaminated by ocular, muscular, and electrode artifacts.  ANT provides three complementary real-time artifact correction methods:",
+   "Real-time artifact correction comparison"
+  ]
+ ],
+ "ant.GEDAIDenoiser": [
+  [
+   "plot_artifact_comparison.py",
+   "/Users/payamsadeghishabestari/ANT/docs/source/../../examples",
+   "/Users/payamsadeghishabestari/ANT/docs/source/auto_examples",
+   "EEG recordings are routinely contaminated by ocular, muscular, and electrode artifacts.  ANT provides three complementary real-time artifact correction methods:",
+   "Real-time artifact correction comparison"
+  ]
+ ],
+ "ant.GEDAIDenoiser.denoise": [
+  [
+   "plot_artifact_comparison.py",
+   "/Users/payamsadeghishabestari/ANT/docs/source/../../examples",
+   "/Users/payamsadeghishabestari/ANT/docs/source/auto_examples",
+   "EEG recordings are routinely contaminated by ocular, muscular, and electrode artifacts.  ANT provides three complementary real-time artifact correction methods:",
+   "Real-time artifact correction comparison"
+  ]
+ ],
+ "ant.GEDAIDenoiser.find_noise_components": [
+  [
+   "plot_artifact_comparison.py",
+   "/Users/payamsadeghishabestari/ANT/docs/source/../../examples",
+   "/Users/payamsadeghishabestari/ANT/docs/source/auto_examples",
+   "EEG recordings are routinely contaminated by ocular, muscular, and electrode artifacts.  ANT provides three complementary real-time artifact correction methods:",
+   "Real-time artifact correction comparison"
+  ]
+ ],
+ "ant.GEDAIDenoiser.fit_from_raw": [
+  [
+   "plot_artifact_comparison.py",
+   "/Users/payamsadeghishabestari/ANT/docs/source/../../examples",
+   "/Users/payamsadeghishabestari/ANT/docs/source/auto_examples",
+   "EEG recordings are routinely contaminated by ocular, muscular, and electrode artifacts.  ANT provides three complementary real-time artifact correction methods:",
+   "Real-time artifact correction comparison"
+  ]
+ ],
+ "ant.tools.GEDAIDenoiser.find_noise_components": [
+  [
+   "plot_artifact_comparison.py",
+   "/Users/payamsadeghishabestari/ANT/docs/source/../../examples",
+   "/Users/payamsadeghishabestari/ANT/docs/source/auto_examples",
+   "EEG recordings are routinely contaminated by ocular, muscular, and electrode artifacts.  ANT provides three complementary real-time artifact correction methods:",
+   "Real-time artifact correction comparison"
+  ]
+ ]
+}

@@ -39,6 +39,15 @@ Artifact correction
    ant.tools.ASRDenoiser
    ant.tools.RTMaxwellFilter
 
+Quality control
+---------------
+
+.. autosummary::
+   :toctree: generated/
+   :nosignatures:
+
+   ant.tools.BadChannelDetector
+
 NF Protocols
 ------------
 
@@ -49,15 +58,17 @@ NF Protocols
    ant.protocols.ThresholdProtocol
    ant.protocols.ZScoreProtocol
    ant.protocols.PercentileProtocol
+   ant.protocols.LinearTrendProtocol
 
-OSC output
-----------
+Feedback output
+---------------
 
 .. autosummary::
    :toctree: generated/
    :nosignatures:
 
    ant.osc.OSCSender
+   ant.lsl_output.LSLSender
 
 Tools & utilities
 -----------------

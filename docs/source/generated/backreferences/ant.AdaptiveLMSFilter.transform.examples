@@ -1,7 +1,7 @@
 
 
-Examples using ``ant.GEDAIDenoiser.fit_from_raw``
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Examples using ``ant.AdaptiveLMSFilter.transform``
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 
 .. start-sphx-glr-thumbnails

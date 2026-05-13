@@ -20,13 +20,19 @@ Layer (LSL).  It covers the full closed-loop pipeline — from amplifier to
 Key capabilities
 ----------------
 
-- **Real-time NF feature extraction** — 14+ modalities (alpha power,
-  ERD/ERS, Hjorth, spectral centroid, CFC, graph metrics, …)
+- **Real-time NF feature extraction** — 17 modalities (alpha power,
+  ERD/ERS, Hjorth, spectral centroid, CFC, wPLI, graph metrics, …)
 - **Sensor-space & source-space** processing with MNE inverse operators
 - **Live artifact correction** — ORICA, adaptive LMS, GEDAI, ASR, Maxwell/tSSS
+- **Real-time quality control** — :class:`~ant.tools.BadChannelDetector`
+  flags flat, noisy, or de-correlated channels on every incoming window
+- **NF protocols** — threshold, z-score, percentile, and linear-trend reward
+  criteria with rolling statistics
 - **Three parallel visualisation windows** — StreamViewer, NF signal plot,
   3D brain surface
-- **OSC output** — send feedback values to Max/MSP, SuperCollider, Pure Data
+- **OSC and LSL output** — broadcast feedback values via OSC (Max/MSP,
+  SuperCollider) or LSL (:class:`~ant.lsl_output.LSLSender`) for
+  lower-latency same-machine feedback
 - **CLI** — run full sessions with a single ``ANT run`` command
 
 .. raw:: html

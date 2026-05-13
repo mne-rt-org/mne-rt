@@ -125,41 +125,53 @@ GEDAI — GED-based Artifact Isolation
 **Class:** :class:`ant.tools.GEDAIDenoiser`
 
 GEDAI uses Generalized Eigendecomposition (GED) :footcite:p:`Cohen2022` to find
-spatial filters that maximally separate brain signal from artifact
-subspaces estimated from a baseline recording and (optionally) a
-leadfield-derived forward model :footcite:p:`ROS2020`.
+spatial filters that maximally separate brain signal from broadband activity,
+optionally anchored to a leadfield-derived forward model :footcite:p:`ROS2020`.
 
-**GED formulation.** Given a *signal* covariance :math:`\mathbf{S}` (broadband
-or band-limited EEG) and a *noise* covariance :math:`\mathbf{N}` (artifact
-reference or baseline residual), GED finds the matrix :math:`\mathbf{W}` that
-simultaneously diagonalises both:
+**GED formulation.** ANT uses a *band-vs-broadband* formulation.
+Let :math:`\mathbf{R}_\text{band}` be the covariance of the band-limited signal
+(e.g. 8–30 Hz for alpha/beta) and :math:`\mathbf{R}_\text{broad}` be the
+broadband covariance.  The GED solves:
 
 .. math::
 
-   \mathbf{S}\,\mathbf{W} = \mathbf{N}\,\mathbf{W}\,\boldsymbol{\Lambda}
+   \mathbf{R}_\text{band}\,\mathbf{W} =
+   \mathbf{R}_\text{broad}\,\mathbf{W}\,\boldsymbol{\Lambda}
 
-The columns of :math:`\mathbf{W}` are the *generalized eigenvectors*
-(spatial filters), and the diagonal entries of :math:`\boldsymbol{\Lambda}`
-are the *generalized eigenvalues* (signal-to-noise ratios per filter).
+The columns of :math:`\mathbf{W}` are spatial filters and the eigenvalues
+:math:`\lambda_k = \mathbf{w}_k^\top \mathbf{R}_\text{band}\, \mathbf{w}_k \;/\;
+\mathbf{w}_k^\top \mathbf{R}_\text{broad}\, \mathbf{w}_k`
+express the *band-to-broadband power ratio* along each filter direction.
 
-**Artifact isolation.** Filters with large :math:`\lambda_k`
-capture artifact-dominated directions.  These are projected out:
+**Eigenvalue interpretation.**  Filters are sorted by :math:`\lambda_k`
+in **descending** order:
+
+* **Large** :math:`\lambda_k` — high band/broadband ratio → **brain-like**
+  (targeted oscillation dominant).
+* **Small** :math:`\lambda_k` — low band/broadband ratio → **non-brain**
+  (broadband, artifact-like).
+
+**Artifact isolation.** :meth:`~ant.tools.GEDAIDenoiser.find_noise_components`
+returns the :math:`n_\text{noise}` components with the **smallest** eigenvalues
+(least band-specific), which are then zeroed before back-projection:
 
 .. math::
 
    \hat{\mathbf{X}} = \mathbf{W}_{\text{brain}}\,
-   \mathbf{W}_{\text{brain}}^\top\, \mathbf{X}
+   \mathbf{W}_{\text{brain}}^\dagger\, \mathbf{X}
 
-where :math:`\mathbf{W}_{\text{brain}}` retains only filters with eigenvalues
-below a threshold :math:`\lambda_{\text{thresh}}`.
+where :math:`\mathbf{W}_{\text{brain}}` is the subset of :math:`\mathbf{W}`
+with the largest eigenvalues (brain-like directions retained).
 
-**Leadfield incorporation.** When a forward model is available, GEDAI
-constrains the signal subspace to be consistent with neural generators,
-improving separation from far-field artifacts (e.g., ECG).
+**Leadfield incorporation.** When a forward model is available
+(:meth:`~ant.tools.GEDAIDenoiser.fit_from_leadfield`), GEDAI replaces
+:math:`\mathbf{R}_\text{band}` with the leadfield outer product
+:math:`\mathbf{L}\mathbf{L}^\top`, directly constraining filters to be
+consistent with neural generators.
 
 **When to use.** Most powerful when a resting-state baseline is available
 and the artifact has a stable spatial signature (cardiac, powerline).
-Requires a calibration recording (``fit_gedai()`` runs a 60 s baseline).
+Requires a calibration recording (``fit_from_raw()`` uses the first N seconds).
 
 ----
 
@@ -321,6 +333,57 @@ nearby ferromagnetic objects or implants are present.
 
 ----
 
+.. _denoising-bad-channel:
+
+Bad Channel Detection
+---------------------
+
+**Class:** :class:`ant.tools.BadChannelDetector`
+
+Artifact correction assumes all channels are functional.  A disconnected or
+noisy electrode contaminating adjacent channels can degrade every downstream
+method.  :class:`~ant.tools.BadChannelDetector` evaluates each incoming data
+window against up to four independent criteria and uses a rolling-window
+majority vote to flag persistently bad channels.
+
+**Criteria**
+
+``"flat"``
+    Channels whose RMS amplitude falls below ``flat_threshold``.  Catches
+    disconnected leads and dead electrodes.
+
+``"variance"``
+    Channels whose RMS is a *robust* outlier across all channels, measured
+    by a MAD-based z-score:
+    :math:`z = (\text{RMS} - \text{median})\;/\;(\text{MAD} \times 1.4826)`.
+    Flags both excessively noisy and suspiciously quiet channels.
+
+``"correlation"``
+    Channels whose mean Pearson correlation with their :math:`K` nearest
+    spatial neighbours falls below ``corr_threshold``.  Requires channel
+    positions to be set in ``info`` (montage applied).
+
+``"hf_noise"``
+    Channels with an abnormally high ratio of HF power (> ``hf_cutoff`` Hz)
+    to broadband power, using the same MAD z-score.  Catches EMG, loose
+    cable noise, and intermittent contacts.
+
+**Rolling-window vote.**  A channel is declared bad only when it is flagged
+by at least one criterion in ≥ ``min_bad_frac`` of the last
+``history_windows`` windows.  With the default ``min_bad_frac=0.5`` this
+is a majority vote over the past 30 windows, suppressing false positives
+from transient artifacts.
+
+**Usage example**::
+
+    detector = BadChannelDetector(raw.info, method="all")
+    while streaming:
+        window = stream.get_data(1.0)        # 1-second chunk
+        bad_channels = detector.update(window)
+        raw.info["bads"] = bad_channels
+
+----
+
 .. _denoising-comparison:
 
 Method comparison
@@ -350,13 +413,13 @@ Method comparison
      - Mixed artifacts
    * - GEDAI
      - EEG / MEG
-     - Yes (60 s)
+     - Yes (N s)
      - No
      - No
      - Cardiac, powerline
    * - ASR
      - EEG / MEG
-     - Yes (60 s)
+     - Yes (N s)
      - No
      - No
      - Transient high-amplitude
@@ -366,6 +429,19 @@ Method comparison
      - No
      - No (periodic tSSS)
      - Environmental noise
+   * - BadChannelDetector
+     - EEG / MEG
+     - No
+     - No
+     - Yes (rolling)
+     - Disconnected / noisy channels
+
+----
+
+See also the :ref:`artifact comparison example <sphx_glr_auto_examples_plot_artifact_comparison.py>`
+for a quantitative benchmark of LMS, ASR, and GEDAI on simulated EEG, and the
+:ref:`RTMaxwell example <sphx_glr_auto_examples_plot_maxwell_realtime.py>`
+for a demonstration of real-time SSS on the MNE sample MEG dataset.
 
 ----
 
