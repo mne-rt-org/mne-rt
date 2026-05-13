@@ -89,11 +89,6 @@ class BrainPlot:
         Verbosity level.  ``None`` uses the current ANT log level.
         See :func:`~ant._logging.set_log_level` for accepted values.
 
-    Attributes
-    ----------
-    plotter : pyvista.Plotter
-        The underlying PyVista plotter instance.
-
     Raises
     ------
     ValueError
@@ -293,7 +288,7 @@ class BrainPlot:
         )
         self._cmap_label = p.add_text(
             f"Colormap: {_CMAPS[self._cmap_idx]}",
-            position=(10, 48),
+            position=(0.006, 0.048),
             font_size=9,
             color="#CC5DE8",
         )
@@ -301,7 +296,7 @@ class BrainPlot:
         # Surface label (updated by set_surface)
         self._surf_label = p.add_text(
             f"Surface: {self._surf}",
-            position=(10, 28),
+            position=(0.006, 0.028),
             font_size=9,
             color="#4ECDC4",
         )
@@ -321,13 +316,15 @@ class BrainPlot:
             callback=_toggle_lh, value=True, position=(12, 12),
             size=24, border_size=3, color_on="#4ECDC4", color_off="#1a2744",
         )
-        p.add_text("LH", position=(42, 16), font_size=9, color="#4ECDC4")
+        # Normalized viewport coordinates (0–1): position text to the right of each button.
+        # Checkbox buttons use display-pixel coords; add_text tuples use normalized coords.
+        p.add_text("LH", position=(0.027, 0.018), font_size=11, color="#4ECDC4")
 
         p.add_checkbox_button_widget(
             callback=_toggle_rh, value=True, position=(82, 12),
             size=24, border_size=3, color_on="#FF6B6B", color_off="#1a2744",
         )
-        p.add_text("RH", position=(112, 16), font_size=9, color="#FF6B6B")
+        p.add_text("RH", position=(0.073, 0.018), font_size=11, color="#FF6B6B")
 
     def _add_key_bindings(self) -> None:
         p = self._plotter
@@ -589,7 +586,7 @@ class BrainPlot:
             path = Path.home() / f"ant_brain_{ts}.mp4"
         path = Path(path)
         self._video_writer = imageio.get_writer(
-            str(path), fps=24, macro_block_size=None
+            str(path), fps=24, macro_block_size=None, plugin="ffmpeg"
         )
         self._video_path = path
         self._recording = True
