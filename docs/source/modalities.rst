@@ -3,7 +3,7 @@
 NF Modalities
 =============
 
-ANT implements 18 neurofeedback (NF) modalities spanning sensor-space and
+ANT implements 17 neurofeedback (NF) modalities spanning sensor-space and
 source-space features, from simple band-power estimates to graph-theoretic
 functional connectivity measures.
 Each modality is selected via the ``--modality`` flag of :doc:`cli` and is
@@ -120,33 +120,6 @@ computed separately for the right and left hemisphere electrode sets:
 This measure combines baseline normalisation (from ERD/ERS) with hemispheric
 asymmetry (from laterality) and is particularly useful for motor-imagery
 neurofeedback.
-
-----
-
-.. _modality-wpli_sensor:
-
-Weighted PLI (Sensor)
-~~~~~~~~~~~~~~~~~~~~~
-
-**Config key:** ``wpli_sensor``
-
-The weighted Phase Lag Index (wPLI) measures phase synchronisation between
-two channels while suppressing volume-conduction artefacts, which produce
-zero-lag interactions :footcite:p:`shabestari2025advances`.
-Given the cross-spectrum :math:`C_{ij}(f)` between channels :math:`i` and
-:math:`j`, wPLI is defined as:
-
-.. math::
-
-   \mathrm{wPLI}_{ij} =
-       \frac{\left|\,\overline{\operatorname{Im}\bigl(C_{ij}\bigr)}\,\right|}
-            {\overline{\left|\operatorname{Im}\bigl(C_{ij}\bigr)\right|}}
-
-where the overline denotes the mean over frequency bins in the target band
-and :math:`\operatorname{Im}(\cdot)` extracts the imaginary part.
-By weighting phase interactions by the magnitude of the imaginary component,
-wPLI down-weights small, noise-driven phase lags and is robust to common
-reference artefacts.
 
 ----
 
@@ -392,26 +365,11 @@ Sensor Connectivity
 **Config key:** ``sensor_connectivity``
 
 Pairwise functional connectivity between sensor channels.
-ANT supports two measures:
+ANT directly calls the measures implemented in `MNE-Connectivity <https://mne.tools/mne-connectivity/stable/index.html>`_.
 
-**Phase Lag Index (PLI)** — detects consistent non-zero phase differences
-between channels, robust to volume conduction :footcite:p:`shabestari2025advances`:
-
-.. math::
-
-   \mathrm{PLI}_{ij} =
-       \left|\,\overline{\operatorname{sign}\!\bigl(\operatorname{Im}(C_{ij})\bigr)}\,\right|
-
-where :math:`C_{ij}(f)` is the cross-spectrum and the overline denotes the
-mean over frequency bins in the target band.
-PLI = 0 implies zero or :math:`\pi`-lagged phase relationship; PLI = 1 implies
-a perfectly consistent non-zero phase lag.
-
-**Pearson correlation** — linear correlation of band-limited amplitude
-envelopes (or raw time series) between pairs of channels.
-
-The NF value is the connectivity between a specified pair of channels or the
-mean connectivity across a set of channel pairs.
+See `MNE-Connectivity <https://mne.tools/mne-connectivity/stable/generated/mne_connectivity.spectral_connectivity_time.html#mne_connectivity.spectral_connectivity_time>`_ 
+for the detailed list of supported methods. The NF value is the connectivity between a specified pair of channels
+or the mean connectivity across a set of channel pairs.
 
 ----
 
@@ -489,10 +447,7 @@ Source Connectivity
 Functional connectivity computed on source-space time series rather than
 sensor signals, reducing the influence of field spread and volume conduction.
 After projecting sensor data to source estimates with the inverse operator,
-the same measures as :ref:`modality-sensor_connectivity` are applied:
-
-* **PLI** between source time series of two regions of interest (ROIs)
-* **Pearson correlation** of amplitude envelopes between ROI time series
+the same measures as :ref:`modality-sensor_connectivity` are applied.
 
 Source connectivity is more anatomically interpretable than sensor
 connectivity and is recommended when an MRI and FreeSurfer reconstruction are
