@@ -210,9 +210,6 @@ class NFSignalPlot(QMainWindow):
         self._n = len(modalities)
         self._channel_scales = [1.0] * self._n
         self._paused = False
-        self._recording = False
-        self._video_writer = None
-        self._video_path = None
 
         # Data buffers — 30 fps × time_window gives real-time resolution
         n_pts = max(int(sfreq * time_window), 30)
@@ -333,11 +330,7 @@ class NFSignalPlot(QMainWindow):
         btn_shot = QPushButton("📷  Screenshot")
         btn_shot.clicked.connect(self._screenshot)
 
-        self._btn_record = QPushButton("⏺  Record")
-        self._btn_record.setCheckable(True)
-        self._btn_record.clicked.connect(self._toggle_record)
-
-        for w in (self._btn_pause, btn_clear, btn_shot, self._btn_record):
+        for w in (self._btn_pause, btn_clear, btn_shot):
             lay.addWidget(w)
         return grp
 
@@ -463,58 +456,6 @@ class NFSignalPlot(QMainWindow):
         exp.parameters()["width"] = 1920
         exp.export(path)
 
-    def _toggle_record(self, checked: bool) -> None:
-        if checked:
-            self._start_recording()
-        else:
-            self._stop_recording()
-
-    def _start_recording(self) -> None:
-        import imageio
-        from PyQt6.QtWidgets import QFileDialog
-        ts = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
-        default = str(Path.home() / f"nf_plot_{ts}.mp4")
-        path, _ = QFileDialog.getSaveFileName(
-            self, "Save Video", default,
-            "MP4 Video (*.mp4);;AVI Video (*.avi)"
-        )
-        if not path:
-            self._btn_record.setChecked(False)
-            return
-        self._video_writer = imageio.get_writer(
-            path, fps=30, macro_block_size=None, plugin="ffmpeg"
-        )
-        self._video_path = path
-        self._recording = True
-        self._btn_record.setText("⏹  Stop Rec")
-        self._status.showMessage(f"Recording → {Path(path).name}")
-
-    def _stop_recording(self) -> None:
-        if self._video_writer is not None:
-            self._video_writer.close()
-            self._video_writer = None
-        self._recording = False
-        self._btn_record.setText("⏺  Record")
-        if self._video_path:
-            self._status.showMessage(f"Saved: {Path(self._video_path).name}")
-        self._video_path = None
-
-    def _record_frame(self) -> None:
-        """Capture the current plot as a video frame."""
-        if self._video_writer is None:
-            return
-        try:
-            from PyQt6.QtGui import QImage
-            img = self._glw.grab().toImage().convertToFormat(QImage.Format.Format_RGB888)
-            w, h = img.width(), img.height()
-            ptr = img.bits()
-            ptr.setsize(h * w * 3)
-            arr = np.frombuffer(ptr, dtype=np.uint8).reshape((h, w, 3)).copy()
-            # Ensure even dimensions required by H.264
-            self._video_writer.append_data(arr[: h - h % 2, : w - w % 2])
-        except Exception:
-            pass
-
     def _change_time_window(self, idx: int) -> None:
         secs = float(self._cmb_tw.itemData(idx))
         self._time_window = secs
@@ -587,10 +528,5 @@ class NFSignalPlot(QMainWindow):
 
         self._status.showMessage("  |  ".join(status_parts))
 
-        if self._recording:
-            self._record_frame()
-
     def closeEvent(self, event) -> None:
-        if self._recording:
-            self._stop_recording()
         super().closeEvent(event)
