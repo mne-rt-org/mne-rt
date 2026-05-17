@@ -30,7 +30,7 @@ from warnings import warn
 
 import numpy as np
 from scipy.optimize import curve_fit
-from scipy.signal import sosfiltfilt
+from scipy.signal import butter, sosfiltfilt, welch
 from pactools import Comodulogram
 
 import mne
@@ -43,6 +43,7 @@ from mne_features.univariate import (
     compute_samp_entropy,
     compute_spect_entropy,
     compute_svd_entropy,
+    
 )
 
 from ant._logging import logger
@@ -57,7 +58,45 @@ from ant.tools import (
 
 
 class ModalityMixin:
-    """Feature-extraction prep and compute methods for every NF modality."""
+    """Feature-extraction engine for all ANT NF modalities.
+
+    :class:`ModalityMixin` is mixed into :class:`~ant.NFRealtime` and provides
+    the **prep / compute** pair for every modality:
+
+    * **Prep** (``_<modality>_prep()``) — runs *once* before the main loop.
+      Returns a ``dict`` of pre-computed artefacts (filter coefficients, index
+      arrays, connectivity indices, …) that are passed as keyword arguments to
+      the compute step.
+    * **Compute** (``_<modality>(data, **prep_kwargs)``) — runs *every window*
+      inside a thread-pool worker.  Decorated with :func:`~ant.tools.timed` so
+      it returns ``(value, elapsed_seconds)``.
+
+    Supported modalities (20 total)
+    --------------------------------
+
+    **Sensor-space power & time-domain**
+
+    ``sensor_power``, ``band_ratio``, ``erd_ers``, ``laterality``,
+    ``laterality_erd_ers``, ``hjorth``, ``spectral_centroid``, ``argmax_freq``,
+    ``individual_peak_power``, ``entropy``, ``instantaneous_phase``,
+    ``scp``, ``peak_alpha_freq``
+
+    **Sensor-space connectivity & graph**
+
+    ``sensor_connectivity``, ``connectivity_ratio``, ``cfc_sensor``,
+    ``sensor_graph``
+
+    **Source-space**
+
+    ``source_power``, ``source_connectivity``, ``source_graph``
+
+    Notes
+    -----
+    All methods are private (single-underscore prefix) and are called
+    internally by :meth:`~ant.NFRealtime.record_main`.  To extend ANT with a
+    custom modality, sub-class :class:`~ant.NFRealtime` and add a matching
+    ``_<name>_prep`` / ``_<name>`` pair following the same pattern.
+    """
 
     # ------------------------------------------------------------------
     # Prep methods  (run once before the main loop, return kwargs dict)
@@ -763,60 +802,222 @@ class ModalityMixin:
         return float(erd_rh - erd_lh)
 
     # ------------------------------------------------------------------
-    # wPLI sensor connectivity
+    # Slow Cortical Potentials (SCP)
     # ------------------------------------------------------------------
 
-    def _wpli_sensor_prep(self) -> dict:
-        ch_names = self.rec_info["ch_names"]
-        chs = self.params["channels"]
-        # chs is [["C3", "F3"], ["C4", "F4"]] → pairs (C3,C4), (F3,F4)
-        ch_pairs = [
-            (ch_names.index(a), ch_names.index(b))
-            for a, b in zip(chs[0], chs[1])
-        ]
+    def _scp_prep(self) -> dict:
+        """Prep: build SOS low-pass (and optional high-pass) Butterworth filters."""
+        sfreq = self.rec_info["sfreq"]
+        lowpass = self.params["lowpass"]
+        highpass = self.params.get("highpass", 0.0)
+        reference = self.params.get("reference", "mean")
+
+        nyq = sfreq / 2.0
+        sos_lp = butter(4, lowpass / nyq, btype="low", output="sos")
+
+        sos_hp = None
+        if highpass > 0.0:
+            sos_hp = butter(4, highpass / nyq, btype="high", output="sos")
+
         return {
-            "ch_pairs": ch_pairs,
-            "sfreq": self._sfreq,
-            "frange": tuple(self.params["frange"]),
+            "sos_lp": sos_lp,
+            "sos_hp": sos_hp,
+            "reference": reference,
         }
 
     @timed
-    def _wpli_sensor(
+    def _scp(
         self,
         data: np.ndarray,
-        ch_pairs: list,
-        sfreq: float,
-        frange: tuple,
+        sos_lp: np.ndarray,
+        sos_hp,
+        reference: str,
     ) -> float:
-        """Weighted Phase Lag Index (wPLI) between sensor pairs.
+        """Slow Cortical Potential: mean amplitude of the DC-coupled slow signal.
 
-        More robust to volume conduction and common reference artifacts than
-        PLV or PLI because it weights phase differences by their imaginary
-        component magnitude, suppressing near-zero-lag common-source coupling.
+        Applies a low-pass (and optional high-pass) zero-phase Butterworth
+        filter to extract the slow envelope, then collapses channels via
+        mean or median and returns the temporal mean of the resulting signal.
 
-        wPLI is computed per channel pair over the frequency bins inside
-        ``frange`` and then averaged:
-
-        .. math::
-
-            \\mathrm{wPLI}_{ij} =
-            \\frac{\\lvert \\mathbb{E}[\\mathrm{Im}(C_{ij})] \\rvert}
-                  {\\mathbb{E}[\\lvert \\mathrm{Im}(C_{ij}) \\rvert]}
-
-        where :math:`C_{ij}(f) = X_i(f)\\overline{X_j(f)}` is the
-        cross-spectrum and the expectation :math:`\\mathbb{E}` is over
-        frequency bins within the band.
+        Positive SCP → cortical deactivation; negative SCP → activation.
         """
-        n = data.shape[1]
-        freqs = np.fft.rfftfreq(n, d=1.0 / sfreq)
+        sig = data.copy()
+
+        # Optional high-pass first (removes very slow drifts if DC not coupled)
+        if sos_hp is not None:
+            sig = sosfiltfilt(sos_hp, sig)
+
+        # Low-pass to extract the slow cortical potential
+        sig = sosfiltfilt(sos_lp, sig)
+
+        # Collapse channels
+        if reference == "median":
+            channel_summary = np.median(sig, axis=0)   # shape: (n_samples,)
+        else:
+            channel_summary = np.mean(sig, axis=0)     # shape: (n_samples,)
+
+        return float(channel_summary.mean())
+
+    # ------------------------------------------------------------------
+    # Peak Alpha Frequency (PAF) tracker
+    # ------------------------------------------------------------------
+
+    def _peak_alpha_freq_prep(self) -> dict:
+        """Prep: initialise EMA state for the real-time PAF tracker."""
+        sfreq = self.rec_info["sfreq"]
+        frange = self.params["frange"]
+        method = self.params.get("method", "welch")
+        smoothing = self.params.get("smoothing", 0.85)
+
+        # Compute initial PAF from baseline if available; else use band midpoint
+        if hasattr(self, "raw_baseline") and self.raw_baseline is not None:
+            baseline_data = self.raw_baseline.get_data()   # (n_ch, n_samples)
+            mean_sig = baseline_data.mean(axis=0)           # (n_samples,)
+            if method == "welch":
+                freqs_bl, psd_bl = welch(mean_sig, fs=sfreq, nperseg=min(256, mean_sig.shape[-1]))
+            else:
+                n = mean_sig.shape[-1]
+                fft_vals = np.abs(np.fft.rfft(mean_sig)) ** 2
+                freqs_bl = np.fft.rfftfreq(n, d=1.0 / sfreq)
+                psd_bl = fft_vals
+            mask_bl = (freqs_bl >= frange[0]) & (freqs_bl <= frange[1])
+            if mask_bl.any():
+                initial_paf = float(freqs_bl[mask_bl][np.argmax(psd_bl[mask_bl])])
+            else:
+                initial_paf = float((frange[0] + frange[1]) / 2.0)
+        else:
+            initial_paf = float((frange[0] + frange[1]) / 2.0)
+
+        return {
+            "sfreq": float(sfreq),
+            "frange": list(frange),
+            "method": method,
+            "smoothing": float(smoothing),
+            "_paf_state": [initial_paf],   # mutable reference cell for EMA state
+        }
+
+    @timed
+    def _peak_alpha_freq(
+        self,
+        data: np.ndarray,
+        sfreq: float,
+        frange: list,
+        method: str,
+        smoothing: float,
+        _paf_state: list,
+    ) -> float:
+        """Real-time peak alpha frequency (PAF) with exponential smoothing.
+
+        Computes the PSD of the current window (averaged across channels),
+        finds the dominant peak within *frange*, and updates an exponential
+        moving average (EMA) to suppress frame-to-frame jitter.
+
+        Returns the EMA-smoothed PAF in Hz.
+        """
+        # Average across channels to get a single time series
+        mean_sig = data.mean(axis=0)   # shape: (n_samples,)
+
+        # Compute PSD
+        if method == "welch":
+            freqs, psd = welch(mean_sig, fs=sfreq, nperseg=min(256, mean_sig.shape[-1]))
+        else:
+            n = mean_sig.shape[-1]
+            psd = np.abs(np.fft.rfft(mean_sig)) ** 2
+            freqs = np.fft.rfftfreq(n, d=1.0 / sfreq)
+
+        # Find peak within frange
         mask = (freqs >= frange[0]) & (freqs <= frange[1])
-        if not mask.any():
-            return 0.0
-        Xfft = np.fft.rfft(data, axis=1)[:, mask]   # (n_ch, n_freq_band)
-        wpli_vals = []
-        for i, j in ch_pairs:
-            cross = Xfft[i] * np.conj(Xfft[j])
-            im_c = np.imag(cross)
-            denom = np.mean(np.abs(im_c)) + 1e-300
-            wpli_vals.append(abs(np.mean(im_c)) / denom)
-        return float(np.mean(wpli_vals))
+        if mask.any():
+            peak_freq = float(freqs[mask][np.argmax(psd[mask])])
+        else:
+            peak_freq = float(_paf_state[0])   # fallback: keep current estimate
+
+        # EMA update — mutate the state cell so state persists across windows
+        new_paf = (1.0 - smoothing) * peak_freq + smoothing * _paf_state[0]
+        _paf_state[0] = new_paf
+
+        return float(new_paf)
+
+    # ------------------------------------------------------------------
+    # Connectivity Ratio
+    # ------------------------------------------------------------------
+
+    def _connectivity_ratio_prep(self) -> dict:
+        """Prep: build connectivity indices for numerator and denominator pairs."""
+        ch_names = self.rec_info["ch_names"]
+
+        def _pair_to_indices(pair):
+            a, b = pair[0], pair[1]
+            if a not in ch_names or b not in ch_names:
+                missing = [c for c in [a, b] if c not in ch_names]
+                raise ValueError(
+                    f"connectivity_ratio: channels {missing} not found in recording. "
+                    f"Available: {ch_names}"
+                )
+            return (np.array([ch_names.index(a)]), np.array([ch_names.index(b)]))
+
+        indices_num = _pair_to_indices(self.params["channels_num"])
+        indices_den = _pair_to_indices(self.params["channels_den"])
+
+        freqs = np.linspace(self.params["frange"][0], self.params["frange"][1], 6)
+
+        return {
+            "indices_num": indices_num,
+            "indices_den": indices_den,
+            "freqs": freqs,
+            "fmin": float(self.params["frange"][0]),
+            "fmax": float(self.params["frange"][1]),
+            "mode": self.params["mode"],
+            "method": self.params["method"],
+        }
+
+    @timed
+    def _connectivity_ratio(
+        self,
+        data: np.ndarray,
+        indices_num: tuple,
+        indices_den: tuple,
+        freqs: np.ndarray,
+        fmin: float,
+        fmax: float,
+        mode: str,
+        method: str,
+    ) -> float:
+        """Ratio of functional connectivity between two channel pairs (or groups).
+
+        Useful for laterality of connectivity, e.g. ipsilateral / contralateral.
+        Returns conn_pair1 / conn_pair2.
+        """
+        # Numerator connectivity
+        con_num = spectral_connectivity_time(
+            data=data[np.newaxis, :],
+            freqs=freqs,
+            indices=indices_num,
+            average=False,
+            sfreq=self._sfreq,
+            fmin=fmin,
+            fmax=fmax,
+            faverage=True,
+            mode=mode,
+            method=method,
+            n_cycles=5,
+        )
+        conn_num = float(np.squeeze(con_num.get_data(output="dense"))[indices_num].mean())
+
+        # Denominator connectivity
+        con_den = spectral_connectivity_time(
+            data=data[np.newaxis, :],
+            freqs=freqs,
+            indices=indices_den,
+            average=False,
+            sfreq=self._sfreq,
+            fmin=fmin,
+            fmax=fmax,
+            faverage=True,
+            mode=mode,
+            method=method,
+            n_cycles=5,
+        )
+        conn_den = float(np.squeeze(con_den.get_data(output="dense"))[indices_den].mean())
+
+        return float(conn_num / (conn_den + 1e-30))
