@@ -1,7 +1,7 @@
 """Real-time 3D brain activation display.
 
-Built on PyVista with interactive sliders, hemisphere toggles, surface
-switching, view presets, and screenshot support.
+Built on PyVista / pyvistaqt with a Qt control panel, hemisphere toggles,
+surface switching, view presets, and screenshot support.
 
 Classes
 -------
@@ -23,6 +23,13 @@ except ImportError:
     pv = None  # type: ignore[assignment]
     _pyvista_available = False
 
+try:
+    from pyvistaqt import BackgroundPlotter as _BackgroundPlotter
+    _pyvistaqt_available = True
+except ImportError:
+    _BackgroundPlotter = None  # type: ignore[assignment]
+    _pyvistaqt_available = False
+
 from ant._logging import logger
 from ant.tools import setup_surface
 
@@ -35,6 +42,26 @@ _CMAPS = ["hot", "plasma", "viridis", "Reds", "YlOrRd", "RdBu_r"]
 
 _SURFACES = ["inflated", "pial", "white", "sphere"]
 
+# Display modes: label shown in the scalar bar title
+_DISPLAY_MODES = [
+    "Source Activation",
+    "Alpha Power  (8–13 Hz)",
+    "Beta Power   (13–30 Hz)",
+    "Theta Power  (4–8 Hz)",
+    "Gamma Power  (30–80 Hz)",
+    "SMR Power    (12–15 Hz)",
+]
+
+# Suggested clim ranges for each display mode
+_DISPLAY_CLIM_HINTS: dict[str, tuple[float, float]] = {
+    "Source Activation":   (0.0, 0.6),
+    "Alpha Power  (8–13 Hz)":  (0.0, 0.5),
+    "Beta Power   (13–30 Hz)": (0.0, 0.3),
+    "Theta Power  (4–8 Hz)":   (0.0, 0.5),
+    "Gamma Power  (30–80 Hz)": (0.0, 0.2),
+    "SMR Power    (12–15 Hz)": (0.0, 0.4),
+}
+
 _VIEW_PRESETS: dict[str, dict] = {
     "lateral_lh": {"position": (-450, 0, 0),  "focal": (0, 0, 0), "up": (0, 0, 1)},
     "lateral_rh": {"position": (450, 0, 0),   "focal": (0, 0, 0), "up": (0, 0, 1)},
@@ -43,39 +70,38 @@ _VIEW_PRESETS: dict[str, dict] = {
     "ventral":    {"position": (0, 0, -450),  "focal": (0, 0, 0), "up": (0, 1, 0)},
 }
 
-_KEY_HELP = (
-    "View keys\n"
-    "  1 → Left lateral\n"
-    "  2 → Right lateral\n"
-    "  3 → Dorsal\n"
-    "  4 → Frontal\n"
-    "  5 → Ventral\n"
-    "  s → Screenshot\n"
-    "  v → Toggle video rec\n"
-    "  r → Reset activity\n"
-    "  i/p/w/h → Surface\n"
-    "     (inflated/pial/white/sphere)"
-)
+# Background colour presets  (bottom_hex, top_hex)
+_BACKGROUNDS: dict[str, tuple[str, str]] = {
+    "Deep space":   ("#040810", "#0b1628"),
+    "Midnight":     ("#050d1a", "#0d1b35"),
+    "Slate":        ("#0d1117", "#1c2333"),
+    "Charcoal":     ("#111111", "#1e1e1e"),
+    "Black":        ("#000000", "#050505"),
+    "Light":        ("#e8eaf0", "#ffffff"),   # publication / presentations
+}
+
+_DEFAULT_BG = "Midnight"
 
 
 class BrainPlot:
     """Interactive real-time 3D brain activation display.
 
-    Renders bilateral ``fsaverage5`` cortical surfaces with a colour-mapped
-    activity overlay.  Designed to run alongside
-    :class:`~ant.viz.NFSignalPlot` inside a shared Qt event loop — call
-    :meth:`update_from_arrays` or :meth:`update` from the acquisition
-    thread's pump timer.
+    Renders bilateral ``fsaverage`` cortical surfaces with a colour-mapped
+    activity overlay and a Qt control panel docked on the right.  Designed
+    to run alongside :class:`~ant.viz.NFSignalPlot` inside a shared Qt
+    event loop — call :meth:`update_from_arrays` or :meth:`update` from the
+    acquisition thread's pump timer.
 
     Parameters
     ----------
     subjects_fs_dir : str | Path
-        FreeSurfer subjects directory (must contain the ``fsaverage5``
-        subject folder).
+        FreeSurfer subjects directory.  The MNE-bundled ``fsaverage``
+        template is used automatically (auto-downloaded on first use);
+        this path is accepted for API compatibility.
     clim : tuple of float, default (0.0, 0.6)
         Initial ``(min, max)`` colour-map range for the activity overlay.
-    hemi_distance : float, default 100.0
-        Lateral separation in mm between left and right hemispheres.
+    hemi_distance : float, default 20.0
+        Gap in mm between the medial walls of the two hemispheres.
     surf : {"inflated", "pial", "white", "sphere"}, default "inflated"
         Initial cortical surface geometry to display.
     cmap : str, default "hot"
@@ -84,18 +110,9 @@ class BrainPlot:
     opacity : float, default 0.6
         Initial opacity of the activity overlay (0 = transparent, 1 = opaque).
     window_size : tuple of int, default (1600, 1000)
-        Width × height of the PyVista render window in pixels.
+        Width × height of the render window in pixels.
     verbose : bool | str | None, default None
-        Verbosity level.  ``None`` uses the current ANT log level.
-        See :func:`~ant._logging.set_log_level` for accepted values.
-
-    Raises
-    ------
-    ValueError
-        If ``cmap`` or ``surf`` is not a recognised value.
-    ValueError
-        If ``subjects_fs_dir`` does not exist or does not contain
-        ``fsaverage5``.
+        Verbosity level.
 
     See Also
     --------
@@ -104,16 +121,9 @@ class BrainPlot:
 
     Notes
     -----
-    The window is opened immediately in :meth:`__init__` via
-    ``plotter.show(interactive_update=True, auto_close=False)`` so that it
-    participates in the Qt event loop from the start.
-
-    Examples
-    --------
-    Minimal offline usage (no acquisition stream):
-
-    >>> bp = BrainPlot("/path/to/freesurfer/subjects")
-    >>> bp.update_from_arrays(lh_scalars, rh_scalars)
+    Activity values are spread from the 10 242 ico-5 source vertices to all
+    163 842 fsaverage surface vertices via nearest-neighbour interpolation,
+    giving a smooth spatial appearance.
 
     .. versionadded:: 1.0.0
     """
@@ -122,29 +132,25 @@ class BrainPlot:
         self,
         subjects_fs_dir: Union[str, Path],
         clim: tuple[float, float] = (0.0, 0.6),
-        hemi_distance: float = 100.0,
+        hemi_distance: float = 20.0,
         surf: str = "inflated",
         cmap: str = "hot",
         opacity: float = 0.6,
         window_size: tuple[int, int] = (1600, 1000),
         verbose: Union[bool, str, None] = None,
     ) -> None:
-        if not _pyvista_available:
+        if not _pyvista_available or not _pyvistaqt_available:
             raise ImportError(
-                "pyvista is required for BrainPlot. "
-                "Install it with:  pip install 'ANT[viz]'"
+                "pyvista and pyvistaqt are required for BrainPlot. "
+                "Install them with:  pip install 'ANT[viz]'"
             )
         from ant._logging import set_log_level
         set_log_level(verbose)
 
         if cmap not in _CMAPS:
-            raise ValueError(
-                f"cmap {cmap!r} not recognised.  Choose from {_CMAPS}."
-            )
+            raise ValueError(f"cmap {cmap!r} not recognised.  Choose from {_CMAPS}.")
         if surf not in _SURFACES:
-            raise ValueError(
-                f"surf {surf!r} not recognised.  Choose from {_SURFACES}."
-            )
+            raise ValueError(f"surf {surf!r} not recognised.  Choose from {_SURFACES}.")
 
         self._subjects_fs_dir = Path(subjects_fs_dir)
         self._clim = list(clim)
@@ -154,16 +160,16 @@ class BrainPlot:
         self._threshold = 0.0
         self._cmap_idx = _CMAPS.index(cmap)
         self._hemi_visible = {"lh": True, "rh": True}
+        self._bg_name = _DEFAULT_BG
+        self._display_mode = _DISPLAY_MODES[0]
         self._recording = False
         self._video_writer = None
         self._video_path: Path | None = None
 
-        logger.info("Loading %s surface from %s …", surf, subjects_fs_dir)
+        logger.info("Loading %s surface …", surf)
         self._load_surface(surf)
 
         self._plotter = self._build_plotter(window_size)
-        self._add_sliders()
-        self._add_hemisphere_toggles()
         self._add_key_bindings()
         self._add_overlays()
         logger.info("BrainPlot ready.")
@@ -173,12 +179,12 @@ class BrainPlot:
     # ------------------------------------------------------------------
 
     def _load_surface(self, surf: str) -> None:
-        """Load mesh for *surf* and initialise scalar arrays."""
         (
             self._hemi_offsets,
             self._scalars_full,
             self._mesh,
             self._verts_stc,
+            self._nn_map,
         ) = setup_surface(
             str(self._subjects_fs_dir),
             hemi_distance=self._hemi_distance,
@@ -190,21 +196,33 @@ class BrainPlot:
     # Plotter construction
     # ------------------------------------------------------------------
 
-    def _build_plotter(self, window_size: tuple[int, int]) -> pv.Plotter:
-        p = pv.Plotter(
-            window_size=list(window_size),
+    def _build_plotter(self, window_size: tuple[int, int]) -> "_BackgroundPlotter":
+        p = _BackgroundPlotter(
+            window_size=tuple(window_size),
             lighting="three lights",
             title="Advanced Neurofeedback Toolbox — Brain Activation",
+            toolbar=False,
+            menu_bar=False,
+            editor=False,
         )
-        p.set_background("#060c18")
 
+        # Background gradient
+        bg_bot, bg_top = _BACKGROUNDS[_DEFAULT_BG]
+        p.set_background(bg_bot, top=bg_top)
+
+        # ── Base sulcal-depth mesh ────────────────────────────────────────
+        # sulc values: negative = gyri (light), positive = sulci (dark)
+        # "Greys_r" maps low→white, high→black → correct neuroimaging convention
         self._base_actor = p.add_mesh(
             self._mesh,
             scalars="base",
-            cmap="Greys",
+            cmap="Greys_r",
+            clim=[-1.0, 1.5],
             smooth_shading=True,
             show_scalar_bar=False,
         )
+
+        # ── Activity overlay ──────────────────────────────────────────────
         self._act_actor = p.add_mesh(
             self._mesh,
             scalars="activity",
@@ -217,114 +235,259 @@ class BrainPlot:
             nan_opacity=0.0,
         )
 
+        # ── Scalar bar (no tick numbers) ──────────────────────────────────
         p.add_scalar_bar(
             title="Activity",
             italic=True,
             vertical=True,
-            position_x=0.88,
-            position_y=0.12,
-            height=0.55,
+            position_x=0.02,
+            position_y=0.20,
+            height=0.38,
+            width=0.04,
             color="white",
-            title_font_size=13,
-            label_font_size=11,
+            title_font_size=12,
+            label_font_size=10,
+            n_labels=0,
         )
+
+        # ── Lighting & post-processing ────────────────────────────────────
         p.enable_eye_dome_lighting()
+        p.enable_ssao(radius=0.5, bias=0.005, kernel_size=256)
+        p.enable_anti_aliasing("ssaa")
         p.add_camera_orientation_widget()
         p.camera_position = "yz"
         p.camera.azimuth = 45
-        p.show(interactive_update=True, auto_close=False)
+
+        self._add_control_panel(p)
         return p
 
-    def _add_sliders(self) -> None:
-        p = self._plotter
+    # ------------------------------------------------------------------
+    # Qt control panel
+    # ------------------------------------------------------------------
 
-        def _on_threshold(val: float) -> None:
-            self._threshold = val
+    def _add_control_panel(self, p: "_BackgroundPlotter") -> None:
+        """Dock a Qt control panel on the right side of the brain window."""
+        from PyQt6.QtWidgets import (
+            QDockWidget, QWidget, QVBoxLayout, QHBoxLayout,
+            QLabel, QSlider, QComboBox, QCheckBox, QPushButton, QGroupBox,
+        )
+        from PyQt6.QtCore import Qt as Qt_
+
+        # ── helpers ──────────────────────────────────────────────────────
+        def _hslider(lo: int = 0, hi: int = 100, val: int = 0) -> QSlider:
+            sl = QSlider(Qt_.Orientation.Horizontal)
+            sl.setRange(lo, hi)
+            sl.setValue(val)
+            return sl
+
+        def _group(title: str) -> tuple[QGroupBox, QVBoxLayout]:
+            grp = QGroupBox(title)
+            ly = QVBoxLayout(grp)
+            ly.setSpacing(4)
+            ly.setContentsMargins(6, 12, 6, 6)
+            return grp, ly
+
+        # ── root panel ────────────────────────────────────────────────────
+        panel = QWidget()
+        panel.setMinimumWidth(210)
+        panel.setMaximumWidth(260)
+        root = QVBoxLayout(panel)
+        root.setSpacing(6)
+        root.setContentsMargins(6, 6, 6, 6)
+
+        # ── Surface ───────────────────────────────────────────────────────
+        grp, ly = _group("Surface")
+        surf_combo = QComboBox()
+        surf_combo.addItems(_SURFACES)
+        surf_combo.setCurrentText(self._surf)
+        surf_combo.currentTextChanged.connect(
+            lambda s: self.set_surface(s) if s != self._surf else None
+        )
+        ly.addWidget(surf_combo)
+        root.addWidget(grp)
+
+        # ── Hemispheres ───────────────────────────────────────────────────
+        grp, ly = _group("Hemispheres")
+        hl = QHBoxLayout()
+        lh_cb = QCheckBox("Left")
+        lh_cb.setChecked(True)
+        rh_cb = QCheckBox("Right")
+        rh_cb.setChecked(True)
+
+        def _on_lh(state: int) -> None:
+            self._hemi_visible["lh"] = bool(state)
             self._refresh_scalars()
 
-        p.add_slider_widget(
-            callback=_on_threshold,
-            rng=[0.0, float(self._clim[1])],
-            value=0.0,
-            title="Threshold",
-            pointa=(0.04, 0.90), pointb=(0.28, 0.90),
-            style="modern", color="#4ECDC4", title_opacity=0.9,
-            tube_width=0.003, slider_width=0.012,
-        )
+        def _on_rh(state: int) -> None:
+            self._hemi_visible["rh"] = bool(state)
+            self._refresh_scalars()
 
-        def _on_opacity(val: float) -> None:
-            self._opacity = val
-            self._act_actor.GetProperty().SetOpacity(val)
-            p.render()
+        lh_cb.stateChanged.connect(_on_lh)
+        rh_cb.stateChanged.connect(_on_rh)
+        hl.addWidget(lh_cb)
+        hl.addWidget(rh_cb)
+        ly.addLayout(hl)
+        root.addWidget(grp)
 
-        p.add_slider_widget(
-            callback=_on_opacity,
-            rng=[0.0, 1.0],
-            value=self._opacity,
-            title="Opacity",
-            pointa=(0.32, 0.90), pointb=(0.56, 0.90),
-            style="modern", color="#FFD93D", title_opacity=0.9,
-            tube_width=0.003, slider_width=0.012,
-        )
+        # ── Colormap ──────────────────────────────────────────────────────
+        grp, ly = _group("Colormap")
+        cmap_combo = QComboBox()
+        cmap_combo.addItems(_CMAPS)
+        cmap_combo.setCurrentText(_CMAPS[self._cmap_idx])
 
-        def _on_cmap(val: float) -> None:
-            idx = max(0, min(int(round(val)), len(_CMAPS) - 1))
+        def _on_cmap(name: str) -> None:
+            idx = _CMAPS.index(name)
             if idx == self._cmap_idx:
                 return
             self._cmap_idx = idx
             self._sync_scalar_bar_lut()
-            self._cmap_label.SetInput(f"Colormap: {_CMAPS[idx]}")
             p.render()
 
-        p.add_slider_widget(
-            callback=_on_cmap,
-            rng=[0, len(_CMAPS) - 1],
-            value=float(self._cmap_idx),
-            title="Colormap  (0–5)",
-            pointa=(0.60, 0.90), pointb=(0.84, 0.90),
-            style="modern", color="#CC5DE8", title_opacity=0.9,
-            fmt="%.0f",
-            tube_width=0.003, slider_width=0.012,
-        )
-        self._cmap_label = p.add_text(
-            f"Colormap: {_CMAPS[self._cmap_idx]}",
-            position=(0.006, 0.048),
-            font_size=9,
-            color="#CC5DE8",
-        )
+        cmap_combo.currentTextChanged.connect(_on_cmap)
+        ly.addWidget(cmap_combo)
+        root.addWidget(grp)
 
-        # Surface label (updated by set_surface)
-        self._surf_label = p.add_text(
-            f"Surface: {self._surf}",
-            position=(0.006, 0.028),
-            font_size=9,
-            color="#4ECDC4",
-        )
+        # ── Color range (clim) ────────────────────────────────────────────
+        grp, ly = _group("Color Range")
+        clim_max_lbl = QLabel(f"max  {self._clim[1]:.2f}")
+        clim_max_sl = _hslider(0, 100, int(self._clim[1] * 100))
+        clim_min_lbl = QLabel(f"min  {self._clim[0]:.2f}")
+        clim_min_sl = _hslider(0, 100, int(self._clim[0] * 100))
 
-    def _add_hemisphere_toggles(self) -> None:
-        p = self._plotter
+        def _on_clim_max(v: int) -> None:
+            self._clim[1] = v / 100.0
+            clim_max_lbl.setText(f"max  {self._clim[1]:.2f}")
+            self._act_actor.GetMapper().SetScalarRange(*self._clim)
+            p.render()
 
-        def _toggle_lh(state: bool) -> None:
-            self._hemi_visible["lh"] = state
+        def _on_clim_min(v: int) -> None:
+            self._clim[0] = v / 100.0
+            clim_min_lbl.setText(f"min  {self._clim[0]:.2f}")
+            self._act_actor.GetMapper().SetScalarRange(*self._clim)
+            p.render()
+
+        clim_max_sl.valueChanged.connect(_on_clim_max)
+        clim_min_sl.valueChanged.connect(_on_clim_min)
+        ly.addWidget(clim_max_lbl)
+        ly.addWidget(clim_max_sl)
+        ly.addWidget(clim_min_lbl)
+        ly.addWidget(clim_min_sl)
+        root.addWidget(grp)
+
+        # ── Opacity ───────────────────────────────────────────────────────
+        grp, ly = _group("Opacity")
+        op_lbl = QLabel(f"{self._opacity:.2f}")
+        op_sl = _hslider(0, 100, int(self._opacity * 100))
+
+        def _on_opacity(v: int) -> None:
+            self._opacity = v / 100.0
+            op_lbl.setText(f"{self._opacity:.2f}")
+            self._act_actor.GetProperty().SetOpacity(self._opacity)
+            p.render()
+
+        op_sl.valueChanged.connect(_on_opacity)
+        ly.addWidget(op_lbl)
+        ly.addWidget(op_sl)
+        root.addWidget(grp)
+
+        # ── Threshold ─────────────────────────────────────────────────────
+        grp, ly = _group("Threshold  (0 → 1)")
+        thr_lbl = QLabel(f"{self._threshold:.3f}")
+        thr_sl = _hslider(0, 100, 0)
+
+        def _on_threshold(v: int) -> None:
+            self._threshold = v / 100.0
+            thr_lbl.setText(f"{self._threshold:.3f}")
             self._refresh_scalars()
 
-        def _toggle_rh(state: bool) -> None:
-            self._hemi_visible["rh"] = state
-            self._refresh_scalars()
+        thr_sl.valueChanged.connect(_on_threshold)
+        ly.addWidget(thr_lbl)
+        ly.addWidget(thr_sl)
+        root.addWidget(grp)
 
-        p.add_checkbox_button_widget(
-            callback=_toggle_lh, value=True, position=(12, 12),
-            size=24, border_size=3, color_on="#4ECDC4", color_off="#1a2744",
-        )
-        # Normalized viewport coordinates (0–1): position text to the right of each button.
-        # Checkbox buttons use display-pixel coords; add_text tuples use normalized coords.
-        p.add_text("LH", position=(0.027, 0.018), font_size=11, color="#4ECDC4")
+        # ── Background ────────────────────────────────────────────────────
+        grp, ly = _group("Background")
+        bg_combo = QComboBox()
+        bg_combo.addItems(list(_BACKGROUNDS.keys()))
+        bg_combo.setCurrentText(_DEFAULT_BG)
 
-        p.add_checkbox_button_widget(
-            callback=_toggle_rh, value=True, position=(82, 12),
-            size=24, border_size=3, color_on="#FF6B6B", color_off="#1a2744",
+        def _on_bg(name: str) -> None:
+            self._bg_name = name
+            bot, top = _BACKGROUNDS[name]
+            p.set_background(bot, top=top)
+            p.render()
+
+        bg_combo.currentTextChanged.connect(_on_bg)
+        ly.addWidget(bg_combo)
+        root.addWidget(grp)
+
+        # ── View presets ──────────────────────────────────────────────────
+        grp, ly = _group("View Presets")
+        btn_row = QHBoxLayout()
+        for label, key, tip in [
+            ("L", "lateral_lh", "Left lateral"),
+            ("R", "lateral_rh", "Right lateral"),
+            ("D", "dorsal",     "Dorsal (top)"),
+            ("F", "frontal",    "Frontal"),
+            ("V", "ventral",    "Ventral (bottom)"),
+        ]:
+            btn = QPushButton(label)
+            btn.setFixedSize(32, 28)
+            btn.setToolTip(tip)
+            btn.clicked.connect(lambda _=False, k=key: self._set_view(k))
+            btn_row.addWidget(btn)
+        ly.addLayout(btn_row)
+        root.addWidget(grp)
+
+        # ── Display Mode ──────────────────────────────────────────────────
+        grp, ly = _group("Display Mode")
+        mode_combo = QComboBox()
+        mode_combo.addItems(_DISPLAY_MODES)
+        mode_combo.setCurrentText(self._display_mode)
+        mode_lbl = QLabel(
+            "<span style='color:#666;font-size:9px;'>"
+            "Configure NFRealtime modality to match selected mode"
+            "</span>"
         )
-        p.add_text("RH", position=(0.073, 0.018), font_size=11, color="#FF6B6B")
+        mode_lbl.setWordWrap(True)
+
+        def _on_display_mode(name: str) -> None:
+            self.set_display_mode(name)
+
+        mode_combo.currentTextChanged.connect(_on_display_mode)
+        ly.addWidget(mode_combo)
+        ly.addWidget(mode_lbl)
+        root.addWidget(grp)
+
+        # ── Actions ───────────────────────────────────────────────────────
+        grp, ly = _group("Actions")
+        reset_btn = QPushButton("Reset activity  (r)")
+        reset_btn.clicked.connect(self.reset_activity)
+        shot_btn = QPushButton("Screenshot  (s)")
+        shot_btn.clicked.connect(lambda: self.screenshot())
+        ly.addWidget(reset_btn)
+        ly.addWidget(shot_btn)
+        root.addWidget(grp)
+
+        root.addStretch()
+
+        # ── Keyboard hint ─────────────────────────────────────────────────
+        hint = QLabel(
+            "<span style='color:#555; font-size:10px;'>"
+            "Keys: 1-5 views · i/p/w/h surface · s screenshot · r reset"
+            "</span>"
+        )
+        hint.setWordWrap(True)
+        root.addWidget(hint)
+
+        # ── Dock widget ───────────────────────────────────────────────────
+        dock = QDockWidget("Brain Controls")
+        dock.setWidget(panel)
+        dock.setFeatures(
+            QDockWidget.DockWidgetFeature.DockWidgetMovable
+            | QDockWidget.DockWidgetFeature.DockWidgetFloatable,
+        )
+        p.app_window.addDockWidget(Qt_.DockWidgetArea.RightDockWidgetArea, dock)
 
     def _add_key_bindings(self) -> None:
         p = self._plotter
@@ -334,7 +497,6 @@ class BrainPlot:
         p.add_key_event("4", lambda: self._set_view("frontal"))
         p.add_key_event("5", lambda: self._set_view("ventral"))
         p.add_key_event("s", self.screenshot)
-        p.add_key_event("v", self._toggle_recording)
         p.add_key_event("r", self.reset_activity)
         p.add_key_event("i", lambda: self.set_surface("inflated"))
         p.add_key_event("p", lambda: self.set_surface("pial"))
@@ -342,12 +504,6 @@ class BrainPlot:
         p.add_key_event("h", lambda: self.set_surface("sphere"))
 
     def _add_overlays(self) -> None:
-        self._plotter.add_text(
-            _KEY_HELP,
-            position="upper_right",
-            font_size=8,
-            color="#5a6a8a",
-        )
         self._rec_label = self._plotter.add_text(
             "",
             position="lower_right",
@@ -385,8 +541,12 @@ class BrainPlot:
         p.remove_actor(self._act_actor)
 
         self._base_actor = p.add_mesh(
-            self._mesh, scalars="base", cmap="Greys",
-            smooth_shading=True, show_scalar_bar=False,
+            self._mesh,
+            scalars="base",
+            cmap="Greys_r",
+            clim=[-1.0, 1.5],
+            smooth_shading=True,
+            show_scalar_bar=False,
         )
         self._act_actor = p.add_mesh(
             self._mesh,
@@ -399,12 +559,11 @@ class BrainPlot:
             interpolate_before_map=True,
             nan_opacity=0.0,
         )
-        # Re-sync scalar bar LUT to the new actor's mapper
         self._sync_scalar_bar_lut()
         p.render()
 
     def _sync_scalar_bar_lut(self) -> None:
-        """Point the scalar bar's LUT at the current activity actor's mapper."""
+        """Point the scalar bar LUT at the current activity actor's mapper."""
         import matplotlib
         cmap_obj = matplotlib.colormaps[_CMAPS[self._cmap_idx]]
         lut = self._act_actor.GetMapper().GetLookupTable()
@@ -421,28 +580,13 @@ class BrainPlot:
     def set_surface(self, surf: str) -> None:
         """Switch the cortical surface geometry.
 
-        Reloads the FreeSurfer surface file and rebuilds the PyVista actors
-        in-place.  Current activity scalars are preserved.
-
         Parameters
         ----------
         surf : {"inflated", "pial", "white", "sphere"}
             Target surface geometry.
-
-        Raises
-        ------
-        ValueError
-            If *surf* is not one of the recognised surface names.
-
-        Examples
-        --------
-        >>> bp = BrainPlot("/path/to/subjects")
-        >>> bp.set_surface("pial")
         """
         if surf not in _SURFACES:
-            raise ValueError(
-                f"surf {surf!r} not recognised.  Choose from {_SURFACES}."
-            )
+            raise ValueError(f"surf {surf!r} not recognised.  Choose from {_SURFACES}.")
         if surf == self._surf:
             return
 
@@ -451,13 +595,11 @@ class BrainPlot:
         self._surf = surf
         self._load_surface(surf)
 
-        # Preserve activity values if vertex count matches
         if len(saved_scalars) == len(self._scalars_full):
             self._scalars_full[:] = saved_scalars
             self._mesh["activity"] = saved_scalars
 
         self._rebuild_actors()
-        self._surf_label.SetInput(f"Surface: {self._surf}")
         logger.info("Surface changed to %r.", surf)
 
     def update_from_arrays(
@@ -467,27 +609,25 @@ class BrainPlot:
         mode: str = "power",
         deferred: bool = False,
     ) -> None:
-        """Update the brain display from pre-computed per-vertex scalars.
+        """Update the brain display from pre-computed per-source-vertex scalars.
 
-        Intended to be called from the Qt main thread by the acquisition
-        pump timer (see :meth:`~ant.NFRealtime.record_main`).
+        Source values (10 242 per hemisphere) are spread to all 163 842
+        surface vertices via nearest-neighbour interpolation.
 
         Parameters
         ----------
-        lh_scalars : ndarray, shape (n_lh_verts,)
+        lh_scalars : ndarray, shape (10242,)
             Activity values for left-hemisphere source vertices.
-        rh_scalars : ndarray, shape (n_rh_verts,)
+        rh_scalars : ndarray, shape (10242,)
             Activity values for right-hemisphere source vertices.
         mode : str, default "power"
-            Kept for API symmetry; the calling code passes the correct
-            values so this argument is not used internally.
+            Kept for API symmetry; unused internally.
+        deferred : bool, default False
+            If ``True``, skip the immediate ``render()`` call.
         """
-        self._scalars_full[
-            self._verts_stc["lh"] + self._hemi_offsets["lh"]
-        ] = lh_scalars
-        self._scalars_full[
-            self._verts_stc["rh"] + self._hemi_offsets["rh"]
-        ] = rh_scalars
+        n_lh = self._n_lh
+        self._scalars_full[:n_lh] = lh_scalars[self._nn_map["lh"]]
+        self._scalars_full[n_lh:] = rh_scalars[self._nn_map["rh"]]
         self._refresh_scalars(deferred=deferred)
 
     def update(
@@ -510,29 +650,71 @@ class BrainPlot:
         """
         n_times = stc.lh_data.shape[1]
         block = max(n_times // 2, 1)
+        n_lh = self._n_lh
 
         for b_start in range(0, n_times, block):
             b_end = min(b_start + block, n_times)
             for hemi in ("lh", "rh"):
                 raw_d = stc.rh_data if hemi == "rh" else stc.lh_data
                 chunk = raw_d[:, b_start:b_end]
-                scalars = (
+                src_vals = (
                     np.mean(chunk ** 2, axis=1)
                     if mode == "power"
                     else chunk.mean(axis=1)
                 )
-                verts = self._verts_stc[hemi] + self._hemi_offsets[hemi]
-                self._scalars_full[verts] = scalars
+                nn = self._nn_map[hemi]
+                if hemi == "lh":
+                    self._scalars_full[:n_lh] = src_vals[nn]
+                else:
+                    self._scalars_full[n_lh:] = src_vals[nn]
             self._refresh_scalars()
             time.sleep(interval)
 
-    def reset_activity(self) -> None:
-        """Zero out all activity scalars and refresh the display.
+    def set_display_mode(self, mode: str) -> None:
+        """Switch the display mode label and reset clim to sensible defaults.
 
-        Examples
-        --------
-        >>> bp.reset_activity()
+        The display mode is a **label only** — it tells both the operator and
+        the visualisation what kind of values are being streamed in.  Configure
+        :meth:`~ant.NFRealtime.record_main` with the matching ``modality`` to
+        pass the correct data.
+
+        Parameters
+        ----------
+        mode : str
+            One of :data:`_DISPLAY_MODES`.  Choosing a band-power mode will
+            also set the colour-range (clim) to a typical power scale;
+            choosing "Source Activation" restores the activation scale.
+
+        Notes
+        -----
+        For **band power** modes pass per-source-vertex spectral power (e.g.,
+        from ``modality="source_power"``) to :meth:`update_from_arrays`.
+        For **activation** mode pass eLORETA / dSPM amplitude values from
+        :meth:`update` (``stc`` from MNE inverse operator).
         """
+        if mode not in _DISPLAY_MODES:
+            raise ValueError(f"mode {mode!r} not recognised.  Choose from {_DISPLAY_MODES}.")
+        self._display_mode = mode
+        clim_hint = _DISPLAY_CLIM_HINTS.get(mode, (0.0, 0.6))
+        self._clim[0] = clim_hint[0]
+        self._clim[1] = clim_hint[1]
+        self._act_actor.GetMapper().SetScalarRange(*self._clim)
+        label = mode.split("(")[0].strip()
+        self._plotter.scalar_bar.SetTitle(label)
+        self._plotter.render()
+        logger.info("BrainPlot display mode → %r  (clim %s)", mode, clim_hint)
+
+    @property
+    def display_mode(self) -> str:
+        """Current display mode string (e.g. ``"Alpha Power  (8–13 Hz)"``).
+
+        Read this in the acquisition loop to decide which modality to compute
+        and pass to :meth:`update_from_arrays`.
+        """
+        return self._display_mode
+
+    def reset_activity(self) -> None:
+        """Zero out all activity scalars and refresh the display."""
         self._scalars_full[:] = 0.0
         self._refresh_scalars()
 
@@ -549,38 +731,18 @@ class BrainPlot:
     def record_video(self, path: Union[str, Path, None] = None) -> Path:
         """Start recording the brain display to an MP4 video file.
 
-        Each subsequent call to :meth:`write_frame_if_recording` (issued
-        automatically by :meth:`~ant.NFRealtime.record_main`'s brain pump
-        timer) appends one frame.  Press **v** in the window or call
-        :meth:`stop_recording` to finish.
-
         Parameters
         ----------
         path : str | Path | None, default None
-            Destination file path.  Defaults to
-            ``~/ant_brain_<timestamp>.mp4``.
+            Destination file.  Defaults to ``~/ant_brain_<timestamp>.mp4``.
 
         Returns
         -------
         path : Path
-            Path of the video file being written.
-
-        Raises
-        ------
-        RuntimeError
-            If recording is already in progress.
-
-        Examples
-        --------
-        >>> bp.record_video("session.mp4")
-        >>> # ... run NF session ...
-        >>> bp.stop_recording()
         """
         import imageio
         if self._recording:
-            raise RuntimeError(
-                "Already recording. Call stop_recording() first."
-            )
+            raise RuntimeError("Already recording. Call stop_recording() first.")
         if path is None:
             ts = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
             path = Path.home() / f"ant_brain_{ts}.mp4"
@@ -601,13 +763,6 @@ class BrainPlot:
         Returns
         -------
         path : Path | None
-            Path of the saved video file, or ``None`` if no recording
-            was active.
-
-        Examples
-        --------
-        >>> saved = bp.stop_recording()
-        >>> print("Video saved to:", saved)
         """
         if not self._recording:
             return None
@@ -623,13 +778,7 @@ class BrainPlot:
         return path
 
     def write_frame_if_recording(self) -> None:
-        """Capture a video frame if recording is active.
-
-        Called automatically from
-        :meth:`~ant.NFRealtime.record_main`'s brain pump timer after
-        each :meth:`~pyvista.Plotter.render` call.  Safe to call even
-        when not recording (no-op).
-        """
+        """Capture a video frame if recording is active (no-op otherwise)."""
         if not self._recording or self._video_writer is None:
             return
         try:
@@ -649,11 +798,6 @@ class BrainPlot:
         Returns
         -------
         path : Path
-            Path to the saved file.
-
-        Examples
-        --------
-        >>> saved = bp.screenshot("~/my_view.png")
         """
         if path is None:
             ts = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
@@ -663,8 +807,8 @@ class BrainPlot:
         return Path(path)
 
     @property
-    def plotter(self) -> pv.Plotter:
-        """The underlying :class:`pyvista.Plotter` instance."""
+    def plotter(self) -> "_BackgroundPlotter":
+        """The underlying :class:`pyvistaqt.BackgroundPlotter` instance."""
         return self._plotter
 
     @property
