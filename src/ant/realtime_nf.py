@@ -8,7 +8,7 @@ Typical workflow
 ----------------
 ::
 
-    nf = NFRealtime(subject_id="sub01", visit=1, session="main",
+    nf = NFRealtime(subject_id="sub01", session="01",
                     subjects_dir="/data/subjects", montage="easycap-M1")
     nf.connect_to_lsl()
     nf.record_baseline(baseline_duration=120)
@@ -40,7 +40,6 @@ from pyqtgraph.Qt import QtWidgets
 import mne
 from mne import (
     Report,
-    read_labels_from_annot,
     write_cov,
     write_forward_solution,
 )
@@ -48,7 +47,6 @@ from mne.channels import get_builtin_montages, read_dig_captrak
 from mne.io import RawArray
 from mne.minimum_norm import (
     apply_inverse_raw,
-    read_inverse_operator,
     write_inverse_operator,
 )
 from mne_lsl.lsl import local_clock
@@ -68,11 +66,48 @@ from ant.tools.asr import ASRDenoiser
 from ant.tools.gedai import GEDAIDenoiser
 from ant.tools.maxwell import RTMaxwellFilter
 from ant.tools.orica import ORICA
-from ant.viz import BrainPlot, NFSignalPlot
+from ant.viz import BrainPlot, NFSignalPlot, TopoPlot
 
 # Package root — resolves correctly both in editable installs and installed wheels
 _PKG_DIR = Path(__file__).resolve().parent
 _REPO_ROOT = _PKG_DIR.parent.parent  # src/ant → src → repo root
+
+
+def _make_demo_raw_fif(
+    sfreq: float = 256.0,
+    duration: float = 300.0,
+    n_channels: int = 64,
+) -> Path:
+    """Generate a synthetic 64-ch EEG FIF file for mock LSL streaming.
+
+    Used as the default mock source when the bundled BrainVision sample file
+    is not present (i.e. non-editable installs).  The file is written to a
+    temporary directory and its path returned.
+    """
+    import tempfile
+
+    import mne
+
+    montage = mne.channels.make_standard_montage("biosemi64")
+    info = mne.create_info(
+        ch_names=montage.ch_names[:n_channels],
+        sfreq=sfreq,
+        ch_types="eeg",
+    )
+    info.set_montage(montage)
+
+    rng = np.random.default_rng(42)
+    n_samples = int(duration * sfreq)
+    t = np.arange(n_samples) / sfreq
+    # Alpha (~10 Hz) + broadband noise
+    alpha = 1e-6 * np.sin(2 * np.pi * 10.0 * t)
+    data = rng.standard_normal((n_channels, n_samples)) * 5e-7 + alpha
+
+    raw = mne.io.RawArray(data, info, verbose=False)
+    tmp_dir = Path(tempfile.mkdtemp(prefix="ant_mock_"))
+    fif_path = tmp_dir / "demo-raw.fif"
+    raw.save(fif_path, overwrite=True, verbose=False)
+    return fif_path
 
 
 class NFRealtime(ModalityMixin):
@@ -86,12 +121,12 @@ class NFRealtime(ModalityMixin):
     Parameters
     ----------
     subject_id : str
-        Unique subject identifier (non-empty string).
-    visit : int
-        Visit number (≥ 1).  Used to name saved files.
-    session : {"baseline", "main"}
-        Session type.  Baseline sessions record resting-state data;
-        main sessions run the closed-loop NF loop.
+        Unique subject identifier (non-empty string).  Used as the BIDS
+        subject label (e.g. ``"sub01"`` → folder ``sub-sub01/``).
+    session : str
+        BIDS session label (e.g. ``"01"``, ``"pre"``, ``"week1"``).  Used
+        to name output files and directories following the BIDS convention
+        ``sub-<ID>_ses-<session>_task-<task>``.
     subjects_dir : str
         Root directory that holds one sub-folder per subject.
     montage : str | None
@@ -109,32 +144,36 @@ class NFRealtime(ModalityMixin):
         FreeSurfer subjects directory.  Required when
         ``subject_fs_id != "fsaverage"`` or when ``show_brain_activation``
         is requested.
-    filtering : bool, default False
-        Apply online band-pass filtering during the main session.
-    l_freq : float, default 1.0
-        Low cut-off frequency in Hz (used only when ``filtering=True``).
-    h_freq : float, default 40.0
-        High cut-off frequency in Hz (used only when ``filtering=True``).
-    artifact_correction : {False, "orica", "lms", "gedai"}, default False
-        Real-time artifact correction strategy.
+    bandpass_freq : tuple(float, float) | None, default None
+        Online band-pass filter applied to the LSL stream before feature
+        extraction, as ``(l_freq, h_freq)`` in Hz.  ``None`` disables
+        band-pass filtering.  Example: ``(1.0, 40.0)`` for a standard
+        EEG band-pass.
+    notch_freq : float | list[float] | None, default None
+        One or more frequencies (Hz) to suppress with an IIR notch filter.
+        ``None`` disables notch filtering.  Example: ``50`` or ``[50, 100]``
+        for 50 Hz power-line interference and its harmonic.
+    artifact_correction : {False, "lms", "orica", "gedai", "asr", "maxwell"}, default False
+        Real-time artifact correction strategy applied sample-by-sample
+        inside the acquisition loop.
 
-        * ``False``     — no correction
-        * ``"lms"``     — adaptive LMS regression on a frontal reference
-          channel (EEG only)
-        * ``"orica"``   — online recursive ICA
+        * ``False``       — no correction
+        * ``"lms"``       — adaptive LMS regression on a frontal reference
+          channel; fast and lightweight (EEG only).
+          (:class:`~ant.tools.AdaptiveLMSFilter`)
+        * ``"orica"``     — online recursive ICA; blind source separation
+          with continuous weight updates.
           (:class:`~ant.tools.ORICA`)
-        * ``"gedai"``   — GED-based decomposition
-          (:class:`~ant.tools.GEDAIDenoiser`); requires
-          :meth:`fit_gedai` to be called after baseline.
-        * ``"asr"``     — Artifact Subspace Reconstruction
-          (:class:`~ant.tools.ASRDenoiser`); requires
-          :meth:`fit_asr` to be called after baseline.
-        * ``"maxwell"`` — Signal Space Separation / tSSS for MEG
-          (:class:`~ant.tools.RTMaxwellFilter`); requires
-          :meth:`fit_maxwell` (no baseline needed; MEG only).
+        * ``"gedai"``     — generalised eigendecomposition artefact
+          isolation; call :meth:`fit_gedai` after :meth:`record_baseline`.
+          (:class:`~ant.tools.GEDAIDenoiser`)
+        * ``"asr"``       — Artifact Subspace Reconstruction; call
+          :meth:`fit_asr` after :meth:`record_baseline`.
+          (:class:`~ant.tools.ASRDenoiser`)
+        * ``"maxwell"``   — Signal Space Separation / tSSS for MEG;
+          call :meth:`fit_maxwell` before :meth:`record_main` (MEG only).
+          (:class:`~ant.tools.RTMaxwellFilter`)
 
-    ref_channel : str, default "Fp1"
-        Reference channel for LMS artifact correction.
     save_nf_signal : bool, default True
         Save extracted NF feature time-series as JSON.
     config_file : str | None, default None
@@ -160,7 +199,7 @@ class NFRealtime(ModalityMixin):
     -----
     **Typical workflow**::
 
-        nf = NFRealtime("sub01", visit=1, session="main",
+        nf = NFRealtime("sub01", session="01",
                         subjects_dir="/data/subjects",
                         montage="easycap-M1")
         nf.connect_to_lsl()
@@ -175,7 +214,6 @@ class NFRealtime(ModalityMixin):
     .. versionadded:: 1.0.0
     """
 
-    _VALID_SESSIONS = {"baseline", "main"}
     _VALID_ARTIFACT_METHODS = {False, "orica", "lms", "gedai", "asr", "maxwell"}
     _VALID_DATA_TYPES = {"eeg", "meg"}
 
@@ -184,7 +222,6 @@ class NFRealtime(ModalityMixin):
     def __init__(
         self,
         subject_id: str,
-        visit: int,
         session: str,
         subjects_dir: str,
         montage: Optional[str],
@@ -192,23 +229,17 @@ class NFRealtime(ModalityMixin):
         mri: bool = False,
         subject_fs_id: str = "fsaverage",
         subjects_fs_dir: Optional[str] = None,
-        filtering: bool = False,
-        l_freq: float = 1.0,
-        h_freq: float = 40.0,
+        bandpass_freq: Optional[tuple] = None,
+        notch_freq: Union[float, list, None] = None,
         artifact_correction: Union[bool, str] = False,
-        ref_channel: str = "Fp1",
         save_nf_signal: bool = True,
         config_file: Optional[str] = None,
         verbose: Union[bool, str, None] = None,
     ) -> None:
         if not subject_id or not isinstance(subject_id, str):
             raise ValueError("`subject_id` must be a non-empty string.")
-        if not isinstance(visit, int) or visit < 1:
-            raise ValueError("`visit` must be a positive integer (≥ 1).")
-        if session not in self._VALID_SESSIONS:
-            raise ValueError(
-                f"`session` must be one of {self._VALID_SESSIONS}, got {session!r}."
-            )
+        if not session or not isinstance(session, str):
+            raise ValueError("`session` must be a non-empty string (BIDS session label).")
         if data_type not in self._VALID_DATA_TYPES:
             raise ValueError(
                 f"`data_type` must be one of {self._VALID_DATA_TYPES}, got {data_type!r}."
@@ -226,8 +257,19 @@ class NFRealtime(ModalityMixin):
             raise ValueError("`subject_fs_id` must be a non-empty string.")
         if subjects_fs_dir is not None and not Path(subjects_fs_dir).is_dir():
             raise ValueError("`subjects_fs_dir` must be None or an existing directory.")
-        if not isinstance(filtering, bool):
-            raise ValueError("`filtering` must be a boolean.")
+        if bandpass_freq is not None:
+            if (
+                not (hasattr(bandpass_freq, "__len__") and len(bandpass_freq) == 2)
+                or not all(isinstance(f, (int, float)) and f > 0 for f in bandpass_freq)
+                or bandpass_freq[0] >= bandpass_freq[1]
+            ):
+                raise ValueError(
+                    "`bandpass_freq` must be a (l_freq, h_freq) tuple with 0 < l_freq < h_freq."
+                )
+        if notch_freq is not None:
+            _nf = notch_freq if isinstance(notch_freq, list) else [notch_freq]
+            if not all(isinstance(f, (int, float)) and f > 0 for f in _nf):
+                raise ValueError("`notch_freq` must be a positive float or list of positive floats.")
         if artifact_correction not in self._VALID_ARTIFACT_METHODS:
             raise ValueError(
                 f"`artifact_correction` must be one of "
@@ -251,7 +293,6 @@ class NFRealtime(ModalityMixin):
             raise ValueError("`config_file` must be None or a valid .yml file path.")
 
         self.subject_id = subject_id
-        self.visit = visit
         self.session = session
         self.subjects_dir = subjects_dir
         self.montage = montage
@@ -259,15 +300,15 @@ class NFRealtime(ModalityMixin):
         self.mri = mri
         self.subject_fs_id = subject_fs_id
         self.subjects_fs_dir = subjects_fs_dir
-        self.filtering = filtering
-        self.l_freq = l_freq
-        self.h_freq = h_freq
+        self.bandpass_freq = bandpass_freq
+        self.notch_freq = notch_freq
         self.artifact_correction = artifact_correction
-        self.ref_channel = ref_channel
         self.save_nf_signal = save_nf_signal
         self.config_file = config
         self.verbose = verbose
-        self.subject_dir = Path(subjects_dir) / subject_id
+        self.subject_dir = (
+            Path(subjects_dir) / f"sub-{subject_id}" / f"ses-{session}"
+        )
 
         set_log_level(verbose)
 
@@ -285,7 +326,7 @@ class NFRealtime(ModalityMixin):
         bufsize_baseline: int = 4,
         bufsize_main: int = 3,
         acquisition_delay: float = 0.001,
-        timeout: float = 5.0,
+        timeout: float = 15.0,
         stream_name: Optional[str] = None,
         stream_source_id: Optional[str] = None,
         pick_types: Optional[str] = None,
@@ -312,7 +353,7 @@ class NFRealtime(ModalityMixin):
             LSL buffer size in seconds for main sessions.
         acquisition_delay : float, default 0.001
             Seconds between acquisition polling attempts.
-        timeout : float, default 5.0
+        timeout : float, default 15.0
             Maximum wait time in seconds for the LSL connection.
         stream_name : str | None, default None
             Connect by stream name (e.g. ``neuromag2lsl`` for MEG devices).
@@ -350,22 +391,36 @@ class NFRealtime(ModalityMixin):
         if hasattr(self, "stream") and getattr(self.stream, "connected", False):
             self.stream.disconnect()
 
-        if mock_lsl and fname is None:
-            fname = _REPO_ROOT / "data" / "sample" / "sample_data.vhdr"
+        if getattr(self, "_mock_player", None) is not None:
+            try:
+                self._mock_player.stop()
+            except Exception:
+                pass
+            self._mock_player = None
 
-        self.bufsize = bufsize_baseline if self.session == "baseline" else bufsize_main
+        if mock_lsl and fname is None:
+            _bundled = _REPO_ROOT / "data" / "sample" / "sample_data.vhdr"
+            if _bundled.is_file():
+                fname = _bundled
+            else:
+                # Not an editable install — generate a synthetic EEG recording
+                fname = _make_demo_raw_fif()
+
+        self.bufsize = bufsize_main
 
         if self.montage is not None and Path(str(self.montage)).is_file():
             self.montage = read_dig_captrak(self.montage)
 
         self.source_id = uuid.uuid4().hex
         if mock_lsl:
-            Player(
+            self._mock_player = Player(
                 fname,
                 chunk_size=chunk_size,
                 n_repeat=n_repeat,
                 source_id=self.source_id,
-            ).start()
+            )
+            self._mock_player.start()
+            time.sleep(3.0)  # let LSL multicast initialize on first use and player advertise
 
         if stream_name is not None:
             stream = Stream(bufsize=self.bufsize, name=stream_name)
@@ -400,10 +455,12 @@ class NFRealtime(ModalityMixin):
     # Directory helpers
     # ------------------------------------------------------------------
 
-    def _ensure_dirs(self) -> None:
-        """Create all standard session subdirectories under ``subject_dir``."""
-        for sub in ("baseline", "inv", "neurofeedback", "delays", "raw", "reports"):
+    def _ensure_dirs(self, include_delays: bool = False) -> None:
+        """Create BIDS-aligned session subdirectories under ``subject_dir``."""
+        for sub in ("eeg", "beh", "inv", "reports"):
             (self.subject_dir / sub).mkdir(parents=True, exist_ok=True)
+        if include_delays:
+            (self.subject_dir / "delays").mkdir(parents=True, exist_ok=True)
 
     # ------------------------------------------------------------------
     # Recording
@@ -433,12 +490,12 @@ class NFRealtime(ModalityMixin):
 
         Notes
         -----
-        Output files written to ``<subjects_dir>/<subject_id>/``:
+        Output files written under ``<subjects_dir>/sub-<ID>/ses-<session>/``:
 
-        * ``baseline/visit_<N>-raw.fif`` — baseline raw recording
-        * ``inv/visit_<N>-inv.fif`` — inverse operator
-        * ``inv/visit_<N>-fwd.fif`` — forward solution
-        * ``inv/visit_<N>-cov.fif`` — noise covariance
+        * ``eeg/sub-<ID>_ses-<session>_task-baseline_eeg.fif``
+        * ``inv/sub-<ID>_ses-<session>_task-baseline_inv.fif``
+        * ``inv/sub-<ID>_ses-<session>_task-baseline_fwd.fif``
+        * ``inv/sub-<ID>_ses-<session>_task-baseline_cov.fif``
 
         Examples
         --------
@@ -457,8 +514,9 @@ class NFRealtime(ModalityMixin):
         raw_baseline = RawArray(data, self.rec_info)
 
         self._ensure_dirs()
+        _stem = f"sub-{self.subject_id}_ses-{self.session}"
         raw_baseline.save(
-            self.subject_dir / "baseline" / f"visit_{self.visit}-raw.fif",
+            self.subject_dir / "eeg" / f"{_stem}_task-baseline_eeg.fif",
             overwrite=True,
         )
         self.raw_baseline = raw_baseline
@@ -476,16 +534,24 @@ class NFRealtime(ModalityMixin):
         show_raw_signal: bool = True,
         show_nf_signal: bool = True,
         time_window: float = 10.0,
+        show_topo: bool = False,
+        topo_bands: Optional[dict] = None,
         show_brain_activation: bool = False,
         brain_surf: str = "inflated",
         brain_mode: str = "power",
         brain_freq_range: tuple[float, float] = (8.0, 13.0),
-        use_ring_buffer: bool = False,
         zscore_normalize: bool = False,
         zscore_warmup: int = 10,
         zscore_alpha: float = 0.0,
         osc_sender: Optional[Any] = None,
+        lsl_sender: Optional[Any] = None,
+        protocol: Optional[Any] = None,
         save_raw: bool = False,
+        ref_channel: str = "Fp1",
+        track_artifact_rate: bool = True,
+        artifact_threshold_uv: float = 100.0,
+        track_snr: bool = False,
+        snr_frange: Optional[tuple] = None,
         verbose: Union[bool, str, None] = None,
     ) -> None:
         """Stream M/EEG, extract neural features, and drive NF visualisation.
@@ -509,12 +575,13 @@ class NFRealtime(ModalityMixin):
             NF feature(s) to extract.  Must match keys in
             ``config_methods.yml``.  Multiple modalities are extracted in
             parallel.  Available modalities:
-            ``"sensor_power"``, ``"band_ratio"``, ``"source_power"``,
-            ``"sensor_connectivity"``, ``"source_connectivity"``,
-            ``"sensor_graph"``, ``"source_graph"``, ``"entropy"``,
-            ``"argmax_freq"``, ``"individual_peak_power"``,
-            ``"cfc_sensor"``, ``"erd_ers"``, ``"laterality"``,
-            ``"hjorth"``, ``"spectral_centroid"``.
+            ``"sensor_power"``, ``"band_ratio"``, ``"erd_ers"``,
+            ``"laterality"``, ``"laterality_erd_ers"``, ``"hjorth"``,
+            ``"spectral_centroid"``, ``"argmax_freq"``,
+            ``"individual_peak_power"``, ``"entropy"``,
+            ``"instantaneous_phase"``,
+            ``"sensor_connectivity"``, ``"cfc_sensor"``, ``"sensor_graph"``,
+            ``"source_power"``, ``"source_connectivity"``, ``"source_graph"``.
         picks : str | list of str | None, default None
             Channel selection passed to the LSL stream.  ``None`` uses all
             available channels.  Must be ``None`` for source-space modalities.
@@ -534,6 +601,13 @@ class NFRealtime(ModalityMixin):
             Show the :class:`~ant.viz.NFSignalPlot` real-time NF monitor.
         time_window : float, default 10.0
             Visible time range in seconds for the NF signal plot.
+        show_topo : bool, default False
+            Show the :class:`~ant.viz.TopoPlot` real-time scalp topomap
+            display.  Requires the montage to be set on the channel info.
+        topo_bands : dict | None, default None
+            Frequency bands to show in the topomap as
+            ``{label: (f_low, f_high)}``.  ``None`` uses the default
+            δ/θ/α/β/γ bands.
         show_brain_activation : bool, default False
             Show the :class:`~ant.viz.BrainPlot` 3D brain activation
             display (requires ``subjects_fs_dir`` and a fitted inverse
@@ -548,10 +622,6 @@ class NFRealtime(ModalityMixin):
         brain_freq_range : (float, float), default (8.0, 13.0)
             Frequency band in Hz used to band-pass the data before computing
             source power for the brain display.
-        use_ring_buffer : bool, default False
-            Use a sliding ring-buffer acquisition loop (50 % overlap) instead
-            of discrete fixed-length window pulls.  Increases update rate at
-            the cost of higher CPU load.
         zscore_normalize : bool, default False
             Apply online z-score normalisation to each NF feature value
             before storing and displaying it.  During the first
@@ -573,11 +643,29 @@ class NFRealtime(ModalityMixin):
             If provided, each computed NF value is also broadcast over OSC
             to the configured host/port after every update cycle.
             See :class:`~ant.osc.OSCSender`.
+        lsl_sender : LSLSender | None, default None
+            If provided, each computed NF value is pushed into an LSL stream
+            outlet after every update cycle.  Faster and more reliable than
+            OSC for same-machine feedback delivery.
+            See :class:`~ant.lsl_output.LSLSender`.
+        protocol : Protocol instance | dict | None, default None
+            Real-time NF reward protocol evaluated on every analysis window.
+            Pass a single Protocol instance (e.g.
+            :class:`~ant.protocols.ThresholdProtocol`) to apply it to the
+            first modality, or a ``{modality_name: protocol}`` dict to
+            apply different protocols to different modalities.  On each
+            window the protocol's ``evaluate(value)`` method is called and
+            ``(crossed, magnitude)`` is recorded.  Results are accessible via
+            :attr:`reward_data` after the session.
         save_raw : bool, default False
             Persist the raw pre-correction M/EEG acquired during the main
             session to ``raw/<stem>-raw.fif``.  Off by default because FIF
             files can be large; enable when the raw continuous signal is
             needed for offline re-analysis or provenance.
+        ref_channel : str, default "Fp1"
+            Reference channel used for LMS artifact correction
+            (``artifact_correction="lms"`` only).  Ignored for all other
+            correction methods.
         verbose : bool | str | None, default None
             Override the instance-level verbosity for this call.
 
@@ -595,17 +683,14 @@ class NFRealtime(ModalityMixin):
 
         Notes
         -----
-        Output files written to ``<subjects_dir>/<subject_id>/``.  All names
-        include an ISO-8601 timestamp so that multiple runs never overwrite
-        each other:
+        Output files written under ``<subjects_dir>/sub-<ID>/ses-<session>/``:
 
-        * ``neurofeedback/<stem>_nf.json`` — NF feature time-series plus
-          full session metadata (modalities, sfreq, duration, artifact
-          correction used, start/end timestamps)
-        * ``delays/<stem>_delays.json`` — per-step timing summary with
-          mean / std / max / p95 in ms (only when ``estimate_delays=True``)
-        * ``raw/<stem>-raw.fif`` — pre-correction M/EEG (only when
-          ``save_raw=True``)
+        * ``beh/sub-<ID>_ses-<session>_task-neurofeedback_beh.json`` — NF
+          feature time-series plus session metadata
+        * ``delays/sub-<ID>_ses-<session>_task-neurofeedback_delays.json``
+          — per-step timing (only when ``estimate_delays=True``)
+        * ``eeg/sub-<ID>_ses-<session>_task-neurofeedback_eeg.fif`` —
+          pre-correction M/EEG (only when ``save_raw=True``)
 
         Examples
         --------
@@ -637,25 +722,19 @@ class NFRealtime(ModalityMixin):
         self.estimate_delays = estimate_delays
         self._sfreq = self.rec_info["sfreq"]
         self.show_nf_signal = show_nf_signal
-        self.use_ring_buffer = use_ring_buffer
         if zscore_alpha < 0.0 or zscore_alpha >= 1.0:
             raise ValueError("`zscore_alpha` must be in [0, 1).")
         if zscore_warmup < 2:
             raise ValueError("`zscore_warmup` must be ≥ 2.")
 
-        # Timestamp once — all output files share this stem so they are
-        # grouped together and never overwrite an earlier run.
         self._session_start_time = datetime.datetime.now(datetime.timezone.utc)
-        self._session_stem = (
-            f"sub-{self.subject_id}_vis-{self.visit:02d}_ses-{self.session}"
-            f"_{self._session_start_time.strftime('%Y%m%dT%H%M%S')}"
-        )
-        self._ensure_dirs()
+        self._session_stem = f"sub-{self.subject_id}_ses-{self.session}"
+        self._ensure_dirs(include_delays=estimate_delays)
 
         # Artifact correction setup
         ref_ch_idx: Optional[int] = None
         if self.artifact_correction == "lms":
-            ref_ch_idx = self.rec_info["ch_names"].index(self.ref_channel)
+            ref_ch_idx = self.rec_info["ch_names"].index(ref_channel)
         elif self.artifact_correction == "orica":
             self.run_orica(n_channels=len(self.rec_info["ch_names"]), forgetfac=0.99)
         elif self.artifact_correction == "gedai":
@@ -703,22 +782,26 @@ class NFRealtime(ModalityMixin):
             "source_power":         3e-2,
             "sensor_connectivity":  1.0,
             "source_connectivity":  1.0,
+            "connectivity_ratio":   4.0,
             "sensor_graph":         0.05,
             "source_graph":         2e-17,
             "entropy":              3.0,
             "argmax_freq":          8.0,
+            "peak_alpha_freq":      13.0,
             "individual_peak_power": self._SENSOR_POWER_SCALE[self.data_type],
             "cfc_sensor":           1.0,
             "erd_ers":              50.0,
             "laterality":           2.0,
             "hjorth":               5.0,
             "spectral_centroid":    5.0,
+            "scp":                  50e-6,
         }
 
         signal_plot: Optional[NFSignalPlot] = None
+        topo_plot: Optional[TopoPlot] = None
         brain_plot: Optional[BrainPlot] = None
 
-        needs_qt = show_nf_signal or show_brain_activation or show_raw_signal
+        needs_qt = show_nf_signal or show_brain_activation or show_raw_signal or show_topo
         app: Optional[QtWidgets.QApplication] = None
 
         if needs_qt:
@@ -732,6 +815,14 @@ class NFRealtime(ModalityMixin):
                 time_window=time_window,
             )
             signal_plot.show()
+
+        if show_topo:
+            topo_plot = TopoPlot(
+                info=self.rec_info,
+                sfreq=self._sfreq,
+                bands=topo_bands,
+            )
+            topo_plot.show()
 
         if show_brain_activation:
             if self.subjects_fs_dir is None:
@@ -747,24 +838,58 @@ class NFRealtime(ModalityMixin):
         if show_raw_signal:
             self.open_stream_viewer()
 
-        if self.filtering:
-            self.stream.filter(l_freq=self.l_freq, h_freq=self.h_freq)
+        if self.bandpass_freq is not None:
+            self.stream.filter(
+                l_freq=self.bandpass_freq[0], h_freq=self.bandpass_freq[1]
+            )
+        if self.notch_freq is not None:
+            _freqs = (
+                self.notch_freq
+                if isinstance(self.notch_freq, list)
+                else [self.notch_freq]
+            )
+            for _f in _freqs:
+                self.stream.notch_filter(freqs=_f)
 
         # ---- Thread-safe queues between acquisition thread and UI ----
 
         # small caps: drop stale frames rather than accumulate backlog
         nf_queue: _queue.Queue = _queue.Queue(maxsize=4)
+        topo_queue: Optional[_queue.Queue] = (
+            _queue.Queue(maxsize=2) if topo_plot is not None else None
+        )
         brain_queue: Optional[_queue.Queue] = (
             _queue.Queue(maxsize=2) if brain_plot is not None else None
         )
         done_event = threading.Event()
         nf_data: dict[str, list] = {m: [] for m in mods}
 
+        # Build protocol map: {modality_name: protocol_instance}
+        if protocol is None:
+            _proto_map: dict[str, Any] = {}
+        elif isinstance(protocol, dict):
+            _proto_map = dict(protocol)
+        else:
+            _proto_map = {mods[0]: protocol}
+        reward_data: dict[str, list] = {m: [] for m in _proto_map}
+
         # Delay accumulators live in the thread, assigned to self when done
         _acq_delays:     list[float] = []
         _art_delays:     list[float] = []
         _meth_delays:    dict[str, list] = {m: [] for m in mods}
         _plot_delays:    list[float] = []  # only used when viz runs inline
+
+        # ---- Artifact rate tracking ----
+        _n_total_windows: list[int] = [0]
+        _n_artifact_windows: list[int] = [0]
+        _artifact_threshold_raw = artifact_threshold_uv * 1e-6  # V for EEG, T for MEG
+
+        # ---- SNR tracking ----
+        _snr_data: list[float] = []
+        _snr_frange = snr_frange if snr_frange is not None else (
+            tuple(self.mod_params_dict[mods[0]].get("frange", [8, 13]))
+            if mods else (8.0, 13.0)
+        )
 
         # ---- Z-score normalisation state ----
         _z_buf:   dict[str, list] = {m: [] for m in mods}
@@ -823,27 +948,47 @@ class NFRealtime(ModalityMixin):
                     _art_delays.append(time.time() - art_tic)
             return data
 
-        def _push_brain(window: np.ndarray) -> None:
-            """Compute source scalars in acquisition thread, enqueue for UI."""
-            if brain_queue is None:
+        def _push_topo(window: np.ndarray) -> None:
+            """Enqueue raw data window for the topomap display."""
+            if topo_queue is None:
                 return
-            raw_d = self._prepare_raw_array(window)
-            if brain_mode == "power":
-                raw_d.filter(
-                    l_freq=brain_freq_range[0], h_freq=brain_freq_range[1],
-                    fir_design="firwin", verbose=False,
-                )
-            stc = apply_inverse_raw(raw_d, self.inv, lambda2=1.0 / 9, pick_ori="normal")
-            if brain_mode == "power":
-                lh = np.mean(stc.lh_data ** 2, axis=1)
-                rh = np.mean(stc.rh_data ** 2, axis=1)
-            else:
-                lh = stc.lh_data.mean(axis=1)
-                rh = stc.rh_data.mean(axis=1)
             try:
-                brain_queue.put_nowait((lh, rh))
+                topo_queue.put_nowait(window)
             except _queue.Full:
-                pass  # UI is slower than acquisition; drop this frame
+                pass
+
+        def _push_brain(window: np.ndarray) -> None:
+            """Submit inverse computation to thread pool; enqueue scalars for UI."""
+            if brain_queue is None or brain_queue.full():
+                return
+            if not hasattr(self, "inv") or self.inv is None:
+                return
+
+            def _compute_and_enqueue(w: np.ndarray) -> None:
+                raw_d = self._prepare_raw_array(w)
+                if brain_mode == "power":
+                    raw_d.filter(
+                        l_freq=brain_freq_range[0], h_freq=brain_freq_range[1],
+                        fir_design="firwin", verbose=False,
+                    )
+                stc = apply_inverse_raw(raw_d, self.inv, lambda2=1.0 / 9, pick_ori="normal")
+                if brain_mode == "power":
+                    lh = np.mean(stc.lh_data ** 2, axis=1)
+                    rh = np.mean(stc.rh_data ** 2, axis=1)
+                else:
+                    lh = np.abs(stc.lh_data.mean(axis=1))
+                    rh = np.abs(stc.rh_data.mean(axis=1))
+                # Normalise to [0, 1] relative to the 98th percentile so the
+                # BrainPlot clim [0, 0.6] gives meaningful spatial contrast.
+                p98 = float(np.percentile(np.concatenate([lh, rh]), 98)) or 1.0
+                lh = lh / p98
+                rh = rh / p98
+                try:
+                    brain_queue.put_nowait((lh, rh))
+                except _queue.Full:
+                    pass
+
+            self.executor.submit(_compute_and_enqueue, window.copy())
 
         # ---- Acquisition thread ----
 
@@ -851,93 +996,70 @@ class NFRealtime(ModalityMixin):
             t_start = local_clock()
             _raw_chunks: list[np.ndarray] = []
 
-            if not use_ring_buffer:
-                # Fixed-window loop
-                while local_clock() < t_start + duration:
-                    tic = time.time()
-                    data = self.stream.get_data(winsize, picks=picks)[0]
+            while local_clock() < t_start + duration:
+                # Block until a full window of new samples has arrived, then
+                # fetch the latest winsize seconds and process it once.
+                while self.stream.n_new_samples < self.window_size_s:
+                    if local_clock() >= t_start + duration:
+                        break
+                    time.sleep(0.005)
+
+                tic = time.time()
+                data = self.stream.get_data(winsize, picks=picks)[0]
+                if estimate_delays:
+                    _acq_delays.append(time.time() - tic)
+                if data.shape[1] != self.window_size_s:
+                    continue
+
+                _n_total_windows[0] += 1
+                if track_artifact_rate:
+                    if np.any(np.abs(data) > _artifact_threshold_raw):
+                        _n_artifact_windows[0] += 1
+
+                _raw_chunks.append(data.copy())
+                data = _correct(data)
+
+                if track_snr:
+                    from ant.tools import compute_bandpower
+                    _sig = compute_bandpower(data, self._sfreq, _snr_frange, method="welch")
+                    _all = compute_bandpower(data, self._sfreq, (0.5, self._sfreq / 2 - 1), method="welch")
+                    _noise = _all.mean() - _sig.mean()
+                    _snr_data.append(float(10.0 * np.log10(_sig.mean() / (abs(_noise) + 1e-300))))
+
+                futures = [
+                    self.executor.submit(nf_fns[i], data, **precomps[i])
+                    for i in range(len(mods))
+                ]
+                for m, fut in zip(mods, futures):
+                    nf_val, m_delay = fut.result()
+                    nf_val = _apply_zscore(m, float(nf_val))
+                    nf_data[m].append(nf_val)
+                    if m in _proto_map:
+                        _crossed, _mag = _proto_map[m].evaluate(nf_val)
+                        reward_data[m].append(_mag if _crossed else 0.0)
                     if estimate_delays:
-                        _acq_delays.append(time.time() - tic)
-                    if data.shape[1] != self.window_size_s:
-                        continue
+                        _meth_delays[m].append(m_delay)
 
-                    _raw_chunks.append(data.copy())
-                    data = _correct(data)
+                _vals = [nf_data[m][-1] for m in mods]
+                try:
+                    nf_queue.put_nowait(_vals)
+                except _queue.Full:
+                    pass
 
-                    futures = [
-                        self.executor.submit(nf_fns[i], data, **precomps[i])
-                        for i in range(len(mods))
-                    ]
-                    for m, fut in zip(mods, futures):
-                        nf_val, m_delay = fut.result()
-                        nf_val = _apply_zscore(m, float(nf_val))
-                        nf_data[m].append(nf_val)
-                        if estimate_delays:
-                            _meth_delays[m].append(m_delay)
-
-                    _vals = [nf_data[m][-1] for m in mods]
+                if osc_sender is not None:
                     try:
-                        nf_queue.put_nowait(_vals)
-                    except _queue.Full:
+                        osc_sender.send_all(mods, _vals)
+                    except Exception:
                         pass
 
-                    if osc_sender is not None:
-                        try:
-                            osc_sender.send_all(mods, _vals)
-                        except Exception:
-                            pass
+                if lsl_sender is not None:
+                    try:
+                        lsl_sender.push(mods, _vals)
+                    except Exception:
+                        pass
 
-                    _push_brain(data)
-
-            else:
-                # Sliding ring-buffer loop
-                n_ch = len(self.rec_info["ch_names"])
-                ring = np.zeros((n_ch, 0), dtype=np.float32)
-                fetch_secs = max(winsize * 4, 2.0)
-                hop = max(self.window_size_s // 2, 1)
-                max_buf = int(fetch_secs * self._sfreq) + self.window_size_s
-
-                while local_clock() < t_start + duration:
-                    tic = time.time()
-                    fetched = self.stream.get_data(fetch_secs, picks=picks)[0]
-                    if estimate_delays:
-                        _acq_delays.append(time.time() - tic)
-
-                    if fetched is None or fetched.size == 0:
-                        time.sleep(0.001)
-                        continue
-
-                    ring = np.concatenate((ring, fetched), axis=1)
-                    if ring.shape[1] > max_buf:
-                        ring = ring[:, -max_buf:]
-
-                    while ring.shape[1] >= self.window_size_s:
-                        window = ring[:, : self.window_size_s].copy()
-                        _raw_chunks.append(window.copy())
-                        window = _correct(window)
-
-                        for i, mod in enumerate(mods):
-                            meth_tic = time.time()
-                            nf_val, m_delay = nf_fns[i](window, **precomps[i])
-                            nf_val = _apply_zscore(mod, float(nf_val))
-                            nf_data[mod].append(nf_val)
-                            if estimate_delays:
-                                _meth_delays[mod].append(time.time() - meth_tic)
-
-                        _vals = [nf_data[m][-1] for m in mods]
-                        try:
-                            nf_queue.put_nowait(_vals)
-                        except _queue.Full:
-                            pass
-
-                        if osc_sender is not None:
-                            try:
-                                osc_sender.send_all(mods, _vals)
-                            except Exception:
-                                pass
-
-                        _push_brain(window)
-                        ring = ring[:, hop:]
+                _push_topo(data)
+                _push_brain(data)
 
             done_event.set()
             self._raw_chunks = _raw_chunks
@@ -988,6 +1110,8 @@ class NFRealtime(ModalityMixin):
 
                 if done_event.is_set():
                     signal_timer.stop()
+                    if topo_timer is not None:
+                        topo_timer.stop()
                     if brain_timer is not None:
                         brain_timer.stop()
                     QTimer.singleShot(600, app.quit)
@@ -996,6 +1120,25 @@ class NFRealtime(ModalityMixin):
             signal_timer.setInterval(33)   # ~30 fps
             signal_timer.timeout.connect(_pump_signal)
             signal_timer.start()
+
+            # Topomap timer (~5 fps) — matplotlib redraws are slower than
+            # pyqtgraph so we use a separate slower timer.
+            topo_timer: Optional[QTimer] = None
+            if topo_plot is not None:
+                def _pump_topo_qt() -> None:
+                    topo_data = None
+                    try:
+                        while not topo_queue.empty():
+                            topo_data = topo_queue.get_nowait()
+                    except Exception:
+                        pass
+                    if topo_data is not None:
+                        topo_plot.push(topo_data)
+
+                topo_timer = QTimer()
+                topo_timer.setInterval(200)  # 5 fps
+                topo_timer.timeout.connect(_pump_topo_qt)
+                topo_timer.start()
 
             # Separate slow timer for the brain plot so its render never
             # blocks the signal pump.  Scalars are updated without an
@@ -1034,13 +1177,21 @@ class NFRealtime(ModalityMixin):
         # ---- Persist results ----
 
         self.nf_data = nf_data
+        self.reward_data = reward_data
         if estimate_delays:
             self.acq_delays      = _acq_delays
             self.artifact_delays = _art_delays
             self.method_delays   = _meth_delays
+        n_tot = _n_total_windows[0]
+        self.artifact_rate = (
+            _n_artifact_windows[0] / n_tot if n_tot > 0 else 0.0
+        )
+        self.n_artifact_windows = _n_artifact_windows[0]
+        self.n_total_windows = n_tot
+        self.snr_data = _snr_data if track_snr else []
 
         saved_files = self.save(
-            nf_data=True,
+            nf_data=self.save_nf_signal,
             acq_delay=True,
             artifact_delay=True,
             method_delay=True,
@@ -1052,6 +1203,192 @@ class NFRealtime(ModalityMixin):
 
         if signal_plot is not None:
             signal_plot.close()
+
+    # ------------------------------------------------------------------
+    # Offline replay
+    # ------------------------------------------------------------------
+
+    @verbose
+    def replay(
+        self,
+        fname: str,
+        modality: Union[str, list[str]] = "sensor_power",
+        duration: Optional[float] = None,
+        winsize: float = 1.0,
+        verbose: Union[bool, str, None] = None,
+        **record_main_kwargs,
+    ) -> None:
+        """Replay a saved recording as a mock LSL session.
+
+        Loads a pre-recorded M/EEG file (any MNE-readable format), streams it
+        via :class:`~mne_lsl.player.PlayerLSL` at its native sampling rate,
+        and passes the live stream through :meth:`record_main` — exercising
+        the full real-time pipeline (artifact correction, feature extraction,
+        protocol evaluation) without live hardware.
+
+        Useful for:
+
+        * Offline parameter tuning (test different protocols on the same data).
+        * Verifying pipeline latency and modality behaviour.
+        * Reproducing a session with modified parameters.
+
+        Parameters
+        ----------
+        fname : str
+            Path to any MNE-readable recording
+            (``.fif``, ``.vhdr``, ``.edf``, ``.bdf``, ``.set``, …).
+        modality : str | list of str, default "sensor_power"
+            NF modality(ies) to extract.
+        duration : float | None, default None
+            Duration of replay in seconds.  ``None`` infers the full recording
+            length from the file.
+        winsize : float, default 1.0
+            Analysis window length in seconds.
+        verbose : bool | str | None, default None
+            Override instance verbosity for this call.
+        **record_main_kwargs
+            Additional keyword arguments forwarded to :meth:`record_main`
+            (e.g. ``protocol``, ``modality_params``, ``track_snr``).
+
+        Examples
+        --------
+        Replay a saved EEG file and run a ZScore protocol offline::
+
+            from ant.protocols import ZScoreProtocol
+            nf.replay(
+                "sub-01/ses-01/eeg/sub-01_ses-01_task-neurofeedback_eeg.fif",
+                modality="sensor_power",
+                protocol=ZScoreProtocol(),
+                show_nf_signal=False,
+                show_raw_signal=False,
+            )
+            print(f"Artifact rate: {nf.artifact_rate:.1%}")
+
+        .. versionadded:: 1.0.0
+        """
+        if duration is None:
+            _raw_probe = mne.io.read_raw(fname, preload=False, verbose=False)
+            duration = float(_raw_probe.times[-1])
+            del _raw_probe
+
+        self.connect_to_lsl(
+            mock_lsl=True,
+            fname=fname,
+            n_repeat=1,
+            verbose=verbose,
+        )
+        self.record_main(
+            duration=duration,
+            modality=modality,
+            winsize=winsize,
+            verbose=verbose,
+            **record_main_kwargs,
+        )
+
+    # ------------------------------------------------------------------
+    # Multi-run session
+    # ------------------------------------------------------------------
+
+    @verbose
+    def run_blocks(
+        self,
+        blocks: list[dict],
+        rest_duration: float = 30.0,
+        verbose: Union[bool, str, None] = None,
+    ) -> list[dict]:
+        """Run multiple NF blocks separated by rest periods.
+
+        Each block calls :meth:`record_main` with the parameters given in the
+        corresponding dict.  Blocks are separated by ``rest_duration`` seconds
+        of silence (no acquisition, no feedback).
+
+        Parameters
+        ----------
+        blocks : list of dict
+            Each dict is passed as keyword arguments to :meth:`record_main`.
+            The key ``"rest"`` (optional) overrides ``rest_duration`` for the
+            pause *after* that block.  All other keys must be valid
+            :meth:`record_main` parameters.
+
+            Minimal example::
+
+                blocks = [
+                    {"duration": 120, "modality": "sensor_power"},
+                    {"duration": 120, "modality": "sensor_power", "rest": 60},
+                    {"duration": 120, "modality": "sensor_power"},
+                ]
+
+        rest_duration : float, default 30.0
+            Default inter-block rest period in seconds.
+        verbose : bool | str | None, default None
+            Override instance verbosity for this call.
+
+        Returns
+        -------
+        all_nf_data : list of dict
+            One dict per block, each matching :attr:`nf_data` from that block's
+            :meth:`record_main` call.  Also stored as :attr:`block_nf_data`.
+
+        Notes
+        -----
+        :meth:`save` is called internally at the end of *each* block by
+        :meth:`record_main`.  The returned list lets you inspect per-block
+        feature time-series without re-loading JSON files.
+
+        Examples
+        --------
+        Three 2-minute NF runs separated by 30-second rests::
+
+            nf.connect_to_lsl(mock_lsl=True, fname="recording.fif")
+            nf.record_baseline(baseline_duration=60)
+            results = nf.run_blocks(
+                blocks=[
+                    {"duration": 120, "modality": "sensor_power",
+                     "show_nf_signal": False, "show_raw_signal": False},
+                    {"duration": 120, "modality": "sensor_power",
+                     "show_nf_signal": False, "show_raw_signal": False},
+                    {"duration": 120, "modality": "sensor_power",
+                     "show_nf_signal": False, "show_raw_signal": False},
+                ],
+                rest_duration=30.0,
+            )
+            for i, block_data in enumerate(results):
+                vals = block_data["sensor_power"]
+                print(f"Block {i+1}: {len(vals)} windows, mean={sum(vals)/len(vals):.4f}")
+
+        .. versionadded:: 1.0.0
+        """
+        if not blocks:
+            raise ValueError("`blocks` must be a non-empty list of dicts.")
+
+        all_nf_data: list[dict] = []
+        all_artifact_rates: list[float] = []
+        all_snr_data: list[list] = []
+
+        for i, block in enumerate(blocks):
+            block_kwargs = dict(block)
+            post_rest = float(block_kwargs.pop("rest", rest_duration))
+
+            logger.info(
+                "run_blocks: starting block %d/%d (duration=%.0f s)",
+                i + 1, len(blocks),
+                block_kwargs.get("duration", 0),
+            )
+            self.record_main(verbose=verbose, **block_kwargs)
+            all_nf_data.append(dict(self.nf_data))
+            all_artifact_rates.append(self.artifact_rate)
+            all_snr_data.append(list(self.snr_data))
+
+            if i < len(blocks) - 1 and post_rest > 0:
+                logger.info(
+                    "run_blocks: rest period %.0f s …", post_rest
+                )
+                time.sleep(post_rest)
+
+        self.block_nf_data = all_nf_data
+        self.block_artifact_rates = all_artifact_rates
+        self.block_snr_data = all_snr_data
+        return all_nf_data
 
     # ------------------------------------------------------------------
     # Modality-params property
@@ -1548,7 +1885,7 @@ class NFRealtime(ModalityMixin):
         self,
         loose: float = 0.2,
         depth: float = 0.8,
-        noise_cov_method: str = "empirical",
+        noise_cov_method: str = "ad_hoc",
         reg: float = 0.1,
     ) -> None:
         """Compute and save the inverse operator for source localisation.
@@ -1568,20 +1905,27 @@ class NFRealtime(ModalityMixin):
             towards superficial sources.  ``None`` disables depth
             weighting; ``0.8`` is the MNE default.  Higher values
             suppress surface bias more aggressively.
-        noise_cov_method : str, default "empirical"
-            Method passed to :func:`mne.compute_raw_covariance` for
-            estimating the noise covariance from the baseline recording.
-            Common options: ``"empirical"`` (sample covariance),
-            ``"shrunk"`` (Ledoit-Wolf shrinkage — more stable when
-            the number of channels is close to or exceeds the number
-            of samples), ``"diagonal_fixed"`` (diagonal regularisation).
+        noise_cov_method : str, default "ad_hoc"
+            How to estimate the noise covariance used by the inverse
+            operator.
+
+            * ``"ad_hoc"`` *(default)* — :func:`mne.make_ad_hoc_cov`
+              creates a diagonal covariance from standard sensor-noise
+              floors (1 µV for EEG, 20 fT for MEG grads, 200 fT/cm for
+              MEG mags).  Recommended when no dedicated noise recording
+              is available: the resting-state baseline contains brain
+              signal, not pure noise, so fitting an empirical covariance
+              on it conflates signal and noise.
+            * ``"empirical"`` — sample covariance from the baseline raw.
+            * ``"shrunk"`` — Ledoit-Wolf shrinkage; more stable when
+              n_channels ≈ n_samples.
+            * ``"diagonal_fixed"`` — diagonal regularisation.
         reg : float, default 0.1
             Per-channel-type regularisation added to the noise covariance
-            diagonal via :func:`mne.cov.regularize`.  Applied to all
-            channel types present in the recording (EEG, MEG mag, MEG grad).
-            Set to ``0`` to skip regularisation.  Helps numerical stability
-            when the baseline recording is short relative to the number of
-            channels.
+            diagonal via :func:`mne.cov.regularize`.  Applied only when
+            ``noise_cov_method != "ad_hoc"``.  Set to ``0`` to skip.
+            Helps numerical stability when the baseline recording is short
+            relative to the number of channels.
 
         Raises
         ------
@@ -1605,18 +1949,19 @@ class NFRealtime(ModalityMixin):
             reg=reg,
         )
         inv_dir = self.subject_dir / "inv"
+        _stem = f"sub-{self.subject_id}_ses-{self.session}_task-baseline"
         write_inverse_operator(
-            fname=inv_dir / f"visit_{self.visit}-inv.fif",
+            fname=inv_dir / f"{_stem}_inv.fif",
             inv=self.inv,
             overwrite=True,
         )
         write_forward_solution(
-            fname=inv_dir / f"visit_{self.visit}-fwd.fif",
+            fname=inv_dir / f"{_stem}_fwd.fif",
             fwd=self.fwd,
             overwrite=True,
         )
         write_cov(
-            fname=inv_dir / f"visit_{self.visit}-cov.fif",
+            fname=inv_dir / f"{_stem}_cov.fif",
             cov=self.noise_cov,
             overwrite=True,
         )
@@ -1663,7 +2008,7 @@ class NFRealtime(ModalityMixin):
         """Save session outputs and disconnect the LSL stream.
 
         All output files share the stem
-        ``sub-<ID>_vis-<N>_ses-<session>_<ISO-timestamp>`` set at the
+        ``sub-<ID>_ses-<session>`` set at the
         start of :meth:`record_main`, so multiple runs in a day never
         overwrite each other.
 
@@ -1671,7 +2016,7 @@ class NFRealtime(ModalityMixin):
         ----------
         nf_data : bool, default True
             Save NF feature time-series as
-            ``neurofeedback/<stem>_nf.json``.  The JSON contains a
+            ``beh/<stem>_task-neurofeedback_beh.json``.  The JSON contains a
             ``"meta"`` block (subject, modalities, sfreq, duration,
             artifact correction, start/end timestamps) and a ``"data"``
             block with per-modality value lists.
@@ -1708,12 +2053,17 @@ class NFRealtime(ModalityMixin):
         """
         if hasattr(self, "stream") and getattr(self.stream, "connected", False):
             self.stream.disconnect()
+        if hasattr(self, "_mock_player"):
+            try:
+                self._mock_player.stop()
+            except Exception:
+                pass
 
         self._ensure_dirs()
 
         stem = getattr(
             self, "_session_stem",
-            f"sub-{self.subject_id}_vis-{self.visit:02d}_ses-{self.session}",
+            f"sub-{self.subject_id}_ses-{self.session}",
         )
         saved: dict[str, Path] = {}
 
@@ -1753,7 +2103,6 @@ class NFRealtime(ModalityMixin):
             payload: dict = {
                 "meta": {
                     "subject_id":          self.subject_id,
-                    "visit":               self.visit,
                     "session":             self.session,
                     "data_type":           self.data_type,
                     "modalities":          list(self.nf_data.keys()),
@@ -1772,7 +2121,7 @@ class NFRealtime(ModalityMixin):
                     for m, vals in self.nf_data.items()
                 },
             }
-            p = self.subject_dir / "neurofeedback" / f"{stem}_nf.json"
+            p = self.subject_dir / "beh" / f"{stem}_task-neurofeedback_beh.json"
             with open(p, "w") as fh:
                 json.dump(payload, fh, indent=2)
             saved["nf_data"] = p
@@ -1796,7 +2145,7 @@ class NFRealtime(ModalityMixin):
                     m: _summarize([float(v) for v in vals], delay_include_trace)
                     for m, vals in self.method_delays.items()
                 }
-            p = self.subject_dir / "delays" / f"{stem}_delays.json"
+            p = self.subject_dir / "delays" / f"{stem}_task-neurofeedback_delays.json"
             with open(p, "w") as fh:
                 json.dump(delays_payload, fh, indent=2)
             saved["delays"] = p
@@ -1808,7 +2157,7 @@ class NFRealtime(ModalityMixin):
             if chunks:
                 raw_all = np.concatenate(chunks, axis=1)
                 raw_nf = RawArray(raw_all, self.rec_info, verbose=False)
-                p = self.subject_dir / "raw" / f"{stem}-raw.fif"
+                p = self.subject_dir / "eeg" / f"{stem}_task-neurofeedback_eeg.fif"
                 raw_nf.save(p, overwrite=True, verbose=False)
                 saved["raw"] = p
             else:
@@ -1835,14 +2184,14 @@ class NFRealtime(ModalityMixin):
         payload : dict
             Dict with two keys:
 
-            * ``"meta"`` — session metadata: subject ID, visit, session
+            * ``"meta"`` — session metadata: subject ID, session
               type, modalities, sfreq, winsize, duration, n_windows,
               artifact correction, start/end timestamps.
             * ``"data"`` — ``{modality: [values, …]}`` per-modality lists.
 
         Examples
         --------
-        >>> d = NFRealtime.load_nf_data("subjects/sub01/neurofeedback/sub-sub01_..._nf.json")
+        >>> d = NFRealtime.load_nf_data("subjects/sub-sub01/ses-01/beh/sub-sub01_ses-01_task-neurofeedback_beh.json")
         >>> import numpy as np
         >>> alpha = np.array(d["data"]["sensor_power"])
         >>> print(f"Mean alpha power: {alpha.mean():.3e}")
@@ -1915,6 +2264,8 @@ class NFRealtime(ModalityMixin):
             plt.close(fig_psd)
 
         # ── Sensor layouts & brain labels per modality ────────────────────
+
+        '''
         source_modalities = {"source_power", "source_connectivity", "source_graph"}
 
         for mod in modalities:
@@ -1942,6 +2293,7 @@ class NFRealtime(ModalityMixin):
                     )
                 report.add_figure(fig=fig_brain, title=f"Brain labels — {mod}")
                 plt.close(fig_brain)
+        '''
 
         # ── NF signal time-series ─────────────────────────────────────────
         if include_nf_signal and hasattr(self, "nf_data") and self.nf_data:
@@ -1971,7 +2323,6 @@ class NFRealtime(ModalityMixin):
         summary_html = (
             "<table border='1' cellpadding='4' style='border-collapse:collapse'>"
             f"<tr><th>Subject</th><td>{self.subject_id}</td></tr>"
-            f"<tr><th>Visit</th><td>{self.visit}</td></tr>"
             f"<tr><th>Session</th><td>{self.session}</td></tr>"
             f"<tr><th>Modalities</th><td>{', '.join(modalities)}</td></tr>"
             f"<tr><th>NF windows</th><td>{n_windows}</td></tr>"
@@ -1980,10 +2331,21 @@ class NFRealtime(ModalityMixin):
         )
         report.add_html(html=summary_html, title="Session summary")
 
-        fname = (
-            f"subject_{self.subject_id}_visit_{self.visit}"
-            f"_modality_{'_'.join(modalities)}.html"
-        )
+        fname = f"sub-{self.subject_id}_ses-{self.session}_report.html"
         report_path = self.subject_dir / "reports" / fname
         report.save(report_path, overwrite=overwrite, open_browser=open_browser)
         return report_path
+
+    def __del__(self) -> None:
+        """Stop the mock player and disconnect the stream on garbage collection."""
+        if getattr(self, "_mock_player", None) is not None:
+            try:
+                self._mock_player.stop()
+            except Exception:
+                pass
+        if getattr(self, "stream", None) is not None:
+            try:
+                if getattr(self.stream, "connected", False):
+                    self.stream.disconnect()
+            except Exception:
+                pass
