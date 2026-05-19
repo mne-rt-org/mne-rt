@@ -26,7 +26,7 @@ from scipy import linalg
 class ASRDenoiser:
     """Artifact Subspace Reconstruction (ASR) for streaming EEG.
 
-    ASR :footcite:p:`Mullen2015,deCheveigneArzounian2018` separates *clean*
+    ASR :footcite:p:`mullen2015real,de2018robust` separates *clean*
     from *artifactual* activity by learning the statistics of a resting-state
     baseline and projecting out components that deviate beyond a threshold.
 
