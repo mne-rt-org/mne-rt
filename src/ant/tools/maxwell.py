@@ -28,9 +28,9 @@ class RTMaxwellFilter:
     """Real-time Maxwell filtering (SSS / tSSS) for streaming MEG data.
 
     Pre-computes the Signal Space Separation (SSS) projection matrix
-    :footcite:p:`Taulu2004` **once** from sensor geometry, then applies it as
+    :footcite:p:`taulu2004suppression` **once** from sensor geometry, then applies it as
     a single matrix multiply per incoming chunk — zero added latency, numerically
-    equivalent to offline MNE.  Temporal SSS (tSSS) :footcite:p:`Taulu2006` can
+    equivalent to offline MNE.  Temporal SSS (tSSS) :footcite:p:`taulu2006spatiotemporal` can
     optionally run on a rolling buffer to remove interference that leaks into
     the internal subspace.
 
