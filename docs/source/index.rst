@@ -102,7 +102,7 @@ Key capabilities
 
          <div style="text-align:center; margin: 20px 0;">
              <video width="100%" style="max-width: 850px; border-radius: 15px; display: block; margin: 0 auto;" autoplay muted loop>
-                 <source src="_static/NFSignal.mov" type="video/quicktime">
+                 <source src="_static/NFSignal.mp4" type="video/mp4">
              </video>
          </div>
 
@@ -112,7 +112,7 @@ Key capabilities
 
          <div style="text-align:center; margin: 20px 0;">
              <video width="100%" style="max-width: 850px; border-radius: 15px; display: block; margin: 0 auto;" autoplay muted loop>
-                 <source src="_static/TopoPlot.mov" type="video/quicktime">
+                 <source src="_static/TopoPlot.mp4" type="video/mp4">
              </video>
          </div>
 
@@ -122,7 +122,7 @@ Key capabilities
 
          <div style="text-align:center; margin: 20px 0;">
              <video width="100%" style="max-width: 850px; border-radius: 15px; display: block; margin: 0 auto;" autoplay muted loop>
-                 <source src="_static/BrainPlot.mov" type="video/quicktime">
+                 <source src="_static/BrainPlot.mp4" type="video/mp4">
              </video>
          </div>
 
