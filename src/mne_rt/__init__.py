@@ -1,20 +1,32 @@
-"""Advanced Neurofeedback Toolbox (ANT).
+"""MNE-RT — real-time M/EEG signal processing.
 
-ANT is an open-source Python package for **real-time processing and
-visualisation of M/EEG neurofeedback experiments**.
+MNE-RT is an open-source Python package for **real-time processing and
+visualisation of M/EEG data**.
 
 Main entry points
 -----------------
-:class:`~ant.NFRealtime`
-    Complete NF session controller — LSL streaming, artifact correction,
-    feature extraction, and real-time visualisation.
-:class:`~ant.viz.NFSignalPlot`
-    Scrolling multi-channel NF signal monitor (PyQt6 + pyqtgraph).
-:class:`~ant.viz.BrainPlot`
+:class:`~mne_rt.RTStream`
+    Real-time M/EEG session controller — LSL streaming, artifact correction,
+    feature extraction, and visualisation.
+:class:`~mne_rt.RTEpochs`
+    Event-triggered epoch accumulator with per-trial feature statistics.
+:class:`~mne_rt.viz.SignalPlot`
+    Scrolling multi-channel real-time signal monitor (PyQt6 + pyqtgraph).
+:class:`~mne_rt.viz.ERPPlot`
+    Live-updating evoked-potential display with scalp-layout channel grid,
+    ±SEM shading, re-referencing, and unit-aware amplitude display.
+:class:`~mne_rt.viz.ButterflyPlot`
+    All channels overlaid per condition, coloured by scalp region.
+:class:`~mne_rt.viz.TFRPlot`
+    Real-time Morlet wavelet time-frequency representation per channel.
+:class:`~mne_rt.viz.CompareEvoked`
+    Large per-channel ERP comparison with ±SEM ribbons, peak markers, and
+    a clickable scalp-topomap in the sidebar for interactive channel selection.
+:class:`~mne_rt.viz.BrainPlot`
     Interactive 3D cortical surface with activity overlay (PyVista).
-:class:`~ant.tools.ORICA`
+:class:`~mne_rt.tools.ORICA`
     Online Recursive ICA for real-time artifact removal.
-:class:`~ant.tools.GEDAIDenoiser`
+:class:`~mne_rt.tools.GEDAIDenoiser`
     GED-based spatial filter for artifact identification and removal.
 
 Verbosity
@@ -22,28 +34,32 @@ Verbosity
 All public methods accept a ``verbose`` keyword argument following
 MNE's convention.  You can also set the package-wide level::
 
-    import ant
-    ant.set_log_level("INFO")   # or True / False / "DEBUG" / "WARNING"
+    import mne_rt
+    mne_rt.set_log_level("INFO")   # or True / False / "DEBUG" / "WARNING"
 """
 from importlib.metadata import PackageNotFoundError, version
 
 try:
-    __version__ = version("ANT")
+    __version__ = version("mne-rt")
 except PackageNotFoundError:
     __version__ = "0.0.0"
 
-from ant._logging import logger, set_log_level  # noqa: F401 — public API
-from ant.realtime_nf import NFRealtime
-from ant.viz import BrainPlot, NFSignalPlot, TopoPlot
-from ant.tools import ORICA, GEDAIDenoiser
-from ant.tools.lms import AdaptiveLMSFilter
-from ant.tools.asr import ASRDenoiser
-from ant.tools.maxwell import RTMaxwellFilter
-from ant.tools.bad_channel_detector import BadChannelDetector
-from ant.osc import OSCSender
-from ant.protocols import ThresholdProtocol, ZScoreProtocol, PercentileProtocol, LinearTrendProtocol
-from ant.lsl_output import LSLSender
-from ant.combiners import (  # noqa: F401 — public API
+from mne_rt._logging import logger, set_log_level  # noqa: F401 — public API
+from mne_rt.rt_stream import RTStream
+from mne_rt.rt_epochs import RTEpochs
+from mne_rt.viz import (
+    BrainPlot, SignalPlot, TopoPlot, ERPPlot,
+    ButterflyPlot, TFRPlot, CompareEvoked,
+)
+from mne_rt.tools import ORICA, GEDAIDenoiser
+from mne_rt.tools.lms import AdaptiveLMSFilter
+from mne_rt.tools.asr import ASRDenoiser
+from mne_rt.tools.maxwell import RTMaxwellFilter
+from mne_rt.tools.bad_channel_detector import BadChannelDetector
+from mne_rt.osc import OSCSender
+from mne_rt.protocols import ThresholdProtocol, ZScoreProtocol, PercentileProtocol, LinearTrendProtocol
+from mne_rt.lsl_output import LSLSender
+from mne_rt.combiners import (  # noqa: F401 — public API
     FeatureCombiner,
     WeightedSumCombiner,
     GeometricMeanCombiner,
@@ -52,10 +68,15 @@ from ant.combiners import (  # noqa: F401 — public API
 )
 
 __all__ = [
-    "NFRealtime",
+    "RTStream",
+    "RTEpochs",
     "BrainPlot",
-    "NFSignalPlot",
+    "SignalPlot",
     "TopoPlot",
+    "ERPPlot",
+    "ButterflyPlot",
+    "TFRPlot",
+    "CompareEvoked",
     "ORICA",
     "GEDAIDenoiser",
     "AdaptiveLMSFilter",
