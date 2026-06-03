@@ -1,11 +1,11 @@
-"""Tests for ant.combiners — all four concrete FeatureCombiner subclasses."""
+"""Tests for mne_rt.combiners — all four concrete FeatureCombiner subclasses."""
 from __future__ import annotations
 
 import math
 
 import pytest
 
-from ant.combiners import (
+from mne_rt.combiners import (
     FeatureCombiner,
     GeometricMeanCombiner,
     LearnedCombiner,

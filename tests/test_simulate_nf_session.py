@@ -3,7 +3,7 @@
 import numpy as np
 import pytest
 
-from ant.tools.simulation import simulate_nf_session
+from mne_rt.tools.simulation import simulate_nf_session
 
 
 # ------------------------------------------------------------------

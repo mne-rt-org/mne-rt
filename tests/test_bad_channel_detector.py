@@ -25,7 +25,7 @@ def fake_info():
 
 @pytest.fixture()
 def detector(fake_info):
-    from ant.tools import BadChannelDetector
+    from mne_rt.tools import BadChannelDetector
     return BadChannelDetector(fake_info, method=["flat", "variance", "hf_noise"])
 
 
@@ -40,31 +40,31 @@ def clean_data():
 # ------------------------------------------------------------------
 
 def test_invalid_method(fake_info):
-    from ant.tools import BadChannelDetector
+    from mne_rt.tools import BadChannelDetector
     with pytest.raises(ValueError):
         BadChannelDetector(fake_info, method="invalid_criterion")
 
 
 def test_invalid_flat_threshold(fake_info):
-    from ant.tools import BadChannelDetector
+    from mne_rt.tools import BadChannelDetector
     with pytest.raises(ValueError):
         BadChannelDetector(fake_info, flat_threshold=-1e-8)
 
 
 def test_invalid_min_bad_frac(fake_info):
-    from ant.tools import BadChannelDetector
+    from mne_rt.tools import BadChannelDetector
     with pytest.raises(ValueError):
         BadChannelDetector(fake_info, min_bad_frac=0.0)
 
 
 def test_method_all(fake_info):
-    from ant.tools import BadChannelDetector
+    from mne_rt.tools import BadChannelDetector
     det = BadChannelDetector(fake_info, method="all")
     assert len(det._methods) >= 2  # at least flat + variance + hf_noise
 
 
 def test_method_list(fake_info):
-    from ant.tools import BadChannelDetector
+    from mne_rt.tools import BadChannelDetector
     det = BadChannelDetector(fake_info, method=["flat", "variance"])
     assert "flat" in det._methods
     assert "variance" in det._methods
@@ -86,7 +86,7 @@ def test_initial_state(detector):
 # ------------------------------------------------------------------
 
 def test_flat_channel_detected(fake_info, clean_data):
-    from ant.tools import BadChannelDetector
+    from mne_rt.tools import BadChannelDetector
     det = BadChannelDetector(
         fake_info,
         method=["flat"],
@@ -122,7 +122,7 @@ def test_good_channels_not_flagged_as_flat(detector, clean_data):
 # ------------------------------------------------------------------
 
 def test_noisy_channel_detected(fake_info, clean_data):
-    from ant.tools import BadChannelDetector
+    from mne_rt.tools import BadChannelDetector
     det = BadChannelDetector(
         fake_info,
         method=["variance"],
@@ -146,7 +146,7 @@ def test_noisy_channel_detected(fake_info, clean_data):
 # ------------------------------------------------------------------
 
 def test_hf_noise_channel_detected(fake_info):
-    from ant.tools import BadChannelDetector
+    from mne_rt.tools import BadChannelDetector
     det = BadChannelDetector(
         fake_info,
         method=["hf_noise"],
@@ -220,7 +220,7 @@ def test_get_scores_returns_dict(detector, clean_data):
 # ------------------------------------------------------------------
 
 def test_single_bad_window_does_not_flag_with_high_threshold(fake_info, clean_data):
-    from ant.tools import BadChannelDetector
+    from mne_rt.tools import BadChannelDetector
     det = BadChannelDetector(
         fake_info,
         method=["flat"],
@@ -255,7 +255,7 @@ def test_reset_clears_state(detector, clean_data):
 
 
 def test_reset_preserves_params(fake_info):
-    from ant.tools import BadChannelDetector
+    from mne_rt.tools import BadChannelDetector
     det = BadChannelDetector(fake_info, method=["flat"], flat_threshold=5e-8,
                              history_windows=20, min_bad_frac=0.3)
     det.reset()

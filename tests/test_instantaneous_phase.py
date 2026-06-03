@@ -5,7 +5,7 @@ import math
 import numpy as np
 import pytest
 
-from ant.tools.tools import compute_instantaneous_phase
+from mne_rt.tools.tools import compute_instantaneous_phase
 
 
 SFREQ = 512.0

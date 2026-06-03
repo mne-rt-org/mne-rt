@@ -1,7 +1,7 @@
-"""Tests for the ANT command-line interface (parser only, no I/O)."""
+"""Tests for the mne-rt command-line interface (parser only, no I/O)."""
 
 import pytest
-from ant.cli import _build_parser
+from mne_rt.cli import _build_parser
 
 
 @pytest.fixture()

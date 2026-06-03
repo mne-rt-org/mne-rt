@@ -3,7 +3,7 @@
 import numpy as np
 import pytest
 
-from ant.protocols import ZScoreProtocol
+from mne_rt.protocols import ZScoreProtocol
 
 
 # ------------------------------------------------------------------

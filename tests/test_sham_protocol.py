@@ -3,8 +3,8 @@
 import numpy as np
 import pytest
 
-from ant.protocols import ZScoreProtocol, ThresholdProtocol
-from ant.protocols.sham import ShamProtocol
+from mne_rt.protocols import ZScoreProtocol, ThresholdProtocol
+from mne_rt.protocols.sham import ShamProtocol
 
 
 # ------------------------------------------------------------------

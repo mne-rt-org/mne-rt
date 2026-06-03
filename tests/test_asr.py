@@ -11,7 +11,7 @@ N_T = int(SFREQ * 4)
 
 @pytest.fixture()
 def asr():
-    from ant.tools import ASRDenoiser
+    from mne_rt.tools import ASRDenoiser
     a = ASRDenoiser(cutoff=3.0)
     data = RNG.standard_normal((N_CH, N_T)) * 1e-6
     a.fit(data, SFREQ)
@@ -23,19 +23,19 @@ def asr():
 # ------------------------------------------------------------------
 
 def test_invalid_cutoff():
-    from ant.tools import ASRDenoiser
+    from mne_rt.tools import ASRDenoiser
     with pytest.raises(ValueError):
         ASRDenoiser(cutoff=-1)
 
 
 def test_invalid_dropout_fraction():
-    from ant.tools import ASRDenoiser
+    from mne_rt.tools import ASRDenoiser
     with pytest.raises(ValueError):
         ASRDenoiser(max_dropout_fraction=1.1)
 
 
 def test_invalid_window_overlap():
-    from ant.tools import ASRDenoiser
+    from mne_rt.tools import ASRDenoiser
     with pytest.raises(ValueError):
         ASRDenoiser(window_overlap=1.0)
 
@@ -45,7 +45,7 @@ def test_invalid_window_overlap():
 # ------------------------------------------------------------------
 
 def test_fit_returns_self():
-    from ant.tools import ASRDenoiser
+    from mne_rt.tools import ASRDenoiser
     a = ASRDenoiser(cutoff=3.0)
     data = RNG.standard_normal((N_CH, N_T)) * 1e-6
     result = a.fit(data, SFREQ)
@@ -65,14 +65,14 @@ def test_eigenvectors_shape(asr):
 # ------------------------------------------------------------------
 
 def test_thresholds_before_fit():
-    from ant.tools import ASRDenoiser
+    from mne_rt.tools import ASRDenoiser
     a = ASRDenoiser()
     with pytest.raises(RuntimeError):
         _ = a.thresholds
 
 
 def test_transform_before_fit():
-    from ant.tools import ASRDenoiser
+    from mne_rt.tools import ASRDenoiser
     a = ASRDenoiser()
     data = RNG.standard_normal((N_CH, N_T)) * 1e-6
     with pytest.raises(RuntimeError):

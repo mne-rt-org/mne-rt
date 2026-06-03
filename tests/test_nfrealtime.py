@@ -1,4 +1,4 @@
-"""Tests for NFRealtime instantiation and validation (no LSL required)."""
+"""Tests for RTStream instantiation and validation (no LSL required)."""
 
 import pytest
 
@@ -9,8 +9,8 @@ def subjects_dir(tmp_path):
 
 
 def test_valid_instantiation(subjects_dir):
-    from ant import NFRealtime
-    nf = NFRealtime(
+    from mne_rt import RTStream as RTStream
+    nf = RTStream(
         subject_id="sub01",
         session="01",
         subjects_dir=subjects_dir,
@@ -22,9 +22,9 @@ def test_valid_instantiation(subjects_dir):
 
 
 def test_invalid_subject_id(subjects_dir):
-    from ant import NFRealtime
+    from mne_rt import RTStream as RTStream
     with pytest.raises(ValueError, match="subject_id"):
-        NFRealtime(
+        RTStream(
             subject_id="",
             session="01",
             subjects_dir=subjects_dir, montage="easycap-M1",
@@ -32,9 +32,9 @@ def test_invalid_subject_id(subjects_dir):
 
 
 def test_invalid_session(subjects_dir):
-    from ant import NFRealtime
+    from mne_rt import RTStream as RTStream
     with pytest.raises(ValueError, match="session"):
-        NFRealtime(
+        RTStream(
             subject_id="sub01",
             session="",
             subjects_dir=subjects_dir, montage="easycap-M1",
@@ -42,9 +42,9 @@ def test_invalid_session(subjects_dir):
 
 
 def test_invalid_data_type(subjects_dir):
-    from ant import NFRealtime
+    from mne_rt import RTStream as RTStream
     with pytest.raises(ValueError, match="data_type"):
-        NFRealtime(
+        RTStream(
             subject_id="sub01",
             session="01",
             subjects_dir=subjects_dir, montage="easycap-M1",
@@ -53,9 +53,9 @@ def test_invalid_data_type(subjects_dir):
 
 
 def test_invalid_artifact_correction(subjects_dir):
-    from ant import NFRealtime
+    from mne_rt import RTStream as RTStream
     with pytest.raises(ValueError, match="artifact_correction"):
-        NFRealtime(
+        RTStream(
             subject_id="sub01",
             session="01",
             subjects_dir=subjects_dir, montage="easycap-M1",
@@ -64,9 +64,9 @@ def test_invalid_artifact_correction(subjects_dir):
 
 
 def test_subject_dir_layout(tmp_path):
-    from ant import NFRealtime
+    from mne_rt import RTStream as RTStream
     from pathlib import Path
-    nf = NFRealtime(
+    nf = RTStream(
         subject_id="newsub",
         session="pre",
         subjects_dir=str(tmp_path), montage="easycap-M1",
@@ -76,8 +76,8 @@ def test_subject_dir_layout(tmp_path):
 
 
 def test_modality_params_setter(subjects_dir):
-    from ant import NFRealtime
-    nf = NFRealtime(
+    from mne_rt import RTStream as RTStream
+    nf = RTStream(
         subject_id="sub01", session="01",
         subjects_dir=subjects_dir, montage="easycap-M1",
     )
@@ -86,8 +86,8 @@ def test_modality_params_setter(subjects_dir):
 
 
 def test_modality_params_invalid(subjects_dir):
-    from ant import NFRealtime
-    nf = NFRealtime(
+    from mne_rt import RTStream as RTStream
+    nf = RTStream(
         subject_id="sub01", session="01",
         subjects_dir=subjects_dir, montage="easycap-M1",
     )

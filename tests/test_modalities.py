@@ -13,12 +13,12 @@ DATA = RNG.standard_normal((N_CHANNELS, N_TIMES)).astype(np.float64)
 
 @pytest.fixture()
 def nf_obj(tmp_path):
-    """Minimal NFRealtime-like object with only the mixin methods wired up."""
+    """Minimal RTStream-like object with only the mixin methods wired up."""
     from pathlib import Path
     import mne
-    from ant.modalities import ModalityMixin
+    from mne_rt.modalities import ModalityMixin
 
-    config_file = Path(__file__).parent.parent / "src" / "ant" / "config_methods.yml"
+    config_file = Path(__file__).parent.parent / "src" / "mne_rt" / "config_methods.yml"
 
     # Minimal mne.Info-like object with the channel names
     ch_names = [f"EEG{i:03d}" for i in range(N_CHANNELS)]
@@ -44,7 +44,7 @@ def nf_obj(tmp_path):
 
 
 def _call_modality(nf_obj, mod_name, data):
-    from ant.tools import get_params
+    from mne_rt.tools import get_params
     nf_obj.params = get_params(nf_obj.config_file, mod_name, {})
     prep_fn = getattr(nf_obj, f"_{mod_name}_prep", None)
     precomp = prep_fn() if callable(prep_fn) else {}

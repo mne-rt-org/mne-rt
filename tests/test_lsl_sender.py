@@ -22,7 +22,7 @@ def _make_mock_lsl():
 
 def _make_sender(**kwargs):
     """Instantiate LSLSender with a mocked LSL backend."""
-    from ant.lsl_output import LSLSender
+    from mne_rt.lsl_output import LSLSender
     MockInfo, MockOutlet = _make_mock_lsl()
     with patch.object(LSLSender, "_import_lsl", staticmethod(lambda: (MockInfo, MockOutlet))):
         sender = LSLSender(**kwargs)
@@ -51,7 +51,7 @@ def test_custom_params():
 # ------------------------------------------------------------------
 
 def test_push_single_channel():
-    from ant.lsl_output import LSLSender
+    from mne_rt.lsl_output import LSLSender
     MockInfo, MockOutlet = _make_mock_lsl()
     outlet_instance = MagicMock()
     MockOutlet.return_value = outlet_instance
@@ -72,7 +72,7 @@ def test_push_sets_channel_labels():
 
 
 def test_push_pads_with_zeros():
-    from ant.lsl_output import LSLSender
+    from mne_rt.lsl_output import LSLSender
     MockInfo, MockOutlet = _make_mock_lsl()
     outlet_instance = MagicMock()
     MockOutlet.return_value = outlet_instance
@@ -98,7 +98,7 @@ def test_push_length_mismatch_raises():
 # ------------------------------------------------------------------
 
 def test_push_value():
-    from ant.lsl_output import LSLSender
+    from mne_rt.lsl_output import LSLSender
     MockInfo, MockOutlet = _make_mock_lsl()
     outlet_instance = MagicMock()
     MockOutlet.return_value = outlet_instance
@@ -126,7 +126,7 @@ def test_n_channels_property():
 # ------------------------------------------------------------------
 
 def test_close_sets_outlet_none():
-    from ant.lsl_output import LSLSender
+    from mne_rt.lsl_output import LSLSender
     MockInfo, MockOutlet = _make_mock_lsl()
     outlet_instance = MagicMock()
     outlet_instance.close = MagicMock()
@@ -150,7 +150,7 @@ def test_close_is_idempotent():
 # ------------------------------------------------------------------
 
 def test_context_manager():
-    from ant.lsl_output import LSLSender
+    from mne_rt.lsl_output import LSLSender
     MockInfo, MockOutlet = _make_mock_lsl()
     outlet_instance = MagicMock()
     outlet_instance.close = MagicMock()

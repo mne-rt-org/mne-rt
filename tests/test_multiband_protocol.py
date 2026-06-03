@@ -5,8 +5,8 @@ import math
 import numpy as np
 import pytest
 
-from ant.protocols import ThresholdProtocol, ZScoreProtocol
-from ant.protocols.multiband import MultiBandProtocol
+from mne_rt.protocols import ThresholdProtocol, ZScoreProtocol
+from mne_rt.protocols.multiband import MultiBandProtocol
 
 
 def _up_proto(threshold=0.5):

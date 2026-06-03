@@ -8,7 +8,7 @@ import numpy as np
 import pytest
 import mne
 
-from ant.tools.bids_io import save_as_bids
+from mne_rt.tools.bids_io import save_as_bids
 
 
 # ------------------------------------------------------------------
@@ -108,7 +108,7 @@ def test_dataset_description_content(tmp_path, minimal_raw, nf_data):
     save_as_bids(minimal_raw, nf_data, tmp_path, subject="07")
     desc = json.loads((tmp_path / "dataset_description.json").read_text())
     assert desc["BIDSVersion"] == "1.9.0"
-    assert any(g["Name"] == "ANT" for g in desc["GeneratedBy"])
+    assert any(g["Name"] == "MNE-RT" for g in desc["GeneratedBy"])
 
 
 # ------------------------------------------------------------------

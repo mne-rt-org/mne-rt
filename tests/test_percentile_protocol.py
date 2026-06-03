@@ -3,7 +3,7 @@
 import numpy as np
 import pytest
 
-from ant.protocols import PercentileProtocol
+from mne_rt.protocols import PercentileProtocol
 
 
 # ------------------------------------------------------------------

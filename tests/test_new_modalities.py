@@ -26,7 +26,7 @@ def make_eeg(n_ch=N_CHANNELS, n_samp=N_SAMPLES, sfreq=SFREQ, freq=10.0):
 def make_dummy_modality_mixin(sfreq=SFREQ, data=None, ch_names=None, data_type="eeg"):
     """Build a minimal ModalityMixin-like object for testing prep/compute."""
     import mne
-    from ant.modalities import ModalityMixin
+    from mne_rt.modalities import ModalityMixin
 
     class _Dummy(ModalityMixin):
         pass
@@ -230,16 +230,16 @@ class TestConnectivityRatioModality:
 
 class TestNFRealtimeNewFeatures:
     def test_replay_method_exists(self):
-        from ant import NFRealtime
-        assert hasattr(NFRealtime, "replay")
+        from mne_rt import RTStream
+        assert hasattr(RTStream, "replay")
 
     def test_run_blocks_method_exists(self):
-        from ant import NFRealtime
-        assert hasattr(NFRealtime, "run_blocks")
+        from mne_rt import RTStream
+        assert hasattr(RTStream, "run_blocks")
 
     def test_run_blocks_empty_raises(self, tmp_path):
-        from ant import NFRealtime
-        nf = NFRealtime(
+        from mne_rt import RTStream
+        nf = RTStream(
             subject_id="sub01", session="01",
             subjects_dir=str(tmp_path), montage="easycap-M1",
         )

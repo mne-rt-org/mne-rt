@@ -3,7 +3,7 @@
 import numpy as np
 import pytest
 
-from ant.protocols.staircase import UpDownStaircaseProtocol
+from mne_rt.protocols.staircase import UpDownStaircaseProtocol
 
 
 # ------------------------------------------------------------------

@@ -31,35 +31,35 @@ def meg_info():
 # ------------------------------------------------------------------
 
 def test_invalid_int_order():
-    from ant.tools import RTMaxwellFilter
+    from mne_rt.tools import RTMaxwellFilter
     with pytest.raises(ValueError):
         RTMaxwellFilter(int_order=0)
 
 
 def test_invalid_ext_order():
-    from ant.tools import RTMaxwellFilter
+    from mne_rt.tools import RTMaxwellFilter
     with pytest.raises(ValueError):
         RTMaxwellFilter(ext_order=-1)
 
 
 def test_invalid_st_correlation():
-    from ant.tools import RTMaxwellFilter
+    from mne_rt.tools import RTMaxwellFilter
     with pytest.raises(ValueError):
         RTMaxwellFilter(st_correlation=1.5)
 
 
 def test_mode_sss():
-    from ant.tools import RTMaxwellFilter
+    from mne_rt.tools import RTMaxwellFilter
     assert RTMaxwellFilter().mode == "sss"
 
 
 def test_mode_tsss():
-    from ant.tools import RTMaxwellFilter
+    from mne_rt.tools import RTMaxwellFilter
     assert RTMaxwellFilter(st_duration=10.0).mode == "tsss"
 
 
 def test_transform_before_fit():
-    from ant.tools import RTMaxwellFilter
+    from mne_rt.tools import RTMaxwellFilter
     filt = RTMaxwellFilter()
     data = RNG.standard_normal((306, 250))
     with pytest.raises(RuntimeError):
@@ -67,14 +67,14 @@ def test_transform_before_fit():
 
 
 def test_sss_projector_before_fit():
-    from ant.tools import RTMaxwellFilter
+    from mne_rt.tools import RTMaxwellFilter
     filt = RTMaxwellFilter()
     with pytest.raises(RuntimeError):
         _ = filt.sss_projector
 
 
 def test_repr_unfitted():
-    from ant.tools import RTMaxwellFilter
+    from mne_rt.tools import RTMaxwellFilter
     filt = RTMaxwellFilter()
     r = repr(filt)
     assert "RTMaxwellFilter" in r
@@ -82,7 +82,7 @@ def test_repr_unfitted():
 
 
 def test_repr_fitted_state(meg_info):
-    from ant.tools import RTMaxwellFilter
+    from mne_rt.tools import RTMaxwellFilter
     filt = RTMaxwellFilter()
     filt.fit(meg_info)
     r = repr(filt)
@@ -90,7 +90,7 @@ def test_repr_fitted_state(meg_info):
 
 
 def test_default_params():
-    from ant.tools import RTMaxwellFilter
+    from mne_rt.tools import RTMaxwellFilter
     filt = RTMaxwellFilter()
     assert filt.int_order == 8
     assert filt.ext_order == 3
@@ -109,14 +109,14 @@ def test_default_params():
 # ------------------------------------------------------------------
 
 def test_fit_sss_sets_fitted(meg_info):
-    from ant.tools import RTMaxwellFilter
+    from mne_rt.tools import RTMaxwellFilter
     filt = RTMaxwellFilter()
     filt.fit(meg_info)
     assert filt._fitted is True
 
 
 def test_sss_projector_shape(meg_info):
-    from ant.tools import RTMaxwellFilter
+    from mne_rt.tools import RTMaxwellFilter
     filt = RTMaxwellFilter()
     filt.fit(meg_info)
     P = filt.sss_projector
@@ -125,7 +125,7 @@ def test_sss_projector_shape(meg_info):
 
 
 def test_transform_shape(meg_info):
-    from ant.tools import RTMaxwellFilter
+    from mne_rt.tools import RTMaxwellFilter
     import mne
 
     filt = RTMaxwellFilter()

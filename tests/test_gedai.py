@@ -11,7 +11,7 @@ N_T = int(SFREQ * 4)   # 4-second segment
 
 @pytest.fixture()
 def gedai():
-    from ant.tools import GEDAIDenoiser
+    from mne_rt.tools import GEDAIDenoiser
     return GEDAIDenoiser(n_channels=N_CH, shrinkage=0.05)
 
 

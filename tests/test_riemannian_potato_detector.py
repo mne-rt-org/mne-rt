@@ -28,13 +28,13 @@ def _artifact_windows(n_win=5, n_ch=N_CH, n_samp=N_SAMP, scale=100.0):
 
 @pytest.fixture
 def detector():
-    from ant.tools import RiemannianPotatoDetector
+    from mne_rt.tools import RiemannianPotatoDetector
     return RiemannianPotatoDetector(threshold=3.0)
 
 
 @pytest.fixture
 def fitted_detector():
-    from ant.tools import RiemannianPotatoDetector
+    from mne_rt.tools import RiemannianPotatoDetector
     det = RiemannianPotatoDetector(threshold=3.0)
     det.fit(_clean_windows())
     return det
@@ -45,7 +45,7 @@ def fitted_detector():
 # ---------------------------------------------------------------------------
 
 def test_default_params():
-    from ant.tools import RiemannianPotatoDetector
+    from mne_rt.tools import RiemannianPotatoDetector
     det = RiemannianPotatoDetector()
     assert det.threshold == 3.0
     assert det.estimator == "oas"
@@ -53,7 +53,7 @@ def test_default_params():
 
 
 def test_custom_params():
-    from ant.tools import RiemannianPotatoDetector
+    from mne_rt.tools import RiemannianPotatoDetector
     det = RiemannianPotatoDetector(threshold=2.5, estimator="scm", metric="logeuclid")
     assert det.threshold == 2.5
     assert det.estimator == "scm"
@@ -61,7 +61,7 @@ def test_custom_params():
 
 
 def test_invalid_threshold():
-    from ant.tools import RiemannianPotatoDetector
+    from mne_rt.tools import RiemannianPotatoDetector
     with pytest.raises(ValueError, match="threshold must be > 0"):
         RiemannianPotatoDetector(threshold=0.0)
     with pytest.raises(ValueError, match="threshold must be > 0"):
@@ -71,7 +71,7 @@ def test_invalid_threshold():
 def test_importerror_when_pyriemann_missing():
     """Constructor must raise ImportError if pyriemann is not available."""
     with patch.dict(sys.modules, {"pyriemann": None}):
-        from ant.tools import riemannian_potato as mod
+        from mne_rt.tools import riemannian_potato as mod
         with pytest.raises(ImportError, match="pyriemann"):
             mod.RiemannianPotatoDetector._check_pyriemann()
 

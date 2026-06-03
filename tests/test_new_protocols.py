@@ -9,7 +9,7 @@ from pathlib import Path
 import numpy as np
 import pytest
 
-from ant.protocols import (
+from mne_rt.protocols import (
     RLProtocol, OperantProtocol, TransferProtocol,
     ZScoreProtocol, ThresholdProtocol,
 )
@@ -199,7 +199,7 @@ class TestOperantProtocol:
 
 @pytest.fixture()
 def beh_json(tmp_path):
-    """Write a minimal ANT beh JSON and return its path."""
+    """Write a minimal MNE-RT beh JSON and return its path."""
     data = {
         "meta": {"modalities": ["sensor_power"]},
         "data": {"sensor_power": [0.1, 0.2, 0.3, 0.4, 0.5]},
