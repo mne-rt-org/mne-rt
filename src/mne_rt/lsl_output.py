@@ -1,8 +1,8 @@
-"""LSL stream outlet for broadcasting NF feature values.
+"""LSL stream outlet for broadcasting real-time feature values.
 
 :class:`LSLSender` creates a Lab Streaming Layer (LSL) outlet that pushes
-computed NF values as a float-channel stream.  Any LSL-aware application
-(Psychtoolbox, PsychoPy, OpenViBE, BCI2000, another ANT instance, …) can
+computed feature values as a float-channel stream.  Any LSL-aware application
+(Psychtoolbox, PsychoPy, OpenViBE, BCI2000, another MNE-RT instance, …) can
 subscribe to this stream and use the values for stimulus control or
 further analysis.
 
@@ -26,7 +26,7 @@ Send alpha power into an LSL stream named ``"ANT_NF"``::
     sender.push(["sensor_power"], [0.42])
     sender.close()
 
-Pass to :meth:`~ant.NFRealtime.record_main` alongside (or instead of) OSC::
+Pass to :meth:`~mne_rt.RTStream.record_main` alongside (or instead of) OSC::
 
     nf.record_main(duration=300, modality="sensor_power",
                    lsl_sender=LSLSender())
