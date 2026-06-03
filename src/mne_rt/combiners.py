@@ -1,9 +1,9 @@
-"""Feature combiners for multi-modality neurofeedback.
+"""Feature combiners for multi-modality real-time M/EEG processing.
 
-When ANT extracts several NF features in parallel (e.g. ``sensor_power``,
+When MNE-RT extracts several feature values in parallel (e.g. ``sensor_power``,
 ``laterality``, ``connectivity_ratio``), each produces its own numeric value
 per window.  A :class:`FeatureCombiner` reduces those N values to a single
-*mixed* NF score that can be passed to a protocol or displayed as one trace.
+*mixed* output score that can be passed to a protocol or displayed as one trace.
 
 Pipeline position::
 
@@ -11,7 +11,7 @@ Pipeline position::
 
 Quick examples::
 
-    from ant.combiners import WeightedSumCombiner, ZScoredNormCombiner
+    from mne_rt.combiners import WeightedSumCombiner, ZScoredNormCombiner
 
     # Weighted blend: 60 % alpha power, 40 % laterality
     combiner = WeightedSumCombiner(
@@ -70,7 +70,7 @@ class FeatureCombiner:
     -----
     The combiner receives a snapshot dict ``{modality_name: float}`` once per
     analysis window, immediately after the EMA smoothing step inside
-    :meth:`~ant.NFRealtime.record_main`.  The returned scalar replaces the
+    :meth:`~mne_rt.RTStream.record_main`.  The returned scalar replaces the
     per-modality values for protocol evaluation and display when a combiner is
     active.
     """
@@ -134,7 +134,7 @@ class WeightedSumCombiner(FeatureCombiner):
     --------
     Alpha-power minus frontal asymmetry::
 
-        from ant.combiners import WeightedSumCombiner
+        from mne_rt.combiners import WeightedSumCombiner
 
         combiner = WeightedSumCombiner(
             weights={"sensor_power": 0.6, "laterality": 0.4}
@@ -202,7 +202,7 @@ class GeometricMeanCombiner(FeatureCombiner):
     --------
     Equal-weight geometric mean of three power features::
 
-        from ant.combiners import GeometricMeanCombiner
+        from mne_rt.combiners import GeometricMeanCombiner
 
         combiner = GeometricMeanCombiner(
             features=["sensor_power", "band_ratio", "individual_peak_power"]
@@ -291,7 +291,7 @@ class ZScoredNormCombiner(FeatureCombiner):
     --------
     ::
 
-        from ant.combiners import ZScoredNormCombiner
+        from mne_rt.combiners import ZScoredNormCombiner
 
         combiner = ZScoredNormCombiner(
             features=["sensor_power", "laterality", "connectivity_ratio"],
@@ -392,7 +392,7 @@ class LearnedCombiner(FeatureCombiner):
     Offline fit, then real-time use::
 
         from sklearn.linear_model import Ridge
-        from ant.combiners import LearnedCombiner
+        from mne_rt.combiners import LearnedCombiner
 
         # --- offline (calibration session) ---
         X_cal = ...  # shape (n_windows, n_features)
