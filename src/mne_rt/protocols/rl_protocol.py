@@ -1,6 +1,6 @@
-"""Reinforcement-learning adaptive threshold protocol for the ANT package.
+"""Reinforcement-learning adaptive threshold protocol for MNE-RT.
 
-This module provides :class:`RLProtocol`, an adaptive neurofeedback protocol
+This module provides :class:`RLProtocol`, an adaptive feedback protocol
 that maintains a target hit rate by adjusting the threshold using a proper RL
 update rule with epsilon-greedy exploration.
 

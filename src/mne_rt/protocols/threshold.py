@@ -1,4 +1,4 @@
-"""Threshold-based neurofeedback reward protocol for the ANT package.
+"""Threshold-based feedback reward protocol for MNE-RT.
 
 This module provides :class:`ThresholdProtocol`, a lightweight stateful object
 that converts a continuous NF feature value into a binary reward signal with an

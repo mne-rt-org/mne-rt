@@ -1,6 +1,6 @@
-"""Operant conditioning reinforcement-schedule wrapper for the ANT package.
+"""Operant conditioning reinforcement-schedule wrapper for MNE-RT.
 
-This module provides :class:`OperantProtocol`, which wraps any inner NF
+This module provides :class:`OperantProtocol`, which wraps any inner
 protocol and gates its reward output through a classical operant conditioning
 schedule (fixed ratio, variable ratio, fixed interval, or variable interval).
 
@@ -37,8 +37,8 @@ class OperantProtocol:
     adaptive threshold, etc.) advances correctly; the schedule only decides
     whether to pass the reward through to the caller.
 
-    Supported schedules
-    -------------------
+    .. rubric:: Supported schedules
+
     ``"FR"`` (Fixed Ratio)
         Deliver reward on every ``ratio``-th hit (hit = inner protocol
         returned ``crossed=True``).
@@ -91,8 +91,8 @@ class OperantProtocol:
     --------
     Fixed-ratio schedule (reward every 5th hit)::
 
-        from ant.protocols import ZScoreProtocol
-        from ant.protocols.operant import OperantProtocol
+        from mne_rt.protocols import ZScoreProtocol
+        from mne_rt.protocols.operant import OperantProtocol
 
         inner = ZScoreProtocol(direction="up")
         proto = OperantProtocol(inner, schedule="FR", ratio=5)

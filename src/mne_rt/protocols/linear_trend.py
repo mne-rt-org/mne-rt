@@ -1,4 +1,4 @@
-"""Linear-trend neurofeedback protocol for the ANT package.
+"""Linear-trend feedback protocol for MNE-RT.
 
 This module provides :class:`LinearTrendProtocol`, a stateful protocol that
 rewards continuous improvement by detecting a statistically significant

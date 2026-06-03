@@ -1,4 +1,4 @@
-"""Multi-band simultaneous reward protocol for the ANT package.
+"""Multi-band simultaneous reward protocol for MNE-RT.
 
 This module provides :class:`MultiBandProtocol`, which wraps two inner
 protocols (one for up-regulation, one for down-regulation) and issues a
@@ -54,7 +54,7 @@ class MultiBandProtocol:
     Notes
     -----
     Call ``evaluate(up_value, down_value)`` with TWO positional arguments —
-    one from each modality/band.  Configure ``NFRealtime`` with
+    one from each modality/band.  Configure ``RTStream`` with
     ``modality=["sensor_power_alpha", "sensor_power_theta"]`` (or similar)
     and unpack the two returned values before each call.
 
@@ -62,8 +62,8 @@ class MultiBandProtocol:
     --------
     Alpha-up / theta-down simultaneous reward::
 
-        from ant.protocols import ZScoreProtocol
-        from ant.protocols.multiband import MultiBandProtocol
+        from mne_rt.protocols import ZScoreProtocol
+        from mne_rt.protocols.multiband import MultiBandProtocol
 
         alpha_proto = ZScoreProtocol(direction="up")
         theta_proto = ZScoreProtocol(direction="down")

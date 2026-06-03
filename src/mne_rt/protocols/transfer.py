@@ -1,4 +1,4 @@
-"""Cross-session transfer protocol for the ANT package.
+"""Cross-session transfer protocol for MNE-RT.
 
 This module provides :class:`TransferProtocol`, which loads baseline
 statistics from a previous session's BIDS behavioural JSON file and uses them
@@ -88,7 +88,7 @@ class TransferProtocol:
     --------
     Seed today's session from yesterday's baseline::
 
-        from ant.protocols.transfer import TransferProtocol
+        from mne_rt.protocols.transfer import TransferProtocol
 
         proto = TransferProtocol(
             fname="sub-01/ses-01/beh/sub-01_ses-01_task-nf_beh.json",

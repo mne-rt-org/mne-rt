@@ -1,4 +1,4 @@
-"""Up-down adaptive staircase threshold protocol for the ANT package.
+"""Up-down adaptive staircase threshold protocol for MNE-RT.
 
 This module provides :class:`UpDownStaircaseProtocol`, a classic psychophysics
 adaptive procedure that converges the NF reward threshold to a target
@@ -81,7 +81,7 @@ class UpDownStaircaseProtocol:
     --------
     1-up/2-down staircase targeting ~70.7 % success rate::
 
-        from ant.protocols.staircase import UpDownStaircaseProtocol
+        from mne_rt.protocols.staircase import UpDownStaircaseProtocol
 
         proto = UpDownStaircaseProtocol(
             initial_threshold=0.5,

@@ -1,4 +1,4 @@
-"""Double-blind sham feedback wrapper protocol for the ANT package.
+"""Double-blind sham feedback wrapper protocol for MNE-RT.
 
 This module provides :class:`ShamProtocol`, a stateful wrapper that intercepts
 real neurofeedback rewards and substitutes randomly-drawn historical values on a
@@ -68,8 +68,8 @@ class ShamProtocol:
     --------
     Wrap an existing protocol so 50 % of windows receive sham feedback::
 
-        from ant.protocols import ZScoreProtocol
-        from ant.protocols.sham import ShamProtocol
+        from mne_rt.protocols import ZScoreProtocol
+        from mne_rt.protocols.sham import ShamProtocol
 
         inner = ZScoreProtocol(direction="up")
         proto = ShamProtocol(inner, sham_rate=0.5, rng_seed=42)

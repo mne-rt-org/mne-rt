@@ -1,4 +1,4 @@
-"""Percentile-based neurofeedback reward protocol for the ANT package.
+"""Percentile-based feedback reward protocol for MNE-RT.
 
 This module provides :class:`PercentileProtocol`, a stateful protocol that
 rewards the participant when the current NF value crosses the Nth percentile

@@ -1,4 +1,4 @@
-"""Z-score-based neurofeedback reward protocol for the ANT package.
+"""Z-score-based feedback reward protocol for MNE-RT.
 
 This module provides :class:`ZScoreProtocol`, a stateful protocol that
 normalises incoming NF values against a running baseline mean and standard
@@ -18,7 +18,7 @@ import numpy as np
 
 
 class ZScoreProtocol:
-    """Z-score neurofeedback protocol with rolling baseline normalisation.
+    """Z-score feedback protocol with rolling baseline normalisation.
 
     Normalises each incoming NF value against the running mean and standard
     deviation accumulated since initialisation (or the last :meth:`reset`).
