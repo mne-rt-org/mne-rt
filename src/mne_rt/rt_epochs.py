@@ -101,7 +101,7 @@ class RTEpochs:
     >>> rt.connect_to_lsl(mock_lsl=True, fname="sample_raw.fif")
     >>> rt.run(n_trials=20, show_erp=True)
 
-    .. versionadded:: 1.1.0
+    .. versionadded:: 1.0.0
     """
 
     def __init__(
