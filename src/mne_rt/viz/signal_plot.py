@@ -1,10 +1,10 @@
-"""Real-time neurofeedback signal plot.
+"""Real-time signal monitor.
 
 Dark-themed scrolling window built on PyQt6 + pyqtgraph.
 
 Classes
 -------
-NFSignalPlot
+SignalPlot
     Scrolling multi-channel real-time NF signal monitor.
 """
 from __future__ import annotations
@@ -138,12 +138,12 @@ QStatusBar { background-color: #0d0d1a; color: #606080; font-size: 10px; }
 """
 
 
-class NFSignalPlot(QMainWindow):
+class SignalPlot(QMainWindow):
     """Scrolling real-time neurofeedback signal monitor.
 
     Displays one colour-coded trace per active NF modality in a dark-themed
     :class:`pyqtgraph.PlotWidget`.  Designed to be driven by
-    :meth:`~ant.NFRealtime.record_main` via :meth:`push`.
+    :meth:`~mne_rt.RTStream.record_main` via :meth:`push`.
 
     Parameters
     ----------
@@ -165,8 +165,8 @@ class NFSignalPlot(QMainWindow):
 
     See Also
     --------
-    ant.viz.BrainPlot : 3D brain activation display.
-    ant.NFRealtime.record_main : Drives both plots from the NF loop.
+    mne_rt.viz.BrainPlot : 3D brain activation display.
+    mne_rt.RTStream.record_main : Drives both plots from the NF loop.
 
     Notes
     -----
@@ -184,7 +184,7 @@ class NFSignalPlot(QMainWindow):
     Minimal offline usage:
 
     >>> app = QApplication([])
-    >>> plot = NFSignalPlot(["sensor_power"], {"sensor_power": 1e-12}, sfreq=100)
+    >>> plot = SignalPlot(["sensor_power"], {"sensor_power": 1e-12}, sfreq=100)
     >>> plot.show()
     >>> plot.push([3.2e-13])
     >>> app.exec()
@@ -201,7 +201,7 @@ class NFSignalPlot(QMainWindow):
         display_smoothing: float = 0.3,
         verbose=None,
     ) -> None:
-        from ant._logging import set_log_level
+        from mne_rt._logging import set_log_level
         set_log_level(verbose)
         super().__init__()
         self._mods = modalities
@@ -221,7 +221,7 @@ class NFSignalPlot(QMainWindow):
 
         pg.setConfigOptions(antialias=True, foreground="#c0c0d8", background="#0d0d1a")
         self._build_ui()
-        self.setWindowTitle("ANT — Advanced Neurofeedback Toolbox")
+        self.setWindowTitle("ANT — MNE-RT")
         self.resize(1440, max(500, 200 + self._n * 150))
 
     # ------------------------------------------------------------------
@@ -449,7 +449,7 @@ class NFSignalPlot(QMainWindow):
     def _screenshot(self) -> None:
         from PyQt6.QtWidgets import QFileDialog
         ts = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
-        default = str(Path.home() / f"nf_plot_{ts}.png")
+        default = str(Path.home() / f"signal_plot_{ts}.png")
         path, _ = QFileDialog.getSaveFileName(
             self, "Save Screenshot", default, "PNG Image (*.png)"
         )
@@ -492,7 +492,7 @@ class NFSignalPlot(QMainWindow):
         """Append one new sample per modality and refresh all traces.
 
         This is the main update entry point, called at ~30 fps by the
-        Qt pump timer inside :meth:`~ant.NFRealtime.record_main`.
+        Qt pump timer inside :meth:`~mne_rt.RTStream.record_main`.
 
         Parameters
         ----------
