@@ -10,7 +10,7 @@ This is faster and more reliable than OSC for same-machine communication
 because it uses shared memory / localhost TCP rather than UDP, and LSL
 handles timestamping, buffering, and clock synchronisation automatically.
 
-Use :class:`~ant.osc.OSCSender` instead when the feedback application runs
+Use :class:`~mne_rt.osc.OSCSender` instead when the feedback application runs
 on a *different machine* and supports OSC but not LSL.
 
 Classes
