@@ -25,7 +25,7 @@ class RLProtocol:
 
         threshold += lr * (hit_rate - target_hit_rate) * running_std
 
-    Unlike :class:`~ant.protocols.ThresholdProtocol` (which also has an
+    Unlike :class:`~mne_rt.protocols.ThresholdProtocol` (which also has an
     adaptive mode), this protocol tracks a rolling hit rate in a fixed-length
     window, scales updates by the running standard deviation of recent values,
     and optionally applies epsilon-greedy exploration: with probability
