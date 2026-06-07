@@ -1,9 +1,9 @@
-"""Headless tests for the four real-time visualisation classes.
+"""Headless tests for the real-time visualisation classes.
 
 Runs in offscreen (no display) mode.  Each test:
   - constructs the widget with synthetic EEG-like data
-  - calls update() with a small batch of fake epochs
-  - verifies internal state (buffers, condition counts, shapes)
+  - calls the public API (push / update) with small batches of fake data
+  - verifies internal state (buffers, condition counts, shapes, flags)
   - does NOT test pixel output — only data paths
 
 Environment setup (offscreen Qt) is handled in conftest.py or via the
@@ -34,6 +34,10 @@ CH_NAMES = [f"EEG{i:03d}" for i in range(1, 9)]  # 8 synthetic channels
 N_CH     = len(CH_NAMES)
 EVENT_ID = {"left": 1, "right": 2}
 
+# 10-20 channel names for tests that need a real montage (e.g. TopomapPlot)
+TOPO_CH_NAMES = ["Fp1", "Fp2", "F3", "F4", "C3", "C4", "P3", "P4"]
+N_TOPO        = len(TOPO_CH_NAMES)
+
 RNG = np.random.default_rng(42)
 
 
@@ -50,6 +54,16 @@ def qt_app():
     from PyQt6.QtWidgets import QApplication
     app = QApplication.instance() or QApplication([])
     yield app
+
+
+@pytest.fixture(scope="module")
+def topo_info():
+    """mne.Info with standard 10-20 montage for TopomapPlot tests."""
+    import mne
+    info = mne.create_info(TOPO_CH_NAMES, sfreq=SFREQ, ch_types="eeg")
+    montage = mne.channels.make_standard_montage("standard_1020")
+    info.set_montage(montage, on_missing="ignore")
+    return info
 
 
 @pytest.fixture(scope="module")
@@ -216,4 +230,130 @@ class TestTFRPlot:
         assert len(w._latest_conds) == 6
         assert w._latest_conds.count("left")  == 3
         assert w._latest_conds.count("right") == 3
+        w.close()
+
+
+# ---------------------------------------------------------------------------
+# RawPlot
+# ---------------------------------------------------------------------------
+
+class TestRawPlot:
+    def test_construct(self, qt_app):
+        from mne_rt.viz.raw_plot import RawPlot
+        w = RawPlot(CH_NAMES, sfreq=SFREQ)
+        assert w._n_ch == N_CH
+        assert w._sfreq == SFREQ
+        assert w._buf.shape == (N_CH, int(SFREQ * 10.0))
+        w.close()
+
+    def test_push_fills_buffer(self, qt_app):
+        from mne_rt.viz.raw_plot import RawPlot
+        w = RawPlot(CH_NAMES, sfreq=SFREQ, time_window=5.0)
+        data = RNG.standard_normal((N_CH, 100)).astype(np.float32) * 1e-6
+        w.push(data)
+        qt_app.processEvents()
+        assert np.any(w._buf != 0.0)
+        w.close()
+
+    def test_push_respects_pause(self, qt_app):
+        from mne_rt.viz.raw_plot import RawPlot
+        w = RawPlot(CH_NAMES, sfreq=SFREQ)
+        w._paused = True
+        data = RNG.standard_normal((N_CH, 50)).astype(np.float32) * 1e-6
+        w.push(data)
+        qt_app.processEvents()
+        assert not np.any(w._buf != 0.0)
+        w.close()
+
+    def test_filter_apply_sets_sos_and_zi(self, qt_app):
+        from mne_rt.viz.raw_plot import RawPlot
+        w = RawPlot(CH_NAMES, sfreq=SFREQ)
+        w._cmb_filter.setCurrentIndex(3)  # Band-pass
+        w._flo_spin.setValue(1.0)
+        w._fhi_spin.setValue(40.0)
+        w._apply_filter_settings()
+        assert w._filter_sos is not None
+        assert w._filter_zi is not None
+        assert w._filter_zi.shape == (N_CH, w._filter_sos.shape[0], 2)
+        w.close()
+
+    def test_reref_average_applied(self, qt_app):
+        from mne_rt.viz.raw_plot import RawPlot
+        w = RawPlot(CH_NAMES, sfreq=SFREQ)
+        w._cmb_reref.setCurrentIndex(1)   # Average
+        w._apply_reref_settings()
+        assert w._reref_type == "average"
+        # All-ones input after average ref → every channel should be ~0
+        data = np.ones((N_CH, 64), dtype=np.float64) * 1e-6
+        w.push(data)
+        qt_app.processEvents()
+        stored = w._buf[:, -64:]
+        assert np.allclose(stored, 0.0, atol=1e-12)
+        w.close()
+
+    def test_reref_channel(self, qt_app):
+        from mne_rt.viz.raw_plot import RawPlot
+        w = RawPlot(CH_NAMES, sfreq=SFREQ)
+        w._cmb_reref.setCurrentIndex(4)   # Channel
+        w._reref_ch_cmb.setCurrentIndex(0)  # first channel as reference
+        w._apply_reref_settings()
+        assert w._reref_type == "channel"
+        assert w._reref_idx == 0
+        w.close()
+
+
+# ---------------------------------------------------------------------------
+# TopomapPlot
+# ---------------------------------------------------------------------------
+
+class TestTopomapPlot:
+    def test_construct(self, qt_app, topo_info):
+        from mne_rt.viz.topomap_plot import TopomapPlot
+        w = TopomapPlot(topo_info, sfreq=SFREQ)
+        assert w._sfreq == SFREQ
+        assert len(w._bands) == len(w._visible_bands)
+        w.close()
+
+    def test_push_updates_last_data(self, qt_app, topo_info):
+        from mne_rt.viz.topomap_plot import TopomapPlot
+        w = TopomapPlot(topo_info, sfreq=SFREQ)
+        data = RNG.standard_normal((N_TOPO, int(SFREQ))).astype(np.float32) * 1e-6
+        w.push(data)
+        qt_app.processEvents()
+        assert w._last_data is not None
+        assert w._last_data.shape == data.shape
+        w.close()
+
+    def test_pause_inhibits_update(self, qt_app, topo_info):
+        from mne_rt.viz.topomap_plot import TopomapPlot
+        w = TopomapPlot(topo_info, sfreq=SFREQ)
+        w._paused = True
+        data = RNG.standard_normal((N_TOPO, int(SFREQ))).astype(np.float32) * 1e-6
+        w.push(data)
+        qt_app.processEvents()
+        assert w._last_data is None
+        w.close()
+
+    def test_custom_band_added(self, qt_app, topo_info):
+        from mne_rt.viz.topomap_plot import TopomapPlot
+        w = TopomapPlot(topo_info, sfreq=SFREQ)
+        initial = len(w._bands)
+        w._custom_flo.setValue(15.0)
+        w._custom_fhi.setValue(25.0)
+        w._add_custom_band()
+        assert len(w._bands) == initial + 1
+        assert "Custom 15.0–25.0 Hz" in w._bands
+        assert "Custom 15.0–25.0 Hz" in w._visible_bands
+        w.close()
+
+    def test_toggle_band_visibility(self, qt_app, topo_info):
+        from mne_rt.viz.topomap_plot import TopomapPlot
+        w = TopomapPlot(topo_info, sfreq=SFREQ)
+        first_band = list(w._bands.keys())[0]
+        # Disable first band
+        w._band_checks[first_band].setChecked(False)
+        assert first_band not in w._visible_bands
+        # Re-enable
+        w._band_checks[first_band].setChecked(True)
+        assert first_band in w._visible_bands
         w.close()
