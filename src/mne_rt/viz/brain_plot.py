@@ -88,7 +88,7 @@ class BrainPlot:
 
     Renders bilateral ``fsaverage`` cortical surfaces with a colour-mapped
     activity overlay and a Qt control panel docked on the right.  Designed
-    to run alongside :class:`~mne_rt.viz.SignalPlot` inside a shared Qt
+    to run alongside :class:`~mne_rt.viz.NFPlot` inside a shared Qt
     event loop — call :meth:`update_from_arrays` or :meth:`update` from the
     acquisition thread's pump timer.
 
@@ -121,7 +121,7 @@ class BrainPlot:
 
     See Also
     --------
-    mne_rt.viz.SignalPlot : Scrolling real-time NF signal plot.
+    mne_rt.viz.NFPlot : Scrolling real-time NF signal plot.
     mne_rt.RTStream.record_main : Main NF loop that drives both plots.
 
     Notes
@@ -174,6 +174,14 @@ class BrainPlot:
         self._display_alpha = float(np.clip(display_smoothing, 0.0, 1.0))
         self._lh_ema: np.ndarray | None = None
         self._rh_ema: np.ndarray | None = None
+
+        # Custom band overlay state
+        self._custom_band_hz: tuple[float, float] | None = None
+
+        # Parcellation border overlay state
+        self._parc_name: str | None = None
+        self._parc_actor = None
+        self._parc_edges: np.ndarray | None = None  # (n_edges, 2) vertex index pairs
 
         logger.info("Loading %s surface …", surf)
         self._load_surface(surf)
@@ -280,6 +288,7 @@ class BrainPlot:
         from PyQt6.QtWidgets import (
             QDockWidget, QWidget, QVBoxLayout, QHBoxLayout,
             QLabel, QSlider, QComboBox, QCheckBox, QPushButton, QGroupBox,
+            QDoubleSpinBox,
         )
         from PyQt6.QtCore import Qt as Qt_
 
@@ -314,6 +323,19 @@ class BrainPlot:
             lambda s: self.set_surface(s) if s != self._surf else None
         )
         ly.addWidget(surf_combo)
+        root.addWidget(grp)
+
+        # ── Parcellation ──────────────────────────────────────────────────
+        grp, ly = _group("Parcellation")
+        _PARC_ITEMS = ["None", "aparc  (Desikan)", "aparc.a2009s  (Destrieux)"]
+        self._parc_combo = QComboBox()
+        self._parc_combo.addItems(_PARC_ITEMS)
+        self._parc_combo.currentTextChanged.connect(self._set_parcellation)
+        ly.addWidget(self._parc_combo)
+        self._parc_status_lbl = QLabel("")
+        self._parc_status_lbl.setWordWrap(True)
+        self._parc_status_lbl.setStyleSheet("color:#555; font-size:9px;")
+        ly.addWidget(self._parc_status_lbl)
         root.addWidget(grp)
 
         # ── Hemispheres ───────────────────────────────────────────────────
@@ -469,6 +491,41 @@ class BrainPlot:
         ly.addWidget(mode_lbl)
         root.addWidget(grp)
 
+        # ── Custom frequency band ─────────────────────────────────────────
+        grp, ly = _group("Custom Band  (Hz)")
+        band_row = QHBoxLayout()
+        self._custom_lo_spin = QDoubleSpinBox()
+        self._custom_lo_spin.setRange(0.5, 200.0)
+        self._custom_lo_spin.setValue(13.0)
+        self._custom_lo_spin.setSuffix(" Hz")
+        self._custom_lo_spin.setDecimals(1)
+        dash_lbl2 = QLabel("–")
+        dash_lbl2.setStyleSheet("color:#888;")
+        self._custom_hi_spin = QDoubleSpinBox()
+        self._custom_hi_spin.setRange(1.0, 500.0)
+        self._custom_hi_spin.setValue(30.0)
+        self._custom_hi_spin.setSuffix(" Hz")
+        self._custom_hi_spin.setDecimals(1)
+        band_row.addWidget(self._custom_lo_spin)
+        band_row.addWidget(dash_lbl2)
+        band_row.addWidget(self._custom_hi_spin)
+        ly.addLayout(band_row)
+
+        btn_band_row = QHBoxLayout()
+        btn_set_band = QPushButton("Set")
+        btn_set_band.clicked.connect(self._set_custom_band)
+        btn_clr_band = QPushButton("Clear")
+        btn_clr_band.clicked.connect(self._clear_custom_band)
+        btn_band_row.addWidget(btn_set_band)
+        btn_band_row.addWidget(btn_clr_band)
+        ly.addLayout(btn_band_row)
+
+        self._custom_band_lbl = QLabel("No custom band set")
+        self._custom_band_lbl.setStyleSheet("color:#555; font-size:10px;")
+        self._custom_band_lbl.setWordWrap(True)
+        ly.addWidget(self._custom_band_lbl)
+        root.addWidget(grp)
+
         # ── Actions ───────────────────────────────────────────────────────
         grp, ly = _group("Actions")
         reset_btn = QPushButton("Reset activity  (r)")
@@ -549,6 +606,7 @@ class BrainPlot:
         p = self._plotter
         p.remove_actor(self._base_actor)
         p.remove_actor(self._act_actor)
+        self._remove_parc_actor()
 
         self._base_actor = p.add_mesh(
             self._mesh,
@@ -570,6 +628,11 @@ class BrainPlot:
             nan_opacity=0.0,
         )
         self._sync_scalar_bar_lut()
+
+        # Re-overlay parcellation borders on the new surface geometry
+        if self._parc_edges is not None:
+            self._build_parc_actor()
+
         p.render()
 
     def _sync_scalar_bar_lut(self) -> None:
@@ -583,6 +646,141 @@ class BrainPlot:
             lut.SetTableValue(i, r, g, b, a)
         lut.Build()
         self._plotter.scalar_bar.SetLookupTable(lut)
+
+    # ------------------------------------------------------------------
+    # Parcellation border overlay
+    # ------------------------------------------------------------------
+
+    def _set_parcellation(self, parc_label: str) -> None:
+        """Load annotation and draw parcel boundary edges on the surface."""
+        self._remove_parc_actor()
+        self._parc_edges = None
+        self._parc_name = None
+
+        if parc_label == "None":
+            if hasattr(self, "_parc_status_lbl"):
+                self._parc_status_lbl.setText("")
+            return
+
+        parc_id = parc_label.split()[0]  # "aparc  (Desikan)" → "aparc"
+        logger.info("Loading parcellation %r …", parc_id)
+        if hasattr(self, "_parc_status_lbl"):
+            self._parc_status_lbl.setText("Loading …")
+
+        try:
+            import mne
+            from pathlib import Path as _Path
+            fs_dir = _Path(mne.datasets.fetch_fsaverage(verbose=False))
+            subjects_dir = str(fs_dir.parent)
+
+            labels_lh = mne.read_labels_from_annot(
+                "fsaverage", parc=parc_id, hemi="lh",
+                subjects_dir=subjects_dir, verbose=False,
+            )
+            labels_rh = mne.read_labels_from_annot(
+                "fsaverage", parc=parc_id, hemi="rh",
+                subjects_dir=subjects_dir, verbose=False,
+            )
+
+            n_lh = self._n_lh
+            n_rh = self._mesh.n_points - n_lh
+            parcel_lh = np.full(n_lh, -1, dtype=np.int32)
+            parcel_rh = np.full(n_rh, -1, dtype=np.int32)
+
+            for i, lbl in enumerate(labels_lh):
+                verts = lbl.vertices[lbl.vertices < n_lh]
+                parcel_lh[verts] = i
+            for i, lbl in enumerate(labels_rh):
+                verts = lbl.vertices[lbl.vertices < n_rh]
+                parcel_rh[verts] = i
+
+            parcel_all = np.concatenate([parcel_lh, parcel_rh])
+
+            # Extract triangle edges and keep those crossing parcel boundaries
+            faces = self._mesh.faces.reshape(-1, 4)[:, 1:]  # (n_faces, 3)
+            e01 = np.sort(faces[:, :2], axis=1)
+            e12 = np.sort(faces[:, 1:], axis=1)
+            e02 = np.sort(faces[:, [0, 2]], axis=1)
+            all_edges = np.unique(np.vstack([e01, e12, e02]), axis=0)
+
+            mask = parcel_all[all_edges[:, 0]] != parcel_all[all_edges[:, 1]]
+            self._parc_edges = all_edges[mask]
+            self._parc_name = parc_id
+
+            self._build_parc_actor()
+            n_bnd = len(self._parc_edges)
+            logger.info("Parcellation %r: %d boundary edges", parc_id, n_bnd)
+            if hasattr(self, "_parc_status_lbl"):
+                self._parc_status_lbl.setText(f"{n_bnd:,} boundary edges")
+
+        except Exception as exc:
+            self._parc_edges = None
+            self._parc_name = None
+            logger.warning("Parcellation load failed: %s", exc)
+            if hasattr(self, "_parc_status_lbl"):
+                self._parc_status_lbl.setText(f"Error: {exc}")
+
+    def _build_parc_actor(self) -> None:
+        """Create a pyvista line mesh from stored boundary edges and add it."""
+        if self._parc_edges is None or len(self._parc_edges) == 0:
+            return
+        pts = self._mesh.points
+        n_segs = len(self._parc_edges)
+
+        seg_pts = np.empty((n_segs * 2, 3), dtype=np.float32)
+        seg_pts[0::2] = pts[self._parc_edges[:, 0]]
+        seg_pts[1::2] = pts[self._parc_edges[:, 1]]
+
+        lines_conn = np.empty(n_segs * 3, dtype=np.int_)
+        lines_conn[0::3] = 2
+        lines_conn[1::3] = np.arange(0, n_segs * 2, 2)
+        lines_conn[2::3] = np.arange(1, n_segs * 2, 2)
+
+        bnd = pv.PolyData(seg_pts, lines=lines_conn)
+        self._parc_actor = self._plotter.add_mesh(
+            bnd,
+            color="#ffffff",
+            line_width=2.0,
+            render_lines_as_tubes=False,
+            show_scalar_bar=False,
+        )
+
+    def _remove_parc_actor(self) -> None:
+        if self._parc_actor is not None:
+            self._plotter.remove_actor(self._parc_actor)
+            self._parc_actor = None
+
+    # ------------------------------------------------------------------
+    # Custom frequency band
+    # ------------------------------------------------------------------
+
+    def _set_custom_band(self) -> None:
+        lo = self._custom_lo_spin.value()
+        hi = self._custom_hi_spin.value()
+        if lo >= hi:
+            return
+        self._custom_band_hz = (lo, hi)
+        self._display_mode = f"Custom  {lo:.1f}–{hi:.1f} Hz"
+        self._custom_band_lbl.setText(f"Active: {lo:.1f}–{hi:.1f} Hz")
+        self._custom_band_lbl.setStyleSheet("color:#80d8ff; font-size:10px;")
+        logger.info("BrainPlot custom band → %.1f–%.1f Hz", lo, hi)
+
+    def _clear_custom_band(self) -> None:
+        self._custom_band_hz = None
+        self._display_mode = _DISPLAY_MODES[0]
+        self._custom_band_lbl.setText("No custom band set")
+        self._custom_band_lbl.setStyleSheet("color:#555; font-size:10px;")
+        logger.info("BrainPlot custom band cleared")
+
+    @property
+    def custom_band(self) -> tuple[float, float] | None:
+        """Active custom frequency band ``(lo, hi)`` in Hz, or ``None``.
+
+        Read this in the acquisition loop alongside :attr:`display_mode` to
+        decide which frequency range to pass to :meth:`update_from_arrays`.
+        When not ``None`` it overrides the built-in band labels.
+        """
+        return self._custom_band_hz
 
     # ------------------------------------------------------------------
     # Public interface
