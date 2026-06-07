@@ -1,567 +1,893 @@
-"""Real-time scalp topomap and band-power display.
+"""Real-time scalp-layout ERP / evoked-potential display.
 
-Dark-themed window built on PyQt6 + matplotlib (embedded via
-:class:`~matplotlib.backends.backend_qtagg.FigureCanvasQTAgg`).  Displays one
-topomap per selected frequency band, updated in real-time from raw EEG/MEG
-windows.
+Live-updating equivalent of :func:`mne.viz.plot_evoked_topo`: channels
+are placed at their exact 2-D scalp positions (from
+:func:`mne.channels.find_layout`), using PyQtGraph's scene for absolute
+positioning rather than a collapsible grid.  Redraws after every
+:meth:`update` call as new epochs arrive from :class:`~mne_rt.RTEpochs`.
 
 Classes
 -------
 TopoPlot
-    Real-time scalp topomap showing per-band power distribution.
+    Real-time scalp-layout ERP display with interactive sidebar.
 """
 from __future__ import annotations
 
-import datetime
-from pathlib import Path
-from typing import Optional
+import math
+from typing import Optional, Union
 
 import numpy as np
 
-from PyQt6.QtCore import Qt
-from PyQt6.QtWidgets import (
-    QCheckBox,
-    QComboBox,
-    QGroupBox,
-    QHBoxLayout,
-    QLabel,
-    QMainWindow,
-    QPushButton,
-    QScrollArea,
-    QSpinBox,
-    QVBoxLayout,
-    QWidget,
+try:
+    from PyQt6.QtCore import Qt, QRectF, pyqtSignal
+    from PyQt6.QtGui  import QFont, QColor
+    from PyQt6.QtWidgets import (
+        QApplication, QMainWindow, QWidget,
+        QVBoxLayout, QHBoxLayout, QLabel,
+        QCheckBox, QSlider, QPushButton,
+        QFrame, QSizePolicy, QScrollArea,
+        QFileDialog, QComboBox,
+    )
+    _qt_available = True
+except ImportError:
+    _qt_available = False
+
+try:
+    import pyqtgraph as pg
+    _pg_available = True
+except ImportError:
+    _pg_available = False
+
+try:
+    import mne
+    _mne_available = True
+except ImportError:
+    _mne_available = False
+
+from mne_rt._logging import logger, set_log_level
+
+
+# ---------------------------------------------------------------------------
+# Palette
+# ---------------------------------------------------------------------------
+_BG       = "#0d1117"
+_SURFACE  = "#161b22"
+_BORDER   = "#30363d"
+_TEXT     = "#e6edf3"
+_DIM      = "#8b949e"
+_ACCENT   = "#3b82f6"
+
+_COND_COLORS = [
+    "#3b82f6",   # blue
+    "#ec4899",   # pink
+    "#10b981",   # green
+    "#f59e0b",   # amber
+    "#8b5cf6",   # violet
+    "#06b6d4",   # cyan
+]
+
+_BG_PRESETS = [
+    ("Dark",  "#0d1117", _TEXT),
+    ("Navy",  "#050d1a", _TEXT),
+    ("Slate", "#1e2030", _TEXT),
+    ("Dim",   "#2d333b", _TEXT),
+    ("Light", "#f1f5f9", "#111827"),
+]
+
+_SIDEBAR_W = 230
+
+_SW, _SH = 1000, 920
+_PW, _PH = 76, 64
+
+_MASTOID_NAMES = frozenset(
+    ["M1", "M2", "TP9", "TP10", "A1", "A2", "Mastoid", "mastoid"]
 )
 
-import mne
-from matplotlib.backends.backend_qtagg import FigureCanvasQTAgg
-from matplotlib.figure import Figure
+
+# ---------------------------------------------------------------------------
+# Sidebar helpers
+# ---------------------------------------------------------------------------
+
+def _sep(parent: QWidget) -> QFrame:
+    f = QFrame(parent)
+    f.setFrameShape(QFrame.Shape.HLine)
+    f.setStyleSheet(f"color:{_BORDER};")
+    return f
+
+
+def _section(text: str, parent: QWidget) -> QLabel:
+    lbl = QLabel(text, parent)
+    lbl.setStyleSheet(
+        f"color:{_DIM}; font-size:10px; font-weight:700; "
+        "letter-spacing:1px; padding-top:6px;"
+    )
+    return lbl
+
+
+def _row(parent: QWidget, spacing: int = 5) -> tuple[QWidget, QHBoxLayout]:
+    w = QWidget(parent)
+    lay = QHBoxLayout(w)
+    lay.setContentsMargins(0, 1, 0, 1)
+    lay.setSpacing(spacing)
+    return w, lay
+
+
+def _val_lbl(text: str, parent: QWidget, color: str = _ACCENT) -> QLabel:
+    lbl = QLabel(text, parent)
+    lbl.setStyleSheet(
+        f"color:{color}; font-size:11px; font-weight:600;"
+    )
+    lbl.setAlignment(Qt.AlignmentFlag.AlignRight | Qt.AlignmentFlag.AlignVCenter)
+    return lbl
+
+
+def _key_lbl(text: str, parent: QWidget) -> QLabel:
+    lbl = QLabel(text, parent)
+    lbl.setStyleSheet(f"color:{_TEXT}; font-size:11px;")
+    return lbl
+
+
+def _slider(parent, lo: int, hi: int, val: int) -> QSlider:
+    sl = QSlider(Qt.Orientation.Horizontal, parent)
+    sl.setRange(lo, hi)
+    sl.setValue(val)
+    return sl
 
 
 # ---------------------------------------------------------------------------
-# Constants
+# Main class
 # ---------------------------------------------------------------------------
-
-_DEFAULT_BANDS: dict[str, tuple[float, float]] = {
-    "δ  1–4 Hz":    (1.0,   4.0),
-    "θ  4–8 Hz":    (4.0,   8.0),
-    "α  8–13 Hz":   (8.0,  13.0),
-    "β  13–30 Hz":  (13.0, 30.0),
-    "γ  30–45 Hz":  (30.0, 45.0),
-}
-
-_CMAPS = ["RdBu_r", "hot", "plasma", "viridis", "Reds", "RdYlBu_r"]
-
-_QSS = """
-QMainWindow, QWidget {
-    background-color: #1a1a2e;
-    color: #e0e0e0;
-    font-family: "Segoe UI", sans-serif;
-}
-QPushButton {
-    background-color: #16213e;
-    color: #d0d0e8;
-    border: 1px solid #0f3460;
-    border-radius: 5px;
-    padding: 5px 10px;
-    font-size: 12px;
-}
-QPushButton:hover  { background-color: #0f3460; }
-QPushButton:pressed { background-color: #533483; }
-QPushButton:checked {
-    background-color: #533483;
-    border-color: #a882dd;
-    color: #ffffff;
-}
-QComboBox {
-    background-color: #16213e;
-    color: #d0d0e8;
-    border: 1px solid #0f3460;
-    border-radius: 4px;
-    padding: 3px 6px;
-}
-QComboBox QAbstractItemView {
-    background-color: #16213e;
-    color: #d0d0e8;
-    selection-background-color: #0f3460;
-}
-QGroupBox {
-    border: 1px solid #2a2a4a;
-    border-radius: 6px;
-    margin-top: 10px;
-    padding-top: 6px;
-    font-weight: bold;
-    font-size: 11px;
-    color: #8888aa;
-}
-QGroupBox::title {
-    subcontrol-origin: margin;
-    left: 8px;
-    padding: 0 4px;
-}
-QLabel  { color: #b0b0c8; font-size: 11px; }
-QCheckBox { color: #b0b0c8; font-size: 11px; }
-QScrollArea { border: none; }
-QStatusBar { background-color: #0d0d1a; color: #606080; font-size: 10px; }
-QSpinBox {
-    background-color: #16213e;
-    color: #d0d0e8;
-    border: 1px solid #0f3460;
-    border-radius: 4px;
-    padding: 2px 4px;
-}
-"""
-
 
 class TopoPlot(QMainWindow):
-    """Real-time scalp topomap showing per-band power distribution.
+    """Real-time scalp-layout ERP display.
 
-    Displays one colour-mapped topomap per selected frequency band,
-    updated in real-time by :meth:`push`.  Built on PyQt6 with a
-    matplotlib figure embedded via
-    :class:`~matplotlib.backends.backend_qtagg.FigureCanvasQTAgg`.
+    One mini :class:`pyqtgraph.PlotItem` per electrode, placed at the
+    channel's true 2-D scalp position from
+    :func:`mne.channels.find_layout`.  Condition averages (with optional
+    ±1 SEM shading) are redrawn after every :meth:`update` call.
 
     Parameters
     ----------
-    info : mne.Info
-        Channel info containing electrode positions (montage must be set).
+    ch_names : list of str
+        Electrode names in data order.
     sfreq : float
-        Sampling frequency of the incoming data in Hz.
-    bands : dict[str, tuple[float, float]] | None, default None
-        Frequency bands to display as ``{label: (f_low, f_high)}``.
-        Defaults to δ/θ/α/β/γ standard bands.
-    cmap : str, default "RdBu_r"
-        Initial colourmap.  Must be one of
-        ``["RdBu_r", "hot", "plasma", "viridis", "Reds", "RdYlBu_r"]``.
-    sensors : bool, default True
-        Whether to draw sensor markers on the topomap.
-    contours : int, default 6
-        Number of contour lines.  Set to ``0`` to disable.
-    display_smoothing : float, default 1.0
-        EMA factor applied to the per-channel band-power maps before
-        rendering.  ``1.0`` disables smoothing (raw per-window estimate
-        shown directly — good for artifact monitoring); lower values
-        progressively smooth the spatial maps across consecutive windows.
-    verbose : bool | str | None, default None
-        Verbosity level.  See :func:`~ant._logging.set_log_level`.
+        Sampling frequency in Hz.
+    tmin : float
+        Epoch start (s).
+    tmax : float
+        Epoch end (s).
+    event_id : dict[str, int]
+        Condition label → marker integer.
+    info : mne.Info or None
+        When provided, :func:`mne.channels.find_layout` is called on
+        this object for exact scalp positioning and channel-type detection
+        (EEG → µV, MEG mag → fT, MEG grad → fT/cm).
+        Pass ``epochs_stream.info`` from :class:`~mne_rt.RTEpochs`.
+    montage : str, default "standard_1020"
+        Fallback montage when ``info`` is not given or has no dig points.
+    baseline : tuple or None, default (None, 0)
+        Baseline interval — drawn as a shaded region.
+    window_size : tuple of int, default (1440, 900)
+        Initial window size in pixels.
+    verbose : bool or str or None
+
+    .. versionadded:: 1.0.0
 
     See Also
     --------
-    mne_rt.viz.SignalPlot : Scrolling NF signal display.
-    mne_rt.viz.BrainPlot : 3D brain activation display.
-    mne_rt.RTStream.record_main : Main NF loop that drives all plots.
-
-    Notes
-    -----
-    The control panel (right sidebar) provides:
-
-    * **Playback** — pause/resume, screenshot.
-    * **Display** — colormap selector, contours, sensor toggle, colorbar mode.
-    * **Bands** — per-band visibility checkboxes.  Toggling rebuilds the
-      figure layout automatically.
-
-    Band power is estimated via FFT on each incoming window (Hanning window
-    applied to reduce spectral leakage).
-
-    Examples
-    --------
-    Minimal offline usage:
-
-    >>> from mne import create_info
-    >>> import numpy as np
-    >>> app = QApplication([])
-    >>> info = create_info(["Fp1", "Fz", "Cz", "Oz"], sfreq=256, ch_types="eeg")
-    >>> plot = TopoPlot(info, sfreq=256)
-    >>> plot.show()
-    >>> data = np.random.randn(4, 256)   # 1 s window
-    >>> plot.push(data)
-    >>> app.exec()
-
-    .. versionadded:: 1.0.0
+    mne_rt.RTEpochs : Drives this plot via :meth:`update`.
+    mne_rt.viz.ButterflyPlot : All-channel overlay alternative.
+    mne_rt.viz.CompareEvoked : Large per-channel view with SEM ribbons.
     """
+
+    _redraw_sig = pyqtSignal(int)
 
     def __init__(
         self,
-        info: mne.Info,
-        sfreq: float,
-        bands: Optional[dict[str, tuple[float, float]]] = None,
-        cmap: str = "RdBu_r",
-        sensors: bool = True,
-        contours: int = 6,
-        display_smoothing: float = 1.0,
-        verbose=None,
+        ch_names:    list[str],
+        sfreq:       float,
+        tmin:        float,
+        tmax:        float,
+        event_id:    dict[str, int],
+        info=None,
+        montage:     str = "standard_1020",
+        baseline:    Optional[tuple] = (None, 0),
+        window_size: tuple[int, int] = (1440, 900),
+        verbose:     Union[bool, str, None] = None,
     ) -> None:
-        from mne_rt._logging import set_log_level
-        set_log_level(verbose)
+        if not _qt_available or not _pg_available:
+            raise ImportError(
+                "PyQt6 and pyqtgraph are required for TopoPlot.\n"
+                "Install with: pip install 'mne-rt[full]'"
+            )
+        _app = QApplication.instance() or QApplication([])  # noqa: F841
+
         super().__init__()
+        self._redraw_sig.connect(self._redraw)
+        set_log_level(verbose)
 
-        self._info = info.copy()
-        self._sfreq = float(sfreq)
-        self._bands: dict[str, tuple[float, float]] = (
-            dict(bands) if bands is not None else dict(_DEFAULT_BANDS)
-        )
-        self._cmap = cmap if cmap in _CMAPS else "RdBu_r"
-        self._sensors = sensors
-        self._contours = contours
-        self._paused = False
-        self._last_data: Optional[np.ndarray] = None
-        self._visible_bands: list[str] = list(self._bands.keys())
-        self._display_alpha = float(np.clip(display_smoothing, 0.0, 1.0))
-        self._bp_ema: dict[str, np.ndarray] = {}
+        self.ch_names  = list(ch_names)
+        self.sfreq     = sfreq
+        self.tmin      = tmin
+        self.tmax      = tmax
+        self.event_id  = event_id
+        self.montage   = montage
+        self.baseline  = baseline
+        self._info     = info
 
-        # Detect channel type for plot_topomap
-        self._ch_type = self._detect_ch_type()
-        self._topo_picks = self._get_topo_picks()
+        self._conditions = list(event_id.keys())
+        self._cmap = {
+            c: _COND_COLORS[i % len(_COND_COLORS)]
+            for i, c in enumerate(self._conditions)
+        }
+        self._n_ch  = len(ch_names)
+        self._n_t   = int(round((tmax - tmin) * sfreq)) + 1
+        self._times = np.linspace(tmin, tmax, self._n_t)
 
+        self._epoch_buf: dict[str, list[np.ndarray]] = {
+            c: [] for c in self._conditions
+        }
+        self._n_per: dict[str, int] = {c: 0 for c in self._conditions}
+
+        # Display state
+        self._yscale    = 1.0
+        self._linewidth = 1.6
+        self._smooth_ms = 0.0
+        self._show_sem  = False
+        self._plot_bg   = _BG
+        self._x_start   = tmin
+        self._x_end     = tmax
+
+        # Unit / re-reference
+        self._unit, self._unit_scale = self._detect_unit(info)
+        self._reref_mode  = "none"
+        self._mastoid_idx = self._find_mastoids()
+
+        self._norm_pos = self._compute_positions(info, montage)
+
+        self.setWindowTitle("MNE-RT — Topo ERP")
+        self.resize(*window_size)
+        self._apply_styles()
         self._build_ui()
-        self.setWindowTitle("ANT — Topomap")
-        self.resize(1200, 540)
 
-    # ------------------------------------------------------------------
-    # Setup helpers
-    # ------------------------------------------------------------------
+        logger.info(
+            "TopoPlot(ERP): %d ch, %.0f–%.0f ms, unit=%s, layout=%s",
+            self._n_ch, tmin * 1000, tmax * 1000, self._unit,
+            "from info" if info is not None else "montage/fallback",
+        )
 
-    def _detect_ch_type(self) -> str:
-        n_eeg = len(mne.pick_types(self._info, eeg=True, meg=False))
-        n_mag = len(mne.pick_types(self._info, meg="mag", eeg=False))
-        n_grad = len(mne.pick_types(self._info, meg="grad", eeg=False))
-        if n_eeg > 0:
-            return "eeg"
-        if n_mag > 0:
-            return "mag"
-        if n_grad > 0:
-            return "grad"
-        return "eeg"
+    # -----------------------------------------------------------------------
+    # Unit / mastoid helpers
+    # -----------------------------------------------------------------------
 
-    def _get_topo_picks(self) -> np.ndarray:
-        """Indices of channels to use for the topomap."""
-        if self._ch_type == "eeg":
-            picks = mne.pick_types(self._info, eeg=True, meg=False, exclude="bads")
-        elif self._ch_type == "mag":
-            picks = mne.pick_types(self._info, meg="mag", eeg=False, exclude="bads")
-        else:
-            picks = mne.pick_types(self._info, meg="grad", eeg=False, exclude="bads")
-        if len(picks) == 0:
-            picks = np.arange(len(self._info["ch_names"]))
-        # Drop channels whose 3D position is NaN (e.g. TP9/TP10 not in biosemi64 montage)
-        valid = np.array([
-            not np.any(np.isnan(self._info["chs"][p]["loc"][:3]))
-            for p in picks
-        ])
-        picks = picks[valid]
-        return picks
+    def _detect_unit(self, info) -> tuple[str, float]:
+        if info is None or not _mne_available:
+            return "µV", 1e6
+        try:
+            ct = mne.channel_type(info, 0)
+            if ct == "mag":
+                return "fT", 1e15
+            elif ct == "grad":
+                return "fT/cm", 1e13
+        except Exception:
+            pass
+        return "µV", 1e6
 
-    # ------------------------------------------------------------------
-    # UI construction
-    # ------------------------------------------------------------------
+    def _find_mastoids(self) -> list[int]:
+        return [
+            i for i, ch in enumerate(self.ch_names)
+            if ch in _MASTOID_NAMES
+        ]
+
+    # -----------------------------------------------------------------------
+    # Scalp layout
+    # -----------------------------------------------------------------------
+
+    def _compute_positions(
+        self, info, montage_name: str
+    ) -> list[tuple[float, float]]:
+        if _mne_available:
+            if info is not None:
+                pos = self._from_layout(mne.channels.find_layout(info))
+                if pos is not None:
+                    return pos
+            try:
+                tmp = mne.create_info(
+                    self.ch_names, sfreq=1.0, ch_types="eeg", verbose=False
+                )
+                mont = mne.channels.make_standard_montage(montage_name)
+                tmp.set_montage(mont, on_missing="ignore", verbose=False)
+                pos = self._from_layout(mne.channels.find_layout(tmp))
+                if pos is not None:
+                    return pos
+            except Exception as exc:
+                logger.debug("TopoPlot: montage layout failed: %s", exc)
+        logger.warning("TopoPlot: falling back to circular layout.")
+        return self._circular_fallback()
+
+    def _from_layout(self, layout) -> Optional[list[tuple[float, float]]]:
+        if layout is None:
+            return None
+        name_xy: dict[str, tuple[float, float]] = {}
+        for name, pos in zip(layout.names, layout.pos):
+            xc = float(pos[0] + pos[2] / 2.0)
+            yc = float(pos[1] + pos[3] / 2.0)
+            name_xy[name] = (xc, 1.0 - yc)
+        n_matched = sum(1 for c in self.ch_names if c in name_xy)
+        if n_matched < self._n_ch // 2:
+            return None
+        positions: list[tuple[float, float]] = []
+        fb = 0
+        for ch in self.ch_names:
+            if ch in name_xy:
+                positions.append(name_xy[ch])
+            else:
+                positions.append((0.02, fb * 0.05)); fb += 1
+        return positions
+
+    def _circular_fallback(self) -> list[tuple[float, float]]:
+        n = self._n_ch
+        return [
+            (0.5 + 0.42 * math.cos(2 * math.pi * i / n - math.pi / 2),
+             0.5 + 0.42 * math.sin(2 * math.pi * i / n - math.pi / 2))
+            for i in range(n)
+        ]
+
+    # -----------------------------------------------------------------------
+    # UI build
+    # -----------------------------------------------------------------------
+
+    def _apply_styles(self) -> None:
+        self.setStyleSheet(f"""
+            QMainWindow, QWidget  {{ background:{_BG}; color:{_TEXT}; }}
+            QLabel                {{ color:{_TEXT}; font-size:12px; }}
+            QCheckBox             {{ color:{_TEXT}; font-size:12px; spacing:6px; }}
+            QCheckBox::indicator  {{ width:14px; height:14px; border-radius:3px;
+                                     border:1px solid {_BORDER};
+                                     background:{_SURFACE}; }}
+            QCheckBox::indicator:checked {{ background:{_ACCENT};
+                                           border-color:{_ACCENT}; }}
+            QPushButton           {{ background:{_SURFACE}; color:{_TEXT};
+                                     border:1px solid {_BORDER};
+                                     border-radius:5px; padding:4px 10px;
+                                     font-size:11px; }}
+            QPushButton:hover     {{ background:{_BORDER}; }}
+            QSlider::groove:horizontal {{
+                height:4px; background:{_BORDER}; border-radius:2px; }}
+            QSlider::handle:horizontal {{
+                width:14px; height:14px; margin:-5px 0;
+                border-radius:7px; background:{_ACCENT}; }}
+            QComboBox             {{ background:{_SURFACE}; color:{_TEXT};
+                                     border:1px solid {_BORDER};
+                                     border-radius:4px; padding:2px 6px;
+                                     font-size:11px; }}
+            QComboBox::drop-down  {{ border:none; width:20px; }}
+            QScrollArea           {{ border: none; }}
+            QScrollBar:vertical   {{ background:{_BG}; width:6px; }}
+            QScrollBar::handle:vertical {{ background:{_BORDER}; border-radius:3px; }}
+        """)
 
     def _build_ui(self) -> None:
-        self.setStyleSheet(_QSS)
         central = QWidget()
         self.setCentralWidget(central)
         root = QHBoxLayout(central)
-        root.setContentsMargins(8, 8, 4, 8)
-        root.setSpacing(6)
+        root.setSpacing(0)
+        root.setContentsMargins(0, 0, 0, 0)
 
-        self._canvas_holder = QWidget()
-        self._canvas_layout = QVBoxLayout(self._canvas_holder)
-        self._canvas_layout.setContentsMargins(0, 0, 0, 0)
-        self._build_canvas()
+        pg.setConfigOptions(antialias=True, background=_BG, foreground=_DIM)
 
-        root.addWidget(self._canvas_holder, stretch=5)
-        root.addWidget(self._build_control_panel(), stretch=0)
+        self._gview = pg.GraphicsView()
+        self._gview.setBackground(_BG)
+        self._gview.setSizePolicy(
+            QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding
+        )
+        root.addWidget(self._gview, stretch=1)
+        self._scene = self._gview.sceneObj
 
-        self._status = self.statusBar()
-        self._status.showMessage("Waiting for data …")
+        root.addWidget(self._build_sidebar())
 
-    def _build_canvas(self) -> None:
-        n_vis = max(len(self._visible_bands), 1)
-        n_cols = min(n_vis, 5)
-        n_rows = (n_vis + n_cols - 1) // n_cols
+        self._plots:      list[pg.PlotItem]      = []
+        self._ch_labels:  list[pg.TextItem]      = []
+        self._curves:     dict[str, list[pg.PlotCurveItem]] = {
+            c: [] for c in self._conditions
+        }
+        self._sem_upper:  dict[str, list[pg.PlotCurveItem]] = {
+            c: [] for c in self._conditions
+        }
+        self._sem_lower:  dict[str, list[pg.PlotCurveItem]] = {
+            c: [] for c in self._conditions
+        }
+        self._sem_fills:  dict[str, list] = {c: [] for c in self._conditions}
+        self._zl_items:   list[pg.InfiniteLine] = []
 
-        fig_w = max(3.2 * n_cols, 6.0)
-        fig_h = max(3.2 * n_rows, 3.2)
+        for ch_idx, ch in enumerate(self.ch_names):
+            xn, yn = self._norm_pos[ch_idx]
+            margin = 0.05
+            cx = (margin + xn * (1.0 - 2 * margin)) * _SW
+            cy = (margin + yn * (1.0 - 2 * margin)) * _SH
 
-        self._fig = Figure(figsize=(fig_w, fig_h), facecolor="#0d0d1a")
-        self._canvas = FigureCanvasQTAgg(self._fig)
-        self._canvas_layout.addWidget(self._canvas)
+            plot = pg.PlotItem()
+            plot.setGeometry(QRectF(cx - _PW / 2, cy - _PH / 2, _PW, _PH))
+            self._scene.addItem(plot)
+            lbl = self._style_plot(plot, ch)
+            self._ch_labels.append(lbl)
 
-        self._axes: dict[str, object] = {}
-        for i, band_name in enumerate(self._visible_bands):
-            ax = self._fig.add_subplot(n_rows, n_cols, i + 1)
-            ax.set_facecolor("#0d0d1a")
-            ax.set_title(band_name, color="#b0b0c8", fontsize=10, pad=4)
-            self._axes[band_name] = ax
+            zl = pg.InfiniteLine(
+                pos=0, angle=90,
+                pen=pg.mkPen(_BORDER, width=1, style=Qt.PenStyle.DashLine),
+            )
+            plot.addItem(zl)
+            self._zl_items.append(zl)
 
-        self._fig.tight_layout(pad=1.2)
+            for cond in self._conditions:
+                col = self._cmap[cond]
+                curve = plot.plot(
+                    self._times, np.zeros(self._n_t),
+                    pen=pg.mkPen(col, width=self._linewidth),
+                )
+                self._curves[cond].append(curve)
 
-    def _rebuild_canvas(self) -> None:
-        old = self._canvas_layout.itemAt(0)
-        if old is not None:
-            w = old.widget()
-            self._canvas_layout.removeWidget(w)
-            w.deleteLater()
+                upper = plot.plot(self._times, np.zeros(self._n_t), pen=None)
+                lower = plot.plot(self._times, np.zeros(self._n_t), pen=None)
+                qcol = QColor(col)
+                qcol.setAlpha(55)
+                fill = pg.FillBetweenItem(upper, lower, brush=pg.mkBrush(qcol))
+                fill.setVisible(False)
+                plot.addItem(fill)
+                self._sem_upper[cond].append(upper)
+                self._sem_lower[cond].append(lower)
+                self._sem_fills[cond].append(fill)
 
-        self._fig.clear()
-        self._axes.clear()
-        self._build_canvas()
+            self._plots.append(plot)
 
-        if self._last_data is not None:
-            self._update_topomaps(self._last_data)
-        else:
-            self._canvas.draw()
+    def _style_plot(self, plot: pg.PlotItem, ch: str) -> pg.TextItem:
+        plot.setMenuEnabled(False)
+        plot.hideButtons()
+        plot.setMouseEnabled(x=False, y=False)
+        for ax in ("bottom", "left", "top", "right"):
+            plot.showAxis(ax, False)
+        plot.setContentsMargins(0, 0, 0, 0)
+        lbl = pg.TextItem(ch, color=_DIM, anchor=(0, 1))
+        lbl.setFont(QFont("Helvetica", 6))
+        plot.addItem(lbl)
+        lbl.setPos(self.tmin, 0)
+        return lbl
 
-    def _build_control_panel(self) -> QScrollArea:
+    def _fit_view(self) -> None:
+        if not self._plots:
+            return
+        rects = [p.geometry() for p in self._plots]
+        x0 = min(r.x() for r in rects)
+        y0 = min(r.y() for r in rects)
+        x1 = max(r.x() + r.width() for r in rects)
+        y1 = max(r.y() + r.height() for r in rects)
+        pad_x = (x1 - x0) * 0.08
+        pad_y = (y1 - y0) * 0.10
+        self._gview.fitInView(
+            QRectF(x0 - pad_x, y0 - pad_y, x1 - x0 + 2 * pad_x, y1 - y0 + 2 * pad_y),
+            Qt.AspectRatioMode.KeepAspectRatio,
+        )
+
+    def showEvent(self, event) -> None:  # noqa: N802
+        super().showEvent(event)
+        self._fit_view()
+
+    def resizeEvent(self, event) -> None:  # noqa: N802
+        super().resizeEvent(event)
+        self._fit_view()
+
+    # -----------------------------------------------------------------------
+    # Sidebar build
+    # -----------------------------------------------------------------------
+
+    def _build_sidebar(self) -> QScrollArea:
         scroll = QScrollArea()
+        scroll.setFixedWidth(_SIDEBAR_W + 14)
         scroll.setWidgetResizable(True)
-        scroll.setFixedWidth(215)
         scroll.setHorizontalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
+        scroll.setStyleSheet(
+            f"QScrollArea {{ background:{_SURFACE}; "
+            f"border-left:1px solid {_BORDER}; }}"
+        )
 
-        panel = QWidget()
-        layout = QVBoxLayout(panel)
-        layout.setSpacing(8)
-        layout.setContentsMargins(6, 6, 6, 6)
+        sb = QWidget()
+        sb.setStyleSheet(f"background:{_SURFACE};")
+        ly = QVBoxLayout(sb)
+        ly.setSpacing(4)
+        ly.setContentsMargins(10, 12, 10, 12)
 
-        layout.addWidget(self._grp_playback())
-        layout.addWidget(self._grp_display())
-        layout.addWidget(self._grp_bands())
-        layout.addStretch()
+        # ── Header ───────────────────────────────────────────────────────
+        hdr = QLabel("ERP CONTROLS")
+        hdr.setStyleSheet(
+            f"color:{_TEXT}; font-size:11px; font-weight:700; letter-spacing:1.5px;"
+        )
+        ly.addWidget(hdr)
 
-        scroll.setWidget(panel)
+        # Unit badge next to header
+        self._unit_lbl = QLabel(f"[{self._unit}]")
+        self._unit_lbl.setStyleSheet(
+            f"color:{_ACCENT}; font-size:10px; font-weight:600; "
+            f"background:{_SURFACE}; border:1px solid {_BORDER}; "
+            "border-radius:3px; padding:1px 5px;"
+        )
+        row_hdr, lhdr = _row(sb)
+        lhdr.addWidget(hdr, stretch=1)
+        lhdr.addWidget(self._unit_lbl)
+        ly.addWidget(row_hdr)
+        ly.addWidget(_sep(sb))
+
+        # ── CONDITIONS ───────────────────────────────────────────────────
+        ly.addWidget(_section("CONDITIONS", sb))
+        self._cond_checks: dict[str, QCheckBox] = {}
+        self._cond_n_lbl:  dict[str, QLabel]    = {}
+
+        for cond in self._conditions:
+            col = self._cmap[cond]
+            rw, rl = _row(sb)
+            cb = QCheckBox()
+            cb.setChecked(True)
+            cb.setStyleSheet(
+                f"QCheckBox::indicator:checked{{"
+                f"background:{col};border-color:{col};}}"
+            )
+            cb.toggled.connect(lambda chk, c=cond: self._toggle_cond(c, chk))
+            self._cond_checks[cond] = cb
+            dot = QLabel(f"● {cond}")
+            dot.setStyleSheet(f"color:{col};font-size:11px;font-weight:600;")
+            dot.setWordWrap(True)
+            n_lbl = _val_lbl("n = 0", sb, color=_DIM)
+            self._cond_n_lbl[cond] = n_lbl
+            rl.addWidget(cb); rl.addWidget(dot, stretch=1); rl.addWidget(n_lbl)
+            ly.addWidget(rw)
+
+        ly.addWidget(_sep(sb))
+
+        # ── AMPLITUDE ────────────────────────────────────────────────────
+        ly.addWidget(_section("AMPLITUDE", sb))
+
+        r1, l1 = _row(sb)
+        l1.addWidget(_key_lbl("Y scale", sb), stretch=1)
+        self._sv_lbl = _val_lbl("×1.0", sb)
+        l1.addWidget(self._sv_lbl)
+        ly.addWidget(r1)
+        self._scale_sl = _slider(sb, 1, 50, 5)
+        self._scale_sl.valueChanged.connect(self._on_scale)
+        ly.addWidget(self._scale_sl)
+        self._yscale = 1.0
+
+        r2, l2 = _row(sb)
+        l2.addWidget(_key_lbl("Line width", sb), stretch=1)
+        self._lw_lbl = _val_lbl("1.5", sb)
+        l2.addWidget(self._lw_lbl)
+        ly.addWidget(r2)
+        self._lw_sl = _slider(sb, 1, 8, 3)
+        self._lw_sl.valueChanged.connect(self._on_linewidth)
+        ly.addWidget(self._lw_sl)
+
+        rbt, lbt = _row(sb, 6)
+        auto_btn = QPushButton("Auto scale")
+        auto_btn.clicked.connect(self._auto_scale)
+        lbt.addWidget(auto_btn)
+        ly.addWidget(rbt)
+
+        ly.addWidget(_sep(sb))
+
+        # ── SMOOTHING ────────────────────────────────────────────────────
+        ly.addWidget(_section("SMOOTHING", sb))
+        r3, l3 = _row(sb)
+        l3.addWidget(_key_lbl("Window", sb), stretch=1)
+        self._sm_lbl = _val_lbl("Off", sb)
+        l3.addWidget(self._sm_lbl)
+        ly.addWidget(r3)
+        self._smooth_sl = _slider(sb, 0, 50, 0)
+        self._smooth_sl.valueChanged.connect(self._on_smooth)
+        ly.addWidget(self._smooth_sl)
+
+        ly.addWidget(_sep(sb))
+
+        # ── RE-REFERENCE ─────────────────────────────────────────────────
+        ly.addWidget(_section("RE-REFERENCE", sb))
+
+        self._reref_cb = QComboBox(sb)
+        self._reref_cb.addItem("None (raw)")
+        self._reref_cb.addItem("Average reference")
+        mastoid_names = [self.ch_names[i] for i in self._mastoid_idx]
+        if mastoid_names:
+            self._reref_cb.addItem(f"Mastoids ({', '.join(mastoid_names)})")
+        else:
+            self._reref_cb.addItem("Mastoids (not found)")
+            self._reref_cb.model().item(2).setEnabled(False)
+        self._reref_cb.currentIndexChanged.connect(self._on_reref)
+        ly.addWidget(self._reref_cb)
+
+        ly.addWidget(_sep(sb))
+
+        # ── TIME WINDOW ──────────────────────────────────────────────────
+        ly.addWidget(_section("TIME WINDOW", sb))
+        tmin_ms = int(self.tmin * 1000)
+        tmax_ms = int(self.tmax * 1000)
+
+        r4, l4 = _row(sb)
+        l4.addWidget(_key_lbl("Start", sb), stretch=1)
+        self._xstart_lbl = _val_lbl(f"{tmin_ms} ms", sb)
+        l4.addWidget(self._xstart_lbl)
+        ly.addWidget(r4)
+        self._xstart_sl = _slider(sb, tmin_ms, 0, tmin_ms)
+        self._xstart_sl.valueChanged.connect(self._on_xrange)
+        ly.addWidget(self._xstart_sl)
+
+        r5, l5 = _row(sb)
+        l5.addWidget(_key_lbl("End", sb), stretch=1)
+        self._xend_lbl = _val_lbl(f"{tmax_ms} ms", sb)
+        l5.addWidget(self._xend_lbl)
+        ly.addWidget(r5)
+        self._xend_sl = _slider(sb, 0, tmax_ms, tmax_ms)
+        self._xend_sl.valueChanged.connect(self._on_xrange)
+        ly.addWidget(self._xend_sl)
+
+        ly.addWidget(_sep(sb))
+
+        # ── APPEARANCE ───────────────────────────────────────────────────
+        ly.addWidget(_section("APPEARANCE", sb))
+
+        ly.addWidget(_key_lbl("Background", sb))
+        sw_row, sw_l = _row(sb, 5)
+        self._bg_swatches: list[QPushButton] = []
+        for label, hex_col, _ in _BG_PRESETS:
+            btn = QPushButton()
+            btn.setFixedSize(28, 22)
+            btn.setToolTip(label)
+            active = hex_col == _BG
+            border = f"2px solid {_ACCENT}" if active else f"1px solid {_BORDER}"
+            btn.setStyleSheet(
+                f"background:{hex_col}; border:{border}; border-radius:4px;"
+            )
+            btn.clicked.connect(lambda _, c=hex_col: self._set_bg(c))
+            sw_l.addWidget(btn)
+            self._bg_swatches.append(btn)
+        sw_l.addStretch()
+        ly.addWidget(sw_row)
+        ly.addSpacing(4)
+
+        self._sem_chk = QCheckBox("±1 SEM shading")
+        self._sem_chk.setChecked(False)
+        self._sem_chk.toggled.connect(self._toggle_sem)
+        ly.addWidget(self._sem_chk)
+
+        self._labels_chk = QCheckBox("Channel labels")
+        self._labels_chk.setChecked(True)
+        self._labels_chk.toggled.connect(self._toggle_labels)
+        ly.addWidget(self._labels_chk)
+
+        self._zl_chk = QCheckBox("Stimulus line")
+        self._zl_chk.setChecked(True)
+        self._zl_chk.toggled.connect(self._toggle_zl)
+        ly.addWidget(self._zl_chk)
+
+        ly.addWidget(_sep(sb))
+
+        # ── DATA ─────────────────────────────────────────────────────────
+        ly.addWidget(_section("DATA", sb))
+        self._total_lbl = QLabel("Total: 0 trials")
+        self._total_lbl.setStyleSheet(f"color:{_TEXT};font-size:11px;")
+        ly.addWidget(self._total_lbl)
+        ly.addSpacing(4)
+
+        reset_btn = QPushButton("Reset epochs")
+        reset_btn.setToolTip("Clear all accumulated epochs")
+        reset_btn.clicked.connect(self._reset_epochs)
+        ly.addWidget(reset_btn)
+
+        export_btn = QPushButton("Export PNG …")
+        export_btn.setToolTip("Save current plot as PNG")
+        export_btn.clicked.connect(self._export_png)
+        ly.addWidget(export_btn)
+
+        ly.addStretch()
+        scroll.setWidget(sb)
         return scroll
 
-    def _grp_playback(self) -> QGroupBox:
-        grp = QGroupBox("Playback")
-        lay = QVBoxLayout(grp)
+    # -----------------------------------------------------------------------
+    # Sidebar callbacks
+    # -----------------------------------------------------------------------
 
-        self._btn_pause = QPushButton("⏸  Pause")
-        self._btn_pause.setCheckable(True)
-        self._btn_pause.clicked.connect(self._toggle_pause)
+    def _toggle_cond(self, cond: str, visible: bool) -> None:
+        for c in self._curves[cond]:
+            c.setVisible(visible)
+        for f in self._sem_fills[cond]:
+            f.setVisible(visible and self._show_sem)
 
-        btn_shot = QPushButton("📷  Screenshot")
-        btn_shot.clicked.connect(self._screenshot)
+    def _on_scale(self, value: int) -> None:
+        self._yscale = value / 5.0
+        self._sv_lbl.setText(f"×{self._yscale:.1f}")
+        self._apply_y_range()
 
-        btn_freeze = QPushButton("🔒  Freeze clim")
-        btn_freeze.setCheckable(True)
-        btn_freeze.clicked.connect(self._toggle_freeze_clim)
-        self._btn_freeze = btn_freeze
+    def _apply_y_range(self) -> None:
+        avgs = []
+        for cond in self._conditions:
+            if self._cond_checks.get(cond, QCheckBox()).isChecked():
+                buf = self._epoch_buf[cond]
+                if buf:
+                    avg = np.mean(np.stack(buf, 0), 0) * self._unit_scale
+                    avgs.append(self._apply_reref(avg))
+        if not avgs:
+            return
+        amp = float(np.percentile(np.abs(np.stack(avgs, 0)), 99)) or 1e-12
+        half = amp * self._yscale
+        for plot in self._plots:
+            plot.setYRange(-half, half, padding=0.05)
 
-        for w in (self._btn_pause, btn_shot, btn_freeze):
-            lay.addWidget(w)
-        return grp
+    def _auto_scale(self) -> None:
+        self._scale_sl.setValue(5)  # triggers _on_scale → _apply_y_range
 
-    def _grp_display(self) -> QGroupBox:
-        grp = QGroupBox("Display")
-        lay = QVBoxLayout(grp)
+    def _on_linewidth(self, value: int) -> None:
+        self._linewidth = value * 0.5
+        self._lw_lbl.setText(f"{self._linewidth:.1f}")
+        for cond in self._conditions:
+            col = self._cmap[cond]
+            for curve in self._curves[cond]:
+                curve.setPen(pg.mkPen(col, width=self._linewidth))
 
-        row_cmap = QHBoxLayout()
-        row_cmap.addWidget(QLabel("Colormap:"))
-        self._cmb_cmap = QComboBox()
-        for c in _CMAPS:
-            self._cmb_cmap.addItem(c)
-        self._cmb_cmap.setCurrentText(self._cmap)
-        self._cmb_cmap.currentTextChanged.connect(self._change_cmap)
-        row_cmap.addWidget(self._cmb_cmap)
-        lay.addLayout(row_cmap)
+    def _on_smooth(self, value: int) -> None:
+        self._smooth_ms = float(value)
+        self._sm_lbl.setText("Off" if value == 0 else f"{value} ms")
+        total = sum(self._n_per.values())
+        if total > 0:
+            self._redraw(total)
 
-        row_cont = QHBoxLayout()
-        row_cont.addWidget(QLabel("Contours:"))
-        self._spn_contours = QSpinBox()
-        self._spn_contours.setRange(0, 12)
-        self._spn_contours.setValue(self._contours)
-        self._spn_contours.valueChanged.connect(self._change_contours)
-        row_cont.addWidget(self._spn_contours)
-        lay.addLayout(row_cont)
+    def _smooth(self, y: np.ndarray) -> np.ndarray:
+        if self._smooth_ms <= 0:
+            return y
+        n = max(1, int(self._smooth_ms * 1e-3 * self.sfreq))
+        if n < 2:
+            return y
+        return np.convolve(y, np.ones(n) / n, mode="same")
 
-        chk_sensors = QCheckBox("Show sensors")
-        chk_sensors.setChecked(self._sensors)
-        chk_sensors.toggled.connect(self._toggle_sensors)
-        lay.addWidget(chk_sensors)
+    def _on_reref(self, index: int) -> None:
+        modes = ["none", "average", "mastoids"]
+        self._reref_mode = modes[index] if index < len(modes) else "none"
+        total = sum(self._n_per.values())
+        if total > 0:
+            self._redraw(total)
 
-        return grp
+    def _apply_reref(self, avg: np.ndarray) -> np.ndarray:
+        """Apply re-referencing to avg (n_ch, n_times). Returns copy."""
+        if self._reref_mode == "average":
+            return avg - avg.mean(0, keepdims=True)
+        if self._reref_mode == "mastoids" and self._mastoid_idx:
+            ref = avg[self._mastoid_idx].mean(0)
+            return avg - ref
+        return avg
 
-    def _grp_bands(self) -> QGroupBox:
-        grp = QGroupBox("Bands")
-        lay = QVBoxLayout(grp)
-        lay.setSpacing(3)
+    def _on_xrange(self) -> None:
+        x1 = self._xstart_sl.value() / 1000.0
+        x2 = self._xend_sl.value() / 1000.0
+        if x1 >= x2:
+            return
+        self._x_start = x1
+        self._x_end   = x2
+        self._xstart_lbl.setText(f"{int(x1 * 1000)} ms")
+        self._xend_lbl.setText(f"{int(x2 * 1000)} ms")
+        for plot in self._plots:
+            plot.setXRange(x1, x2, padding=0)
 
-        self._band_checks: dict[str, QCheckBox] = {}
-        for band_name in self._bands:
-            chk = QCheckBox(band_name)
-            chk.setChecked(band_name in self._visible_bands)
-            chk.toggled.connect(
-                lambda checked, b=band_name: self._toggle_band(b, checked)
+    def _set_bg(self, color: str) -> None:
+        self._plot_bg = color
+        self._gview.setBackground(color)
+        for plot in self._plots:
+            plot.getViewBox().setBackgroundColor(color)
+        for btn, (_, hex_col, _) in zip(self._bg_swatches, _BG_PRESETS):
+            active = hex_col == color
+            border = f"2px solid {_ACCENT}" if active else f"1px solid {_BORDER}"
+            btn.setStyleSheet(
+                f"background:{hex_col}; border:{border}; border-radius:4px;"
             )
-            lay.addWidget(chk)
-            self._band_checks[band_name] = chk
 
-        return grp
+    def _toggle_sem(self, visible: bool) -> None:
+        self._show_sem = visible
+        for cond in self._conditions:
+            checked = self._cond_checks.get(cond, QCheckBox()).isChecked()
+            for f in self._sem_fills[cond]:
+                f.setVisible(visible and checked)
+        if visible:
+            total = sum(self._n_per.values())
+            if total > 0:
+                self._redraw(total)
 
-    # ------------------------------------------------------------------
-    # Callbacks
-    # ------------------------------------------------------------------
+    def _toggle_labels(self, visible: bool) -> None:
+        for lbl in self._ch_labels:
+            lbl.setVisible(visible)
 
-    def _toggle_pause(self, checked: bool) -> None:
-        self._paused = checked
-        self._btn_pause.setText("▶  Resume" if checked else "⏸  Pause")
+    def _toggle_zl(self, v: bool) -> None:
+        for item in self._zl_items:
+            item.setVisible(v)
 
-    def _toggle_freeze_clim(self, checked: bool) -> None:
-        self._freeze_clim = checked
-        self._btn_freeze.setText("🔓  Unfreeze clim" if checked else "🔒  Freeze clim")
+    def _reset_epochs(self) -> None:
+        for cond in self._conditions:
+            self._epoch_buf[cond] = []
+            self._n_per[cond]     = 0
+            self._cond_n_lbl[cond].setText("n = 0")
+            for curve in self._curves[cond]:
+                curve.setData(self._times, np.zeros(self._n_t))
+            for upper, lower, fill in zip(
+                self._sem_upper[cond], self._sem_lower[cond], self._sem_fills[cond]
+            ):
+                upper.setData(self._times, np.zeros(self._n_t))
+                lower.setData(self._times, np.zeros(self._n_t))
+                fill.setVisible(False)
+        self._total_lbl.setText("Total: 0 trials")
 
-    def _screenshot(self) -> None:
-        from PyQt6.QtWidgets import QFileDialog
-        ts = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
-        default = str(Path.home() / f"ant_topo_{ts}.png")
+    def _export_png(self) -> None:
         path, _ = QFileDialog.getSaveFileName(
-            self, "Save Screenshot", default, "PNG Image (*.png)"
+            self, "Export Topo ERP Plot", "topo_plot.png",
+            "PNG Image (*.png);;JPEG Image (*.jpg)",
         )
-        if not path:
-            return
-        self._fig.savefig(path, dpi=150, facecolor=self._fig.get_facecolor())
-        self._status.showMessage(f"Screenshot saved: {Path(path).name}")
+        if path:
+            self.grab().save(path)
 
-    def _change_cmap(self, cmap: str) -> None:
-        self._cmap = cmap
-        if self._last_data is not None and not self._paused:
-            self._update_topomaps(self._last_data)
+    # -----------------------------------------------------------------------
+    # Public API
+    # -----------------------------------------------------------------------
 
-    def _change_contours(self, val: int) -> None:
-        self._contours = val
-        if self._last_data is not None and not self._paused:
-            self._update_topomaps(self._last_data)
+    def update(
+        self,
+        data:       np.ndarray,
+        conditions: list[str],
+    ) -> None:
+        """Redraw all channel plots with updated condition averages.
 
-    def _toggle_sensors(self, checked: bool) -> None:
-        self._sensors = checked
-        if self._last_data is not None and not self._paused:
-            self._update_topomaps(self._last_data)
-
-    def _toggle_band(self, band_name: str, checked: bool) -> None:
-        orig_order = list(self._bands.keys())
-        if checked and band_name not in self._visible_bands:
-            self._visible_bands = [
-                b for b in orig_order
-                if b in self._visible_bands or b == band_name
-            ]
-        elif not checked and band_name in self._visible_bands:
-            self._visible_bands.remove(band_name)
-        self._rebuild_canvas()
-
-    # ------------------------------------------------------------------
-    # Core update logic
-    # ------------------------------------------------------------------
-
-    def _compute_band_powers(self, data: np.ndarray) -> dict[str, np.ndarray]:
-        """Compute per-channel FFT mean power for each frequency band.
+        Thread-safe — may be called from the acquisition thread.
 
         Parameters
         ----------
-        data : ndarray of shape (n_channels, n_times)
-
-        Returns
-        -------
-        dict mapping band label → ndarray of shape (n_topo_picks,)
+        data : ndarray, shape (n_epochs, n_channels, n_times)
+            All accepted epochs so far.
+        conditions : list of str
+            Condition label for each epoch; ``len(conditions) == data.shape[0]``.
         """
-        topo_data = data[self._topo_picks]
-        n_times = topo_data.shape[1]
-        win = np.hanning(n_times)
-        fft_out = np.fft.rfft(topo_data * win, axis=1)
-        freqs = np.fft.rfftfreq(n_times, d=1.0 / self._sfreq)
-        psd = np.abs(fft_out) ** 2
+        n_total = len(conditions)
+        for cond in self._conditions:
+            mask = np.array([c == cond for c in conditions])
+            self._epoch_buf[cond] = list(data[mask]) if mask.any() else []
+            self._n_per[cond]     = int(mask.sum())
+        self._redraw_sig.emit(n_total)
 
-        result: dict[str, np.ndarray] = {}
-        for band_name, (flo, fhi) in self._bands.items():
-            mask = (freqs >= flo) & (freqs <= fhi)
-            if not mask.any():
-                result[band_name] = np.zeros(len(self._topo_picks))
+    def _redraw(self, n_total: int) -> None:
+        self._total_lbl.setText(f"Total: {n_total} trials")
+
+        for cond in self._conditions:
+            self._cond_n_lbl[cond].setText(f"n = {self._n_per[cond]}")
+            buf = self._epoch_buf[cond]
+            n   = len(buf)
+
+            if buf:
+                stack = np.stack(buf, 0)
+                avg   = np.mean(stack, 0)          # (n_ch, n_t)
+                sem   = (np.std(stack, 0, ddof=1) / np.sqrt(n)
+                         if n >= 2 else np.zeros_like(avg))
             else:
-                result[band_name] = psd[:, mask].mean(axis=1)
-        return result
+                avg = np.zeros((self._n_ch, self._n_t))
+                sem = np.zeros_like(avg)
 
-    def _update_topomaps(self, data: np.ndarray) -> None:
-        """Redraw all visible topomaps from a raw data window."""
-        band_powers = self._compute_band_powers(data)
-        if self._display_alpha < 1.0:
-            for band, pw in band_powers.items():
-                if band not in self._bp_ema:
-                    self._bp_ema[band] = pw.copy()
-                else:
-                    self._bp_ema[band] = self._display_alpha * pw + (1.0 - self._display_alpha) * self._bp_ema[band]
-                band_powers[band] = self._bp_ema[band]
-        topo_info = mne.pick_info(self._info, self._topo_picks)
+            # Apply re-reference then unit scaling
+            avg = self._apply_reref(avg) * self._unit_scale
+            sem = sem * self._unit_scale
 
-        freeze = getattr(self, "_freeze_clim", False)
+            checked = self._cond_checks.get(cond, QCheckBox()).isChecked()
 
-        for band_name, ax in self._axes.items():
-            powers = band_powers.get(band_name)
-            if powers is None:
-                continue
+            for ch_i, curve in enumerate(self._curves[cond]):
+                y = avg[ch_i]
+                if len(y) != self._n_t:
+                    y = np.interp(
+                        self._times,
+                        np.linspace(self.tmin, self.tmax, len(y)), y
+                    )
+                curve.setData(self._times, self._smooth(y))
 
-            if not freeze:
-                vmax = float(np.percentile(np.abs(powers), 97)) or 1e-20
-                if self._cmap in ("RdBu_r", "RdYlBu_r", "bwr"):
-                    vmin, vmax_use = -vmax, vmax
-                else:
-                    vmin, vmax_use = 0.0, vmax
-                self._clim_cache = getattr(self, "_clim_cache", {})
-                self._clim_cache[band_name] = (vmin, vmax_use)
-            else:
-                cache = getattr(self, "_clim_cache", {})
-                vmin, vmax_use = cache.get(band_name, (-1e-20, 1e-20))
+                if self._show_sem and n >= 2:
+                    s = sem[ch_i]
+                    self._sem_upper[cond][ch_i].setData(self._times, y + s)
+                    self._sem_lower[cond][ch_i].setData(self._times, y - s)
+                    self._sem_fills[cond][ch_i].setVisible(checked)
 
-            ax.clear()
-            ax.set_facecolor("#0d0d1a")
-            ax.set_title(band_name, color="#b0b0c8", fontsize=10, pad=4)
-
-            try:
-                mne.viz.plot_topomap(
-                    powers,
-                    topo_info,
-                    axes=ax,
-                    show=False,
-                    cmap=self._cmap,
-                    vlim=(vmin, vmax_use),
-                    sensors=self._sensors,
-                    contours=self._contours,
-                    res=32,
-                    extrapolate="auto",
-                )
-            except Exception as _e:
-                ax.text(
-                    0.5, 0.5, f"Topo error:\n{_e}",
-                    transform=ax.transAxes,
-                    ha="center", va="center",
-                    color="#606080", fontsize=7,
-                    wrap=True,
-                )
-
-        self._fig.tight_layout(pad=1.2)
-        self._canvas.draw_idle()
-
-    # ------------------------------------------------------------------
-    # Public interface
-    # ------------------------------------------------------------------
-
-    def push(self, data: np.ndarray) -> None:
-        """Update all visible topomaps from a new raw data window.
-
-        Called at ~5 fps by the Qt pump timer inside
-        :meth:`~mne_rt.RTStream.record_main`.
-
-        Parameters
-        ----------
-        data : ndarray of shape (n_channels, n_times)
-            Raw EEG/MEG data for the current analysis window.
-
-        Notes
-        -----
-        The call is a no-op when paused (⏸ button pressed).  Band power
-        is estimated via FFT and the topomaps are redrawn via
-        :func:`mne.viz.plot_topomap`.
-        """
-        if self._paused:
-            return
-        self._last_data = data
-        self._update_topomaps(data)
-        now = datetime.datetime.now().strftime("%H:%M:%S.%f")[:-3]
-        self._status.showMessage(f"Updated {now}")
+        self._apply_y_range()
