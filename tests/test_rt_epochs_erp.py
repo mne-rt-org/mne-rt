@@ -1,8 +1,8 @@
-"""Test RTEpochs + ERPPlot with a mock LSL player.
+"""Test RTEpochs + TopoPlot with a mock LSL player.
 
 Uses the MNE sample dataset (MEG + EEG + STIM) to drive a PlayerLSL,
 collects 10 epochs via RTEpochs (backed by mne_lsl.EpochsStream), and
-verifies shapes and ERPPlot data path.
+verifies shapes and TopoPlot data path.
 
 Run with:
     python tests/test_rt_epochs_erp.py
@@ -101,10 +101,10 @@ print("  [PASS] RTEpochs shape OK")
 
 
 # ---------------------------------------------------------------------------
-# 3. Test ERPPlot data path (headless — no window shown)
+# 3. Test TopoPlot data path (headless — no window shown)
 # ---------------------------------------------------------------------------
-print("\n[ERPPlot] Testing data computation path …")
-from mne_rt.viz.erp_plot import ERPPlot
+print("\n[TopoPlot] Testing data computation path …")
+from mne_rt.viz.topo_plot import TopoPlot
 
 ch_names_eeg = [c for c in raw_trim.ch_names if c.startswith("EEG")]
 sfreq = raw_trim.info["sfreq"]
@@ -117,12 +117,12 @@ n_ch = len(ch_names_eeg)
 fake_epochs = rng.standard_normal((4, n_ch, n_times)) * 1e-6  # (4, 60, 301)
 fake_conditions = ["auditory/left", "auditory/right", "auditory/left", "auditory/right"]
 
-# ERPPlot.__init__ needs Qt; wrap in try/except so the test degrades gracefully
+# TopoPlot.__init__ needs Qt; wrap in try/except so the test degrades gracefully
 try:
     from PyQt6.QtWidgets import QApplication
     app = QApplication.instance() or QApplication(sys.argv)
 
-    erp = ERPPlot(
+    erp = TopoPlot(
         ch_names=ch_names_eeg,
         sfreq=sfreq,
         tmin=tmin,
@@ -144,14 +144,14 @@ try:
         buf = np.stack(erp._epoch_buf[cond], axis=0)
         actual_avg = buf.mean(axis=0)
         np.testing.assert_allclose(actual_avg, expected_avg, rtol=1e-5)
-        print(f"  [PASS] ERPPlot average correct for condition '{cond}'")
+        print(f"  [PASS] TopoPlot average correct for condition '{cond}'")
 
-    print("  [PASS] ERPPlot data path OK")
+    print("  [PASS] TopoPlot data path OK")
 
 except ImportError as e:
     print(f"  [SKIP] Qt not available in this environment: {e}")
 except Exception as e:
-    print(f"  [FAIL] ERPPlot error: {e}")
+    print(f"  [FAIL] TopoPlot error: {e}")
     raise
 
 print("\nAll tests passed.")
