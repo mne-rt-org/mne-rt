@@ -79,21 +79,21 @@ def common_kw():
 
 
 # ---------------------------------------------------------------------------
-# ERPPlot
+# TopoPlot  (scalp-layout ERP display)
 # ---------------------------------------------------------------------------
 
-class TestERPPlot:
+class TestTopoPlot:
     def test_construct(self, qt_app, common_kw):
-        from mne_rt.viz.erp_plot import ERPPlot
-        w = ERPPlot(**common_kw)
+        from mne_rt.viz.topo_plot import TopoPlot
+        w = TopoPlot(**common_kw)
         assert w is not None
         assert w.ch_names == CH_NAMES
         assert w.sfreq == SFREQ
         w.close()
 
     def test_update_populates_buffer(self, qt_app, common_kw):
-        from mne_rt.viz.erp_plot import ERPPlot
-        w = ERPPlot(**common_kw)
+        from mne_rt.viz.topo_plot import TopoPlot
+        w = TopoPlot(**common_kw)
         data, conds = _make_epochs(10)
         w.update(data, conds)
         qt_app.processEvents()
@@ -104,8 +104,8 @@ class TestERPPlot:
         w.close()
 
     def test_update_single_condition(self, qt_app, common_kw):
-        from mne_rt.viz.erp_plot import ERPPlot
-        w = ERPPlot(**common_kw)
+        from mne_rt.viz.topo_plot import TopoPlot
+        w = TopoPlot(**common_kw)
         data, _ = _make_epochs(6)
         conds   = ["left"] * 6
         w.update(data, conds)
@@ -115,8 +115,8 @@ class TestERPPlot:
         w.close()
 
     def test_times_shape(self, qt_app, common_kw):
-        from mne_rt.viz.erp_plot import ERPPlot
-        w = ERPPlot(**common_kw)
+        from mne_rt.viz.topo_plot import TopoPlot
+        w = TopoPlot(**common_kw)
         assert w._times.shape == (N_TIMES,)
         w.close()
 
@@ -251,7 +251,7 @@ class TestRawPlot:
         w = RawPlot(CH_NAMES, sfreq=SFREQ, time_window=5.0)
         data = RNG.standard_normal((N_CH, 100)).astype(np.float32) * 1e-6
         w.push(data)
-        qt_app.processEvents()
+        w._flush_data_queue()   # drain queue synchronously (timer-based in production)
         assert np.any(w._buf != 0.0)
         w.close()
 
@@ -286,7 +286,7 @@ class TestRawPlot:
         # All-ones input after average ref → every channel should be ~0
         data = np.ones((N_CH, 64), dtype=np.float64) * 1e-6
         w.push(data)
-        qt_app.processEvents()
+        w._flush_data_queue()
         stored = w._buf[:, -64:]
         assert np.allclose(stored, 0.0, atol=1e-12)
         w.close()
@@ -356,4 +356,74 @@ class TestTopomapPlot:
         # Re-enable
         w._band_checks[first_band].setChecked(True)
         assert first_band in w._visible_bands
+        w.close()
+
+
+# ---------------------------------------------------------------------------
+# EpochPlot
+# ---------------------------------------------------------------------------
+
+class TestEpochPlot:
+    def test_construct(self, qt_app):
+        from mne_rt.viz.epoch_plot import EpochPlot
+        w = EpochPlot(CH_NAMES, sfreq=SFREQ, tmin=-0.1, tmax=0.5)
+        assert w._n_ch == N_CH
+        assert w._sfreq == SFREQ
+        assert w._tmin == -0.1
+        assert w._tmax == 0.5
+        assert w._buf.shape == (N_CH, int(SFREQ * 10.0))
+        w.close()
+
+    def test_push_fills_buffer(self, qt_app):
+        from mne_rt.viz.epoch_plot import EpochPlot
+        w = EpochPlot(CH_NAMES, sfreq=SFREQ, time_window=5.0)
+        data = RNG.standard_normal((N_CH, 100)).astype(np.float32) * 1e-6
+        w.push(data)
+        w._process_pending()    # drain queue synchronously (timer-based in production)
+        assert np.any(w._buf != 0.0)
+        assert w._total_pushed == 100
+        w.close()
+
+    def test_push_respects_pause(self, qt_app):
+        from mne_rt.viz.epoch_plot import EpochPlot
+        w = EpochPlot(CH_NAMES, sfreq=SFREQ)
+        w._paused = True
+        data = RNG.standard_normal((N_CH, 50)).astype(np.float32) * 1e-6
+        w.push(data)
+        assert not np.any(w._buf != 0.0)
+        assert w._total_pushed == 0
+        w.close()
+
+    def test_push_trigger_adds_entry(self, qt_app):
+        from mne_rt.viz.epoch_plot import EpochPlot
+        w = EpochPlot(CH_NAMES, sfreq=SFREQ, event_id={"stim": 1})
+        data = RNG.standard_normal((N_CH, 64)).astype(np.float32) * 1e-6
+        w.push(data)
+        w.push_trigger(code=1)
+        w._process_pending()    # drain queue synchronously
+        assert len(w._triggers) == 1
+        trig_abs, trig_code = w._triggers[0]
+        assert trig_abs == 64
+        assert trig_code == 1
+        w.close()
+
+    def test_apply_epoch_window(self, qt_app):
+        from mne_rt.viz.epoch_plot import EpochPlot
+        w = EpochPlot(CH_NAMES, sfreq=SFREQ)
+        w._tmin_spin.setValue(-0.2)
+        w._tmax_spin.setValue(0.8)
+        w._apply_epoch_window()
+        assert w._tmin == -0.2
+        assert w._tmax == 0.8
+        w.close()
+
+    def test_clear_triggers(self, qt_app):
+        from mne_rt.viz.epoch_plot import EpochPlot
+        w = EpochPlot(CH_NAMES, sfreq=SFREQ)
+        data = RNG.standard_normal((N_CH, 32)).astype(np.float32) * 1e-6
+        w.push(data); w.push_trigger(1); w.push_trigger(2)
+        w._process_pending()    # drain queue so triggers land in _triggers
+        assert len(w._triggers) == 2
+        w._clear_triggers()
+        assert len(w._triggers) == 0
         w.close()
