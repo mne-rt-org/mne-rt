@@ -14,7 +14,7 @@ Full end-to-end pipeline with ANT:
    clearly visible as modulation in every NF feature.
 
 The three interactive windows — :class:`~mne_rt.viz.SignalPlot` (NF signal),
-:class:`~mne_rt.viz.TopoPlot` (scalp topomap), and
+:class:`~mne_rt.viz.TopomapPlot` (scalp topomap), and
 :class:`~mne_rt.viz.BrainPlot` (3D brain) — open automatically during
 ``record_main`` when ``show_nf_signal=True``, ``show_topo=True``, and
 ``show_brain_activation=True`` respectively.  This example runs headlessly
