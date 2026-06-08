@@ -1,0 +1,42 @@
+
+
+Examples using ``mne_rt.BadChannelDetector``
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+
+.. start-sphx-glr-thumbnails
+
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbnails">
+
+.. thumbnail-parent-div-open
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="EEG and MEG recordings often contain disconnected, noisy, or poorly coupled channels that contaminate downstream artifact correction and NF feature extraction.  BadChannelDetector evaluates independent criteria per incoming window and uses a rolling majority-vote to flag persistently bad channels — no baseline recording is needed.">
+
+.. only:: html
+
+  .. image:: /auto_examples/images/thumb/sphx_glr_ex_bad_channel_detection_thumb.png
+    :alt:
+
+  :doc:`/auto_examples/ex_bad_channel_detection`
+
+.. raw:: html
+
+      <div class="sphx-glr-thumbnail-title">Real-time bad channel detection</div>
+    </div>
+
+
+.. only:: not html
+
+ * :doc:`/auto_examples/ex_bad_channel_detection`
+
+.. thumbnail-parent-div-close
+
+.. raw:: html
+
+    </div>
+

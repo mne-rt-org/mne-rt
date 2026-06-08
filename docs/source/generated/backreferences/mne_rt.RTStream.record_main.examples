@@ -1,0 +1,42 @@
+
+
+Examples using ``mne_rt.RTStream.record_main``
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+
+.. start-sphx-glr-thumbnails
+
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbnails">
+
+.. thumbnail-parent-div-open
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="Full end-to-end pipeline with ANT:">
+
+.. only:: html
+
+  .. image:: /auto_examples/images/thumb/sphx_glr_ex_complete_nf_session_thumb.png
+    :alt:
+
+  :doc:`/auto_examples/ex_complete_nf_session`
+
+.. raw:: html
+
+      <div class="sphx-glr-thumbnail-title">Complete closed-loop NF session</div>
+    </div>
+
+
+.. only:: not html
+
+ * :doc:`/auto_examples/ex_complete_nf_session`
+
+.. thumbnail-parent-div-close
+
+.. raw:: html
+
+    </div>
+
