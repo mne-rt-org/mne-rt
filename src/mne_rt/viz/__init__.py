@@ -6,6 +6,9 @@ NFPlot
     Scrolling dark-themed multi-channel NF signal monitor (PyQt6 + pyqtgraph).
 RawPlot
     Scrolling dark-themed raw M/EEG channel viewer (PyQt6 + pyqtgraph).
+EpochPlot
+    Scrolling raw viewer with epoch/trigger overlays (tmin/tmax window, event
+    markers, shaded epoch regions).
 BrainPlot
     Interactive 3D cortical surface with activity overlay (PyVista).
 TopomapPlot
@@ -23,6 +26,7 @@ CompareEvoked
 """
 from .nf_plot import NFPlot
 from .raw_plot import RawPlot
+from .epoch_plot import EpochPlot
 from .brain_plot import BrainPlot
 from .topomap_plot import TopomapPlot
 from .topo_plot import TopoPlot
@@ -33,6 +37,7 @@ from .compare_evoked import CompareEvoked
 __all__ = [
     "NFPlot",
     "RawPlot",
+    "EpochPlot",
     "BrainPlot",
     "TopomapPlot",
     "TopoPlot",
