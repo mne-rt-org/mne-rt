@@ -70,6 +70,102 @@ _VIEW_PRESETS: dict[str, dict] = {
     "ventral":    {"position": (0, 0, -450),  "focal": (0, 0, 0), "up": (0, 1, 0)},
 }
 
+# Dark stylesheet for the Qt control panel — matches the dark UI of other plots
+_PANEL_DARK_STYLE = """
+    QWidget {
+        background: #161b22;
+        color: #e6edf3;
+        font-family: -apple-system, 'Segoe UI', sans-serif;
+        font-size: 11px;
+    }
+    QGroupBox {
+        border: 1px solid #30363d;
+        border-radius: 6px;
+        margin-top: 10px;
+        padding-top: 8px;
+        color: #8b949e;
+        font-weight: 600;
+        font-size: 10px;
+    }
+    QGroupBox::title {
+        subcontrol-origin: margin;
+        left: 8px;
+        padding: 0 4px;
+        color: #8b949e;
+    }
+    QLabel { color: #c9d1d9; background: transparent; }
+    QComboBox {
+        background: #21262d;
+        border: 1px solid #30363d;
+        border-radius: 5px;
+        padding: 4px 8px;
+        color: #e6edf3;
+    }
+    QComboBox::drop-down { border: none; width: 18px; }
+    QComboBox QAbstractItemView {
+        background: #161b22;
+        border: 1px solid #30363d;
+        color: #e6edf3;
+        selection-background-color: #1f6feb;
+    }
+    QSlider::groove:horizontal {
+        height: 3px;
+        background: #30363d;
+        border-radius: 2px;
+    }
+    QSlider::handle:horizontal {
+        background: #58a6ff;
+        width: 12px;
+        height: 12px;
+        margin: -5px 0;
+        border-radius: 6px;
+    }
+    QSlider::sub-page:horizontal {
+        background: #388bfd;
+        border-radius: 2px;
+    }
+    QPushButton {
+        background: #21262d;
+        border: 1px solid #30363d;
+        border-radius: 5px;
+        padding: 5px 8px;
+        color: #c9d1d9;
+        font-weight: 500;
+    }
+    QPushButton:hover { background: #30363d; border-color: #8b949e; color: #e6edf3; }
+    QPushButton:pressed { background: #1f6feb; border-color: #388bfd; color: #ffffff; }
+    QCheckBox { spacing: 6px; color: #c9d1d9; }
+    QCheckBox::indicator {
+        width: 13px; height: 13px;
+        border-radius: 3px;
+        border: 1px solid #30363d;
+        background: #21262d;
+    }
+    QCheckBox::indicator:checked { background: #238636; border-color: #2ea043; }
+    QDoubleSpinBox {
+        background: #21262d;
+        border: 1px solid #30363d;
+        border-radius: 5px;
+        padding: 3px 6px;
+        color: #e6edf3;
+    }
+    QDoubleSpinBox::up-button, QDoubleSpinBox::down-button {
+        background: #30363d; border: none; width: 14px;
+    }
+    QDockWidget { color: #e6edf3; background: #0d1117; }
+    QDockWidget::title {
+        background: #161b22;
+        border-bottom: 1px solid #30363d;
+        padding: 6px 8px;
+        color: #e6edf3;
+        font-weight: 700;
+    }
+    QScrollBar:vertical { background: #0d1117; width: 8px; border-radius: 4px; }
+    QScrollBar::handle:vertical {
+        background: #30363d; border-radius: 4px; min-height: 20px;
+    }
+"""
+
 # Background colour presets  (bottom_hex, top_hex)
 _BACKGROUNDS: dict[str, tuple[str, str]] = {
     "Deep space":   ("#040810", "#0b1628"),
@@ -310,6 +406,7 @@ class BrainPlot:
         panel = QWidget()
         panel.setMinimumWidth(210)
         panel.setMaximumWidth(260)
+        panel.setStyleSheet(_PANEL_DARK_STYLE)
         root = QVBoxLayout(panel)
         root.setSpacing(6)
         root.setContentsMargins(6, 6, 6, 6)
@@ -334,7 +431,7 @@ class BrainPlot:
         ly.addWidget(self._parc_combo)
         self._parc_status_lbl = QLabel("")
         self._parc_status_lbl.setWordWrap(True)
-        self._parc_status_lbl.setStyleSheet("color:#555; font-size:9px;")
+        self._parc_status_lbl.setStyleSheet("color:#8b949e; font-size:9px;")
         ly.addWidget(self._parc_status_lbl)
         root.addWidget(grp)
 
@@ -477,7 +574,7 @@ class BrainPlot:
         mode_combo.addItems(_DISPLAY_MODES)
         mode_combo.setCurrentText(self._display_mode)
         mode_lbl = QLabel(
-            "<span style='color:#666;font-size:9px;'>"
+            "<span style='color:#8b949e;font-size:9px;'>"
             "Configure RTStream modality to match selected mode"
             "</span>"
         )
@@ -500,7 +597,7 @@ class BrainPlot:
         self._custom_lo_spin.setSuffix(" Hz")
         self._custom_lo_spin.setDecimals(1)
         dash_lbl2 = QLabel("–")
-        dash_lbl2.setStyleSheet("color:#888;")
+        dash_lbl2.setStyleSheet("color:#8b949e;")
         self._custom_hi_spin = QDoubleSpinBox()
         self._custom_hi_spin.setRange(1.0, 500.0)
         self._custom_hi_spin.setValue(30.0)
@@ -521,7 +618,7 @@ class BrainPlot:
         ly.addLayout(btn_band_row)
 
         self._custom_band_lbl = QLabel("No custom band set")
-        self._custom_band_lbl.setStyleSheet("color:#555; font-size:10px;")
+        self._custom_band_lbl.setStyleSheet("color:#8b949e; font-size:10px;")
         self._custom_band_lbl.setWordWrap(True)
         ly.addWidget(self._custom_band_lbl)
         root.addWidget(grp)
@@ -540,7 +637,7 @@ class BrainPlot:
 
         # ── Keyboard hint ─────────────────────────────────────────────────
         hint = QLabel(
-            "<span style='color:#555; font-size:10px;'>"
+            "<span style='color:#8b949e; font-size:10px;'>"
             "Keys: 1-5 views · i/p/w/h surface · s screenshot · r reset"
             "</span>"
         )
@@ -769,7 +866,7 @@ class BrainPlot:
         self._custom_band_hz = None
         self._display_mode = _DISPLAY_MODES[0]
         self._custom_band_lbl.setText("No custom band set")
-        self._custom_band_lbl.setStyleSheet("color:#555; font-size:10px;")
+        self._custom_band_lbl.setStyleSheet("color:#8b949e; font-size:10px;")
         logger.info("BrainPlot custom band cleared")
 
     @property
