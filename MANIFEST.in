@@ -1,0 +1,13 @@
+include LICENSE
+include README.md
+include pyproject.toml
+include src/mne_rt/config_methods.yml
+
+# Docs, examples and build artefacts are not needed to install the package
+prune docs
+prune build
+prune tests
+prune examples
+prune paper
+prune material
+prune data
