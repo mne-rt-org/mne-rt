@@ -1,6 +1,6 @@
 """Real-time scalp topomap and band-power display.
 
-Dark-themed window built on PyQt6 + matplotlib (embedded via
+Dark-themed window built on Qt (via qtpy) + matplotlib (embedded via
 :class:`~matplotlib.backends.backend_qtagg.FigureCanvasQTAgg`).  Displays one
 topomap per selected frequency band, updated in real-time from raw EEG/MEG
 windows.
@@ -18,8 +18,8 @@ from typing import Optional
 
 import numpy as np
 
-from PyQt6.QtCore import Qt
-from PyQt6.QtWidgets import (
+from qtpy.QtCore import Qt
+from qtpy.QtWidgets import (
     QCheckBox,
     QComboBox,
     QDoubleSpinBox,
@@ -118,7 +118,7 @@ class TopomapPlot(QMainWindow):
     """Real-time scalp topomap showing per-band power distribution.
 
     Displays one colour-mapped topomap per selected frequency band,
-    updated in real-time by :meth:`push`.  Built on PyQt6 with a
+    updated in real-time by :meth:`push`.  Built on Qt (via qtpy) with a
     matplotlib figure embedded via
     :class:`~matplotlib.backends.backend_qtagg.FigureCanvasQTAgg`.
 
@@ -477,7 +477,7 @@ class TopomapPlot(QMainWindow):
         self._btn_freeze.setText("🔓  Unfreeze clim" if checked else "🔒  Freeze clim")
 
     def _screenshot(self) -> None:
-        from PyQt6.QtWidgets import QFileDialog
+        from qtpy.QtWidgets import QFileDialog
         ts = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
         default = str(Path.home() / f"ant_topo_{ts}.png")
         path, _ = QFileDialog.getSaveFileName(

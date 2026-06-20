@@ -18,9 +18,9 @@ from typing import Optional, Union
 import numpy as np
 
 try:
-    from PyQt6.QtCore import Qt, pyqtSignal
-    from PyQt6.QtGui import QFont, QColor
-    from PyQt6.QtWidgets import (
+    from qtpy.QtCore import Qt, Signal
+    from qtpy.QtGui import QFont, QColor
+    from qtpy.QtWidgets import (
         QApplication, QMainWindow, QWidget,
         QVBoxLayout, QHBoxLayout, QLabel,
         QCheckBox, QSlider, QPushButton,
@@ -207,7 +207,7 @@ class ButterflyPlot(QMainWindow):
     """
 
     # Emitted from any thread; Qt delivers it to _redraw on the main thread.
-    _redraw_sig = pyqtSignal(int)
+    _redraw_sig = Signal(int)
 
     def __init__(
         self,
@@ -224,7 +224,7 @@ class ButterflyPlot(QMainWindow):
     ) -> None:
         if not _qt_available or not _pg_available:
             raise ImportError(
-                "PyQt6 and pyqtgraph are required for ButterflyPlot.\n"
+                "A Qt binding (PyQt6 or PySide6) and pyqtgraph are required for ButterflyPlot.\n"
                 "Install with: pip install 'mne-rt[full]'"
             )
         _app = QApplication.instance() or QApplication([])  # noqa: F841

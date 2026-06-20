@@ -119,7 +119,7 @@ fake_conditions = ["auditory/left", "auditory/right", "auditory/left", "auditory
 
 # TopoPlot.__init__ needs Qt; wrap in try/except so the test degrades gracefully
 try:
-    from PyQt6.QtWidgets import QApplication
+    from qtpy.QtWidgets import QApplication
     app = QApplication.instance() or QApplication(sys.argv)
 
     erp = TopoPlot(

@@ -1,6 +1,6 @@
 """Real-time raw M/EEG channel viewer.
 
-Dark-themed scrolling raw signal display built on PyQt6 + pyqtgraph.
+Dark-themed scrolling raw signal display built on Qt (via qtpy) + pyqtgraph.
 
 Classes
 -------
@@ -16,8 +16,8 @@ from pathlib import Path
 import numpy as np
 import pyqtgraph as pg
 import pyqtgraph.exporters
-from PyQt6.QtCore import QEvent, QObject, Qt, QTimer
-from PyQt6.QtWidgets import (
+from qtpy.QtCore import QEvent, QObject, Qt, QTimer
+from qtpy.QtWidgets import (
     QCheckBox,
     QComboBox,
     QDoubleSpinBox,
@@ -976,7 +976,7 @@ class RawPlot(QMainWindow):
         self._redraw()
 
     def _screenshot(self) -> None:
-        from PyQt6.QtWidgets import QFileDialog
+        from qtpy.QtWidgets import QFileDialog
         ts = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
         default = str(Path.home() / f"raw_plot_{ts}.png")
         path, _ = QFileDialog.getSaveFileName(

@@ -11,9 +11,9 @@ Main entry points
 :class:`~mne_rt.RTEpochs`
     Event-triggered epoch accumulator with per-trial feature statistics.
 :class:`~mne_rt.viz.NFPlot`
-    Scrolling multi-channel real-time NF signal monitor (PyQt6 + pyqtgraph).
+    Scrolling multi-channel real-time NF signal monitor (Qt + pyqtgraph).
 :class:`~mne_rt.viz.RawPlot`
-    Scrolling raw M/EEG channel viewer (PyQt6 + pyqtgraph).
+    Scrolling raw M/EEG channel viewer (Qt + pyqtgraph).
 :class:`~mne_rt.viz.TopoPlot`
     Live-updating scalp-layout ERP display — one mini-plot per electrode,
     ±SEM shading, re-referencing, and unit-aware amplitude display.

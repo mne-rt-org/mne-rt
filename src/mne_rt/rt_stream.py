@@ -1158,7 +1158,7 @@ class RTStream(ModalityMixin):
         # ---- Event loop or blocking join ----
 
         if needs_qt:
-            from PyQt6.QtCore import QTimer
+            from qtpy.QtCore import QTimer
 
             # Interpolation state: [prev_vals, curr_vals, step_index]
             # Linearly interpolates between consecutive NF estimates so the

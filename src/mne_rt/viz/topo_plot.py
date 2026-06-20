@@ -19,9 +19,9 @@ from typing import Optional, Union
 import numpy as np
 
 try:
-    from PyQt6.QtCore import Qt, QRectF, pyqtSignal
-    from PyQt6.QtGui  import QFont, QColor
-    from PyQt6.QtWidgets import (
+    from qtpy.QtCore import Qt, QRectF, Signal
+    from qtpy.QtGui import QFont, QColor
+    from qtpy.QtWidgets import (
         QApplication, QMainWindow, QWidget,
         QVBoxLayout, QHBoxLayout, QLabel,
         QCheckBox, QSlider, QPushButton,
@@ -180,7 +180,7 @@ class TopoPlot(QMainWindow):
     mne_rt.viz.CompareEvoked : Large per-channel view with SEM ribbons.
     """
 
-    _redraw_sig = pyqtSignal(int)
+    _redraw_sig = Signal(int)
 
     def __init__(
         self,
@@ -197,7 +197,7 @@ class TopoPlot(QMainWindow):
     ) -> None:
         if not _qt_available or not _pg_available:
             raise ImportError(
-                "PyQt6 and pyqtgraph are required for TopoPlot.\n"
+                "A Qt binding (PyQt6 or PySide6) and pyqtgraph are required for TopoPlot.\n"
                 "Install with: pip install 'mne-rt[full]'"
             )
         _app = QApplication.instance() or QApplication([])  # noqa: F841

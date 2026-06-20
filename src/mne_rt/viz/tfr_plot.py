@@ -18,9 +18,9 @@ from typing import Optional, Union
 import numpy as np
 
 try:
-    from PyQt6.QtCore import Qt, QRectF, pyqtSignal
-    from PyQt6.QtGui  import QFont, QColor, QTransform
-    from PyQt6.QtWidgets import (QApplication, QMainWindow, QWidget,
+    from qtpy.QtCore import Qt, QRectF, Signal
+    from qtpy.QtGui import QFont, QColor, QTransform
+    from qtpy.QtWidgets import (QApplication, QMainWindow, QWidget,
         QVBoxLayout, QHBoxLayout, QLabel, QCheckBox, QSlider, QPushButton,
         QFrame, QSizePolicy, QScrollArea, QFileDialog, QComboBox,
         QDoubleSpinBox)
@@ -180,7 +180,7 @@ class TFRPlot(QMainWindow):
 
     # Emitted from the worker thread; Qt delivers it to _redraw on the main
     # thread, keeping all widget mutations on the GUI thread.
-    _redraw_sig = pyqtSignal(int)
+    _redraw_sig = Signal(int)
 
     def __init__(
         self,
@@ -202,7 +202,7 @@ class TFRPlot(QMainWindow):
     ) -> None:
         if not _qt_available or not _pg_available:
             raise ImportError(
-                "PyQt6 and pyqtgraph are required for TFRPlot.\n"
+                "A Qt binding (PyQt6 or PySide6) and pyqtgraph are required for TFRPlot.\n"
                 "Install with: pip install 'mne-rt[full]'"
             )
         _app = QApplication.instance() or QApplication([])  # noqa: F841

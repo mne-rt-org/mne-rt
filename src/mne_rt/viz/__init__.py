@@ -3,9 +3,9 @@
 Classes
 -------
 NFPlot
-    Scrolling dark-themed multi-channel NF signal monitor (PyQt6 + pyqtgraph).
+    Scrolling dark-themed multi-channel NF signal monitor (Qt + pyqtgraph).
 RawPlot
-    Scrolling dark-themed raw M/EEG channel viewer (PyQt6 + pyqtgraph).
+    Scrolling dark-themed raw M/EEG channel viewer (Qt + pyqtgraph).
 EpochPlot
     Scrolling raw viewer with epoch/trigger overlays (tmin/tmax window, event
     markers, shaded epoch regions).

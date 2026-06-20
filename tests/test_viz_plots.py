@@ -51,7 +51,7 @@ def _make_epochs(n: int) -> tuple[np.ndarray, list[str]]:
 
 @pytest.fixture(scope="module")
 def qt_app():
-    from PyQt6.QtWidgets import QApplication
+    from qtpy.QtWidgets import QApplication
     app = QApplication.instance() or QApplication([])
     yield app
 

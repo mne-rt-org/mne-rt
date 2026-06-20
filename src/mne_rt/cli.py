@@ -402,7 +402,7 @@ def _cmd_info(args) -> None:
 
     lines.append(f"  Python         : {platform.python_version()}")
 
-    for pkg in ["mne", "numpy", "scipy", "pyvista", "PyQt6", "pyqtgraph",
+    for pkg in ["mne", "numpy", "scipy", "pyvista", "qtpy", "pyqtgraph",
                 "mne_lsl", "mne_connectivity", "mne_features"]:
         try:
             from importlib.metadata import version
@@ -524,7 +524,7 @@ def _cmd_demo_erp(args) -> None:
     raw_demo.save(mock_path, overwrite=True, verbose=False)
     print(f"  Saved {raw_demo.times[-1]:.0f} s demo file -> {mock_path}")
 
-    from PyQt6.QtWidgets import QApplication
+    from qtpy.QtWidgets import QApplication
     app = QApplication.instance() or QApplication(sys.argv)
 
     stim_ch  = "STI 014"

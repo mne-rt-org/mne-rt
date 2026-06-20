@@ -23,8 +23,8 @@ from pathlib import Path
 import numpy as np
 import pyqtgraph as pg
 import pyqtgraph.exporters
-from PyQt6.QtCore import QEvent, QObject, Qt, QTimer
-from PyQt6.QtWidgets import (
+from qtpy.QtCore import QEvent, QObject, Qt, QTimer
+from qtpy.QtWidgets import (
     QCheckBox,
     QDoubleSpinBox,
     QGroupBox,
@@ -393,7 +393,7 @@ class EpochPlot(QMainWindow):
         lay = QVBoxLayout(grp)
         row = QHBoxLayout()
         row.addWidget(QLabel("Time window:"))
-        from PyQt6.QtWidgets import QComboBox
+        from qtpy.QtWidgets import QComboBox
         self._cmb_tw = QComboBox()
         for secs in _TIME_WINDOW_OPTIONS:
             self._cmb_tw.addItem(f"{secs} s", secs)
@@ -583,7 +583,7 @@ class EpochPlot(QMainWindow):
         self._redraw()
 
     def _screenshot(self) -> None:
-        from PyQt6.QtWidgets import QFileDialog
+        from qtpy.QtWidgets import QFileDialog
         ts = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
         default = str(Path.home() / f"epoch_plot_{ts}.png")
         path, _ = QFileDialog.getSaveFileName(

@@ -381,12 +381,12 @@ class BrainPlot:
 
     def _add_control_panel(self, p: "_BackgroundPlotter") -> None:
         """Dock a Qt control panel on the right side of the brain window."""
-        from PyQt6.QtWidgets import (
+        from qtpy.QtWidgets import (
             QDockWidget, QWidget, QVBoxLayout, QHBoxLayout,
             QLabel, QSlider, QComboBox, QCheckBox, QPushButton, QGroupBox,
             QDoubleSpinBox,
         )
-        from PyQt6.QtCore import Qt as Qt_
+        from qtpy.QtCore import Qt as Qt_
 
         # ── helpers ──────────────────────────────────────────────────────
         def _hslider(lo: int = 0, hi: int = 100, val: int = 0) -> QSlider:

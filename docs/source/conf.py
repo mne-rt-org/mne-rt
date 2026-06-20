@@ -32,7 +32,7 @@ warnings.filterwarnings(
 )
 
 # Force a non-Qt matplotlib backend BEFORE any ant/pyqtgraph import so that
-# matplotlib does not try to version-check the mocked PyQt6.
+# matplotlib does not try to version-check the mocked Qt modules.
 os.environ.setdefault("MPLBACKEND", "Agg")
 
 # Insert the package source so autodoc can import ant regardless of CWD
@@ -45,10 +45,10 @@ sys.path.insert(0, os.path.join(_here, '..', '..', 'src'))
 # autosummary's module-import phase finds them before autodoc's own mocking.
 # ---------------------------------------------------------------------------
 _MOCK_MODULES = [
-    "PyQt6",
-    "PyQt6.QtCore",
-    "PyQt6.QtGui",
-    "PyQt6.QtWidgets",
+    "qtpy",
+    "qtpy.QtCore",
+    "qtpy.QtGui",
+    "qtpy.QtWidgets",
     "pyqtgraph",
     "pyqtgraph.Qt",
     "pyqtgraph.exporters",
@@ -79,10 +79,10 @@ for _mod in _MOCK_MODULES:
 # and drops the docstring entirely.  Replacing QMainWindow with a real (dummy)
 # Python class lets autodoc see the proper class hierarchy and renders the docs.
 class _MockQMainWindow:
-    """Placeholder used during Sphinx docs build for PyQt6.QtWidgets.QMainWindow."""
+    """Placeholder used during Sphinx docs build for qtpy.QtWidgets.QMainWindow."""
     def __init__(self, *args, **kwargs): pass
 
-sys.modules["PyQt6.QtWidgets"].QMainWindow = _MockQMainWindow
+sys.modules["qtpy.QtWidgets"].QMainWindow = _MockQMainWindow
 
 # Also tell autodoc to mock them (belt-and-suspenders)
 autodoc_mock_imports = _MOCK_MODULES
