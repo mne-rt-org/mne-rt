@@ -198,9 +198,7 @@ sphinx_gallery_conf = {
     'plot_gallery':         True,
     'download_all_examples': False,
     'show_memory':          False,
-    'backreferences_dir':   os.path.join('generated', 'backreferences'),
-    'doc_module':           ('mne_rt',),
-    'reference_url':        {'mne_rt': None},
+    'backreferences_dir':   None,
     'first_notebook_cell':  "import matplotlib\nmatplotlib.use('Agg')\n",
     'abort_on_example_error': False,
 }
