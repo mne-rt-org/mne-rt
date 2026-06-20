@@ -8,7 +8,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "mne-rt"
-version = "1.0.0"
+version = "1.0.1"
 description = "MNE-RT — real-time M/EEG signal processing and analysis"
 authors = [
     { name = "Payam S. Shabestari", email = "payam.sadeghi74@gmail.com" },
@@ -52,7 +52,6 @@ dependencies = [
     "scipy>=1.13",
     "matplotlib>=3.9",
     "nibabel>=5.0",
-    "PyQt6>=6.7",
     "pyqtgraph>=0.13",
     "qtpy>=2.4",
     "pyserial>=3.0",       # required by mne-lsl / liblsl
@@ -69,6 +68,10 @@ dependencies = [
 # ---------------------------------------------------------------------------
 
 [project.optional-dependencies]
+
+# Qt binding — install one of these (PyQt6 is the default for standalone installs)
+pyqt6 = ["PyQt6>=6.7"]
+pyside6 = ["PySide6>=6.7"]
 
 # 3-D brain visualisation (BrainPlot) — not needed for sensor-space NF
 viz = [
