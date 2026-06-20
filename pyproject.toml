@@ -8,7 +8,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "mne-rt"
-version = "1.0.1"
+version = "1.0.2"
 description = "MNE-RT — real-time M/EEG signal processing and analysis"
 authors = [
     { name = "Payam S. Shabestari", email = "payam.sadeghi74@gmail.com" },
@@ -59,7 +59,6 @@ dependencies = [
     "pyunlocbox>=0.5.2",
     "pactools>=0.3",
     "pyyaml>=6.0",
-    "python-osc>=1.8",
     "imageio[ffmpeg]>=2.28",
 ]
 
@@ -72,6 +71,8 @@ dependencies = [
 # Qt binding — install one of these (PyQt6 is the default for standalone installs)
 pyqt6 = ["PyQt6>=6.7"]
 pyside6 = ["PySide6>=6.7"]
+# OSC feedback output (not on conda-forge; install via pip if needed)
+osc = ["python-osc>=1.8"]
 
 # 3-D brain visualisation (BrainPlot) — not needed for sensor-space NF
 viz = [
