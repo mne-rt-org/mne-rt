@@ -22,6 +22,43 @@ processing**, built on [MNE-Python](https://mne.tools) and
 from amplifier to 3-D brain display — in a single API designed for neurofeedback,
 BCI, and clinical or basic-science monitoring.
 
+## Ecosystem
+
+Several MNE-affiliated packages address real-time M/EEG at different levels of
+abstraction. Here is how they relate:
+
+**[mne-realtime](https://github.com/mne-tools/mne-realtime)** was the original
+real-time extension for [MNE-Python](https://mne.tools). It offered TCP/IP client
+classes for a handful of acquisition systems (FieldTrip buffer, RtClient,
+StimServer) and a basic `RtEpochs` object for online epoching and classification.
+The package is **no longer maintained** and should not be used for new projects.
+
+**[mne-lsl](https://mne.tools/mne-lsl)** is an actively maintained, low-to-mid-level
+streaming library. It provides modern Python bindings for the
+[Lab Streaming Layer (LSL)](https://github.com/sccn/labstreaminglayer) C++ library 
+(replacement for the older [pylsl](https://github.com/labstreaminglayer/pylsl))
+— together with high-level objects: `StreamInlet` and `StreamOutlet` for reading
+and writing LSL streams, `StreamPlayer` for replaying recorded files without
+hardware, `StreamRecorder` for saving streams to disk, and `EpochStream` for
+real-time epoching with online filtering. [MNE-RT](https://payamsash.github.io/mne-rt/) 
+uses [MNE-LSL](https://mne.tools/mne-lsl) as its data-acquisition backbone.
+
+**[MNE-RT](https://payamsash.github.io/mne-rt/)** (this package) is an actively
+maintained, high-level neurofeedback and BCI application framework built on top of
+[MNE-Python](https://mne.tools) and [MNE-LSL](https://mne.tools/mne-lsl). It adds
+the full closed-loop pipeline that neither of the above provides: **neural
+feature extraction modalities** spanning sensor and source space (band power,
+ERD/ERS, laterality index, Hjorth parameters, spectral centroid, cross-frequency
+coupling, functional connectivity, graph Laplacian); **adaptive feedback
+protocols** (z-score, threshold, percentile, staircase, operant conditioning,
+reinforcement learning, sham, multi-band, and cross-session transfer); **online
+artifact correction methods** (ASR, adaptive LMS, GEDAI, ORICA, real-time
+Maxwell/SSS for MEG); and **live visualisation windows** (scrolling raw signal,
+neurofeedback signal, epoch overlays, scalp topography, interactive 3-D brain
+surface, butterfly plot, ERP comparison, and time-frequency heatmaps). It also
+handles feature combining, external feedback output via OSC and LSL outlets,
+BIDS-compatible session saving, and a full CLI.
+
 ## Highlights
 
 | Feature | Details |
