@@ -47,16 +47,9 @@ uses [MNE-LSL](https://mne.tools/mne-lsl) as its data-acquisition backbone.
 maintained, high-level neurofeedback and BCI application framework built on top of
 [MNE-Python](https://mne.tools) and [MNE-LSL](https://mne.tools/mne-lsl). It adds
 the full closed-loop pipeline that neither of the above provides: **neural
-feature extraction modalities** spanning sensor and source space (band power,
-ERD/ERS, laterality index, Hjorth parameters, spectral centroid, cross-frequency
-coupling, functional connectivity, graph Laplacian); **adaptive feedback
-protocols** (z-score, threshold, percentile, staircase, operant conditioning,
-reinforcement learning, sham, multi-band, and cross-session transfer); **online
-artifact correction methods** (ASR, adaptive LMS, GEDAI, ORICA, real-time
-Maxwell/SSS for MEG); and **live visualisation windows** (scrolling raw signal,
-neurofeedback signal, epoch overlays, scalp topography, interactive 3-D brain
-surface, butterfly plot, ERP comparison, and time-frequency heatmaps). It also
-handles feature combining, external feedback output via OSC and LSL outlets,
+feature extraction modalities** spanning sensor and source space; **adaptive feedback
+protocols**; **online artifact correction methods**; and **live visualisation windows**.
+It also handles feature combining, external feedback output via OSC and LSL outlets,
 BIDS-compatible session saving, and a full CLI.
 
 ## Highlights
