@@ -1,4 +1,4 @@
-# Advanced Neurofeedback Toolbox — Conda environment
+# MNE-RT — Conda development environment
 #
 # Fastest creation:
 #   mamba env create -f environment.yml   (install mamba once: conda install -n base -c conda-forge mamba)
@@ -7,14 +7,16 @@
 #   conda env create -f environment.yml
 #
 # Activate:
-#   conda activate ant
+#   conda activate mne-rt
 #
 # Update after pulling changes:
 #   mamba env update -f environment.yml --prune
 #
 # Tip: uv is even faster for pure-pip installs — see docs/source/install.rst.
+# Just want to use MNE-RT (not develop it)? Install the published package instead:
+#   mamba install -c conda-forge mne-rt
 
-name: ant
+name: mne-rt
 
 channels:
   - conda-forge
@@ -55,5 +57,5 @@ dependencies:
     - python-osc>=1.8
     - imageio[ffmpeg]>=2.28
     - qtpy>=2.4
-    # Install ANT itself in editable mode
+    # Install MNE-RT itself in editable mode
     - -e .

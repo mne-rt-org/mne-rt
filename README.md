@@ -76,6 +76,13 @@ pip install "mne-rt[full]"         # + 3-D viz, dev tools, docs
 <details>
 <summary>Other installation methods</summary>
 
+**conda / mamba ([conda-forge](https://anaconda.org/conda-forge/mne-rt)):**
+```bash
+mamba install -c conda-forge mne-rt
+# or, with plain conda:
+conda install -c conda-forge mne-rt
+```
+
 **uv (fast Rust-based installer):**
 ```bash
 uv pip install mne-rt

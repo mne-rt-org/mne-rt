@@ -165,9 +165,7 @@ Quick install
 
       .. code-block:: bash
 
-          mamba create -n mne-rt python=3.11
-          mamba activate mne-rt
-          pip install "mne-rt[full]"
+          mamba install -c conda-forge mne-rt
 
 See :doc:`install` for full instructions.
 

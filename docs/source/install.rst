@@ -28,8 +28,8 @@ Editable / development install
 
 .. code-block:: bash
 
-    git clone https://github.com/payamsash/ANT.git
-    cd ANT
+    git clone https://github.com/payamsash/mne-rt.git
+    cd mne-rt
     pip install -e ".[dev]"
 
 uv — recommended fast installer
@@ -61,7 +61,7 @@ directly and handles all extras.
 conda / mamba
 -------------
 
-The provided ``environment.yml`` creates a complete conda environment.
+MNE-RT is published on `conda-forge <https://anaconda.org/conda-forge/mne-rt>`_.
 **mamba** (or micromamba) is strongly recommended over plain ``conda``
 because it uses a faster C++ dependency solver.
 
@@ -70,6 +70,21 @@ because it uses a faster C++ dependency solver.
     # Install mamba into base (once)
     conda install -n base -c conda-forge mamba
 
+    # Install the latest release
+    mamba install -c conda-forge mne-rt
+
+    # Or with plain conda (slower)
+    conda install -c conda-forge mne-rt
+
+Development environment
+^^^^^^^^^^^^^^^^^^^^^^^^
+
+If you're developing MNE-RT itself (rather than just using it), the
+provided ``environment.yml`` creates a complete conda environment with
+an editable install from source.
+
+.. code-block:: bash
+
     # Create the mne-rt environment
     mamba env create -f environment.yml   # ~2 min
 
@@ -77,7 +92,7 @@ because it uses a faster C++ dependency solver.
     conda env create -f environment.yml
 
     # Activate
-    conda activate ant
+    conda activate mne-rt
 
     # Update after pulling new changes
     mamba env update -f environment.yml --prune
