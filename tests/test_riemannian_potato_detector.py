@@ -1,4 +1,5 @@
 """Tests for RiemannianPotatoDetector."""
+
 import sys
 from unittest.mock import MagicMock, patch
 
@@ -11,8 +12,8 @@ import pytest
 
 RNG = np.random.default_rng(42)
 N_CH = 8
-N_SAMP = 200   # samples per window
-N_WIN = 30     # calibration windows
+N_SAMP = 200  # samples per window
+N_WIN = 30  # calibration windows
 
 
 def _clean_windows(n_win=N_WIN, n_ch=N_CH, n_samp=N_SAMP, rng=None):
@@ -29,12 +30,14 @@ def _artifact_windows(n_win=5, n_ch=N_CH, n_samp=N_SAMP, scale=100.0):
 @pytest.fixture
 def detector():
     from mne_rt.tools import RiemannianPotatoDetector
+
     return RiemannianPotatoDetector(threshold=3.0)
 
 
 @pytest.fixture
 def fitted_detector():
     from mne_rt.tools import RiemannianPotatoDetector
+
     det = RiemannianPotatoDetector(threshold=3.0)
     det.fit(_clean_windows())
     return det
@@ -44,8 +47,10 @@ def fitted_detector():
 # Construction
 # ---------------------------------------------------------------------------
 
+
 def test_default_params():
     from mne_rt.tools import RiemannianPotatoDetector
+
     det = RiemannianPotatoDetector()
     assert det.threshold == 3.0
     assert det.estimator == "oas"
@@ -54,6 +59,7 @@ def test_default_params():
 
 def test_custom_params():
     from mne_rt.tools import RiemannianPotatoDetector
+
     det = RiemannianPotatoDetector(threshold=2.5, estimator="scm", metric="logeuclid")
     assert det.threshold == 2.5
     assert det.estimator == "scm"
@@ -62,6 +68,7 @@ def test_custom_params():
 
 def test_invalid_threshold():
     from mne_rt.tools import RiemannianPotatoDetector
+
     with pytest.raises(ValueError, match="threshold must be > 0"):
         RiemannianPotatoDetector(threshold=0.0)
     with pytest.raises(ValueError, match="threshold must be > 0"):
@@ -72,6 +79,7 @@ def test_importerror_when_pyriemann_missing():
     """Constructor must raise ImportError if pyriemann is not available."""
     with patch.dict(sys.modules, {"pyriemann": None}):
         from mne_rt.tools import riemannian_potato as mod
+
         with pytest.raises(ImportError, match="pyriemann"):
             mod.RiemannianPotatoDetector._check_pyriemann()
 
@@ -79,6 +87,7 @@ def test_importerror_when_pyriemann_missing():
 # ---------------------------------------------------------------------------
 # fit()
 # ---------------------------------------------------------------------------
+
 
 def test_fit_sets_attributes(detector):
     detector.fit(_clean_windows(n_win=20))
@@ -110,6 +119,7 @@ def test_fit_minimum_windows(detector):
 # ---------------------------------------------------------------------------
 # detect()
 # ---------------------------------------------------------------------------
+
 
 def test_detect_before_fit_raises(detector):
     window = _clean_windows(n_win=1)[0]
@@ -165,6 +175,7 @@ def test_detect_returns_tuple(fitted_detector):
 # Attributes after fit
 # ---------------------------------------------------------------------------
 
+
 def test_not_fitted_initially(detector):
     assert detector.is_fitted_ is False
     assert detector.n_channels_ == 0
@@ -181,6 +192,7 @@ def test_refit_updates_attributes(detector):
 # ---------------------------------------------------------------------------
 # __repr__
 # ---------------------------------------------------------------------------
+
 
 def test_repr_before_fit(detector):
     r = repr(detector)

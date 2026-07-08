@@ -7,6 +7,7 @@ Classes
 RawPlot
     Scrolling multi-channel raw M/EEG signal viewer.
 """
+
 from __future__ import annotations
 
 import datetime
@@ -32,7 +33,6 @@ from qtpy.QtWidgets import (
     QVBoxLayout,
     QWidget,
 )
-
 
 # ---------------------------------------------------------------------------
 # Per-channel trace colours — 20 visually distinct hues for a dark background
@@ -144,6 +144,7 @@ QScrollBar::add-page:vertical, QScrollBar::sub-page:vertical {
 # Artifact-corrector adapter classes
 # ---------------------------------------------------------------------------
 
+
 class _GEDAIWrapper:
     """Makes GEDAIDenoiser present the .transform(data) interface."""
 
@@ -166,8 +167,8 @@ class _ORICAWrapper:
     def transform(self, data: np.ndarray) -> np.ndarray:
         self._o.partial_fit(data)
         S = self._o.transform(data)
-        rms = np.sqrt(np.mean(S ** 2, axis=1))
-        noise_idx = np.argsort(rms)[-self._n:].tolist()
+        rms = np.sqrt(np.mean(S**2, axis=1))
+        noise_idx = np.argsort(rms)[-self._n :].tolist()
         S_clean = S.copy()
         S_clean[noise_idx] = 0.0
         return self._o.inverse_transform(S_clean)
@@ -176,6 +177,7 @@ class _ORICAWrapper:
 # ---------------------------------------------------------------------------
 # Event filter: intercepts wheel events on the plot viewport
 # ---------------------------------------------------------------------------
+
 
 class _WheelFilter(QObject):
     def __init__(self, callback, parent=None):
@@ -192,6 +194,7 @@ class _WheelFilter(QObject):
 # ---------------------------------------------------------------------------
 # RawPlot
 # ---------------------------------------------------------------------------
+
 
 class RawPlot(QMainWindow):
     """Scrolling raw M/EEG channel viewer.
@@ -261,6 +264,7 @@ class RawPlot(QMainWindow):
         verbose=None,
     ) -> None:
         from mne_rt._logging import set_log_level
+
         set_log_level(verbose)
         super().__init__()
 
@@ -277,8 +281,8 @@ class RawPlot(QMainWindow):
 
         # Online causal filter — SOS coefficients + per-channel state vector
         # Both reset to None when the filter is changed or the buffer is cleared.
-        self._filter_sos = None      # ndarray (n_sections, 6) or None
-        self._filter_zi  = None      # ndarray (n_ch, n_sections, 2) or None
+        self._filter_sos = None  # ndarray (n_sections, 6) or None
+        self._filter_zi = None  # ndarray (n_ch, n_sections, 2) or None
 
         # SSP projector matrix (n_ch × n_ch), applied to new incoming chunks
         self._ssp_proj = None
@@ -287,19 +291,19 @@ class RawPlot(QMainWindow):
         self._corrector = None
 
         # Re-referencing — applied in push() after the corrector
-        self._reref_type: str = "none"   # "none", "average", "mastoid", "channel"
-        self._reref_idx: int = 0         # index of the single reference channel
-        self._reref_idxs: list[int] = [] # indices for multi-channel references
+        self._reref_type: str = "none"  # "none", "average", "mastoid", "channel"
+        self._reref_idx: int = 0  # index of the single reference channel
+        self._reref_idxs: list[int] = []  # indices for multi-channel references
 
         # Bad channels — toggled by left-clicking the channel label
         self._bad_ch_idxs: set[int] = set()
 
         # Bad segments — marked by double-clicking on the signal canvas
-        self._total_pushed: int = 0           # cumulative samples pushed
-        self._bad_segs: list[tuple[float, float]] = []   # (abs_start_s, abs_end_s)
-        self._bad_seg_overlays: list = []     # pg.LinearRegionItem objects on plot
-        self._bad_seg_click1: float | None = None   # absolute session time of first click
-        self._bad_seg_start_line = None       # pg.InfiniteLine shown while waiting for end
+        self._total_pushed: int = 0  # cumulative samples pushed
+        self._bad_segs: list[tuple[float, float]] = []  # (abs_start_s, abs_end_s)
+        self._bad_seg_overlays: list = []  # pg.LinearRegionItem objects on plot
+        self._bad_seg_click1: float | None = None  # absolute session time of first click
+        self._bad_seg_start_line = None  # pg.InfiniteLine shown while waiting for end
         self._bad_seg_start_line_on_plot: bool = False
 
         # Per-channel colours and types
@@ -316,10 +320,10 @@ class RawPlot(QMainWindow):
         self._data_queue: deque = deque()
 
         # Riemannian Potato auto-bad-segment detection
-        self._rp_detector = None          # RiemannianPotatoDetector | None
+        self._rp_detector = None  # RiemannianPotatoDetector | None
         self._rp_active: bool = False
         self._rp_seg_samples: int = max(2, int(sfreq * 1.0))  # updated from spinbox
-        self._rp_last_tested: int = 0     # abs sample idx of last tested window end
+        self._rp_last_tested: int = 0  # abs sample idx of last tested window end
 
         pg.setConfigOptions(antialias=True, foreground="#c0c0d8", background="#0d0d1a")
         self._build_ui()
@@ -340,9 +344,8 @@ class RawPlot(QMainWindow):
         if self._info is not None:
             try:
                 import mne
-                self._ch_types = [
-                    mne.channel_type(self._info, i) for i in range(self._n_ch)
-                ]
+
+                self._ch_types = [mne.channel_type(self._info, i) for i in range(self._n_ch)]
             except Exception:
                 self._ch_types = ["misc"] * self._n_ch
         else:
@@ -350,9 +353,7 @@ class RawPlot(QMainWindow):
 
         # Distinct colour per channel by cycling the palette; ensures adjacent
         # channels are always distinguishable even when all share one type.
-        self._ch_colors = [
-            _TRACE_COLORS[i % len(_TRACE_COLORS)] for i in range(self._n_ch)
-        ]
+        self._ch_colors = [_TRACE_COLORS[i % len(_TRACE_COLORS)] for i in range(self._n_ch)]
 
     # ------------------------------------------------------------------
     # UI construction
@@ -374,9 +375,7 @@ class RawPlot(QMainWindow):
         self._ch_scroll.setPageStep(self._n_shown)
         self._ch_scroll.setSingleStep(1)
         self._ch_scroll.setFixedWidth(14)
-        self._ch_scroll.valueChanged.connect(
-            lambda v: self._set_page_start(v, source="scrollbar")
-        )
+        self._ch_scroll.valueChanged.connect(lambda v: self._set_page_start(v, source="scrollbar"))
         root.addWidget(self._ch_scroll)
 
         root.addSpacing(4)
@@ -846,7 +845,7 @@ class RawPlot(QMainWindow):
         # Active checkbox
         self._rp_chk = QCheckBox("Active (auto-detect)")
         self._rp_chk.setChecked(False)
-        self._rp_chk.setEnabled(False)   # enabled after calibration
+        self._rp_chk.setEnabled(False)  # enabled after calibration
         self._rp_chk.toggled.connect(self._toggle_potato_active)
         lay.addWidget(self._rp_chk)
 
@@ -914,7 +913,7 @@ class RawPlot(QMainWindow):
         pos = event.scenePos()
         btn = event.button()
         axis = self._pi.getAxis("left")
-        vb   = self._pi.getViewBox()
+        vb = self._pi.getViewBox()
 
         # ── Y-axis clicks ──────────────────────────────────────────────
         if axis.sceneBoundingRect().contains(pos):
@@ -943,8 +942,9 @@ class RawPlot(QMainWindow):
             self._status.showMessage(f"No Info available — cannot show position for {ch_name}")
             return
         try:
-            import mne
             import matplotlib.pyplot as plt
+            import mne
+
             fig = mne.viz.plot_sensors(
                 self._info,
                 show_names=True,
@@ -977,11 +977,10 @@ class RawPlot(QMainWindow):
 
     def _screenshot(self) -> None:
         from qtpy.QtWidgets import QFileDialog
+
         ts = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
         default = str(Path.home() / f"raw_plot_{ts}.png")
-        path, _ = QFileDialog.getSaveFileName(
-            self, "Save Screenshot", default, "PNG Image (*.png)"
-        )
+        path, _ = QFileDialog.getSaveFileName(self, "Save Screenshot", default, "PNG Image (*.png)")
         if not path:
             return
         exp = pg.exporters.ImageExporter(self._glw.scene())
@@ -1028,17 +1027,18 @@ class RawPlot(QMainWindow):
 
         if ft == "none":
             self._filter_sos = None
-            self._filter_zi  = None
+            self._filter_zi = None
             self._filter_status.setText("○  No filter")
             self._filter_status.setStyleSheet("color:#505070; font-size:10px;")
             return
 
         try:
             from scipy.signal import butter, iirnotch, sosfilt, sosfilt_zi, tf2sos
+
             nyq = self._sfreq / 2.0
             flo = self._flo_spin.value()
             fhi = self._fhi_spin.value()
-            fn  = self._fnotch_spin.value()
+            fn = self._fnotch_spin.value()
 
             if ft == "highpass":
                 sos = butter(4, flo / nyq, btype="high", output="sos")
@@ -1056,10 +1056,8 @@ class RawPlot(QMainWindow):
 
             # Prime the per-channel state from the current buffer tail
             # (1 s worth of samples) to avoid a transient at the start.
-            zi_base = sosfilt_zi(sos)                                   # (n_sections, 2)
-            self._filter_zi = np.zeros(
-                (self._n_ch, zi_base.shape[0], zi_base.shape[1])
-            )
+            zi_base = sosfilt_zi(sos)  # (n_sections, 2)
+            self._filter_zi = np.zeros((self._n_ch, zi_base.shape[0], zi_base.shape[1]))
             n_prime = min(int(self._sfreq), self._buf.shape[1])
             if n_prime > 0:
                 for ch in range(self._n_ch):
@@ -1069,12 +1067,10 @@ class RawPlot(QMainWindow):
 
             self._filter_sos = sos
             self._filter_status.setText(label)
-            self._filter_status.setStyleSheet(
-                "color:#80d8ff; font-size:10px; font-weight:bold;"
-            )
+            self._filter_status.setStyleSheet("color:#80d8ff; font-size:10px; font-weight:bold;")
         except Exception as exc:
             self._filter_sos = None
-            self._filter_zi  = None
+            self._filter_zi = None
             self._filter_status.setText(f"Error: {exc}")
             self._filter_status.setStyleSheet("color:#ff8080; font-size:10px;")
 
@@ -1084,6 +1080,7 @@ class RawPlot(QMainWindow):
             return
         try:
             import mne
+
             active = list(self._info.get("projs", []))
             proj, _, _ = mne.make_projector(active, self._info["ch_names"])
             self._ssp_proj = proj
@@ -1114,11 +1111,7 @@ class RawPlot(QMainWindow):
                 label = "●  Average ref"
 
             elif method == "mastoid":
-                idxs = [
-                    self._ch_names.index(n)
-                    for n in ("TP9", "TP10")
-                    if n in self._ch_names
-                ]
+                idxs = [self._ch_names.index(n) for n in ("TP9", "TP10") if n in self._ch_names]
                 if not idxs:
                     raise RuntimeError("No TP9 or TP10 channels found.")
                 self._reref_type = "mastoid"
@@ -1128,11 +1121,7 @@ class RawPlot(QMainWindow):
 
             elif method == "linked_mastoid":
                 candidates = ("TP9", "TP10", "M1", "M2", "A1", "A2")
-                idxs = [
-                    self._ch_names.index(n)
-                    for n in candidates
-                    if n in self._ch_names
-                ]
+                idxs = [self._ch_names.index(n) for n in candidates if n in self._ch_names]
                 if not idxs:
                     raise RuntimeError(
                         "No mastoid channels found (tried TP9, TP10, M1, M2, A1, A2)."
@@ -1149,9 +1138,7 @@ class RawPlot(QMainWindow):
                 label = f"●  Ref: {ref_name}"
 
             self._reref_status.setText(label)
-            self._reref_status.setStyleSheet(
-                "color:#80d8ff; font-size:10px; font-weight:bold;"
-            )
+            self._reref_status.setStyleSheet("color:#80d8ff; font-size:10px; font-weight:bold;")
         except Exception as exc:
             self._reref_type = "none"
             self._reref_status.setText(f"Error: {exc}")
@@ -1183,6 +1170,7 @@ class RawPlot(QMainWindow):
         try:
             if method == "lms":
                 from mne_rt.tools.lms import AdaptiveLMSFilter
+
                 ref_name = self._lms_ref_cmb.currentText()
                 ref_idx = self._ch_names.index(ref_name)
                 self._corrector = AdaptiveLMSFilter(ref_ch_idx=ref_idx)
@@ -1190,6 +1178,7 @@ class RawPlot(QMainWindow):
 
             elif method == "asr":
                 from mne_rt.tools.asr import ASRDenoiser
+
                 cutoff = self._asr_cut_spin.value()
                 nonzero_cols = np.any(self._buf != 0.0, axis=0)
                 n_valid = int(nonzero_cols.sum())
@@ -1206,6 +1195,7 @@ class RawPlot(QMainWindow):
 
             elif method == "gedai":
                 from mne_rt.tools.gedai import GEDAIDenoiser
+
                 nonzero_cols = np.any(self._buf != 0.0, axis=0)
                 n_valid = int(nonzero_cols.sum())
                 min_needed = max(int(self._sfreq), 30)
@@ -1218,36 +1208,31 @@ class RawPlot(QMainWindow):
                 hi = self._gedai_hi_spin.value()
                 n_noise = self._gedai_noise_spin.value()
                 gedai = GEDAIDenoiser(n_channels=self._n_ch)
-                gedai.fit_from_raw(
-                    self._buf[:, nonzero_cols], self._sfreq, band=(lo, hi)
-                )
+                gedai.fit_from_raw(self._buf[:, nonzero_cols], self._sfreq, band=(lo, hi))
                 self._corrector = _GEDAIWrapper(gedai, n_noise)
                 label = f"●  GEDAI  ({lo:.0f}–{hi:.0f} Hz, rm {n_noise})"
 
             elif method == "orica":
                 from mne_rt.tools.orica import ORICA
+
                 n_remove = self._orica_n_spin.value()
                 self._corrector = _ORICAWrapper(ORICA(n_channels=self._n_ch), n_remove)
-                label = (
-                    f"●  ORICA  (rm {n_remove} IC{'s' if n_remove > 1 else ''})"
-                )
+                label = f"●  ORICA  (rm {n_remove} IC{'s' if n_remove > 1 else ''})"
 
             elif method == "maxwell":
                 if self._info is None:
                     raise RuntimeError(
-                        "Maxwell filter requires mne.Info. "
-                        "Pass info= when constructing RawPlot."
+                        "Maxwell filter requires mne.Info. Pass info= when constructing RawPlot."
                     )
                 from mne_rt.tools.maxwell import RTMaxwellFilter
+
                 mf = RTMaxwellFilter()
                 mf.fit(self._info)
                 self._corrector = mf
                 label = "●  Maxwell SSS"
 
             self._corr_status.setText(label)
-            self._corr_status.setStyleSheet(
-                "color:#80d8ff; font-size:10px; font-weight:bold;"
-            )
+            self._corr_status.setStyleSheet("color:#80d8ff; font-size:10px; font-weight:bold;")
         except Exception as exc:
             self._corrector = None
             self._corr_status.setText(f"Error: {exc}")
@@ -1268,9 +1253,7 @@ class RawPlot(QMainWindow):
         # call, which breaks the circular buffer write in _flush_data_queue.
         bads = sorted(self._bad_ch_idxs)
         if bads:
-            self._status.showMessage(
-                f"Bad channels: {', '.join(self._ch_names[i] for i in bads)}"
-            )
+            self._status.showMessage(f"Bad channels: {', '.join(self._ch_names[i] for i in bads)}")
         else:
             self._status.showMessage("No bad channels marked")
         self._update_tick_labels()
@@ -1283,9 +1266,9 @@ class RawPlot(QMainWindow):
     def _on_bad_seg_click(self, x_val: float) -> None:
         # Convert plot x-coordinate to absolute session time immediately, so
         # that a scrolling buffer between click 1 and click 2 doesn't shift it.
-        buf_size    = self._buf.shape[1]
+        buf_size = self._buf.shape[1]
         buf_start_s = max(0.0, (self._total_pushed - buf_size) / self._sfreq)
-        abs_time    = buf_start_s + x_val
+        abs_time = buf_start_s + x_val
 
         if self._bad_seg_click1 is None:
             # First double-click — store absolute start time
@@ -1297,11 +1280,11 @@ class RawPlot(QMainWindow):
             self._status.showMessage(
                 f"Bad segment start: {abs_time:.2f} s — double-click to set end"
             )
-            self._redraw()   # redraws start indicator via _update_bad_seg_overlays
+            self._redraw()  # redraws start indicator via _update_bad_seg_overlays
         else:
             # Second double-click — finalize segment
             abs_start = self._bad_seg_click1
-            abs_end   = abs_time
+            abs_end = abs_time
             self._bad_seg_click1 = None
             if self._bad_seg_start_line is not None:
                 if self._bad_seg_start_line_on_plot:
@@ -1315,15 +1298,11 @@ class RawPlot(QMainWindow):
                 abs_start, abs_end = abs_end, abs_start
             self._bad_segs.append((abs_start, abs_end))
             n = len(self._bad_segs)
-            self._bad_seg_count_lbl.setText(
-                f"{n} bad segment{'s' if n > 1 else ''}"
-            )
+            self._bad_seg_count_lbl.setText(f"{n} bad segment{'s' if n > 1 else ''}")
             self._bad_seg_count_lbl.setStyleSheet("color:#ff8a65; font-size:10px;")
             self._bad_seg_status_lbl.setText("Ready")
             self._bad_seg_status_lbl.setStyleSheet("color:#505070; font-size:10px;")
-            self._status.showMessage(
-                f"Bad segment added: {abs_start:.2f}–{abs_end:.2f} s"
-            )
+            self._status.showMessage(f"Bad segment added: {abs_start:.2f}–{abs_end:.2f} s")
             self._redraw()
 
     def _update_bad_seg_overlays(self) -> None:
@@ -1331,7 +1310,7 @@ class RawPlot(QMainWindow):
             self._pi.removeItem(region)
         self._bad_seg_overlays.clear()
 
-        buf_size    = self._buf.shape[1]
+        buf_size = self._buf.shape[1]
         buf_start_s = max(0.0, (self._total_pushed - buf_size) / self._sfreq)
 
         # ── pending start indicator ────────────────────────────────────
@@ -1348,9 +1327,9 @@ class RawPlot(QMainWindow):
             if 0.0 <= x_ind <= self._time_window:
                 if self._bad_seg_start_line is None:
                     self._bad_seg_start_line = pg.InfiniteLine(
-                        pos=x_ind, angle=90,
-                        pen=pg.mkPen(color="#ff8a65", width=2,
-                                     style=Qt.PenStyle.DashLine),
+                        pos=x_ind,
+                        angle=90,
+                        pen=pg.mkPen(color="#ff8a65", width=2, style=Qt.PenStyle.DashLine),
                     )
                 else:
                     self._bad_seg_start_line.setPos(x_ind)
@@ -1358,15 +1337,15 @@ class RawPlot(QMainWindow):
                     self._pi.addItem(self._bad_seg_start_line)
                     self._bad_seg_start_line_on_plot = True
             else:
-                _remove_start_line()   # scrolled off-screen; keep click1 state
+                _remove_start_line()  # scrolled off-screen; keep click1 state
         else:
             _remove_start_line()
             self._bad_seg_start_line = None
 
         # ── completed bad-segment regions ──────────────────────────────
-        for (abs_start, abs_end) in self._bad_segs:
+        for abs_start, abs_end in self._bad_segs:
             x_s = abs_start - buf_start_s
-            x_e = abs_end   - buf_start_s
+            x_e = abs_end - buf_start_s
             if x_e < 0 or x_s > self._time_window:
                 continue
             x_s = max(0.0, x_s)
@@ -1404,9 +1383,9 @@ class RawPlot(QMainWindow):
     # ------------------------------------------------------------------
 
     def _calibrate_potato(self) -> None:
-        seg_s  = self._rp_seg_spin.value()
-        z_thr  = self._rp_thr_spin.value()
-        n_seg  = max(2, int(self._sfreq * seg_s))
+        seg_s = self._rp_seg_spin.value()
+        z_thr = self._rp_thr_spin.value()
+        n_seg = max(2, int(self._sfreq * seg_s))
         n_wins = self._buf.shape[1] // n_seg
 
         if n_wins < 3:
@@ -1419,24 +1398,20 @@ class RawPlot(QMainWindow):
 
         try:
             from mne_rt.tools import RiemannianPotatoDetector
-            windows = np.stack([
-                self._buf[:, i * n_seg:(i + 1) * n_seg]
-                for i in range(n_wins)
-            ])  # (n_wins, n_ch, n_seg)
+
+            windows = np.stack(
+                [self._buf[:, i * n_seg : (i + 1) * n_seg] for i in range(n_wins)]
+            )  # (n_wins, n_ch, n_seg)
             det = RiemannianPotatoDetector(threshold=z_thr)
             det.fit(windows)
 
-            self._rp_detector  = det
+            self._rp_detector = det
             self._rp_seg_samples = n_seg
             self._rp_last_tested = self._total_pushed  # start detecting from now
             self._rp_chk.setEnabled(True)
-            self._rp_status_lbl.setText(
-                f"✓ Calibrated\n{n_wins} windows · z>{z_thr:.1f}"
-            )
+            self._rp_status_lbl.setText(f"✓ Calibrated\n{n_wins} windows · z>{z_thr:.1f}")
             self._rp_status_lbl.setStyleSheet("color:#69f0ae; font-size:10px;")
-            self._status.showMessage(
-                f"Potato calibrated on {n_wins} windows ({seg_s:.1f} s each)"
-            )
+            self._status.showMessage(f"Potato calibrated on {n_wins} windows ({seg_s:.1f} s each)")
         except Exception as exc:
             self._rp_detector = None
             self._rp_chk.setEnabled(False)
@@ -1447,9 +1422,7 @@ class RawPlot(QMainWindow):
         self._rp_active = checked
         if checked:
             self._rp_last_tested = self._total_pushed
-            self._rp_status_lbl.setStyleSheet(
-                "color:#69f0ae; font-size:10px; font-weight:bold;"
-            )
+            self._rp_status_lbl.setStyleSheet("color:#69f0ae; font-size:10px; font-weight:bold;")
         else:
             self._rp_status_lbl.setStyleSheet("color:#69f0ae; font-size:10px;")
 
@@ -1460,19 +1433,19 @@ class RawPlot(QMainWindow):
 
         n_seg = self._rp_seg_samples
         buf_size = self._buf.shape[1]
-        buf_start_abs = self._total_pushed - buf_size   # absolute sample of buf[:,0]
+        buf_start_abs = self._total_pushed - buf_size  # absolute sample of buf[:,0]
         added = False
 
         while (self._total_pushed - self._rp_last_tested) >= n_seg:
             win_start_abs = self._rp_last_tested
-            win_end_abs   = win_start_abs + n_seg
+            win_end_abs = win_start_abs + n_seg
             # Locate in buffer
             s = win_start_abs - buf_start_abs
-            e = win_end_abs   - buf_start_abs
+            e = win_end_abs - buf_start_abs
             self._rp_last_tested = win_end_abs
 
             if s < 0 or e > buf_size:
-                continue   # window fell outside the buffer (edge case at startup)
+                continue  # window fell outside the buffer (edge case at startup)
 
             window = self._buf[:, s:e]
             try:
@@ -1482,15 +1455,13 @@ class RawPlot(QMainWindow):
 
             if not is_clean:
                 abs_start = win_start_abs / self._sfreq
-                abs_end   = win_end_abs   / self._sfreq
+                abs_end = win_end_abs / self._sfreq
                 self._bad_segs.append((abs_start, abs_end))
                 added = True
 
         if added:
             n = len(self._bad_segs)
-            self._bad_seg_count_lbl.setText(
-                f"{n} bad segment{'s' if n > 1 else ''}"
-            )
+            self._bad_seg_count_lbl.setText(f"{n} bad segment{'s' if n > 1 else ''}")
             self._bad_seg_count_lbl.setStyleSheet("color:#ff8a65; font-size:10px;")
 
     # ------------------------------------------------------------------
@@ -1512,8 +1483,8 @@ class RawPlot(QMainWindow):
                     raw -= nz.mean()
 
             is_bad = ch_idx in self._bad_ch_idxs
-            color  = "#505050" if is_bad else self._ch_colors[ch_idx]
-            width  = 1
+            color = "#505050" if is_bad else self._ch_colors[ch_idx]
+            width = 1
             self._curves[vis_idx].setPen(pg.mkPen(color=color, width=width))
             offset = float(n_actual - 1 - vis_idx)
             self._curves[vis_idx].setData(self._time_axis, offset + raw * gain)
@@ -1555,6 +1526,7 @@ class RawPlot(QMainWindow):
         if self._filter_sos is not None and self._filter_zi is not None:
             try:
                 from scipy.signal import sosfilt
+
                 for ch in range(self._n_ch):
                     chunk[ch], self._filter_zi[ch] = sosfilt(
                         self._filter_sos, chunk[ch], zi=self._filter_zi[ch]
@@ -1605,9 +1577,7 @@ class RawPlot(QMainWindow):
             self._total_pushed += n
         self._run_potato_detection()
         end = min(self._page_start + self._n_shown, self._n_ch)
-        self._status.showMessage(
-            f"Streaming  —  ch {self._page_start + 1}–{end} of {self._n_ch}"
-        )
+        self._status.showMessage(f"Streaming  —  ch {self._page_start + 1}–{end} of {self._n_ch}")
         self._redraw()
 
     @property
@@ -1632,7 +1602,8 @@ class RawPlot(QMainWindow):
             return None
         try:
             import mne
-            onsets   = [s for s, _ in self._bad_segs]
+
+            onsets = [s for s, _ in self._bad_segs]
             durations = [e - s for s, e in self._bad_segs]
             return mne.Annotations(
                 onset=onsets,

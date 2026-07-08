@@ -14,6 +14,7 @@ Classes
 EpochPlot
     Scrolling raw viewer with epoch / trigger overlays.
 """
+
 from __future__ import annotations
 
 import datetime
@@ -38,21 +39,41 @@ from qtpy.QtWidgets import (
     QWidget,
 )
 
-
 # ---------------------------------------------------------------------------
 # Colour palettes
 # ---------------------------------------------------------------------------
 
 _TRACE_COLORS = [
-    "#4fc3f7", "#ef9a9a", "#a5d6a7", "#fff176", "#ffab91",
-    "#ce93d8", "#80cbc4", "#ffcc80", "#80deea", "#b39ddb",
-    "#f48fb1", "#c5e1a5", "#ffd54f", "#81d4fa", "#dce775",
-    "#ff8a65", "#90caf9", "#e6ee9c", "#bcaaa4", "#ffe082",
+    "#4fc3f7",
+    "#ef9a9a",
+    "#a5d6a7",
+    "#fff176",
+    "#ffab91",
+    "#ce93d8",
+    "#80cbc4",
+    "#ffcc80",
+    "#80deea",
+    "#b39ddb",
+    "#f48fb1",
+    "#c5e1a5",
+    "#ffd54f",
+    "#81d4fa",
+    "#dce775",
+    "#ff8a65",
+    "#90caf9",
+    "#e6ee9c",
+    "#bcaaa4",
+    "#ffe082",
 ]
 
 # Trigger colours: red, green, cyan, yellow, magenta, orange
 _EVENT_COLORS = [
-    "#69f0ae", "#40c4ff", "#ffff00", "#ff9e80", "#ea80fc", "#80cbc4",
+    "#69f0ae",
+    "#40c4ff",
+    "#ffff00",
+    "#ff9e80",
+    "#ea80fc",
+    "#80cbc4",
 ]
 
 _TIME_WINDOW_OPTIONS = [2, 5, 10, 20]
@@ -133,6 +154,7 @@ QScrollBar::add-page:vertical, QScrollBar::sub-page:vertical {
 # Wheel-event filter (same as RawPlot)
 # ---------------------------------------------------------------------------
 
+
 class _WheelFilter(QObject):
     def __init__(self, callback, parent=None):
         super().__init__(parent)
@@ -148,6 +170,7 @@ class _WheelFilter(QObject):
 # ---------------------------------------------------------------------------
 # EpochPlot
 # ---------------------------------------------------------------------------
+
 
 class EpochPlot(QMainWindow):
     """Real-time scrolling M/EEG viewer with epoch / trigger overlays.
@@ -210,21 +233,22 @@ class EpochPlot(QMainWindow):
         verbose=None,
     ) -> None:
         from mne_rt._logging import set_log_level
+
         set_log_level(verbose)
         super().__init__()
 
-        self._ch_names   = list(ch_names)
-        self._n_ch       = len(ch_names)
-        self._sfreq      = float(sfreq)
-        self._tmin       = float(tmin)
-        self._tmax       = float(tmax)
-        self._n_shown    = min(int(n_shown), self._n_ch)
+        self._ch_names = list(ch_names)
+        self._n_ch = len(ch_names)
+        self._sfreq = float(sfreq)
+        self._tmin = float(tmin)
+        self._tmax = float(tmax)
+        self._n_shown = min(int(n_shown), self._n_ch)
         self._time_window = float(time_window)
-        self._scale      = float(scale_uv) * 1e-6
-        self._event_id   = dict(event_id) if event_id else {}
-        self._info       = info
+        self._scale = float(scale_uv) * 1e-6
+        self._event_id = dict(event_id) if event_id else {}
+        self._info = info
         self._page_start = 0
-        self._paused     = False
+        self._paused = False
 
         # Stream state
         self._total_pushed: int = 0
@@ -249,9 +273,7 @@ class EpochPlot(QMainWindow):
         self._default_color = _EVENT_COLORS[0]
 
         # Per-channel colours
-        self._ch_colors = [
-            _TRACE_COLORS[i % len(_TRACE_COLORS)] for i in range(self._n_ch)
-        ]
+        self._ch_colors = [_TRACE_COLORS[i % len(_TRACE_COLORS)] for i in range(self._n_ch)]
 
         pg.setConfigOptions(antialias=True, foreground="#c0c0d8", background="#0d0d1a")
         self._build_ui()
@@ -283,9 +305,7 @@ class EpochPlot(QMainWindow):
         self._ch_scroll.setPageStep(self._n_shown)
         self._ch_scroll.setSingleStep(1)
         self._ch_scroll.setFixedWidth(14)
-        self._ch_scroll.valueChanged.connect(
-            lambda v: self._set_page_start(v, source="scrollbar")
-        )
+        self._ch_scroll.valueChanged.connect(lambda v: self._set_page_start(v, source="scrollbar"))
         root.addWidget(self._ch_scroll)
 
         root.addSpacing(4)
@@ -379,13 +399,18 @@ class EpochPlot(QMainWindow):
         self._scale_lbl.setAlignment(Qt.AlignmentFlag.AlignCenter)
         self._scale_lbl.setStyleSheet("color:#7ec8e3; font-size:12px; font-weight:bold;")
         row = QHBoxLayout()
-        btn_dn = QPushButton("÷2"); btn_up = QPushButton("×2")
+        btn_dn = QPushButton("÷2")
+        btn_up = QPushButton("×2")
         for b in (btn_dn, btn_up):
             b.setFixedSize(42, 26)
         btn_dn.clicked.connect(self._scale_down)
         btn_up.clicked.connect(self._scale_up)
-        row.addStretch(); row.addWidget(btn_dn); row.addWidget(btn_up); row.addStretch()
-        lay.addWidget(self._scale_lbl); lay.addLayout(row)
+        row.addStretch()
+        row.addWidget(btn_dn)
+        row.addWidget(btn_up)
+        row.addStretch()
+        lay.addWidget(self._scale_lbl)
+        lay.addLayout(row)
         return grp
 
     def _grp_display(self) -> QGroupBox:
@@ -394,13 +419,15 @@ class EpochPlot(QMainWindow):
         row = QHBoxLayout()
         row.addWidget(QLabel("Time window:"))
         from qtpy.QtWidgets import QComboBox
+
         self._cmb_tw = QComboBox()
         for secs in _TIME_WINDOW_OPTIONS:
             self._cmb_tw.addItem(f"{secs} s", secs)
         best = min(_TIME_WINDOW_OPTIONS, key=lambda s: abs(s - self._time_window))
         self._cmb_tw.setCurrentIndex(_TIME_WINDOW_OPTIONS.index(best))
         self._cmb_tw.currentIndexChanged.connect(self._change_time_window)
-        row.addWidget(self._cmb_tw); lay.addLayout(row)
+        row.addWidget(self._cmb_tw)
+        lay.addLayout(row)
         chk_grid = QCheckBox("Show grid")
         chk_grid.setChecked(True)
         chk_grid.toggled.connect(
@@ -411,7 +438,8 @@ class EpochPlot(QMainWindow):
 
     def _grp_epoch(self) -> QGroupBox:
         grp = QGroupBox("Epoch Window")
-        lay = QVBoxLayout(grp); lay.setSpacing(5)
+        lay = QVBoxLayout(grp)
+        lay.setSpacing(5)
 
         tmin_row = QHBoxLayout()
         tmin_row.addWidget(QLabel("tmin:"))
@@ -464,7 +492,8 @@ class EpochPlot(QMainWindow):
 
     def _grp_events(self) -> QGroupBox:
         grp = QGroupBox("Events")
-        lay = QVBoxLayout(grp); lay.setSpacing(4)
+        lay = QVBoxLayout(grp)
+        lay.setSpacing(4)
 
         self._event_count_lbl = QLabel("No triggers received")
         self._event_count_lbl.setStyleSheet("color:#505070; font-size:10px;")
@@ -496,17 +525,16 @@ class EpochPlot(QMainWindow):
 
     def _fmt_scale(self) -> str:
         uv = self._scale * 1e6
-        if uv >= 1000: return f"{uv / 1000:.4g} mV / row"
-        if uv >= 1:    return f"{uv:.4g} µV / row"
+        if uv >= 1000:
+            return f"{uv / 1000:.4g} mV / row"
+        if uv >= 1:
+            return f"{uv:.4g} µV / row"
         return f"{uv * 1000:.4g} nV / row"
 
     def _update_tick_labels(self) -> None:
         end = min(self._page_start + self._n_shown, self._n_ch)
         n_actual = end - self._page_start
-        ticks = [
-            (n_actual - 1 - i, self._ch_names[self._page_start + i])
-            for i in range(n_actual)
-        ]
+        ticks = [(n_actual - 1 - i, self._ch_names[self._page_start + i]) for i in range(n_actual)]
         self._pi.getAxis("left").setTicks([ticks, []])
 
     def _set_page_start(self, new_start: int, source: str = "other") -> None:
@@ -552,15 +580,20 @@ class EpochPlot(QMainWindow):
             self._status.showMessage(f"No Info — cannot show position for {ch_name}")
             return
         try:
-            import mne, matplotlib.pyplot as plt
+            import matplotlib.pyplot as plt
+            import mne
+
             fig = mne.viz.plot_sensors(
-                self._info, show_names=True,
-                title=f"Sensor position — {ch_name}", show=False,
+                self._info,
+                show_names=True,
+                title=f"Sensor position — {ch_name}",
+                show=False,
             )
             for ax in fig.axes:
                 for txt in ax.texts:
                     if txt.get_text() == ch_name:
-                        txt.set_color("#cc0000"); txt.set_fontsize(10)
+                        txt.set_color("#cc0000")
+                        txt.set_fontsize(10)
                         txt.set_fontweight("bold")
             plt.show(block=False)
         except Exception as exc:
@@ -584,12 +617,12 @@ class EpochPlot(QMainWindow):
 
     def _screenshot(self) -> None:
         from qtpy.QtWidgets import QFileDialog
+
         ts = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
         default = str(Path.home() / f"epoch_plot_{ts}.png")
-        path, _ = QFileDialog.getSaveFileName(
-            self, "Save Screenshot", default, "PNG Image (*.png)"
-        )
-        if not path: return
+        path, _ = QFileDialog.getSaveFileName(self, "Save Screenshot", default, "PNG Image (*.png)")
+        if not path:
+            return
         exp = pg.exporters.ImageExporter(self._glw.scene())
         exp.parameters()["width"] = 1920
         exp.export(path)
@@ -645,11 +678,11 @@ class EpochPlot(QMainWindow):
         if not self._triggers:
             return
 
-        buf_size   = self._buf.shape[1]
-        buf_start  = self._total_pushed - buf_size   # absolute sample of leftmost buf column
+        buf_size = self._buf.shape[1]
+        buf_start = self._total_pushed - buf_size  # absolute sample of leftmost buf column
         dash_style = Qt.PenStyle.DashLine
 
-        for (trig_abs, code) in self._triggers:
+        for trig_abs, code in self._triggers:
             # x coordinate of the trigger (t=0) in the current view
             x0 = (trig_abs - buf_start) / self._sfreq
             # Accept if the epoch window overlaps the visible range
@@ -662,7 +695,8 @@ class EpochPlot(QMainWindow):
 
             # ── solid trigger line at t=0 ──────────────────────────────
             trig_line = pg.InfiniteLine(
-                pos=x0, angle=90,
+                pos=x0,
+                angle=90,
                 pen=pg.mkPen(color=color, width=2),
             )
             self._pi.addItem(trig_line)
@@ -675,7 +709,7 @@ class EpochPlot(QMainWindow):
                     values=(x_lo, x_hi),
                     brush=pg.mkBrush(r, g, b, 30),
                     movable=False,
-                    pen=pg.mkPen(None),      # no border line on the region itself
+                    pen=pg.mkPen(None),  # no border line on the region itself
                 )
                 self._pi.addItem(region)
                 self._epoch_overlay_items.append(region)
@@ -685,7 +719,8 @@ class EpochPlot(QMainWindow):
                 for x_bnd in (x_lo, x_hi):
                     if 0 <= x_bnd <= self._time_window:
                         bnd_line = pg.InfiniteLine(
-                            pos=x_bnd, angle=90,
+                            pos=x_bnd,
+                            angle=90,
                             pen=pg.mkPen(color=color, width=1, style=dash_style),
                         )
                         self._pi.addItem(bnd_line)
@@ -701,14 +736,14 @@ class EpochPlot(QMainWindow):
     # ------------------------------------------------------------------
 
     def _redraw(self) -> None:
-        end      = min(self._page_start + self._n_shown, self._n_ch)
-        visible  = list(range(self._page_start, end))
+        end = min(self._page_start + self._n_shown, self._n_ch)
+        visible = list(range(self._page_start, end))
         n_actual = len(visible)
-        gain     = 1.0 / (self._scale + 1e-300)
+        gain = 1.0 / (self._scale + 1e-300)
 
         for vis_idx, ch_idx in enumerate(visible):
-            raw    = self._buf[ch_idx].copy()
-            color  = self._ch_colors[ch_idx]
+            raw = self._buf[ch_idx].copy()
+            color = self._ch_colors[ch_idx]
             self._curves[vis_idx].setPen(pg.mkPen(color=color, width=1))
             offset = float(n_actual - 1 - vis_idx)
             self._curves[vis_idx].setData(self._time_axis, offset + raw * gain)
@@ -735,7 +770,7 @@ class EpochPlot(QMainWindow):
         """
         if self._paused:
             return
-        self._pending.append(('data', data.copy()))
+        self._pending.append(("data", data.copy()))
 
     def push_trigger(self, code: int = 1) -> None:
         """Enqueue a trigger event at the current stream position.
@@ -749,7 +784,7 @@ class EpochPlot(QMainWindow):
         code : int, default 1
             Integer event code matched against :attr:`event_id`.
         """
-        self._pending.append(('trigger', code))
+        self._pending.append(("trigger", code))
 
     def _process_pending(self) -> None:
         """Drain the pending queue and redraw — called in the main thread at 30 Hz."""
@@ -758,7 +793,7 @@ class EpochPlot(QMainWindow):
         changed = False
         while self._pending:
             kind, payload = self._pending.popleft()
-            if kind == 'data':
+            if kind == "data":
                 n = payload.shape[1]
                 self._buf = np.roll(self._buf, -n, axis=1)
                 self._buf[:, -n:] = payload
@@ -767,9 +802,7 @@ class EpochPlot(QMainWindow):
             else:  # trigger
                 self._triggers.append((self._total_pushed, payload))
                 n_t = len(self._triggers)
-                self._event_count_lbl.setText(
-                    f"{n_t} trigger{'s' if n_t != 1 else ''} received"
-                )
+                self._event_count_lbl.setText(f"{n_t} trigger{'s' if n_t != 1 else ''} received")
                 self._event_count_lbl.setStyleSheet("color:#80d8ff; font-size:10px;")
                 changed = True
         if changed:

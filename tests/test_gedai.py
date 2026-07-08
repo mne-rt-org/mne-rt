@@ -6,12 +6,13 @@ import pytest
 RNG = np.random.default_rng(7)
 N_CH = 16
 SFREQ = 256.0
-N_T = int(SFREQ * 4)   # 4-second segment
+N_T = int(SFREQ * 4)  # 4-second segment
 
 
 @pytest.fixture()
 def gedai():
     from mne_rt.tools import GEDAIDenoiser
+
     return GEDAIDenoiser(n_channels=N_CH, shrinkage=0.05)
 
 

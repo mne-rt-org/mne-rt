@@ -18,6 +18,7 @@ Brain Stimulation, 11(3), 459–460.
 Zander, T. O., et al. (2016). Towards adaptive classification for BCI.
 Journal of Neural Engineering, 13(2), 026005.
 """
+
 from __future__ import annotations
 
 import collections
@@ -88,13 +89,9 @@ class ShamProtocol:
         rng_seed: Optional[int] = None,
     ) -> None:
         if not (0.0 <= sham_rate <= 1.0):
-            raise ValueError(
-                f"sham_rate must be in [0, 1], got {sham_rate}"
-            )
+            raise ValueError(f"sham_rate must be in [0, 1], got {sham_rate}")
         if buffer_len < 1:
-            raise ValueError(
-                f"buffer_len must be >= 1, got {buffer_len}"
-            )
+            raise ValueError(f"buffer_len must be >= 1, got {buffer_len}")
 
         self.inner = inner
         self.sham_rate: float = sham_rate
@@ -156,9 +153,7 @@ class ShamProtocol:
         """
         if hasattr(self.inner, "reset"):
             self.inner.reset()
-        self._buffer = collections.deque(
-            [(False, 0.0)] * self.buffer_len, maxlen=self.buffer_len
-        )
+        self._buffer = collections.deque([(False, 0.0)] * self.buffer_len, maxlen=self.buffer_len)
         self.n_real = 0
         self.n_sham = 0
         self.sham_log = []

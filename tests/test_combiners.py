@@ -1,4 +1,5 @@
 """Tests for mne_rt.combiners — all four concrete FeatureCombiner subclasses."""
+
 from __future__ import annotations
 
 import math
@@ -20,6 +21,7 @@ VALS = {"sensor_power": 2.0, "laterality": 0.5, "connectivity_ratio": 1.0}
 # FeatureCombiner base class
 # ---------------------------------------------------------------------------
 
+
 class TestFeatureCombiner:
     def test_abstract_combine_raises(self):
         c = FeatureCombiner(features=["sensor_power"])
@@ -39,6 +41,7 @@ class TestFeatureCombiner:
 # WeightedSumCombiner
 # ---------------------------------------------------------------------------
 
+
 class TestWeightedSumCombiner:
     def test_equal_weights_is_arithmetic_mean(self):
         c = WeightedSumCombiner(weights={"a": 1.0, "b": 1.0})
@@ -57,7 +60,7 @@ class TestWeightedSumCombiner:
 
     def test_missing_feature_skipped(self):
         c = WeightedSumCombiner(weights={"a": 1.0, "b": 1.0})
-        result = c.combine({"a": 4.0})   # b missing
+        result = c.combine({"a": 4.0})  # b missing
         assert math.isclose(result, 4.0)
 
     def test_all_missing_returns_zero_with_warning(self):
@@ -85,6 +88,7 @@ class TestWeightedSumCombiner:
 # ---------------------------------------------------------------------------
 # GeometricMeanCombiner
 # ---------------------------------------------------------------------------
+
 
 class TestGeometricMeanCombiner:
     def test_equal_features_geomean(self):
@@ -120,7 +124,7 @@ class TestGeometricMeanCombiner:
 
     def test_missing_feature_skipped(self):
         c = GeometricMeanCombiner(features=["a", "b"])
-        result = c.combine({"a": 4.0})   # b missing → only a used
+        result = c.combine({"a": 4.0})  # b missing → only a used
         assert math.isclose(result, 4.0)
 
     def test_all_missing_returns_zero_with_warning(self):
@@ -133,6 +137,7 @@ class TestGeometricMeanCombiner:
 # ---------------------------------------------------------------------------
 # ZScoredNormCombiner
 # ---------------------------------------------------------------------------
+
 
 class TestZScoredNormCombiner:
     def _warmed_up_combiner(self, features, warmup=5, baseline=1.0):
@@ -170,6 +175,7 @@ class TestZScoredNormCombiner:
         c = ZScoredNormCombiner(features=["a", "b", "c"], warmup=4)
         # Inject warmup data with std=1 around mean=0
         import math as _math
+
         samples = [-1.0, 1.0, -1.0, 1.0]
         for s in samples:
             c.combine({"a": s, "b": s, "c": s})
@@ -196,20 +202,25 @@ class TestZScoredNormCombiner:
 # LearnedCombiner
 # ---------------------------------------------------------------------------
 
+
 class _ConstantEstimator:
     """Stub estimator that always predicts a fixed constant."""
+
     def __init__(self, value: float):
         self._value = value
 
     def predict(self, X):
         import numpy as np
+
         return np.full(X.shape[0], self._value)
 
 
 class _SumEstimator:
     """Stub estimator that returns the sum of its input features."""
+
     def predict(self, X):
         import numpy as np
+
         return X.sum(axis=1)
 
 
@@ -226,14 +237,16 @@ class TestLearnedCombiner:
 
     def test_missing_feature_filled_with_zero(self):
         c = LearnedCombiner(features=["a", "b"], estimator=_SumEstimator())
-        result = c.combine({"a": 5.0})   # b missing → filled with 0.0
+        result = c.combine({"a": 5.0})  # b missing → filled with 0.0
         assert math.isclose(result, 5.0)
 
     def test_feature_order_respected(self):
         """Ensure feature vector is built in the declared order."""
+
         class _FirstFeatureEstimator:
             def predict(self, X):
                 import numpy as np
+
                 return X[:, 0]  # always returns first feature only
 
         c = LearnedCombiner(features=["target", "noise"], estimator=_FirstFeatureEstimator())

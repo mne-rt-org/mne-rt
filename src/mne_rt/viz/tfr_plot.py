@@ -9,6 +9,7 @@ Classes
 TFRPlot
     Real-time TFR display with interactive sidebar.
 """
+
 from __future__ import annotations
 
 import math
@@ -18,18 +19,33 @@ from typing import Optional, Union
 import numpy as np
 
 try:
-    from qtpy.QtCore import Qt, QRectF, Signal
-    from qtpy.QtGui import QFont, QColor, QTransform
-    from qtpy.QtWidgets import (QApplication, QMainWindow, QWidget,
-        QVBoxLayout, QHBoxLayout, QLabel, QCheckBox, QSlider, QPushButton,
-        QFrame, QSizePolicy, QScrollArea, QFileDialog, QComboBox,
-        QDoubleSpinBox)
+    from qtpy.QtCore import QRectF, Qt, Signal
+    from qtpy.QtGui import QColor, QFont, QTransform
+    from qtpy.QtWidgets import (
+        QApplication,
+        QCheckBox,
+        QComboBox,
+        QDoubleSpinBox,
+        QFileDialog,
+        QFrame,
+        QHBoxLayout,
+        QLabel,
+        QMainWindow,
+        QPushButton,
+        QScrollArea,
+        QSizePolicy,
+        QSlider,
+        QVBoxLayout,
+        QWidget,
+    )
+
     _qt_available = True
 except ImportError:
     _qt_available = False
 
 try:
     import pyqtgraph as pg
+
     _pg_available = True
 except ImportError:
     _pg_available = False
@@ -37,42 +53,43 @@ except ImportError:
 try:
     import mne
     import mne.time_frequency
+
     _mne_available = True
 except ImportError:
     _mne_available = False
 
 from mne_rt._logging import logger, set_log_level
 
-
 # ---------------------------------------------------------------------------
 # Palette  (shared with ERPPlot)
 # ---------------------------------------------------------------------------
-_BG      = "#0d1117"
+_BG = "#0d1117"
 _SURFACE = "#161b22"
-_BORDER  = "#30363d"
-_TEXT    = "#e6edf3"
-_DIM     = "#8b949e"
-_ACCENT  = "#3b82f6"
+_BORDER = "#30363d"
+_TEXT = "#e6edf3"
+_DIM = "#8b949e"
+_ACCENT = "#3b82f6"
 
 _COND_COLORS = [
-    "#3b82f6",   # blue
-    "#ec4899",   # pink
-    "#10b981",   # green
-    "#f59e0b",   # amber
-    "#8b5cf6",   # violet
-    "#06b6d4",   # cyan
+    "#3b82f6",  # blue
+    "#ec4899",  # pink
+    "#10b981",  # green
+    "#f59e0b",  # amber
+    "#8b5cf6",  # violet
+    "#06b6d4",  # cyan
 ]
 
-_SIDEBAR_W = 210   # px
+_SIDEBAR_W = 210  # px
 
 # Fallback thermal colormap stops when matplotlib is unavailable
-_THERMAL_POS   = [0.0, 0.25, 0.5, 0.75, 1.0]
+_THERMAL_POS = [0.0, 0.25, 0.5, 0.75, 1.0]
 _THERMAL_COLOR = ["#000000", "#1a237e", "#e53935", "#ffeb3b", "#ffffff"]
 
 
 # ---------------------------------------------------------------------------
 # Sidebar helpers  (same API as erp_plot.py)
 # ---------------------------------------------------------------------------
+
 
 def _sep(parent: QWidget) -> QFrame:
     f = QFrame(parent)
@@ -84,8 +101,7 @@ def _sep(parent: QWidget) -> QFrame:
 def _section(text: str, parent: QWidget) -> QLabel:
     lbl = QLabel(text, parent)
     lbl.setStyleSheet(
-        f"color:{_DIM}; font-size:10px; font-weight:700; "
-        "letter-spacing:1px; padding-top:6px;"
+        f"color:{_DIM}; font-size:10px; font-weight:700; letter-spacing:1px; padding-top:6px;"
     )
     return lbl
 
@@ -121,6 +137,7 @@ def _slider(parent: QWidget, lo: int, hi: int, val: int) -> QSlider:
 # ---------------------------------------------------------------------------
 # Main class
 # ---------------------------------------------------------------------------
+
 
 class TFRPlot(QMainWindow):
     """Real-time time-frequency representation (TFR).
@@ -184,21 +201,21 @@ class TFRPlot(QMainWindow):
 
     def __init__(
         self,
-        ch_names:    list[str],
-        sfreq:       float,
-        tmin:        float,
-        tmax:        float,
-        event_id:    dict[str, int],
-        freqs:       Optional[np.ndarray] = None,
-        n_cycles:    Union[np.ndarray, float, None] = None,
-        channels:    Optional[list[str]] = None,
-        mode:        str = "induced",
-        baseline:    Optional[tuple] = (None, 0),
-        decim:       int = 4,
+        ch_names: list[str],
+        sfreq: float,
+        tmin: float,
+        tmax: float,
+        event_id: dict[str, int],
+        freqs: Optional[np.ndarray] = None,
+        n_cycles: Union[np.ndarray, float, None] = None,
+        channels: Optional[list[str]] = None,
+        mode: str = "induced",
+        baseline: Optional[tuple] = (None, 0),
+        decim: int = 4,
         info=None,
-        montage:     str = "standard_1020",
+        montage: str = "standard_1020",
         window_size: tuple[int, int] = (1440, 900),
-        verbose:     Union[bool, str, None] = None,
+        verbose: Union[bool, str, None] = None,
     ) -> None:
         if not _qt_available or not _pg_available:
             raise ImportError(
@@ -212,29 +229,28 @@ class TFRPlot(QMainWindow):
         set_log_level(verbose)
 
         # ── Public attributes ────────────────────────────────────────────
-        self.ch_names   = list(ch_names)
-        self.sfreq      = float(sfreq)
-        self.tmin       = float(tmin)
-        self.tmax       = float(tmax)
-        self.event_id   = event_id
-        self.mode       = mode.lower()
-        self.baseline   = baseline
-        self.decim      = max(1, int(decim))
+        self.ch_names = list(ch_names)
+        self.sfreq = float(sfreq)
+        self.tmin = float(tmin)
+        self.tmax = float(tmax)
+        self.event_id = event_id
+        self.mode = mode.lower()
+        self.baseline = baseline
+        self.decim = max(1, int(decim))
 
         # ── Conditions ───────────────────────────────────────────────────
         self._conditions = list(event_id.keys())
         self._cmap = {
-            c: _COND_COLORS[i % len(_COND_COLORS)]
-            for i, c in enumerate(self._conditions)
+            c: _COND_COLORS[i % len(_COND_COLORS)] for i, c in enumerate(self._conditions)
         }
 
         # ── Time axis ────────────────────────────────────────────────────
-        self._n_t   = int(round((tmax - tmin) * sfreq)) + 1
+        self._n_t = int(round((tmax - tmin) * sfreq)) + 1
         self._times = np.linspace(tmin, tmax, self._n_t)
         # Decimated time axis — mirrors what tfr_array_morlet returns with
         # decim applied along the last axis.
-        self._times_dec = self._times[::self.decim]
-        self._n_t_dec   = len(self._times_dec)
+        self._times_dec = self._times[:: self.decim]
+        self._n_t_dec = len(self._times_dec)
 
         # ── Frequencies ──────────────────────────────────────────────────
         if freqs is None:
@@ -255,7 +271,7 @@ class TFRPlot(QMainWindow):
         self._display_idx = [self.ch_names.index(c) for c in self._display_chs]
 
         # Scalp positions for topomap channel selector (normalised, yn=0=frontal)
-        self._norm_pos    = self._compute_positions(info, montage)
+        self._norm_pos = self._compute_positions(info, montage)
         self._topo_scatter: Optional[pg.ScatterPlotItem] = None
 
         # ── Normalisation mode ───────────────────────────────────────────
@@ -264,22 +280,22 @@ class TFRPlot(QMainWindow):
         self._norm_mode = "db"
 
         # ── Thread-safety state ──────────────────────────────────────────
-        self._computing     = False
-        self._latest_data:  Optional[np.ndarray] = None
-        self._latest_conds: list[str]            = []
-        self._tfr_result:   dict[str, np.ndarray] = {}
+        self._computing = False
+        self._latest_data: Optional[np.ndarray] = None
+        self._latest_conds: list[str] = []
+        self._tfr_result: dict[str, np.ndarray] = {}
 
         # ── Colormap & color limits ──────────────────────────────────────
         self._cmap_name = "hot"
-        self._cmap_lut  = self._build_colormap()
-        self._vmin: Optional[float] = None   # None = auto
+        self._cmap_lut = self._build_colormap()
+        self._vmin: Optional[float] = None  # None = auto
         self._vmax: Optional[float] = None
 
         # ── Widget dicts (populated in _build_ui) ────────────────────────
-        self._image_items:  list[list[pg.ImageItem]] = []   # [cond_i][ch_i]
-        self._plot_items:   list[list[pg.PlotItem]]  = []   # [cond_i][ch_i]
-        self._ch_row_checks: dict[str, QCheckBox]    = {}
-        self._cond_n_lbl:   dict[str, QLabel]        = {}
+        self._image_items: list[list[pg.ImageItem]] = []  # [cond_i][ch_i]
+        self._plot_items: list[list[pg.PlotItem]] = []  # [cond_i][ch_i]
+        self._ch_row_checks: dict[str, QCheckBox] = {}
+        self._cond_n_lbl: dict[str, QLabel] = {}
 
         # ── Build window ─────────────────────────────────────────────────
         self.setWindowTitle("MNE-RT — TFR Plot")
@@ -288,10 +304,12 @@ class TFRPlot(QMainWindow):
         self._build_ui()
 
         logger.info(
-            "TFRPlot: %d display channels, %d conditions, "
-            "freqs %.0f–%.0f Hz, mode=%s",
-            len(self._display_chs), len(self._conditions),
-            self._freqs[0], self._freqs[-1], self.mode,
+            "TFRPlot: %d display channels, %d conditions, freqs %.0f–%.0f Hz, mode=%s",
+            len(self._display_chs),
+            len(self._conditions),
+            self._freqs[0],
+            self._freqs[-1],
+            self.mode,
         )
 
     # -----------------------------------------------------------------------
@@ -308,9 +326,11 @@ class TFRPlot(QMainWindow):
         (too few for a meaningful TFR); then clip ``n_cycles`` on the remaining
         frequencies so the wavelet stays within the epoch.
         """
-        nc = (np.asarray(self._n_cycles, float)
-              if not np.isscalar(self._n_cycles)
-              else np.full(len(self._freqs), float(self._n_cycles)))
+        nc = (
+            np.asarray(self._n_cycles, float)
+            if not np.isscalar(self._n_cycles)
+            else np.full(len(self._freqs), float(self._n_cycles))
+        )
 
         # Maximum n_cycles that fits: nc < (n_t-1)*pi*f / (5*sfreq)
         nc_max = (self._n_t - 1) * np.pi * self._freqs / (5.0 * self.sfreq)
@@ -319,25 +339,25 @@ class TFRPlot(QMainWindow):
         mask = nc_max >= 2.0
         if not mask.all():
             logger.info(
-                "TFRPlot: removed %d freq(s) below %.1f Hz "
-                "(epoch too short for ≥2 cycles).",
+                "TFRPlot: removed %d freq(s) below %.1f Hz (epoch too short for ≥2 cycles).",
                 int((~mask).sum()),
                 float(self._freqs[mask][0]) if mask.any() else 0.0,
             )
             self._freqs = self._freqs[mask]
-            nc          = nc[mask]
-            nc_max      = nc_max[mask]
+            nc = nc[mask]
+            nc_max = nc_max[mask]
 
         if len(self._freqs) == 0:
             # Epoch is very short — use the highest plausible frequency range
             f_min = max(10.0 * self.sfreq / ((self._n_t - 1) * np.pi), 8.0)
             self._freqs = np.arange(f_min, min(f_min + 30.0, 80.0), 2.0)
-            nc_max      = (self._n_t - 1) * np.pi * self._freqs / (5.0 * self.sfreq)
+            nc_max = (self._n_t - 1) * np.pi * self._freqs / (5.0 * self.sfreq)
             self._n_cycles = np.maximum(nc_max * 0.90, 1.0)
             logger.warning(
                 "TFRPlot: epoch too short for standard TFR — "
                 "using %.0f–%.0f Hz with reduced n_cycles.",
-                float(self._freqs[0]), float(self._freqs[-1]),
+                float(self._freqs[0]),
+                float(self._freqs[-1]),
             )
             return
 
@@ -348,19 +368,16 @@ class TFRPlot(QMainWindow):
     # Scalp layout (for topomap channel selector)
     # -----------------------------------------------------------------------
 
-    def _compute_positions(
-        self, info, montage_name: str
-    ) -> list[tuple[float, float]]:
+    def _compute_positions(self, info, montage_name: str) -> list[tuple[float, float]]:
         import math as _math
+
         if _mne_available:
             if info is not None:
                 pos = self._from_layout(mne.channels.find_layout(info))
                 if pos is not None:
                     return pos
             try:
-                tmp = mne.create_info(
-                    self.ch_names, sfreq=1.0, ch_types="eeg", verbose=False
-                )
+                tmp = mne.create_info(self.ch_names, sfreq=1.0, ch_types="eeg", verbose=False)
                 mont = mne.channels.make_standard_montage(montage_name)
                 tmp.set_montage(mont, on_missing="ignore", verbose=False)
                 pos = self._from_layout(mne.channels.find_layout(tmp))
@@ -370,8 +387,10 @@ class TFRPlot(QMainWindow):
                 logger.debug("TFRPlot: montage layout failed: %s", exc)
         n = len(self.ch_names)
         return [
-            (0.5 + 0.42 * _math.cos(2 * _math.pi * i / n - _math.pi / 2),
-             0.5 + 0.42 * _math.sin(2 * _math.pi * i / n - _math.pi / 2))
+            (
+                0.5 + 0.42 * _math.cos(2 * _math.pi * i / n - _math.pi / 2),
+                0.5 + 0.42 * _math.sin(2 * _math.pi * i / n - _math.pi / 2),
+            )
             for i in range(n)
         ]
 
@@ -404,7 +423,7 @@ class TFRPlot(QMainWindow):
         """Clear and recreate TFR grid for the current _display_chs."""
         self._gl_widget.clear()
         self._image_items = [[] for _ in range(len(self._conditions))]
-        self._plot_items  = [[] for _ in range(len(self._conditions))]
+        self._plot_items = [[] for _ in range(len(self._conditions))]
         self._display_idx = [self.ch_names.index(c) for c in self._display_chs]
         self._build_tfr_grid()
         if self._latest_data is not None and not self._computing:
@@ -427,8 +446,7 @@ class TFRPlot(QMainWindow):
             missing = [c for c in channels if c not in self.ch_names]
             if missing:
                 logger.warning(
-                    "TFRPlot: channels not found in ch_names and will be "
-                    "ignored: %s", missing
+                    "TFRPlot: channels not found in ch_names and will be ignored: %s", missing
                 )
             return valid or self.ch_names[:4]
 
@@ -471,16 +489,16 @@ class TFRPlot(QMainWindow):
             pass
         # Inline fallbacks for the most important maps
         if name == "RdBu_r":
-            stops  = [0.0, 0.25, 0.5, 0.75, 1.0]
+            stops = [0.0, 0.25, 0.5, 0.75, 1.0]
             colors = ["#053061", "#4393c3", "#f7f7f7", "#d6604d", "#67001f"]
         elif name == "viridis":
-            stops  = [0.0, 0.33, 0.67, 1.0]
+            stops = [0.0, 0.33, 0.67, 1.0]
             colors = ["#440154", "#31688e", "#35b779", "#fde725"]
         elif name == "plasma":
-            stops  = [0.0, 0.33, 0.67, 1.0]
+            stops = [0.0, 0.33, 0.67, 1.0]
             colors = ["#0d0887", "#cc4778", "#f89441", "#f0f921"]
         else:
-            stops  = _THERMAL_POS
+            stops = _THERMAL_POS
             colors = _THERMAL_COLOR
         cmap = pg.ColorMap(stops, [QColor(c).getRgb()[:3] for c in colors])
         return cmap.getLookupTable(0.0, 1.0, 256)
@@ -535,9 +553,7 @@ class TFRPlot(QMainWindow):
         # ── Canvas ──────────────────────────────────────────────────────
         self._gl_widget = pg.GraphicsLayoutWidget()
         self._gl_widget.setBackground(_BG)
-        self._gl_widget.setSizePolicy(
-            QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding
-        )
+        self._gl_widget.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
         root.addWidget(self._gl_widget, stretch=1)
 
         # ── Sidebar ─────────────────────────────────────────────────────
@@ -548,39 +564,35 @@ class TFRPlot(QMainWindow):
 
     def _build_tfr_grid(self) -> None:
         """Populate the GraphicsLayoutWidget with PlotItem / ImageItem cells."""
-        layout = self._gl_widget.ci   # the central GraphicsLayout
+        layout = self._gl_widget.ci  # the central GraphicsLayout
 
         n_conds = len(self._conditions)
-        n_chs   = len(self._display_chs)
+        n_chs = len(self._display_chs)
 
         # Row 0: condition title labels
         for cond_i, cond in enumerate(self._conditions):
             col = _COND_COLORS[cond_i % len(_COND_COLORS)]
-            title_lbl = layout.addLabel(
-                cond, row=0, col=cond_i, color=col
-            )
+            title_lbl = layout.addLabel(cond, row=0, col=cond_i, color=col)
             title_lbl.setText(
-                f'<span style="color:{col};font-size:10pt;font-weight:700;">'
-                f'{cond}</span>'
+                f'<span style="color:{col};font-size:10pt;font-weight:700;">{cond}</span>'
             )
 
         # Rows 1…n_chs: one row per display channel, one column per condition
         self._image_items = [[] for _ in range(n_conds)]
-        self._plot_items  = [[] for _ in range(n_conds)]
+        self._plot_items = [[] for _ in range(n_conds)]
 
-        is_last_row  = lambda ch_i: ch_i == n_chs - 1  # noqa: E731
-        is_first_col = lambda cond_i: cond_i == 0       # noqa: E731
+        is_last_row = lambda ch_i: ch_i == n_chs - 1  # noqa: E731
+        is_first_col = lambda cond_i: cond_i == 0  # noqa: E731
 
         for ch_i, ch_name in enumerate(self._display_chs):
             for cond_i in range(n_conds):
                 show_x = is_last_row(ch_i)
                 show_y = is_first_col(cond_i)
 
-                ch_title = ch_name   # show channel label in every column
+                ch_title = ch_name  # show channel label in every column
 
                 plot = layout.addPlot(row=ch_i + 1, col=cond_i)
-                self._style_plot(plot, show_x=show_x, show_y=show_y,
-                                 title=ch_title)
+                self._style_plot(plot, show_x=show_x, show_y=show_y, title=ch_title)
 
                 img = pg.ImageItem()
                 img.setLookupTable(self._cmap_lut)
@@ -593,9 +605,9 @@ class TFRPlot(QMainWindow):
                 self._plot_items[cond_i].append(plot)
 
         # ── Align all axes explicitly ─────────────────────────────────────
-        f_min = float(self._freqs[0])  if len(self._freqs) else 0.0
+        f_min = float(self._freqs[0]) if len(self._freqs) else 0.0
         f_max = float(self._freqs[-1]) if len(self._freqs) else 100.0
-        t0_ms = float(self._times_dec[0]  * 1000.0)
+        t0_ms = float(self._times_dec[0] * 1000.0)
         t1_ms = float(self._times_dec[-1] * 1000.0)
         for ch_i in range(n_chs):
             for cond_i in range(n_conds):
@@ -604,12 +616,12 @@ class TFRPlot(QMainWindow):
 
     def _set_image_transform(self, img: "pg.ImageItem") -> None:
         """Apply QTransform so image axes show ms / Hz values."""
-        t0_ms  = self._times_dec[0]  * 1000.0
-        t1_ms  = self._times_dec[-1] * 1000.0
-        f0_hz  = float(self._freqs[0])
-        f1_hz  = float(self._freqs[-1])
-        n_t    = max(1, len(self._times_dec))
-        n_f    = max(1, len(self._freqs))
+        t0_ms = self._times_dec[0] * 1000.0
+        t1_ms = self._times_dec[-1] * 1000.0
+        f0_hz = float(self._freqs[0])
+        f1_hz = float(self._freqs[-1])
+        n_t = max(1, len(self._times_dec))
+        n_f = max(1, len(self._freqs))
 
         tr = QTransform()
         tr.translate(t0_ms, f0_hz)
@@ -626,11 +638,11 @@ class TFRPlot(QMainWindow):
         plot.setMenuEnabled(False)
         plot.hideButtons()
         plot.setMouseEnabled(x=False, y=False)
-        plot.getViewBox().disableAutoRange()   # prevent auto-range from breaking alignment
-        plot.showAxis("top",    False)
-        plot.showAxis("right",  False)
+        plot.getViewBox().disableAutoRange()  # prevent auto-range from breaking alignment
+        plot.showAxis("top", False)
+        plot.showAxis("right", False)
         plot.showAxis("bottom", show_x)
-        plot.showAxis("left",   show_y)
+        plot.showAxis("left", show_y)
         if show_x:
             plot.getAxis("bottom").setLabel("Time", units="ms")
             plot.getAxis("bottom").setStyle(tickFont=QFont("Helvetica", 7))
@@ -651,8 +663,7 @@ class TFRPlot(QMainWindow):
         scroll.setWidgetResizable(True)
         scroll.setHorizontalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
         scroll.setStyleSheet(
-            f"QScrollArea {{ background:{_SURFACE}; "
-            f"border-left:1px solid {_BORDER}; }}"
+            f"QScrollArea {{ background:{_SURFACE}; border-left:1px solid {_BORDER}; }}"
         )
 
         sb = QWidget()
@@ -663,9 +674,7 @@ class TFRPlot(QMainWindow):
 
         # ── Header ───────────────────────────────────────────────────────
         hdr = QLabel("TFR CONTROLS")
-        hdr.setStyleSheet(
-            f"color:{_TEXT}; font-size:11px; font-weight:700; letter-spacing:1.5px;"
-        )
+        hdr.setStyleSheet(f"color:{_TEXT}; font-size:11px; font-weight:700; letter-spacing:1.5px;")
         ly.addWidget(hdr)
         ly.addWidget(_sep(sb))
 
@@ -673,9 +682,7 @@ class TFRPlot(QMainWindow):
         ly.addWidget(_section("CHANNELS", sb))
 
         self._sel_lbl = QLabel(", ".join(self._display_chs))
-        self._sel_lbl.setStyleSheet(
-            f"color:{_ACCENT}; font-size:10px; font-weight:600;"
-        )
+        self._sel_lbl.setStyleSheet(f"color:{_ACCENT}; font-size:10px; font-weight:600;")
         self._sel_lbl.setWordWrap(True)
         ly.addWidget(self._sel_lbl)
 
@@ -846,14 +853,16 @@ class TFRPlot(QMainWindow):
         pw.getViewBox().setMouseEnabled(x=False, y=False)
         pw.getViewBox().setAspectLocked(True)
         pw.getViewBox().setRange(
-            xRange=(-0.06, 1.06), yRange=(-0.06, 1.14), padding=0,
+            xRange=(-0.06, 1.06),
+            yRange=(-0.06, 1.14),
+            padding=0,
         )
 
         theta = np.linspace(0, 2 * np.pi, 160)
-        pw.plot(0.5 + 0.48 * np.cos(theta), 0.5 + 0.48 * np.sin(theta),
-                pen=pg.mkPen(_BORDER, width=1.5))
-        pw.plot([0.47, 0.5, 0.53, 0.47], [0.97, 1.06, 0.97, 0.97],
-                pen=pg.mkPen(_BORDER, width=1.2))
+        pw.plot(
+            0.5 + 0.48 * np.cos(theta), 0.5 + 0.48 * np.sin(theta), pen=pg.mkPen(_BORDER, width=1.5)
+        )
+        pw.plot([0.47, 0.5, 0.53, 0.47], [0.97, 1.06, 0.97, 0.97], pen=pg.mkPen(_BORDER, width=1.2))
 
         spots = []
         for i, ch in enumerate(self.ch_names):
@@ -861,15 +870,19 @@ class TFRPlot(QMainWindow):
             tx = 0.5 + (xn - 0.5) * 0.9
             ty = 1.0 - (0.5 + (yn - 0.5) * 0.9)
             selected = ch in self._display_chs
-            spots.append({
-                "pos": (tx, ty), "data": ch,
-                "brush": pg.mkBrush(_ACCENT if selected else _BORDER),
-                "pen": pg.mkPen(None),
-                "size": 10 if selected else 6,
-            })
+            spots.append(
+                {
+                    "pos": (tx, ty),
+                    "data": ch,
+                    "brush": pg.mkBrush(_ACCENT if selected else _BORDER),
+                    "pen": pg.mkPen(None),
+                    "size": 10 if selected else 6,
+                }
+            )
 
         self._topo_scatter = pg.ScatterPlotItem(
-            spots=spots, hoverable=True,
+            spots=spots,
+            hoverable=True,
             tip=lambda x, y, data: str(data) if data else "",
         )
         self._topo_scatter.sigClicked.connect(self._on_topo_click)
@@ -890,12 +903,15 @@ class TFRPlot(QMainWindow):
             tx = 0.5 + (xn - 0.5) * 0.9
             ty = 1.0 - (0.5 + (yn - 0.5) * 0.9)
             selected = ch in self._display_chs
-            spots.append({
-                "pos": (tx, ty), "data": ch,
-                "brush": pg.mkBrush(_ACCENT if selected else _BORDER),
-                "pen": pg.mkPen(None),
-                "size": 10 if selected else 6,
-            })
+            spots.append(
+                {
+                    "pos": (tx, ty),
+                    "data": ch,
+                    "brush": pg.mkBrush(_ACCENT if selected else _BORDER),
+                    "pen": pg.mkPen(None),
+                    "size": 10 if selected else 6,
+                }
+            )
         self._topo_scatter.setData(spots=spots)
 
     def _on_topo_click(self, *args) -> None:
@@ -925,19 +941,19 @@ class TFRPlot(QMainWindow):
             return
         self._fstart_lbl.setText(f"{fmin} Hz")
         self._fend_lbl.setText(f"{fmax} Hz")
-        self._freqs    = np.arange(fmin, fmax, 2, dtype=float)
+        self._freqs = np.arange(fmin, fmax, 2, dtype=float)
         if len(self._freqs) == 0:
             self._freqs = np.array([float(fmin)])
         self._n_cycles = self._freqs / 2.0
         self._clip_freqs()
         # Refresh transforms and realign all axes
-        f_min = float(self._freqs[0])  if len(self._freqs) else 0.0
+        f_min = float(self._freqs[0]) if len(self._freqs) else 0.0
         f_max = float(self._freqs[-1]) if len(self._freqs) else 100.0
         for cond_i in range(len(self._conditions)):
             for ch_i in range(len(self._display_chs)):
                 self._set_image_transform(self._image_items[cond_i][ch_i])
                 self._plot_items[cond_i][ch_i].setXRange(
-                    float(self._times_dec[0]*1000), float(self._times_dec[-1]*1000), padding=0
+                    float(self._times_dec[0] * 1000), float(self._times_dec[-1] * 1000), padding=0
                 )
                 self._plot_items[cond_i][ch_i].setYRange(f_min, f_max, padding=0)
         self._maybe_recompute()
@@ -949,7 +965,7 @@ class TFRPlot(QMainWindow):
     def _on_cmap_change(self, idx: int) -> None:
         _map = ["hot", "RdBu_r", "viridis", "plasma", "turbo", "greys"]
         self._cmap_name = _map[idx % len(_map)]
-        self._cmap_lut  = self._build_colormap()
+        self._cmap_lut = self._build_colormap()
         for ci in range(len(self._conditions)):
             for chi in range(len(self._display_chs)):
                 self._image_items[ci][chi].setLookupTable(self._cmap_lut)
@@ -978,13 +994,13 @@ class TFRPlot(QMainWindow):
     def _maybe_recompute(self) -> None:
         """Trigger recompute if we already have data."""
         if self._latest_data is not None and not self._computing:
-            threading.Thread(
-                target=self._compute_and_emit, daemon=True
-            ).start()
+            threading.Thread(target=self._compute_and_emit, daemon=True).start()
 
     def _export_png(self) -> None:
         path, _ = QFileDialog.getSaveFileName(
-            self, "Export TFR Plot", "tfr_plot.png",
+            self,
+            "Export TFR Plot",
+            "tfr_plot.png",
             "PNG Image (*.png);;JPEG Image (*.jpg)",
         )
         if path:
@@ -994,9 +1010,7 @@ class TFRPlot(QMainWindow):
     # TFR computation
     # -----------------------------------------------------------------------
 
-    def _compute_tfr(
-        self, data: np.ndarray, conditions: list[str]
-    ) -> "dict[str, np.ndarray]":
+    def _compute_tfr(self, data: np.ndarray, conditions: list[str]) -> "dict[str, np.ndarray]":
         """Compute Morlet TFR for each condition.
 
         Parameters
@@ -1017,12 +1031,10 @@ class TFRPlot(QMainWindow):
         for cond in self._conditions:
             mask = np.array([c == cond for c in conditions])
             if not mask.any():
-                result[cond] = np.zeros(
-                    (len(self._display_idx), len(self._freqs), self._n_t_dec)
-                )
+                result[cond] = np.zeros((len(self._display_idx), len(self._freqs), self._n_t_dec))
                 continue
 
-            ep = data[mask]            # (n_ep, n_ch, n_t)
+            ep = data[mask]  # (n_ep, n_ch, n_t)
 
             if self.mode == "evoked":
                 ep = ep.mean(0, keepdims=True)  # TFR of trial average
@@ -1037,15 +1049,13 @@ class TFRPlot(QMainWindow):
                 zero_mean=True,
             )  # (n_ep, n_ch, n_freqs, n_times_dec)
 
-            avg_power = power.mean(0)   # (n_ch, n_freqs, n_times_dec)
+            avg_power = power.mean(0)  # (n_ch, n_freqs, n_times_dec)
 
             if self._norm_mode == "db":
                 # Baseline correction: dB change from mean baseline power
                 bl_mask = self._times_dec <= 0
                 if bl_mask.any():
-                    bl_power = (
-                        avg_power[:, :, bl_mask].mean(-1, keepdims=True) + 1e-30
-                    )
+                    bl_power = avg_power[:, :, bl_mask].mean(-1, keepdims=True) + 1e-30
                     avg_power = 10.0 * np.log10(avg_power / bl_power)
                 # If no pre-stimulus baseline, still convert to log scale
                 else:
@@ -1073,12 +1083,10 @@ class TFRPlot(QMainWindow):
         conditions : list of str
             Condition label for each epoch; ``len(conditions) == data.shape[0]``.
         """
-        self._latest_data  = data.copy()
+        self._latest_data = data.copy()
         self._latest_conds = list(conditions)
         if not self._computing:
-            threading.Thread(
-                target=self._compute_and_emit, daemon=True
-            ).start()
+            threading.Thread(target=self._compute_and_emit, daemon=True).start()
 
     def _compute_and_emit(self) -> None:
         self._computing = True
@@ -1136,15 +1144,13 @@ class TFRPlot(QMainWindow):
                 continue
             for ch_i in range(len(self._display_chs)):
                 # ImageItem expects (n_times_dec, n_freqs)
-                self._image_items[cond_i][ch_i].setImage(
-                    pwr[ch_i].T, levels=(g_vmin, g_vmax)
-                )
+                self._image_items[cond_i][ch_i].setImage(pwr[ch_i].T, levels=(g_vmin, g_vmax))
 
         # ── Re-lock axis ranges on every cell ─────────────────────────────
         if self._plot_items and len(self._freqs):
             f_min = float(self._freqs[0])
             f_max = float(self._freqs[-1])
-            t0_ms = float(self._times_dec[0]  * 1000.0)
+            t0_ms = float(self._times_dec[0] * 1000.0)
             t1_ms = float(self._times_dec[-1] * 1000.0)
             for ci in range(len(self._conditions)):
                 for chi in range(len(self._display_chs)):

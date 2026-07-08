@@ -7,7 +7,6 @@ import pytest
 
 from mne_rt.tools.tools import compute_instantaneous_phase
 
-
 SFREQ = 512.0
 DURATION = 2.0  # seconds — long enough for sosfiltfilt edge handling
 N_SAMPLES = int(SFREQ * DURATION)
@@ -24,6 +23,7 @@ def _sine_data(freq_hz, sfreq=SFREQ, n_samples=N_SAMPLES, n_channels=N_CHANNELS,
 # ------------------------------------------------------------------
 # Phase is in [-π, π]
 # ------------------------------------------------------------------
+
 
 def test_phase_range_random():
     rng = np.random.default_rng(0)
@@ -42,6 +42,7 @@ def test_phase_range_pure_sine():
 # Amplitude is non-negative
 # ------------------------------------------------------------------
 
+
 def test_amplitude_non_negative_random():
     rng = np.random.default_rng(1)
     data = rng.standard_normal((N_CHANNELS, N_SAMPLES))
@@ -59,6 +60,7 @@ def test_amplitude_non_negative_sine():
 # Amplitude scales with input amplitude
 # ------------------------------------------------------------------
 
+
 def test_amplitude_proportional_to_input():
     data_1 = _sine_data(10.0, amplitude=1.0)
     data_10 = _sine_data(10.0, amplitude=10.0)
@@ -70,6 +72,7 @@ def test_amplitude_proportional_to_input():
 # ------------------------------------------------------------------
 # Out-of-band signal produces near-zero amplitude
 # ------------------------------------------------------------------
+
 
 def test_out_of_band_signal_low_amplitude():
     """Signal at 1 Hz should have very low amplitude when filtered to 8–13 Hz."""
@@ -83,12 +86,11 @@ def test_out_of_band_signal_low_amplitude():
 # channel_indices parameter
 # ------------------------------------------------------------------
 
+
 def test_channel_indices_single_channel():
     data = _sine_data(10.0)
     phase_all, amp_all = compute_instantaneous_phase(data, SFREQ, (8.0, 13.0))
-    phase_idx, amp_idx = compute_instantaneous_phase(
-        data, SFREQ, (8.0, 13.0), channel_indices=[0]
-    )
+    phase_idx, amp_idx = compute_instantaneous_phase(data, SFREQ, (8.0, 13.0), channel_indices=[0])
     # Single channel = same signal as channel-mean for identical channels
     assert phase_all == pytest.approx(phase_idx, abs=1e-6)
     assert amp_all == pytest.approx(amp_idx, abs=1e-6)
@@ -98,9 +100,7 @@ def test_channel_indices_subset():
     rng = np.random.default_rng(2)
     data = rng.standard_normal((N_CHANNELS, N_SAMPLES))
     # Should not raise with a subset of indices
-    phase, amp = compute_instantaneous_phase(
-        data, SFREQ, (8.0, 13.0), channel_indices=[0, 1, 2]
-    )
+    phase, amp = compute_instantaneous_phase(data, SFREQ, (8.0, 13.0), channel_indices=[0, 1, 2])
     assert -math.pi <= phase <= math.pi
     assert amp >= 0.0
 
@@ -121,6 +121,7 @@ def test_channel_indices_none_uses_all():
 # ------------------------------------------------------------------
 # Return types
 # ------------------------------------------------------------------
+
 
 def test_return_types():
     data = _sine_data(10.0)

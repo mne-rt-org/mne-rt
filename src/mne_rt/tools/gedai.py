@@ -4,6 +4,7 @@ Removes artifacts from EEG/MEG by solving a generalized eigenvalue problem
 that finds spatial filters maximising signal in a target band relative to
 broadband activity.
 """
+
 from __future__ import annotations
 
 import numpy as np
@@ -70,8 +71,8 @@ class GEDAIDenoiser:
         self.n_channels = n_channels
         self.shrinkage = shrinkage
 
-        self._W: np.ndarray | None = None        # spatial filters, shape (n_ch, n_ch)
-        self._A: np.ndarray | None = None        # activation patterns = pinv(W.T)
+        self._W: np.ndarray | None = None  # spatial filters, shape (n_ch, n_ch)
+        self._A: np.ndarray | None = None  # activation patterns = pinv(W.T)
         self._eigenvalues: np.ndarray | None = None
 
     # ------------------------------------------------------------------
@@ -97,9 +98,7 @@ class GEDAIDenoiser:
         self
         """
         if data_broadband.shape[0] != self.n_channels:
-            raise ValueError(
-                f"Expected {self.n_channels} channels, got {data_broadband.shape[0]}"
-            )
+            raise ValueError(f"Expected {self.n_channels} channels, got {data_broadband.shape[0]}")
 
         n_samples = data_broadband.shape[1]
 
@@ -107,7 +106,7 @@ class GEDAIDenoiser:
         Xs = data_band - data_band.mean(axis=1, keepdims=True)
 
         R_broad = (Xb @ Xb.T) / n_samples
-        R_band  = (Xs @ Xs.T) / n_samples
+        R_band = (Xs @ Xs.T) / n_samples
 
         # Regularise broadband covariance
         reg = self.shrinkage * np.trace(R_broad) / self.n_channels
@@ -151,9 +150,7 @@ class GEDAIDenoiser:
         self
         """
         if data.shape[0] != self.n_channels:
-            raise ValueError(
-                f"Expected {self.n_channels} channels, got {data.shape[0]}"
-            )
+            raise ValueError(f"Expected {self.n_channels} channels, got {data.shape[0]}")
         if leadfield.shape[0] != self.n_channels:
             raise ValueError(
                 f"Leadfield row count ({leadfield.shape[0]}) must equal n_channels ({self.n_channels})"
@@ -263,10 +260,7 @@ class GEDAIDenoiser:
         """
         self._check_fitted()
         corrs = np.array(
-            [
-                np.corrcoef(self._A[:, i], template_map)[0, 1]
-                for i in range(self._A.shape[1])
-            ]
+            [np.corrcoef(self._A[:, i], template_map)[0, 1] for i in range(self._A.shape[1])]
         )
         artifact_idx = np.where(np.abs(corrs) > threshold)[0].tolist()
         return artifact_idx, corrs

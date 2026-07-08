@@ -5,10 +5,10 @@ import pytest
 
 from mne_rt.protocols import PercentileProtocol
 
-
 # ------------------------------------------------------------------
 # Constructor validation
 # ------------------------------------------------------------------
+
 
 def test_invalid_percentile_zero():
     with pytest.raises(ValueError):
@@ -39,6 +39,7 @@ def test_invalid_smoothing():
 # Default constructor
 # ------------------------------------------------------------------
 
+
 def test_defaults():
     proto = PercentileProtocol()
     assert proto.percentile == 75.0
@@ -53,6 +54,7 @@ def test_defaults():
 # Single-sample behaviour (degenerate buffer)
 # ------------------------------------------------------------------
 
+
 def test_single_sample_no_reward():
     proto = PercentileProtocol()
     crossed, mag = proto.evaluate(1.0)
@@ -65,6 +67,7 @@ def test_single_sample_no_reward():
 # Threshold adapts to history
 # ------------------------------------------------------------------
 
+
 def test_threshold_updates():
     proto = PercentileProtocol(percentile=50.0)
     for v in [1.0, 2.0, 3.0, 4.0, 5.0]:
@@ -76,6 +79,7 @@ def test_threshold_updates():
 # ------------------------------------------------------------------
 # Upward crossing
 # ------------------------------------------------------------------
+
 
 def test_up_crossing_high_value():
     proto = PercentileProtocol(percentile=50.0, direction="up")
@@ -101,6 +105,7 @@ def test_up_no_crossing_low_value():
 # Downward crossing
 # ------------------------------------------------------------------
 
+
 def test_down_crossing_low_value():
     proto = PercentileProtocol(percentile=25.0, direction="down")
     for _ in range(10):
@@ -122,6 +127,7 @@ def test_down_no_crossing_high_value():
 # hit_rate
 # ------------------------------------------------------------------
 
+
 def test_hit_rate_range():
     proto = PercentileProtocol(percentile=50.0)
     for v in range(20):
@@ -142,6 +148,7 @@ def test_hit_rate_approximately_correct():
 # Smoothing
 # ------------------------------------------------------------------
 
+
 def test_smoothing_does_not_crash():
     proto = PercentileProtocol(smoothing=0.5)
     for i in range(20):
@@ -152,6 +159,7 @@ def test_smoothing_does_not_crash():
 # ------------------------------------------------------------------
 # rolling buffer cap
 # ------------------------------------------------------------------
+
 
 def test_history_len_limits_buffer():
     proto = PercentileProtocol(history_len=5)
@@ -164,6 +172,7 @@ def test_history_len_limits_buffer():
 # ------------------------------------------------------------------
 # reset
 # ------------------------------------------------------------------
+
 
 def test_reset_clears_state():
     proto = PercentileProtocol()
@@ -186,6 +195,7 @@ def test_reset_preserves_params():
 # ------------------------------------------------------------------
 # repr
 # ------------------------------------------------------------------
+
 
 def test_repr():
     proto = PercentileProtocol()

@@ -40,16 +40,17 @@ ZScoredNormCombiner
 LearnedCombiner
     Data-driven combination via a fitted sklearn-compatible estimator.
 """
+
 from __future__ import annotations
 
 import math
 import warnings
 from typing import Any, Optional
 
-
 # ---------------------------------------------------------------------------
 # Base class
 # ---------------------------------------------------------------------------
+
 
 class FeatureCombiner:
     """Abstract base class for multi-feature NF combiners.
@@ -93,9 +94,7 @@ class FeatureCombiner:
             Single combined NF value passed downstream to the protocol and
             display.
         """
-        raise NotImplementedError(
-            f"{type(self).__name__} must implement combine()."
-        )
+        raise NotImplementedError(f"{type(self).__name__} must implement combine().")
 
     def __repr__(self) -> str:
         feat = self.features or "any"
@@ -105,6 +104,7 @@ class FeatureCombiner:
 # ---------------------------------------------------------------------------
 # Concrete combiners
 # ---------------------------------------------------------------------------
+
 
 class WeightedSumCombiner(FeatureCombiner):
     """Weighted linear combination of feature values.
@@ -329,10 +329,7 @@ class ZScoredNormCombiner(FeatureCombiner):
                     self._buf[feat].append(values[feat])
 
             # Check whether all features have enough samples
-            ready = all(
-                len(self._buf[f]) >= self.warmup
-                for f in self.features
-            )
+            ready = all(len(self._buf[f]) >= self.warmup for f in self.features)
             if ready:
                 for feat in self.features:
                     buf = self._buf[feat]
@@ -354,7 +351,7 @@ class ZScoredNormCombiner(FeatureCombiner):
         if not z_scores:
             return 0.0
 
-        norm = math.sqrt(sum(z ** 2 for z in z_scores))
+        norm = math.sqrt(sum(z**2 for z in z_scores))
         return norm / math.sqrt(len(z_scores))
 
 

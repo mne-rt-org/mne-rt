@@ -12,6 +12,7 @@ N_T = int(SFREQ * 4)
 @pytest.fixture()
 def asr():
     from mne_rt.tools import ASRDenoiser
+
     a = ASRDenoiser(cutoff=3.0)
     data = RNG.standard_normal((N_CH, N_T)) * 1e-6
     a.fit(data, SFREQ)
@@ -22,20 +23,24 @@ def asr():
 # Constructor validation
 # ------------------------------------------------------------------
 
+
 def test_invalid_cutoff():
     from mne_rt.tools import ASRDenoiser
+
     with pytest.raises(ValueError):
         ASRDenoiser(cutoff=-1)
 
 
 def test_invalid_dropout_fraction():
     from mne_rt.tools import ASRDenoiser
+
     with pytest.raises(ValueError):
         ASRDenoiser(max_dropout_fraction=1.1)
 
 
 def test_invalid_window_overlap():
     from mne_rt.tools import ASRDenoiser
+
     with pytest.raises(ValueError):
         ASRDenoiser(window_overlap=1.0)
 
@@ -44,8 +49,10 @@ def test_invalid_window_overlap():
 # Fit
 # ------------------------------------------------------------------
 
+
 def test_fit_returns_self():
     from mne_rt.tools import ASRDenoiser
+
     a = ASRDenoiser(cutoff=3.0)
     data = RNG.standard_normal((N_CH, N_T)) * 1e-6
     result = a.fit(data, SFREQ)
@@ -64,8 +71,10 @@ def test_eigenvectors_shape(asr):
 # Pre-fit guards
 # ------------------------------------------------------------------
 
+
 def test_thresholds_before_fit():
     from mne_rt.tools import ASRDenoiser
+
     a = ASRDenoiser()
     with pytest.raises(RuntimeError):
         _ = a.thresholds
@@ -73,6 +82,7 @@ def test_thresholds_before_fit():
 
 def test_transform_before_fit():
     from mne_rt.tools import ASRDenoiser
+
     a = ASRDenoiser()
     data = RNG.standard_normal((N_CH, N_T)) * 1e-6
     with pytest.raises(RuntimeError):
@@ -82,6 +92,7 @@ def test_transform_before_fit():
 # ------------------------------------------------------------------
 # Transform
 # ------------------------------------------------------------------
+
 
 def test_transform_clean_data_noop(asr):
     """Transform of low-amplitude clean data returns same shape, close to input."""
@@ -115,6 +126,7 @@ def test_transform_output_shape(asr):
 # ------------------------------------------------------------------
 # Repr & properties
 # ------------------------------------------------------------------
+
 
 def test_repr(asr):
     r = repr(asr)

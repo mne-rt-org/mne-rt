@@ -11,6 +11,7 @@ Classes
 TransferProtocol
     Z-score protocol seeded with baseline statistics from a prior session.
 """
+
 from __future__ import annotations
 
 import json
@@ -115,28 +116,18 @@ class TransferProtocol:
     ) -> None:
         # --- Parameter validation --------------------------------------------
         if direction not in ("up", "down"):
-            raise ValueError(
-                f"direction must be 'up' or 'down', got {direction!r}"
-            )
+            raise ValueError(f"direction must be 'up' or 'down', got {direction!r}")
         if zscore_threshold < 0.0:
-            raise ValueError(
-                f"zscore_threshold must be >= 0, got {zscore_threshold}"
-            )
+            raise ValueError(f"zscore_threshold must be >= 0, got {zscore_threshold}")
         if not (0.0 <= adapt_rate < 1.0):
-            raise ValueError(
-                f"adapt_rate must be in [0, 1), got {adapt_rate}"
-            )
+            raise ValueError(f"adapt_rate must be in [0, 1), got {adapt_rate}")
         if not (0.0 <= smoothing < 1.0):
-            raise ValueError(
-                f"smoothing must be in [0, 1), got {smoothing}"
-            )
+            raise ValueError(f"smoothing must be in [0, 1), got {smoothing}")
 
         # --- Load prior data from file ---------------------------------------
         fname = Path(fname)
         if not fname.exists():
-            raise FileNotFoundError(
-                f"Prior-session file not found: {fname}"
-            )
+            raise FileNotFoundError(f"Prior-session file not found: {fname}")
         with fname.open("r", encoding="utf-8") as fh:
             payload = json.load(fh)
 
@@ -150,8 +141,7 @@ class TransferProtocol:
         if modality not in data_section:
             available = list(data_section.keys())
             raise KeyError(
-                f"Modality {modality!r} not found in {fname}. "
-                f"Available modalities: {available}"
+                f"Modality {modality!r} not found in {fname}. Available modalities: {available}"
             )
 
         prior_data = np.asarray(data_section[modality], dtype=float)
@@ -183,7 +173,7 @@ class TransferProtocol:
         self._welford_n: int = self._n_prior
         self._welford_mean: float = self._prior_mean
         # M2 = sample_var * (n - 1)
-        self._welford_m2: float = self._prior_std ** 2 * (self._n_prior - 1)
+        self._welford_m2: float = self._prior_std**2 * (self._n_prior - 1)
 
     def evaluate(self, value: float) -> tuple[bool, float]:
         """Evaluate one NF value and return (crossed, magnitude).
@@ -218,10 +208,7 @@ class TransferProtocol:
             if self._smoothed is None:
                 self._smoothed = float(value)
             else:
-                self._smoothed = (
-                    (1.0 - self.smoothing) * value
-                    + self.smoothing * self._smoothed
-                )
+                self._smoothed = (1.0 - self.smoothing) * value + self.smoothing * self._smoothed
         else:
             self._smoothed = float(value)
 
@@ -287,7 +274,7 @@ class TransferProtocol:
 
         self._welford_n = self._n_prior
         self._welford_mean = self._prior_mean
-        self._welford_m2 = self._prior_std ** 2 * (self._n_prior - 1)
+        self._welford_m2 = self._prior_std**2 * (self._n_prior - 1)
 
     # ------------------------------------------------------------------
     # Properties

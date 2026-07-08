@@ -18,6 +18,7 @@ Barthélemy, Q., Mayaud, L., Ojeda, D., & Congedo, M. (2019). The Riemannian
 potato field: a tool for online signal quality index of EEG.
 *IRBM*, 40(1), 15–26. https://doi.org/10.1016/j.irbm.2018.09.001
 """
+
 from __future__ import annotations
 
 from typing import Union
@@ -100,6 +101,7 @@ class RiemannianPotatoDetector:
     ) -> None:
         self._check_pyriemann()
         from mne_rt._logging import set_log_level
+
         set_log_level(verbose)
 
         if threshold <= 0:
@@ -132,6 +134,7 @@ class RiemannianPotatoDetector:
     def _make_estimators(self) -> None:
         from pyriemann.clustering import Potato
         from pyriemann.estimation import Covariances
+
         self._cov_estimator = Covariances(estimator=self.estimator)
         self._potato = Potato(
             metric=self.metric,
@@ -166,8 +169,7 @@ class RiemannianPotatoDetector:
         """
         if windows.ndim != 3:
             raise ValueError(
-                f"windows must be 3-D (n_windows, n_ch, n_samples), "
-                f"got shape {windows.shape}"
+                f"windows must be 3-D (n_windows, n_ch, n_samples), got shape {windows.shape}"
             )
         if len(windows) < 2:
             raise ValueError("At least 2 calibration windows are required.")
@@ -210,26 +212,22 @@ class RiemannianPotatoDetector:
             If the channel count does not match the calibration set.
         """
         if not self.is_fitted_:
-            raise RuntimeError(
-                "Call fit() with clean calibration data before detect()."
-            )
+            raise RuntimeError("Call fit() with clean calibration data before detect().")
         if window.ndim != 2 or window.shape[0] != self.n_channels_:
             raise ValueError(
-                f"Expected window shape ({self.n_channels_}, n_samples), "
-                f"got {window.shape}."
+                f"Expected window shape ({self.n_channels_}, n_samples), got {window.shape}."
             )
 
         cov = self._cov_estimator.transform(window[np.newaxis])
         label = float(self._potato.predict(cov)[0])
         z_score = float(self._potato.transform(cov)[0])
 
-        is_clean = (label == 1.0)
+        is_clean = label == 1.0
         return is_clean, z_score
 
     def __repr__(self) -> str:
         status = (
-            f"fitted on {self.n_calibration_windows_} windows, "
-            f"{self.n_channels_} channels"
+            f"fitted on {self.n_calibration_windows_} windows, {self.n_channels_} channels"
             if self.is_fitted_
             else "not fitted"
         )

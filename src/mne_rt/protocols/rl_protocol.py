@@ -9,6 +9,7 @@ Classes
 RLProtocol
     RL-adaptive threshold protocol with epsilon-greedy exploration.
 """
+
 from __future__ import annotations
 
 import collections
@@ -112,33 +113,19 @@ class RLProtocol:
         rng_seed: Optional[int] = None,
     ) -> None:
         if direction not in ("up", "down"):
-            raise ValueError(
-                f"direction must be 'up' or 'down', got {direction!r}"
-            )
+            raise ValueError(f"direction must be 'up' or 'down', got {direction!r}")
         if not (0.0 < target_hit_rate < 1.0):
-            raise ValueError(
-                f"target_hit_rate must be in (0, 1), got {target_hit_rate}"
-            )
+            raise ValueError(f"target_hit_rate must be in (0, 1), got {target_hit_rate}")
         if lr <= 0.0:
-            raise ValueError(
-                f"lr must be > 0, got {lr}"
-            )
+            raise ValueError(f"lr must be > 0, got {lr}")
         if not (0.0 <= epsilon < 1.0):
-            raise ValueError(
-                f"epsilon must be in [0, 1), got {epsilon}"
-            )
+            raise ValueError(f"epsilon must be in [0, 1), got {epsilon}")
         if not (0.0 <= smoothing < 1.0):
-            raise ValueError(
-                f"smoothing must be in [0, 1), got {smoothing}"
-            )
+            raise ValueError(f"smoothing must be in [0, 1), got {smoothing}")
         if history_len < 10:
-            raise ValueError(
-                f"history_len must be >= 10, got {history_len}"
-            )
+            raise ValueError(f"history_len must be >= 10, got {history_len}")
         if warmup_windows < 1:
-            raise ValueError(
-                f"warmup_windows must be >= 1, got {warmup_windows}"
-            )
+            raise ValueError(f"warmup_windows must be >= 1, got {warmup_windows}")
 
         self.direction: str = direction
         self.initial_threshold: float = float(initial_threshold)
@@ -157,13 +144,9 @@ class RLProtocol:
         self._smoothed: Optional[float] = None
 
         # Rolling window for hit/miss of non-exploration evaluations
-        self._hit_history: collections.deque[bool] = collections.deque(
-            maxlen=history_len
-        )
+        self._hit_history: collections.deque[bool] = collections.deque(maxlen=history_len)
         # Rolling window for raw smoothed values (for running std)
-        self._value_history: collections.deque[float] = collections.deque(
-            maxlen=history_len
-        )
+        self._value_history: collections.deque[float] = collections.deque(maxlen=history_len)
 
     def evaluate(self, value: float) -> tuple[bool, float]:
         """Evaluate one NF value and return (crossed, magnitude).
@@ -199,10 +182,7 @@ class RLProtocol:
             if self._smoothed is None:
                 self._smoothed = float(value)
             else:
-                self._smoothed = (
-                    (1.0 - self.smoothing) * value
-                    + self.smoothing * self._smoothed
-                )
+                self._smoothed = (1.0 - self.smoothing) * value + self.smoothing * self._smoothed
         else:
             self._smoothed = float(value)
 
@@ -213,9 +193,7 @@ class RLProtocol:
         # Running std from rolling window (floor at 1e-6)
         running_std: float
         if len(self._value_history) > 1:
-            running_std = max(
-                float(np.std(list(self._value_history))), 1e-6
-            )
+            running_std = max(float(np.std(list(self._value_history))), 1e-6)
         else:
             running_std = 1e-6
 
@@ -253,11 +231,7 @@ class RLProtocol:
                     self._threshold -= update
 
         # --- Magnitude -------------------------------------------------------
-        magnitude = (
-            abs(smoothed - self._threshold) / (running_std + 1e-6)
-            if crossed
-            else 0.0
-        )
+        magnitude = abs(smoothed - self._threshold) / (running_std + 1e-6) if crossed else 0.0
         return crossed, magnitude
 
     def reset(self) -> None:

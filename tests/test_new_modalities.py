@@ -1,4 +1,5 @@
 """Tests for new modalities: SCP, PAF, connectivity_ratio."""
+
 from __future__ import annotations
 
 import numpy as np
@@ -26,6 +27,7 @@ def make_eeg(n_ch=N_CHANNELS, n_samp=N_SAMPLES, sfreq=SFREQ, freq=10.0):
 def make_dummy_modality_mixin(sfreq=SFREQ, data=None, ch_names=None, data_type="eeg"):
     """Build a minimal ModalityMixin-like object for testing prep/compute."""
     import mne
+
     from mne_rt.modalities import ModalityMixin
 
     class _Dummy(ModalityMixin):
@@ -49,6 +51,7 @@ def make_dummy_modality_mixin(sfreq=SFREQ, data=None, ch_names=None, data_type="
 # ─────────────────────────────────────────────────────────────────────────────
 # SCP — Slow Cortical Potentials
 # ─────────────────────────────────────────────────────────────────────────────
+
 
 class TestSCPModality:
     def _obj(self, highpass=0.0, lowpass=1.0, reference="mean"):
@@ -110,6 +113,7 @@ class TestSCPModality:
 # PAF — Peak Alpha Frequency tracking
 # ─────────────────────────────────────────────────────────────────────────────
 
+
 class TestPAFModality:
     def _obj(self, frange=(7.0, 13.0), method="welch", smoothing=0.85):
         obj = make_dummy_modality_mixin()
@@ -151,7 +155,6 @@ class TestPAFModality:
         obj = self._obj(smoothing=0.0)  # no smoothing → pure instantaneous
         data = make_eeg(freq=10.0)
         prep = obj._peak_alpha_freq_prep()
-        state_before = prep["_paf_state"][0]
         obj._peak_alpha_freq(data, **prep)
         state_after = prep["_paf_state"][0]
         # State should have been updated (or at least checked)
@@ -178,6 +181,7 @@ class TestPAFModality:
 # ─────────────────────────────────────────────────────────────────────────────
 # Connectivity Ratio
 # ─────────────────────────────────────────────────────────────────────────────
+
 
 class TestConnectivityRatioModality:
     def _obj(self):
@@ -228,20 +232,26 @@ class TestConnectivityRatioModality:
 # NFRealtime: artifact_rate and snr_data attributes
 # ─────────────────────────────────────────────────────────────────────────────
 
+
 class TestNFRealtimeNewFeatures:
     def test_replay_method_exists(self):
         from mne_rt import RTStream
+
         assert hasattr(RTStream, "replay")
 
     def test_run_blocks_method_exists(self):
         from mne_rt import RTStream
+
         assert hasattr(RTStream, "run_blocks")
 
     def test_run_blocks_empty_raises(self, tmp_path):
         from mne_rt import RTStream
+
         nf = RTStream(
-            subject_id="sub01", session="01",
-            subjects_dir=str(tmp_path), montage="easycap-M1",
+            subject_id="sub01",
+            session="01",
+            subjects_dir=str(tmp_path),
+            montage="easycap-M1",
         )
         with pytest.raises(ValueError, match="blocks"):
             nf.run_blocks(blocks=[])

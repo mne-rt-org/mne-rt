@@ -5,6 +5,7 @@ Classes
 AdaptiveLMSFilter
     Widrow-Hoff LMS adaptive filter with persistent weight state.
 """
+
 from __future__ import annotations
 
 from typing import Optional
@@ -124,7 +125,7 @@ class AdaptiveLMSFilter:
         # Tapped-delay matrix: column k = ref delayed by k samples
         X = np.zeros((n_times, self.n_taps))
         for k in range(self.n_taps):
-            X[k:, k] = ref[:n_times - k]
+            X[k:, k] = ref[: n_times - k]
 
         cleaned = data.copy()
         W = self.weights_

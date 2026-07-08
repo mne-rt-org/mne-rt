@@ -12,6 +12,7 @@ CompareEvoked
     Real-time per-channel condition-overlay display with SEM shading,
     peak detection, and interactive topomap channel selector.
 """
+
 from __future__ import annotations
 
 import math
@@ -21,61 +22,72 @@ import numpy as np
 
 try:
     from qtpy.QtCore import Qt, Signal
-    from qtpy.QtGui import QFont, QColor
+    from qtpy.QtGui import QColor, QFont
     from qtpy.QtWidgets import (
-        QApplication, QMainWindow, QWidget,
-        QVBoxLayout, QHBoxLayout, QLabel,
-        QCheckBox, QSlider, QPushButton,
-        QFrame, QSizePolicy, QScrollArea,
+        QApplication,
+        QCheckBox,
         QFileDialog,
+        QFrame,
+        QHBoxLayout,
+        QLabel,
+        QMainWindow,
+        QPushButton,
+        QScrollArea,
+        QSizePolicy,
+        QSlider,
+        QVBoxLayout,
+        QWidget,
     )
+
     _qt_available = True
 except ImportError:
     _qt_available = False
 
 try:
     import pyqtgraph as pg
+
     _pg_available = True
 except ImportError:
     _pg_available = False
 
 try:
     import mne
+
     _mne_available = True
 except ImportError:
     _mne_available = False
 
 from mne_rt._logging import logger, set_log_level
 
-
 # ---------------------------------------------------------------------------
 # Palette
 # ---------------------------------------------------------------------------
-_BG      = "#0d1117"
+_BG = "#0d1117"
 _SURFACE = "#161b22"
-_BORDER  = "#30363d"
-_TEXT    = "#e6edf3"
-_DIM     = "#8b949e"
-_ACCENT  = "#3b82f6"
+_BORDER = "#30363d"
+_TEXT = "#e6edf3"
+_DIM = "#8b949e"
+_ACCENT = "#3b82f6"
 
 _COND_COLORS = [
-    "#3b82f6",   # blue
-    "#ec4899",   # pink
-    "#10b981",   # green
-    "#f59e0b",   # amber
-    "#8b5cf6",   # violet
-    "#06b6d4",   # cyan
+    "#3b82f6",  # blue
+    "#ec4899",  # pink
+    "#10b981",  # green
+    "#f59e0b",  # amber
+    "#8b5cf6",  # violet
+    "#06b6d4",  # cyan
 ]
 
 # Auto-channel preference list (case-insensitive matching)
 _PREF_CHANNELS = ["cz", "pz", "oz", "fz", "fcz", "cpz"]
 
-_SIDEBAR_W = 210   # px
+_SIDEBAR_W = 210  # px
 
 
 # ---------------------------------------------------------------------------
 # Sidebar helpers (mirrors erp_plot.py)
 # ---------------------------------------------------------------------------
+
 
 def _sep(parent: QWidget) -> QFrame:
     f = QFrame(parent)
@@ -87,8 +99,7 @@ def _sep(parent: QWidget) -> QFrame:
 def _section(text: str, parent: QWidget) -> QLabel:
     lbl = QLabel(text, parent)
     lbl.setStyleSheet(
-        f"color:{_DIM}; font-size:10px; font-weight:700; "
-        "letter-spacing:1px; padding-top:6px;"
+        f"color:{_DIM}; font-size:10px; font-weight:700; letter-spacing:1px; padding-top:6px;"
     )
     return lbl
 
@@ -103,9 +114,7 @@ def _row(parent: QWidget, spacing: int = 5) -> tuple[QWidget, QHBoxLayout]:
 
 def _val_lbl(text: str, parent: QWidget, color: str = _ACCENT) -> QLabel:
     lbl = QLabel(text, parent)
-    lbl.setStyleSheet(
-        f"color:{color}; font-size:11px; font-weight:600;"
-    )
+    lbl.setStyleSheet(f"color:{color}; font-size:11px; font-weight:600;")
     lbl.setAlignment(Qt.AlignmentFlag.AlignRight | Qt.AlignmentFlag.AlignVCenter)
     return lbl
 
@@ -126,6 +135,7 @@ def _slider(parent: QWidget, lo: int, hi: int, val: int) -> QSlider:
 # ---------------------------------------------------------------------------
 # Unit/scale helpers
 # ---------------------------------------------------------------------------
+
 
 def _detect_unit(info, ch_names: list[str]) -> tuple[str, float]:
     if info is None or not _mne_available:
@@ -160,6 +170,7 @@ def _auto_channels(ch_names: list[str]) -> list[str]:
 # ---------------------------------------------------------------------------
 # Main class
 # ---------------------------------------------------------------------------
+
 
 class CompareEvoked(QMainWindow):
     """Real-time per-channel condition overlay with SEM shading and peak markers.
@@ -209,17 +220,17 @@ class CompareEvoked(QMainWindow):
 
     def __init__(
         self,
-        ch_names:    list[str],
-        sfreq:       float,
-        tmin:        float,
-        tmax:        float,
-        event_id:    dict[str, int],
-        channels:    Optional[list[str]] = None,
+        ch_names: list[str],
+        sfreq: float,
+        tmin: float,
+        tmax: float,
+        event_id: dict[str, int],
+        channels: Optional[list[str]] = None,
         info=None,
-        montage:     str = "standard_1020",
-        baseline:    Optional[tuple] = (None, 0),
+        montage: str = "standard_1020",
+        baseline: Optional[tuple] = (None, 0),
         window_size: tuple[int, int] = (1200, 800),
-        verbose:     Union[bool, str, None] = None,
+        verbose: Union[bool, str, None] = None,
     ) -> None:
         if not _qt_available or not _pg_available:
             raise ImportError(
@@ -232,23 +243,22 @@ class CompareEvoked(QMainWindow):
         self._redraw_sig.connect(self._redraw)
         set_log_level(verbose)
 
-        self.ch_names   = list(ch_names)
-        self.sfreq      = sfreq
-        self.tmin       = tmin
-        self.tmax       = tmax
-        self.event_id   = event_id
-        self.montage    = montage
-        self.baseline   = baseline
-        self._info      = info
+        self.ch_names = list(ch_names)
+        self.sfreq = sfreq
+        self.tmin = tmin
+        self.tmax = tmax
+        self.event_id = event_id
+        self.montage = montage
+        self.baseline = baseline
+        self._info = info
 
         self._conditions = list(event_id.keys())
-        self._cmap       = {
-            c: _COND_COLORS[i % len(_COND_COLORS)]
-            for i, c in enumerate(self._conditions)
+        self._cmap = {
+            c: _COND_COLORS[i % len(_COND_COLORS)] for i, c in enumerate(self._conditions)
         }
-        self._n_ch   = len(ch_names)
-        self._n_t    = int(round((tmax - tmin) * sfreq)) + 1
-        self._times  = np.linspace(tmin, tmax, self._n_t)
+        self._n_ch = len(ch_names)
+        self._n_t = int(round((tmax - tmin) * sfreq)) + 1
+        self._times = np.linspace(tmin, tmax, self._n_t)
 
         # Display channels (mutable — changed by topomap clicks)
         if channels is None:
@@ -264,22 +274,18 @@ class CompareEvoked(QMainWindow):
         # (no hard cap — let the user decide via the topomap)
 
         # Index in ch_names for each displayed channel
-        self._disp_idx: list[int] = [
-            self.ch_names.index(ch) for ch in self._disp_channels
-        ]
+        self._disp_idx: list[int] = [self.ch_names.index(ch) for ch in self._disp_channels]
 
         # Unit / scale
         self._unit_label, self._unit_scale = _detect_unit(info, self.ch_names)
 
         # Epoch buffer (always over all conditions)
-        self._epoch_buf: dict[str, list[np.ndarray]] = {
-            c: [] for c in self._conditions
-        }
+        self._epoch_buf: dict[str, list[np.ndarray]] = {c: [] for c in self._conditions}
         self._n_per: dict[str, int] = {c: 0 for c in self._conditions}
 
         # Display state
-        self._yscale    = 1.0
-        self._show_sem  = True
+        self._yscale = 1.0
+        self._show_sem = True
         self._show_peak = True
 
         # Scalp positions for all channels (normalised, yn=0=frontal)
@@ -289,13 +295,13 @@ class CompareEvoked(QMainWindow):
         self._topo_scatter: Optional[pg.ScatterPlotItem] = None
 
         # Canvas data structures (rebuilt by _rebuild_canvas)
-        self._ch_plots:   dict[str, pg.PlotItem]               = {}
-        self._curves:     dict[str, dict[str, pg.PlotCurveItem]] = {}
-        self._sem_upper:  dict[str, dict[str, pg.PlotCurveItem]] = {}
-        self._sem_lower:  dict[str, dict[str, pg.PlotCurveItem]] = {}
-        self._sem_fills:  dict[str, dict[str, pg.FillBetweenItem]] = {}
-        self._peaks:      dict[str, dict[str, pg.ScatterPlotItem]] = {}
-        self._t0_lines:   list[pg.InfiniteLine]                = []
+        self._ch_plots: dict[str, pg.PlotItem] = {}
+        self._curves: dict[str, dict[str, pg.PlotCurveItem]] = {}
+        self._sem_upper: dict[str, dict[str, pg.PlotCurveItem]] = {}
+        self._sem_lower: dict[str, dict[str, pg.PlotCurveItem]] = {}
+        self._sem_fills: dict[str, dict[str, pg.FillBetweenItem]] = {}
+        self._peaks: dict[str, dict[str, pg.ScatterPlotItem]] = {}
+        self._t0_lines: list[pg.InfiniteLine] = []
 
         self.setWindowTitle("MNE-RT — Compare Evoked")
         self.resize(*window_size)
@@ -303,8 +309,7 @@ class CompareEvoked(QMainWindow):
         self._build_ui()
 
         logger.info(
-            "CompareEvoked: %d channels displayed (%s), %d conditions, "
-            "unit=%s",
+            "CompareEvoked: %d channels displayed (%s), %d conditions, unit=%s",
             len(self._disp_channels),
             ", ".join(self._disp_channels),
             len(self._conditions),
@@ -315,9 +320,7 @@ class CompareEvoked(QMainWindow):
     # Scalp layout
     # -----------------------------------------------------------------------
 
-    def _compute_positions(
-        self, info, montage_name: str
-    ) -> list[tuple[float, float]]:
+    def _compute_positions(self, info, montage_name: str) -> list[tuple[float, float]]:
         """Return normalised (xn, yn) for each channel, yn=0=frontal."""
         if _mne_available:
             if info is not None:
@@ -325,9 +328,7 @@ class CompareEvoked(QMainWindow):
                 if pos is not None:
                     return pos
             try:
-                tmp = mne.create_info(
-                    self.ch_names, sfreq=1.0, ch_types="eeg", verbose=False
-                )
+                tmp = mne.create_info(self.ch_names, sfreq=1.0, ch_types="eeg", verbose=False)
                 mont = mne.channels.make_standard_montage(montage_name)
                 tmp.set_montage(mont, on_missing="ignore", verbose=False)
                 pos = self._from_layout(mne.channels.find_layout(tmp))
@@ -345,7 +346,7 @@ class CompareEvoked(QMainWindow):
         for name, pos in zip(layout.names, layout.pos):
             xc = float(pos[0] + pos[2] / 2.0)
             yc = float(pos[1] + pos[3] / 2.0)
-            name_xy[name] = (xc, 1.0 - yc)   # yn=0 = frontal
+            name_xy[name] = (xc, 1.0 - yc)  # yn=0 = frontal
         n_matched = sum(1 for c in self.ch_names if c in name_xy)
         if n_matched < self._n_ch // 2:
             return None
@@ -362,8 +363,10 @@ class CompareEvoked(QMainWindow):
     def _circular_fallback(self) -> list[tuple[float, float]]:
         n = self._n_ch
         return [
-            (0.5 + 0.42 * math.cos(2 * math.pi * i / n - math.pi / 2),
-             0.5 + 0.42 * math.sin(2 * math.pi * i / n - math.pi / 2))
+            (
+                0.5 + 0.42 * math.cos(2 * math.pi * i / n - math.pi / 2),
+                0.5 + 0.42 * math.sin(2 * math.pi * i / n - math.pi / 2),
+            )
             for i in range(n)
         ]
 
@@ -411,9 +414,7 @@ class CompareEvoked(QMainWindow):
 
         self._glw = pg.GraphicsLayoutWidget()
         self._glw.setBackground(_BG)
-        self._glw.setSizePolicy(
-            QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding
-        )
+        self._glw.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
         root.addWidget(self._glw, stretch=1)
         root.addWidget(self._build_sidebar())
 
@@ -423,16 +424,16 @@ class CompareEvoked(QMainWindow):
         """Create or recreate PlotItems for the current _disp_channels."""
         self._glw.clear()
 
-        self._ch_plots  = {}
-        self._curves    = {}
+        self._ch_plots = {}
+        self._curves = {}
         self._sem_upper = {}
         self._sem_lower = {}
         self._sem_fills = {}
-        self._peaks     = {}
-        self._t0_lines  = []
-        self._disp_idx  = [self.ch_names.index(ch) for ch in self._disp_channels]
+        self._peaks = {}
+        self._t0_lines = []
+        self._disp_idx = [self.ch_names.index(ch) for ch in self._disp_channels]
 
-        n_rows   = len(self._disp_channels)
+        n_rows = len(self._disp_channels)
         times_ms = self._times * 1000.0
 
         for row_idx, ch in enumerate(self._disp_channels):
@@ -443,36 +444,41 @@ class CompareEvoked(QMainWindow):
             self._ch_plots[ch] = plot
 
             t0_line = pg.InfiniteLine(
-                pos=0.0, angle=90,
+                pos=0.0,
+                angle=90,
                 pen=pg.mkPen(_BORDER, width=1, style=Qt.PenStyle.DashLine),
             )
             plot.addItem(t0_line)
             self._t0_lines.append(t0_line)
 
-            self._curves[ch]    = {}
+            self._curves[ch] = {}
             self._sem_upper[ch] = {}
             self._sem_lower[ch] = {}
             self._sem_fills[ch] = {}
-            self._peaks[ch]     = {}
+            self._peaks[ch] = {}
 
             for cond in self._conditions:
-                col  = self._cmap[cond]
+                col = self._cmap[cond]
                 qcol = QColor(col)
                 r, g, b = qcol.red(), qcol.green(), qcol.blue()
 
                 curve = pg.PlotCurveItem(
-                    times_ms, np.zeros(self._n_t),
-                    pen=pg.mkPen(col, width=1.8), antialias=True,
+                    times_ms,
+                    np.zeros(self._n_t),
+                    pen=pg.mkPen(col, width=1.8),
+                    antialias=True,
                 )
                 plot.addItem(curve)
                 self._curves[ch][cond] = curve
 
                 sem_up = pg.PlotCurveItem(
-                    times_ms, np.zeros(self._n_t),
+                    times_ms,
+                    np.zeros(self._n_t),
                     pen=pg.mkPen((r, g, b, 0), width=0.5),
                 )
                 sem_lo = pg.PlotCurveItem(
-                    times_ms, np.zeros(self._n_t),
+                    times_ms,
+                    np.zeros(self._n_t),
                     pen=pg.mkPen((r, g, b, 0), width=0.5),
                 )
                 plot.addItem(sem_up)
@@ -481,15 +487,19 @@ class CompareEvoked(QMainWindow):
                 self._sem_lower[ch][cond] = sem_lo
 
                 fill = pg.FillBetweenItem(
-                    sem_up, sem_lo, brush=pg.mkBrush(r, g, b, 40),
+                    sem_up,
+                    sem_lo,
+                    brush=pg.mkBrush(r, g, b, 40),
                 )
                 fill.setVisible(False)
                 plot.addItem(fill)
                 self._sem_fills[ch][cond] = fill
 
                 scatter = pg.ScatterPlotItem(
-                    size=8, pen=pg.mkPen(col, width=1.5),
-                    brush=pg.mkBrush(r, g, b, 200), symbol="o",
+                    size=8,
+                    pen=pg.mkPen(col, width=1.5),
+                    brush=pg.mkBrush(r, g, b, 200),
+                    symbol="o",
                 )
                 scatter.setVisible(False)
                 plot.addItem(scatter)
@@ -505,9 +515,7 @@ class CompareEvoked(QMainWindow):
         if total > 0:
             self._redraw(total)
 
-    def _style_plot(
-        self, plot: pg.PlotItem, ch_name: str, is_last: bool
-    ) -> None:
+    def _style_plot(self, plot: pg.PlotItem, ch_name: str, is_last: bool) -> None:
         plot.setMenuEnabled(False)
         plot.hideButtons()
         plot.setMouseEnabled(x=False, y=False)
@@ -543,12 +551,12 @@ class CompareEvoked(QMainWindow):
     def _update_x_ticks(self) -> None:
         if not self._disp_channels:
             return
-        last_ch    = self._disp_channels[-1]
-        plot       = self._ch_plots[last_ch]
-        bottom_ax  = plot.getAxis("bottom")
-        tmin_ms    = self.tmin * 1000.0
-        tmax_ms    = self.tmax * 1000.0
-        span_ms    = tmax_ms - tmin_ms
+        last_ch = self._disp_channels[-1]
+        plot = self._ch_plots[last_ch]
+        bottom_ax = plot.getAxis("bottom")
+        tmin_ms = self.tmin * 1000.0
+        tmax_ms = self.tmax * 1000.0
+        span_ms = tmax_ms - tmin_ms
 
         for interval in [25, 50, 100, 200, 250, 500]:
             if 4 <= span_ms / interval <= 10:
@@ -579,7 +587,9 @@ class CompareEvoked(QMainWindow):
         pw.getViewBox().setAspectLocked(True)
         # View range with a small margin so the nose isn't clipped
         pw.getViewBox().setRange(
-            xRange=(-0.06, 1.06), yRange=(-0.06, 1.14), padding=0,
+            xRange=(-0.06, 1.06),
+            yRange=(-0.06, 1.14),
+            padding=0,
         )
 
         # ── Head circle ──────────────────────────────────────────────────
@@ -598,7 +608,8 @@ class CompareEvoked(QMainWindow):
             ear_x_vals = np.linspace(0.48 * side, 0.56 * side, 8)
             ear_y_vals = 0.5 + 0.06 * np.sin(np.linspace(0, np.pi, 8))
             pw.plot(
-                0.5 + ear_x_vals, ear_y_vals,
+                0.5 + ear_x_vals,
+                ear_y_vals,
                 pen=pg.mkPen(_BORDER, width=1.2),
             )
 
@@ -609,20 +620,23 @@ class CompareEvoked(QMainWindow):
             xn, yn = self._norm_pos[i]
             # Map into the circle: keep within 0.5±0.45
             tx = 0.5 + (xn - 0.5) * 0.9
-            ty = 0.5 + (yn - 0.5) * 0.9   # yn=0→top, yn=1→bottom; y-axis: 0=bottom
+            ty = 0.5 + (yn - 0.5) * 0.9  # yn=0→top, yn=1→bottom; y-axis: 0=bottom
             # pg default: y increases upward, so we flip yn
             ty = 1.0 - ty  # now ty=1 → frontal top, ty=0 → occipital bottom
             selected = ch in self._disp_channels
-            spots.append({
-                "pos": (tx, ty),
-                "data": ch,
-                "brush": pg.mkBrush(_ACCENT if selected else _BORDER),
-                "pen": pg.mkPen(None),
-                "size": 10 if selected else 6,
-            })
+            spots.append(
+                {
+                    "pos": (tx, ty),
+                    "data": ch,
+                    "brush": pg.mkBrush(_ACCENT if selected else _BORDER),
+                    "pen": pg.mkPen(None),
+                    "size": 10 if selected else 6,
+                }
+            )
 
         self._topo_scatter = pg.ScatterPlotItem(
-            spots=spots, hoverable=True,
+            spots=spots,
+            hoverable=True,
             tip=lambda x, y, data: str(data) if data else "",
         )
         self._topo_scatter.sigClicked.connect(self._on_topo_click)
@@ -646,13 +660,15 @@ class CompareEvoked(QMainWindow):
             tx = 0.5 + (xn - 0.5) * 0.9
             ty = 1.0 - (0.5 + (yn - 0.5) * 0.9)
             selected = ch in self._disp_channels
-            spots.append({
-                "pos": (tx, ty),
-                "data": ch,
-                "brush": pg.mkBrush(_ACCENT if selected else _BORDER),
-                "pen": pg.mkPen(None),
-                "size": 10 if selected else 6,
-            })
+            spots.append(
+                {
+                    "pos": (tx, ty),
+                    "data": ch,
+                    "brush": pg.mkBrush(_ACCENT if selected else _BORDER),
+                    "pen": pg.mkPen(None),
+                    "size": 10 if selected else 6,
+                }
+            )
         self._topo_scatter.setData(spots=spots)
 
     def _on_topo_click(self, *args) -> None:
@@ -668,15 +684,13 @@ class CompareEvoked(QMainWindow):
             if ch is None or ch not in self.ch_names:
                 continue
             if ch in self._disp_channels:
-                if len(self._disp_channels) > 1:   # always keep at least 1
+                if len(self._disp_channels) > 1:  # always keep at least 1
                     self._disp_channels.remove(ch)
             else:
                 self._disp_channels.append(ch)
         self._update_topo_colors()
         # Update title
-        self._sel_lbl.setText(
-            f"{', '.join(self._disp_channels)}"
-        )
+        self._sel_lbl.setText(f"{', '.join(self._disp_channels)}")
         self._rebuild_canvas()
 
     # -----------------------------------------------------------------------
@@ -689,8 +703,7 @@ class CompareEvoked(QMainWindow):
         scroll.setWidgetResizable(True)
         scroll.setHorizontalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
         scroll.setStyleSheet(
-            f"QScrollArea {{ background:{_SURFACE}; "
-            f"border-left:1px solid {_BORDER}; }}"
+            f"QScrollArea {{ background:{_SURFACE}; border-left:1px solid {_BORDER}; }}"
         )
 
         sb = QWidget()
@@ -701,9 +714,7 @@ class CompareEvoked(QMainWindow):
 
         # ── Header ───────────────────────────────────────────────────────
         hdr = QLabel("COMPARE EVOKED")
-        hdr.setStyleSheet(
-            f"color:{_TEXT}; font-size:11px; font-weight:700; letter-spacing:1.5px;"
-        )
+        hdr.setStyleSheet(f"color:{_TEXT}; font-size:11px; font-weight:700; letter-spacing:1.5px;")
         ly.addWidget(hdr)
         ly.addWidget(_sep(sb))
 
@@ -712,9 +723,7 @@ class CompareEvoked(QMainWindow):
 
         # Hint: how many selected / max
         self._sel_lbl = QLabel(", ".join(self._disp_channels))
-        self._sel_lbl.setStyleSheet(
-            f"color:{_ACCENT}; font-size:10px; font-weight:600;"
-        )
+        self._sel_lbl.setStyleSheet(f"color:{_ACCENT}; font-size:10px; font-weight:600;")
         self._sel_lbl.setWordWrap(True)
         ly.addWidget(self._sel_lbl)
 
@@ -738,7 +747,7 @@ class CompareEvoked(QMainWindow):
         # ── CONDITIONS ───────────────────────────────────────────────────
         ly.addWidget(_section("CONDITIONS", sb))
         self._cond_checks: dict[str, QCheckBox] = {}
-        self._cond_n_lbl:  dict[str, QLabel]    = {}
+        self._cond_n_lbl: dict[str, QLabel] = {}
 
         for cond in self._conditions:
             col = self._cmap[cond]
@@ -746,8 +755,7 @@ class CompareEvoked(QMainWindow):
             cb = QCheckBox()
             cb.setChecked(True)
             cb.setStyleSheet(
-                f"QCheckBox::indicator:checked{{"
-                f"background:{col};border-color:{col};}}"
+                f"QCheckBox::indicator:checked{{background:{col};border-color:{col};}}"
             )
             cb.toggled.connect(lambda chk, c=cond: self._toggle_cond(c, chk))
             self._cond_checks[cond] = cb
@@ -876,7 +884,9 @@ class CompareEvoked(QMainWindow):
 
     def _export_png(self) -> None:
         path, _ = QFileDialog.getSaveFileName(
-            self, "Export Compare Evoked", "compare_evoked.png",
+            self,
+            "Export Compare Evoked",
+            "compare_evoked.png",
             "PNG Image (*.png);;JPEG Image (*.jpg)",
         )
         if path:
@@ -888,7 +898,7 @@ class CompareEvoked(QMainWindow):
 
     def update(
         self,
-        data:       np.ndarray,
+        data: np.ndarray,
         conditions: list[str],
     ) -> None:
         """Redraw all channel plots with updated condition averages.
@@ -906,31 +916,30 @@ class CompareEvoked(QMainWindow):
         for cond in self._conditions:
             mask = np.array([c == cond for c in conditions])
             self._epoch_buf[cond] = list(data[mask]) if mask.any() else []
-            self._n_per[cond]     = int(mask.sum())
+            self._n_per[cond] = int(mask.sum())
 
         self._redraw_sig.emit(n_total)
 
     def _redraw(self, n_total: int) -> None:
         """Slot — always runs on the main/GUI thread."""
         times_ms = self._times * 1000.0
-        t0_idx   = int(np.searchsorted(times_ms, 0.0))
+        t0_idx = int(np.searchsorted(times_ms, 0.0))
 
         for cond in self._conditions:
-            buf      = self._epoch_buf[cond]
-            n        = len(buf)
+            buf = self._epoch_buf[cond]
+            n = len(buf)
             cond_vis = self._cond_checks.get(cond, QCheckBox()).isChecked()
 
             if buf:
                 stack = np.stack(buf, 0)
-                avg   = np.mean(stack, 0)
-                sem   = (np.std(stack, axis=0, ddof=1) / math.sqrt(n)
-                         if n >= 2 else np.zeros_like(avg))
+                avg = np.mean(stack, 0)
+                sem = np.std(stack, axis=0, ddof=1) / math.sqrt(n) if n >= 2 else np.zeros_like(avg)
             else:
                 avg = np.zeros((self._n_ch, self._n_t))
                 sem = np.zeros((self._n_ch, self._n_t))
 
             for disp_pos, ch in enumerate(self._disp_channels):
-                ch_i       = self._disp_idx[disp_pos]
+                ch_i = self._disp_idx[disp_pos]
                 avg_scaled = avg[ch_i] * self._unit_scale
                 sem_scaled = sem[ch_i] * self._unit_scale
 

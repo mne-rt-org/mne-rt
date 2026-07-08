@@ -3,13 +3,13 @@
 import numpy as np
 import pytest
 
-from mne_rt.protocols import ZScoreProtocol, ThresholdProtocol
+from mne_rt.protocols import ThresholdProtocol, ZScoreProtocol
 from mne_rt.protocols.sham import ShamProtocol
-
 
 # ------------------------------------------------------------------
 # Constructor validation
 # ------------------------------------------------------------------
+
 
 def test_invalid_sham_rate_negative():
     inner = ThresholdProtocol()
@@ -39,6 +39,7 @@ def test_invalid_buffer_len_negative():
 # Defaults
 # ------------------------------------------------------------------
 
+
 def test_defaults():
     inner = ThresholdProtocol()
     proto = ShamProtocol(inner)
@@ -53,6 +54,7 @@ def test_defaults():
 # ------------------------------------------------------------------
 # sham_rate extremes
 # ------------------------------------------------------------------
+
 
 def test_sham_rate_zero_never_shams():
     inner = ThresholdProtocol(threshold=0.0, direction="up")
@@ -78,6 +80,7 @@ def test_sham_rate_one_always_shams():
 # Approximate sham rate behaviour
 # ------------------------------------------------------------------
 
+
 def test_sham_rate_approximate():
     """With rng_seed, sham fraction should be close to sham_rate."""
     inner = ThresholdProtocol(threshold=0.0, direction="up")
@@ -91,6 +94,7 @@ def test_sham_rate_approximate():
 # ------------------------------------------------------------------
 # Inner protocol state always advances
 # ------------------------------------------------------------------
+
 
 def test_inner_state_advances_on_sham():
     """Inner ZScoreProtocol should accumulate evaluations even on sham windows."""
@@ -106,6 +110,7 @@ def test_inner_state_advances_on_sham():
 # sham_log length
 # ------------------------------------------------------------------
 
+
 def test_sham_log_length():
     inner = ThresholdProtocol()
     proto = ShamProtocol(inner, rng_seed=7)
@@ -117,6 +122,7 @@ def test_sham_log_length():
 # ------------------------------------------------------------------
 # n_real + n_sham == total evaluations
 # ------------------------------------------------------------------
+
 
 def test_counts_sum_to_total():
     inner = ThresholdProtocol()
@@ -131,6 +137,7 @@ def test_counts_sum_to_total():
 # sham_fraction property
 # ------------------------------------------------------------------
 
+
 def test_sham_fraction_equals_n_sham_over_total():
     inner = ThresholdProtocol()
     proto = ShamProtocol(inner, sham_rate=0.5, rng_seed=1)
@@ -143,6 +150,7 @@ def test_sham_fraction_equals_n_sham_over_total():
 # ------------------------------------------------------------------
 # Reproducibility with rng_seed
 # ------------------------------------------------------------------
+
 
 def test_rng_seed_reproducibility():
     def run(seed):
@@ -162,6 +170,7 @@ def test_rng_seed_reproducibility():
 # ------------------------------------------------------------------
 # reset
 # ------------------------------------------------------------------
+
 
 def test_reset_clears_state():
     inner = ThresholdProtocol()
@@ -194,6 +203,7 @@ def test_reset_preserves_params():
 # ------------------------------------------------------------------
 # repr
 # ------------------------------------------------------------------
+
 
 def test_repr():
     inner = ThresholdProtocol()

@@ -7,6 +7,7 @@ Classes
 NFPlot
     Scrolling multi-channel real-time NF signal monitor.
 """
+
 from __future__ import annotations
 
 import datetime
@@ -29,7 +30,6 @@ from qtpy.QtWidgets import (
     QVBoxLayout,
     QWidget,
 )
-
 
 # --------------------------------------------------------------------------
 # Constants
@@ -203,6 +203,7 @@ class NFPlot(QMainWindow):
         verbose=None,
     ) -> None:
         from mne_rt._logging import set_log_level
+
         set_log_level(verbose)
         super().__init__()
         self._mods = modalities
@@ -253,7 +254,7 @@ class NFPlot(QMainWindow):
 
         for i, mod in enumerate(self._mods):
             color = _COLORS[i % len(_COLORS)]
-            is_bottom = (i == self._n - 1)
+            is_bottom = i == self._n - 1
 
             pi = glw.addPlot(row=i, col=0)
             self._apply_grid_style(pi, visible=True)
@@ -290,7 +291,7 @@ class NFPlot(QMainWindow):
             self._curves.append(curve)
 
             pi.setXRange(0.0, self._time_window, padding=0.01)
-            pi.enableAutoRange(axis='y')
+            pi.enableAutoRange(axis="y")
 
             # Link all X axes to the first plot
             if i > 0:
@@ -449,11 +450,10 @@ class NFPlot(QMainWindow):
 
     def _screenshot(self) -> None:
         from qtpy.QtWidgets import QFileDialog
+
         ts = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
         default = str(Path.home() / f"nf_plot_{ts}.png")
-        path, _ = QFileDialog.getSaveFileName(
-            self, "Save Screenshot", default, "PNG Image (*.png)"
-        )
+        path, _ = QFileDialog.getSaveFileName(self, "Save Screenshot", default, "PNG Image (*.png)")
         if not path:
             return
         exp = pg.exporters.ImageExporter(self._glw.scene())
@@ -512,10 +512,12 @@ class NFPlot(QMainWindow):
             return
 
         arr = np.asarray(new_vals, dtype=float)
-        norm = np.array([
-            (arr[i] / (self._scales[self._mods[i]] + 1e-300)) * self._channel_scales[i]
-            for i in range(self._n)
-        ])
+        norm = np.array(
+            [
+                (arr[i] / (self._scales[self._mods[i]] + 1e-300)) * self._channel_scales[i]
+                for i in range(self._n)
+            ]
+        )
 
         if self._display_alpha < 1.0:
             self._ema = self._display_alpha * norm + (1.0 - self._display_alpha) * self._ema

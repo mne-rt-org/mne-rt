@@ -11,6 +11,7 @@ Classes
 TopoPlot
     Real-time scalp-layout ERP display with interactive sidebar.
 """
+
 from __future__ import annotations
 
 import math
@@ -19,58 +20,69 @@ from typing import Optional, Union
 import numpy as np
 
 try:
-    from qtpy.QtCore import Qt, QRectF, Signal
-    from qtpy.QtGui import QFont, QColor
+    from qtpy.QtCore import QRectF, Qt, Signal
+    from qtpy.QtGui import QColor, QFont
     from qtpy.QtWidgets import (
-        QApplication, QMainWindow, QWidget,
-        QVBoxLayout, QHBoxLayout, QLabel,
-        QCheckBox, QSlider, QPushButton,
-        QFrame, QSizePolicy, QScrollArea,
-        QFileDialog, QComboBox,
+        QApplication,
+        QCheckBox,
+        QComboBox,
+        QFileDialog,
+        QFrame,
+        QHBoxLayout,
+        QLabel,
+        QMainWindow,
+        QPushButton,
+        QScrollArea,
+        QSizePolicy,
+        QSlider,
+        QVBoxLayout,
+        QWidget,
     )
+
     _qt_available = True
 except ImportError:
     _qt_available = False
 
 try:
     import pyqtgraph as pg
+
     _pg_available = True
 except ImportError:
     _pg_available = False
 
 try:
     import mne
+
     _mne_available = True
 except ImportError:
     _mne_available = False
 
 from mne_rt._logging import logger, set_log_level
 
-
 # ---------------------------------------------------------------------------
 # Palette
 # ---------------------------------------------------------------------------
-_BG       = "#0d1117"
-_SURFACE  = "#161b22"
-_BORDER   = "#30363d"
-_TEXT     = "#e6edf3"
-_DIM      = "#8b949e"
-_ACCENT   = "#3b82f6"
+_BG = "#0d1117"
+_SURFACE = "#161b22"
+_BORDER = "#30363d"
+_TEXT = "#e6edf3"
+_DIM = "#8b949e"
+_ACCENT = "#3b82f6"
 
 _COND_COLORS = [
-    "#3b82f6",   # blue
-    "#ec4899",   # pink
-    "#10b981",   # green
-    "#f59e0b",   # amber
-    "#8b5cf6",   # violet
-    "#06b6d4",   # cyan
+    "#3b82f6",  # blue
+    "#ec4899",  # pink
+    "#10b981",  # green
+    "#f59e0b",  # amber
+    "#8b5cf6",  # violet
+    "#06b6d4",  # cyan
 ]
 
 _BG_PRESETS = [
-    ("Dark",  "#0d1117", _TEXT),
-    ("Navy",  "#050d1a", _TEXT),
+    ("Dark", "#0d1117", _TEXT),
+    ("Navy", "#050d1a", _TEXT),
     ("Slate", "#1e2030", _TEXT),
-    ("Dim",   "#2d333b", _TEXT),
+    ("Dim", "#2d333b", _TEXT),
     ("Light", "#f1f5f9", "#111827"),
 ]
 
@@ -79,14 +91,13 @@ _SIDEBAR_W = 230
 _SW, _SH = 1000, 920
 _PW, _PH = 76, 64
 
-_MASTOID_NAMES = frozenset(
-    ["M1", "M2", "TP9", "TP10", "A1", "A2", "Mastoid", "mastoid"]
-)
+_MASTOID_NAMES = frozenset(["M1", "M2", "TP9", "TP10", "A1", "A2", "Mastoid", "mastoid"])
 
 
 # ---------------------------------------------------------------------------
 # Sidebar helpers
 # ---------------------------------------------------------------------------
+
 
 def _sep(parent: QWidget) -> QFrame:
     f = QFrame(parent)
@@ -98,8 +109,7 @@ def _sep(parent: QWidget) -> QFrame:
 def _section(text: str, parent: QWidget) -> QLabel:
     lbl = QLabel(text, parent)
     lbl.setStyleSheet(
-        f"color:{_DIM}; font-size:10px; font-weight:700; "
-        "letter-spacing:1px; padding-top:6px;"
+        f"color:{_DIM}; font-size:10px; font-weight:700; letter-spacing:1px; padding-top:6px;"
     )
     return lbl
 
@@ -114,9 +124,7 @@ def _row(parent: QWidget, spacing: int = 5) -> tuple[QWidget, QHBoxLayout]:
 
 def _val_lbl(text: str, parent: QWidget, color: str = _ACCENT) -> QLabel:
     lbl = QLabel(text, parent)
-    lbl.setStyleSheet(
-        f"color:{color}; font-size:11px; font-weight:600;"
-    )
+    lbl.setStyleSheet(f"color:{color}; font-size:11px; font-weight:600;")
     lbl.setAlignment(Qt.AlignmentFlag.AlignRight | Qt.AlignmentFlag.AlignVCenter)
     return lbl
 
@@ -137,6 +145,7 @@ def _slider(parent, lo: int, hi: int, val: int) -> QSlider:
 # ---------------------------------------------------------------------------
 # Main class
 # ---------------------------------------------------------------------------
+
 
 class TopoPlot(QMainWindow):
     """Real-time scalp-layout ERP display.
@@ -184,16 +193,16 @@ class TopoPlot(QMainWindow):
 
     def __init__(
         self,
-        ch_names:    list[str],
-        sfreq:       float,
-        tmin:        float,
-        tmax:        float,
-        event_id:    dict[str, int],
+        ch_names: list[str],
+        sfreq: float,
+        tmin: float,
+        tmax: float,
+        event_id: dict[str, int],
         info=None,
-        montage:     str = "standard_1020",
-        baseline:    Optional[tuple] = (None, 0),
+        montage: str = "standard_1020",
+        baseline: Optional[tuple] = (None, 0),
         window_size: tuple[int, int] = (1440, 900),
-        verbose:     Union[bool, str, None] = None,
+        verbose: Union[bool, str, None] = None,
     ) -> None:
         if not _qt_available or not _pg_available:
             raise ImportError(
@@ -206,41 +215,38 @@ class TopoPlot(QMainWindow):
         self._redraw_sig.connect(self._redraw)
         set_log_level(verbose)
 
-        self.ch_names  = list(ch_names)
-        self.sfreq     = sfreq
-        self.tmin      = tmin
-        self.tmax      = tmax
-        self.event_id  = event_id
-        self.montage   = montage
-        self.baseline  = baseline
-        self._info     = info
+        self.ch_names = list(ch_names)
+        self.sfreq = sfreq
+        self.tmin = tmin
+        self.tmax = tmax
+        self.event_id = event_id
+        self.montage = montage
+        self.baseline = baseline
+        self._info = info
 
         self._conditions = list(event_id.keys())
         self._cmap = {
-            c: _COND_COLORS[i % len(_COND_COLORS)]
-            for i, c in enumerate(self._conditions)
+            c: _COND_COLORS[i % len(_COND_COLORS)] for i, c in enumerate(self._conditions)
         }
-        self._n_ch  = len(ch_names)
-        self._n_t   = int(round((tmax - tmin) * sfreq)) + 1
+        self._n_ch = len(ch_names)
+        self._n_t = int(round((tmax - tmin) * sfreq)) + 1
         self._times = np.linspace(tmin, tmax, self._n_t)
 
-        self._epoch_buf: dict[str, list[np.ndarray]] = {
-            c: [] for c in self._conditions
-        }
+        self._epoch_buf: dict[str, list[np.ndarray]] = {c: [] for c in self._conditions}
         self._n_per: dict[str, int] = {c: 0 for c in self._conditions}
 
         # Display state
-        self._yscale    = 1.0
+        self._yscale = 1.0
         self._linewidth = 1.6
         self._smooth_ms = 0.0
-        self._show_sem  = False
-        self._plot_bg   = _BG
-        self._x_start   = tmin
-        self._x_end     = tmax
+        self._show_sem = False
+        self._plot_bg = _BG
+        self._x_start = tmin
+        self._x_end = tmax
 
         # Unit / re-reference
         self._unit, self._unit_scale = self._detect_unit(info)
-        self._reref_mode  = "none"
+        self._reref_mode = "none"
         self._mastoid_idx = self._find_mastoids()
 
         self._norm_pos = self._compute_positions(info, montage)
@@ -252,7 +258,10 @@ class TopoPlot(QMainWindow):
 
         logger.info(
             "TopoPlot(ERP): %d ch, %.0f–%.0f ms, unit=%s, layout=%s",
-            self._n_ch, tmin * 1000, tmax * 1000, self._unit,
+            self._n_ch,
+            tmin * 1000,
+            tmax * 1000,
+            self._unit,
             "from info" if info is not None else "montage/fallback",
         )
 
@@ -274,27 +283,20 @@ class TopoPlot(QMainWindow):
         return "µV", 1e6
 
     def _find_mastoids(self) -> list[int]:
-        return [
-            i for i, ch in enumerate(self.ch_names)
-            if ch in _MASTOID_NAMES
-        ]
+        return [i for i, ch in enumerate(self.ch_names) if ch in _MASTOID_NAMES]
 
     # -----------------------------------------------------------------------
     # Scalp layout
     # -----------------------------------------------------------------------
 
-    def _compute_positions(
-        self, info, montage_name: str
-    ) -> list[tuple[float, float]]:
+    def _compute_positions(self, info, montage_name: str) -> list[tuple[float, float]]:
         if _mne_available:
             if info is not None:
                 pos = self._from_layout(mne.channels.find_layout(info))
                 if pos is not None:
                     return pos
             try:
-                tmp = mne.create_info(
-                    self.ch_names, sfreq=1.0, ch_types="eeg", verbose=False
-                )
+                tmp = mne.create_info(self.ch_names, sfreq=1.0, ch_types="eeg", verbose=False)
                 mont = mne.channels.make_standard_montage(montage_name)
                 tmp.set_montage(mont, on_missing="ignore", verbose=False)
                 pos = self._from_layout(mne.channels.find_layout(tmp))
@@ -322,14 +324,17 @@ class TopoPlot(QMainWindow):
             if ch in name_xy:
                 positions.append(name_xy[ch])
             else:
-                positions.append((0.02, fb * 0.05)); fb += 1
+                positions.append((0.02, fb * 0.05))
+                fb += 1
         return positions
 
     def _circular_fallback(self) -> list[tuple[float, float]]:
         n = self._n_ch
         return [
-            (0.5 + 0.42 * math.cos(2 * math.pi * i / n - math.pi / 2),
-             0.5 + 0.42 * math.sin(2 * math.pi * i / n - math.pi / 2))
+            (
+                0.5 + 0.42 * math.cos(2 * math.pi * i / n - math.pi / 2),
+                0.5 + 0.42 * math.sin(2 * math.pi * i / n - math.pi / 2),
+            )
             for i in range(n)
         ]
 
@@ -378,27 +383,19 @@ class TopoPlot(QMainWindow):
 
         self._gview = pg.GraphicsView()
         self._gview.setBackground(_BG)
-        self._gview.setSizePolicy(
-            QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding
-        )
+        self._gview.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
         root.addWidget(self._gview, stretch=1)
         self._scene = self._gview.sceneObj
 
         root.addWidget(self._build_sidebar())
 
-        self._plots:      list[pg.PlotItem]      = []
-        self._ch_labels:  list[pg.TextItem]      = []
-        self._curves:     dict[str, list[pg.PlotCurveItem]] = {
-            c: [] for c in self._conditions
-        }
-        self._sem_upper:  dict[str, list[pg.PlotCurveItem]] = {
-            c: [] for c in self._conditions
-        }
-        self._sem_lower:  dict[str, list[pg.PlotCurveItem]] = {
-            c: [] for c in self._conditions
-        }
-        self._sem_fills:  dict[str, list] = {c: [] for c in self._conditions}
-        self._zl_items:   list[pg.InfiniteLine] = []
+        self._plots: list[pg.PlotItem] = []
+        self._ch_labels: list[pg.TextItem] = []
+        self._curves: dict[str, list[pg.PlotCurveItem]] = {c: [] for c in self._conditions}
+        self._sem_upper: dict[str, list[pg.PlotCurveItem]] = {c: [] for c in self._conditions}
+        self._sem_lower: dict[str, list[pg.PlotCurveItem]] = {c: [] for c in self._conditions}
+        self._sem_fills: dict[str, list] = {c: [] for c in self._conditions}
+        self._zl_items: list[pg.InfiniteLine] = []
 
         for ch_idx, ch in enumerate(self.ch_names):
             xn, yn = self._norm_pos[ch_idx]
@@ -413,7 +410,8 @@ class TopoPlot(QMainWindow):
             self._ch_labels.append(lbl)
 
             zl = pg.InfiniteLine(
-                pos=0, angle=90,
+                pos=0,
+                angle=90,
                 pen=pg.mkPen(_BORDER, width=1, style=Qt.PenStyle.DashLine),
             )
             plot.addItem(zl)
@@ -422,7 +420,8 @@ class TopoPlot(QMainWindow):
             for cond in self._conditions:
                 col = self._cmap[cond]
                 curve = plot.plot(
-                    self._times, np.zeros(self._n_t),
+                    self._times,
+                    np.zeros(self._n_t),
                     pen=pg.mkPen(col, width=self._linewidth),
                 )
                 self._curves[cond].append(curve)
@@ -486,8 +485,7 @@ class TopoPlot(QMainWindow):
         scroll.setWidgetResizable(True)
         scroll.setHorizontalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
         scroll.setStyleSheet(
-            f"QScrollArea {{ background:{_SURFACE}; "
-            f"border-left:1px solid {_BORDER}; }}"
+            f"QScrollArea {{ background:{_SURFACE}; border-left:1px solid {_BORDER}; }}"
         )
 
         sb = QWidget()
@@ -498,9 +496,7 @@ class TopoPlot(QMainWindow):
 
         # ── Header ───────────────────────────────────────────────────────
         hdr = QLabel("ERP CONTROLS")
-        hdr.setStyleSheet(
-            f"color:{_TEXT}; font-size:11px; font-weight:700; letter-spacing:1.5px;"
-        )
+        hdr.setStyleSheet(f"color:{_TEXT}; font-size:11px; font-weight:700; letter-spacing:1.5px;")
         ly.addWidget(hdr)
 
         # Unit badge next to header
@@ -519,7 +515,7 @@ class TopoPlot(QMainWindow):
         # ── CONDITIONS ───────────────────────────────────────────────────
         ly.addWidget(_section("CONDITIONS", sb))
         self._cond_checks: dict[str, QCheckBox] = {}
-        self._cond_n_lbl:  dict[str, QLabel]    = {}
+        self._cond_n_lbl: dict[str, QLabel] = {}
 
         for cond in self._conditions:
             col = self._cmap[cond]
@@ -527,8 +523,7 @@ class TopoPlot(QMainWindow):
             cb = QCheckBox()
             cb.setChecked(True)
             cb.setStyleSheet(
-                f"QCheckBox::indicator:checked{{"
-                f"background:{col};border-color:{col};}}"
+                f"QCheckBox::indicator:checked{{background:{col};border-color:{col};}}"
             )
             cb.toggled.connect(lambda chk, c=cond: self._toggle_cond(c, chk))
             self._cond_checks[cond] = cb
@@ -537,7 +532,9 @@ class TopoPlot(QMainWindow):
             dot.setWordWrap(True)
             n_lbl = _val_lbl("n = 0", sb, color=_DIM)
             self._cond_n_lbl[cond] = n_lbl
-            rl.addWidget(cb); rl.addWidget(dot, stretch=1); rl.addWidget(n_lbl)
+            rl.addWidget(cb)
+            rl.addWidget(dot, stretch=1)
+            rl.addWidget(n_lbl)
             ly.addWidget(rw)
 
         ly.addWidget(_sep(sb))
@@ -639,9 +636,7 @@ class TopoPlot(QMainWindow):
             btn.setToolTip(label)
             active = hex_col == _BG
             border = f"2px solid {_ACCENT}" if active else f"1px solid {_BORDER}"
-            btn.setStyleSheet(
-                f"background:{hex_col}; border:{border}; border-radius:4px;"
-            )
+            btn.setStyleSheet(f"background:{hex_col}; border:{border}; border-radius:4px;")
             btn.clicked.connect(lambda _, c=hex_col: self._set_bg(c))
             sw_l.addWidget(btn)
             self._bg_swatches.append(btn)
@@ -765,7 +760,7 @@ class TopoPlot(QMainWindow):
         if x1 >= x2:
             return
         self._x_start = x1
-        self._x_end   = x2
+        self._x_end = x2
         self._xstart_lbl.setText(f"{int(x1 * 1000)} ms")
         self._xend_lbl.setText(f"{int(x2 * 1000)} ms")
         for plot in self._plots:
@@ -779,9 +774,7 @@ class TopoPlot(QMainWindow):
         for btn, (_, hex_col, _) in zip(self._bg_swatches, _BG_PRESETS):
             active = hex_col == color
             border = f"2px solid {_ACCENT}" if active else f"1px solid {_BORDER}"
-            btn.setStyleSheet(
-                f"background:{hex_col}; border:{border}; border-radius:4px;"
-            )
+            btn.setStyleSheet(f"background:{hex_col}; border:{border}; border-radius:4px;")
 
     def _toggle_sem(self, visible: bool) -> None:
         self._show_sem = visible
@@ -805,7 +798,7 @@ class TopoPlot(QMainWindow):
     def _reset_epochs(self) -> None:
         for cond in self._conditions:
             self._epoch_buf[cond] = []
-            self._n_per[cond]     = 0
+            self._n_per[cond] = 0
             self._cond_n_lbl[cond].setText("n = 0")
             for curve in self._curves[cond]:
                 curve.setData(self._times, np.zeros(self._n_t))
@@ -819,7 +812,9 @@ class TopoPlot(QMainWindow):
 
     def _export_png(self) -> None:
         path, _ = QFileDialog.getSaveFileName(
-            self, "Export Topo ERP Plot", "topo_plot.png",
+            self,
+            "Export Topo ERP Plot",
+            "topo_plot.png",
             "PNG Image (*.png);;JPEG Image (*.jpg)",
         )
         if path:
@@ -831,7 +826,7 @@ class TopoPlot(QMainWindow):
 
     def update(
         self,
-        data:       np.ndarray,
+        data: np.ndarray,
         conditions: list[str],
     ) -> None:
         """Redraw all channel plots with updated condition averages.
@@ -849,7 +844,7 @@ class TopoPlot(QMainWindow):
         for cond in self._conditions:
             mask = np.array([c == cond for c in conditions])
             self._epoch_buf[cond] = list(data[mask]) if mask.any() else []
-            self._n_per[cond]     = int(mask.sum())
+            self._n_per[cond] = int(mask.sum())
         self._redraw_sig.emit(n_total)
 
     def _redraw(self, n_total: int) -> None:
@@ -858,13 +853,12 @@ class TopoPlot(QMainWindow):
         for cond in self._conditions:
             self._cond_n_lbl[cond].setText(f"n = {self._n_per[cond]}")
             buf = self._epoch_buf[cond]
-            n   = len(buf)
+            n = len(buf)
 
             if buf:
                 stack = np.stack(buf, 0)
-                avg   = np.mean(stack, 0)          # (n_ch, n_t)
-                sem   = (np.std(stack, 0, ddof=1) / np.sqrt(n)
-                         if n >= 2 else np.zeros_like(avg))
+                avg = np.mean(stack, 0)  # (n_ch, n_t)
+                sem = np.std(stack, 0, ddof=1) / np.sqrt(n) if n >= 2 else np.zeros_like(avg)
             else:
                 avg = np.zeros((self._n_ch, self._n_t))
                 sem = np.zeros_like(avg)
@@ -878,10 +872,7 @@ class TopoPlot(QMainWindow):
             for ch_i, curve in enumerate(self._curves[cond]):
                 y = avg[ch_i]
                 if len(y) != self._n_t:
-                    y = np.interp(
-                        self._times,
-                        np.linspace(self.tmin, self.tmax, len(y)), y
-                    )
+                    y = np.interp(self._times, np.linspace(self.tmin, self.tmax, len(y)), y)
                 curve.setData(self._times, self._smooth(y))
 
                 if self._show_sem and n >= 2:

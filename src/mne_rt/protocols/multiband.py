@@ -16,6 +16,7 @@ Sterman, M. B., & Egner, T. (2006). Foundation and practice of neurofeedback
 for the treatment of epilepsy. Applied Psychophysiology and Biofeedback,
 31(1), 21–35.
 """
+
 from __future__ import annotations
 
 from typing import Any

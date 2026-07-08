@@ -11,6 +11,7 @@ N_T = 256
 @pytest.fixture()
 def orica():
     from mne_rt.tools import ORICA
+
     o = ORICA(
         n_channels=N_CH,
         block_size=64,

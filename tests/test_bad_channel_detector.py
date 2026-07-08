@@ -13,11 +13,13 @@ N_SAMPLES = 512  # 2-second window at 256 Hz
 # Fixtures
 # ------------------------------------------------------------------
 
+
 @pytest.fixture()
 def fake_info():
     """Minimal MNE-compatible info dict with no channel positions."""
     pytest.importorskip("mne")
     import mne
+
     ch_names = [f"EEG{i:03d}" for i in range(N_CH)]
     info = mne.create_info(ch_names=ch_names, sfreq=SFREQ, ch_types="eeg")
     return info
@@ -26,6 +28,7 @@ def fake_info():
 @pytest.fixture()
 def detector(fake_info):
     from mne_rt.tools import BadChannelDetector
+
     return BadChannelDetector(fake_info, method=["flat", "variance", "hf_noise"])
 
 
@@ -39,32 +42,38 @@ def clean_data():
 # Constructor validation
 # ------------------------------------------------------------------
 
+
 def test_invalid_method(fake_info):
     from mne_rt.tools import BadChannelDetector
+
     with pytest.raises(ValueError):
         BadChannelDetector(fake_info, method="invalid_criterion")
 
 
 def test_invalid_flat_threshold(fake_info):
     from mne_rt.tools import BadChannelDetector
+
     with pytest.raises(ValueError):
         BadChannelDetector(fake_info, flat_threshold=-1e-8)
 
 
 def test_invalid_min_bad_frac(fake_info):
     from mne_rt.tools import BadChannelDetector
+
     with pytest.raises(ValueError):
         BadChannelDetector(fake_info, min_bad_frac=0.0)
 
 
 def test_method_all(fake_info):
     from mne_rt.tools import BadChannelDetector
+
     det = BadChannelDetector(fake_info, method="all")
     assert len(det._methods) >= 2  # at least flat + variance + hf_noise
 
 
 def test_method_list(fake_info):
     from mne_rt.tools import BadChannelDetector
+
     det = BadChannelDetector(fake_info, method=["flat", "variance"])
     assert "flat" in det._methods
     assert "variance" in det._methods
@@ -74,6 +83,7 @@ def test_method_list(fake_info):
 # ------------------------------------------------------------------
 # Initial state
 # ------------------------------------------------------------------
+
 
 def test_initial_state(detector):
     assert detector.bad_channels_ == []
@@ -85,8 +95,10 @@ def test_initial_state(detector):
 # Flat channel detection
 # ------------------------------------------------------------------
 
+
 def test_flat_channel_detected(fake_info, clean_data):
     from mne_rt.tools import BadChannelDetector
+
     det = BadChannelDetector(
         fake_info,
         method=["flat"],
@@ -108,11 +120,6 @@ def test_flat_channel_detected(fake_info, clean_data):
 def test_good_channels_not_flagged_as_flat(detector, clean_data):
     for _ in range(35):  # fill history
         detector.update(clean_data)
-    # No channel should be flat
-    flat_ch = [
-        ch for ch in detector.bad_channels_
-        if detector.scores_[ch] > 0.5
-    ]
     # Normal amplitude data should not trigger flat criterion
     assert len(detector.bad_channels_) == 0 or True  # allow for numerical edge cases
 
@@ -121,8 +128,10 @@ def test_good_channels_not_flagged_as_flat(detector, clean_data):
 # Variance (noisy) channel detection
 # ------------------------------------------------------------------
 
+
 def test_noisy_channel_detected(fake_info, clean_data):
     from mne_rt.tools import BadChannelDetector
+
     det = BadChannelDetector(
         fake_info,
         method=["variance"],
@@ -145,8 +154,10 @@ def test_noisy_channel_detected(fake_info, clean_data):
 # HF noise detection
 # ------------------------------------------------------------------
 
+
 def test_hf_noise_channel_detected(fake_info):
     from mne_rt.tools import BadChannelDetector
+
     det = BadChannelDetector(
         fake_info,
         method=["hf_noise"],
@@ -172,6 +183,7 @@ def test_hf_noise_channel_detected(fake_info):
 # update() shape mismatch
 # ------------------------------------------------------------------
 
+
 def test_update_wrong_shape(detector):
     with pytest.raises(ValueError):
         detector.update(np.zeros((N_CH + 1, N_SAMPLES)))
@@ -180,6 +192,7 @@ def test_update_wrong_shape(detector):
 # ------------------------------------------------------------------
 # n_windows_ counter
 # ------------------------------------------------------------------
+
 
 def test_n_windows_increments(detector, clean_data):
     for i in range(5):
@@ -191,6 +204,7 @@ def test_n_windows_increments(detector, clean_data):
 # Scores in [0, 1]
 # ------------------------------------------------------------------
 
+
 def test_scores_range(detector, clean_data):
     for _ in range(10):
         detector.update(clean_data)
@@ -201,6 +215,7 @@ def test_scores_range(detector, clean_data):
 # ------------------------------------------------------------------
 # get_bad_channels / get_scores
 # ------------------------------------------------------------------
+
 
 def test_get_bad_channels_returns_list(detector, clean_data):
     detector.update(clean_data)
@@ -219,8 +234,10 @@ def test_get_scores_returns_dict(detector, clean_data):
 # Rolling vote — min_bad_frac
 # ------------------------------------------------------------------
 
+
 def test_single_bad_window_does_not_flag_with_high_threshold(fake_info, clean_data):
     from mne_rt.tools import BadChannelDetector
+
     det = BadChannelDetector(
         fake_info,
         method=["flat"],
@@ -245,6 +262,7 @@ def test_single_bad_window_does_not_flag_with_high_threshold(fake_info, clean_da
 # reset
 # ------------------------------------------------------------------
 
+
 def test_reset_clears_state(detector, clean_data):
     for _ in range(10):
         detector.update(clean_data)
@@ -256,8 +274,10 @@ def test_reset_clears_state(detector, clean_data):
 
 def test_reset_preserves_params(fake_info):
     from mne_rt.tools import BadChannelDetector
-    det = BadChannelDetector(fake_info, method=["flat"], flat_threshold=5e-8,
-                             history_windows=20, min_bad_frac=0.3)
+
+    det = BadChannelDetector(
+        fake_info, method=["flat"], flat_threshold=5e-8, history_windows=20, min_bad_frac=0.3
+    )
     det.reset()
     assert det.flat_threshold == 5e-8
     assert det.history_windows == 20
@@ -267,6 +287,7 @@ def test_reset_preserves_params(fake_info):
 # ------------------------------------------------------------------
 # repr
 # ------------------------------------------------------------------
+
 
 def test_repr(detector):
     r = repr(detector)

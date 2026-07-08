@@ -1,6 +1,7 @@
 """Tests for the mne-rt command-line interface (parser only, no I/O)."""
 
 import pytest
+
 from mne_rt.cli import _build_parser
 
 
@@ -31,13 +32,19 @@ def test_demo_defaults(parser):
 
 
 def test_demo_custom(parser):
-    args = parser.parse_args([
-        "demo",
-        "--duration", "30",
-        "--modality", "sensor_power", "band_ratio",
-        "--winsize", "2.0",
-        "--no-nf",
-    ])
+    args = parser.parse_args(
+        [
+            "demo",
+            "--duration",
+            "30",
+            "--modality",
+            "sensor_power",
+            "band_ratio",
+            "--winsize",
+            "2.0",
+            "--no-nf",
+        ]
+    )
     assert args.duration == 30.0
     assert args.modality == ["sensor_power", "band_ratio"]
     assert args.winsize == 2.0
@@ -45,11 +52,15 @@ def test_demo_custom(parser):
 
 
 def test_baseline_required_args(parser):
-    args = parser.parse_args([
-        "baseline",
-        "--subject", "sub01",
-        "--subjects-dir", "/tmp",
-    ])
+    args = parser.parse_args(
+        [
+            "baseline",
+            "--subject",
+            "sub01",
+            "--subjects-dir",
+            "/tmp",
+        ]
+    )
     assert args.command == "baseline"
     assert args.subject == "sub01"
     assert args.subjects_dir == "/tmp"
@@ -63,35 +74,52 @@ def test_baseline_missing_subject_raises(parser):
 
 
 def test_run_required_args(parser):
-    args = parser.parse_args([
-        "run",
-        "--subject", "sub01",
-        "--subjects-dir", "/tmp",
-        "--duration", "300",
-    ])
+    args = parser.parse_args(
+        [
+            "run",
+            "--subject",
+            "sub01",
+            "--subjects-dir",
+            "/tmp",
+            "--duration",
+            "300",
+        ]
+    )
     assert args.command == "run"
     assert args.duration == 300.0
 
 
 def test_run_missing_duration_raises(parser):
     with pytest.raises(SystemExit):
-        parser.parse_args([
-            "run",
-            "--subject", "sub01",
-            "--subjects-dir", "/tmp",
-        ])
+        parser.parse_args(
+            [
+                "run",
+                "--subject",
+                "sub01",
+                "--subjects-dir",
+                "/tmp",
+            ]
+        )
 
 
 def test_run_osc_args(parser):
-    args = parser.parse_args([
-        "run",
-        "--subject", "sub01",
-        "--subjects-dir", "/tmp",
-        "--duration", "60",
-        "--osc-host", "192.168.1.10",
-        "--osc-port", "9001",
-        "--osc-prefix", "/nf",
-    ])
+    args = parser.parse_args(
+        [
+            "run",
+            "--subject",
+            "sub01",
+            "--subjects-dir",
+            "/tmp",
+            "--duration",
+            "60",
+            "--osc-host",
+            "192.168.1.10",
+            "--osc-port",
+            "9001",
+            "--osc-prefix",
+            "/nf",
+        ]
+    )
     assert args.osc_host == "192.168.1.10"
     assert args.osc_port == 9001
     assert args.osc_prefix == "/nf"
@@ -99,13 +127,19 @@ def test_run_osc_args(parser):
 
 def test_run_artifact_correction(parser):
     for method in ("lms", "orica", "gedai"):
-        args = parser.parse_args([
-            "run",
-            "--subject", "sub01",
-            "--subjects-dir", "/tmp",
-            "--duration", "60",
-            "--artifact-correction", method,
-        ])
+        args = parser.parse_args(
+            [
+                "run",
+                "--subject",
+                "sub01",
+                "--subjects-dir",
+                "/tmp",
+                "--duration",
+                "60",
+                "--artifact-correction",
+                method,
+            ]
+        )
         assert args.artifact_correction == method
 
 

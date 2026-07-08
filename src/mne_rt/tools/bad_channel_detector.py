@@ -17,6 +17,7 @@ Mullen, T. R., et al. (2015). Real-time neuroimaging and cognitive monitoring
 using wearable dry EEG. *IEEE Trans. Biomed. Eng.*, 62(11), 2553–2567.
 https://doi.org/10.1109/TBME.2015.2481482
 """
+
 from __future__ import annotations
 
 import collections
@@ -177,8 +178,7 @@ class BadChannelDetector:
 
         # Rolling history: per-channel deque of bool (True = bad in that window)
         self._history: dict[str, collections.deque] = {
-            ch: collections.deque(maxlen=history_windows)
-            for ch in self._ch_names
+            ch: collections.deque(maxlen=history_windows) for ch in self._ch_names
         }
 
         self.bad_channels_: list[str] = []
@@ -215,9 +215,7 @@ class BadChannelDetector:
             If ``data.shape[0] != n_channels``.
         """
         if data.shape[0] != self._n_ch:
-            raise ValueError(
-                f"Expected {self._n_ch} channels, got {data.shape[0]}."
-            )
+            raise ValueError(f"Expected {self._n_ch} channels, got {data.shape[0]}.")
 
         flagged = np.zeros(self._n_ch, dtype=bool)
 
@@ -281,12 +279,12 @@ class BadChannelDetector:
 
     def _criterion_flat(self, data: np.ndarray) -> np.ndarray:
         """Flag channels whose RMS is below flat_threshold."""
-        rms = np.sqrt(np.mean(data ** 2, axis=1))
+        rms = np.sqrt(np.mean(data**2, axis=1))
         return rms < self.flat_threshold
 
     def _criterion_variance(self, data: np.ndarray) -> np.ndarray:
         """Flag channels whose RMS is a robust outlier across channels."""
-        rms = np.sqrt(np.mean(data ** 2, axis=1))
+        rms = np.sqrt(np.mean(data**2, axis=1))
         median = np.median(rms)
         mad = np.median(np.abs(rms - median)) * 1.4826 + 1e-30
         z = np.abs((rms - median) / mad)

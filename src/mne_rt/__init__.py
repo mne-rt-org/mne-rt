@@ -39,6 +39,7 @@ MNE's convention.  You can also set the package-wide level::
     import mne_rt
     mne_rt.set_log_level("INFO")   # or True / False / "DEBUG" / "WARNING"
 """
+
 from importlib.metadata import PackageNotFoundError, version
 
 try:
@@ -47,26 +48,38 @@ except PackageNotFoundError:
     __version__ = "0.0.0"
 
 from mne_rt._logging import logger, set_log_level  # noqa: F401 — public API
-from mne_rt.rt_stream import RTStream
-from mne_rt.rt_epochs import RTEpochs
-from mne_rt.viz import (
-    BrainPlot, NFPlot, RawPlot, EpochPlot, TopomapPlot, TopoPlot,
-    ButterflyPlot, TFRPlot, CompareEvoked,
-)
-from mne_rt.tools import ORICA, GEDAIDenoiser
-from mne_rt.tools.lms import AdaptiveLMSFilter
-from mne_rt.tools.asr import ASRDenoiser
-from mne_rt.tools.maxwell import RTMaxwellFilter
-from mne_rt.tools.bad_channel_detector import BadChannelDetector
-from mne_rt.osc import OSCSender
-from mne_rt.protocols import ThresholdProtocol, ZScoreProtocol, PercentileProtocol, LinearTrendProtocol
-from mne_rt.lsl_output import LSLSender
 from mne_rt.combiners import (  # noqa: F401 — public API
     FeatureCombiner,
-    WeightedSumCombiner,
     GeometricMeanCombiner,
-    ZScoredNormCombiner,
     LearnedCombiner,
+    WeightedSumCombiner,
+    ZScoredNormCombiner,
+)
+from mne_rt.lsl_output import LSLSender
+from mne_rt.osc import OSCSender
+from mne_rt.protocols import (
+    LinearTrendProtocol,
+    PercentileProtocol,
+    ThresholdProtocol,
+    ZScoreProtocol,
+)
+from mne_rt.rt_epochs import RTEpochs
+from mne_rt.rt_stream import RTStream
+from mne_rt.tools import ORICA, GEDAIDenoiser
+from mne_rt.tools.asr import ASRDenoiser
+from mne_rt.tools.bad_channel_detector import BadChannelDetector
+from mne_rt.tools.lms import AdaptiveLMSFilter
+from mne_rt.tools.maxwell import RTMaxwellFilter
+from mne_rt.viz import (
+    BrainPlot,
+    ButterflyPlot,
+    CompareEvoked,
+    EpochPlot,
+    NFPlot,
+    RawPlot,
+    TFRPlot,
+    TopomapPlot,
+    TopoPlot,
 )
 
 __all__ = [

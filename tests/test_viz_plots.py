@@ -9,6 +9,7 @@ Runs in offscreen (no display) mode.  Each test:
 Environment setup (offscreen Qt) is handled in conftest.py or via the
 QT_QPA_PLATFORM env var set at module level below.
 """
+
 from __future__ import annotations
 
 import os
@@ -26,25 +27,25 @@ import pytest
 # Shared fixtures
 # ---------------------------------------------------------------------------
 
-SFREQ    = 256.0
-TMIN     = -0.1
-TMAX     = 0.4
-N_TIMES  = int((TMAX - TMIN) * SFREQ) + 1   # 129
+SFREQ = 256.0
+TMIN = -0.1
+TMAX = 0.4
+N_TIMES = int((TMAX - TMIN) * SFREQ) + 1  # 129
 CH_NAMES = [f"EEG{i:03d}" for i in range(1, 9)]  # 8 synthetic channels
-N_CH     = len(CH_NAMES)
+N_CH = len(CH_NAMES)
 EVENT_ID = {"left": 1, "right": 2}
 
 # 10-20 channel names for tests that need a real montage (e.g. TopomapPlot)
 TOPO_CH_NAMES = ["Fp1", "Fp2", "F3", "F4", "C3", "C4", "P3", "P4"]
-N_TOPO        = len(TOPO_CH_NAMES)
+N_TOPO = len(TOPO_CH_NAMES)
 
 RNG = np.random.default_rng(42)
 
 
 def _make_epochs(n: int) -> tuple[np.ndarray, list[str]]:
     """Return (data, conditions) with ``n`` epochs split evenly."""
-    data  = RNG.standard_normal((n, N_CH, N_TIMES)).astype(np.float32) * 1e-6
-    half  = n // 2
+    data = RNG.standard_normal((n, N_CH, N_TIMES)).astype(np.float32) * 1e-6
+    half = n // 2
     conds = ["left"] * half + ["right"] * (n - half)
     return data, conds
 
@@ -52,6 +53,7 @@ def _make_epochs(n: int) -> tuple[np.ndarray, list[str]]:
 @pytest.fixture(scope="module")
 def qt_app():
     from qtpy.QtWidgets import QApplication
+
     app = QApplication.instance() or QApplication([])
     yield app
 
@@ -60,6 +62,7 @@ def qt_app():
 def topo_info():
     """mne.Info with standard 10-20 montage for TopomapPlot tests."""
     import mne
+
     info = mne.create_info(TOPO_CH_NAMES, sfreq=SFREQ, ch_types="eeg")
     montage = mne.channels.make_standard_montage("standard_1020")
     info.set_montage(montage, on_missing="ignore")
@@ -69,12 +72,12 @@ def topo_info():
 @pytest.fixture(scope="module")
 def common_kw():
     return dict(
-        ch_names  = CH_NAMES,
-        sfreq     = SFREQ,
-        tmin      = TMIN,
-        tmax      = TMAX,
-        event_id  = EVENT_ID,
-        baseline  = (None, 0),
+        ch_names=CH_NAMES,
+        sfreq=SFREQ,
+        tmin=TMIN,
+        tmax=TMAX,
+        event_id=EVENT_ID,
+        baseline=(None, 0),
     )
 
 
@@ -82,9 +85,11 @@ def common_kw():
 # TopoPlot  (scalp-layout ERP display)
 # ---------------------------------------------------------------------------
 
+
 class TestTopoPlot:
     def test_construct(self, qt_app, common_kw):
         from mne_rt.viz.topo_plot import TopoPlot
+
         w = TopoPlot(**common_kw)
         assert w is not None
         assert w.ch_names == CH_NAMES
@@ -93,29 +98,32 @@ class TestTopoPlot:
 
     def test_update_populates_buffer(self, qt_app, common_kw):
         from mne_rt.viz.topo_plot import TopoPlot
+
         w = TopoPlot(**common_kw)
         data, conds = _make_epochs(10)
         w.update(data, conds)
         qt_app.processEvents()
-        assert w._n_per["left"]  == 5
+        assert w._n_per["left"] == 5
         assert w._n_per["right"] == 5
-        assert len(w._epoch_buf["left"])  == 5
+        assert len(w._epoch_buf["left"]) == 5
         assert len(w._epoch_buf["right"]) == 5
         w.close()
 
     def test_update_single_condition(self, qt_app, common_kw):
         from mne_rt.viz.topo_plot import TopoPlot
+
         w = TopoPlot(**common_kw)
         data, _ = _make_epochs(6)
-        conds   = ["left"] * 6
+        conds = ["left"] * 6
         w.update(data, conds)
         qt_app.processEvents()
-        assert w._n_per["left"]  == 6
+        assert w._n_per["left"] == 6
         assert w._n_per["right"] == 0
         w.close()
 
     def test_times_shape(self, qt_app, common_kw):
         from mne_rt.viz.topo_plot import TopoPlot
+
         w = TopoPlot(**common_kw)
         assert w._times.shape == (N_TIMES,)
         w.close()
@@ -125,32 +133,36 @@ class TestTopoPlot:
 # ButterflyPlot
 # ---------------------------------------------------------------------------
 
+
 class TestButterflyPlot:
     def test_construct(self, qt_app, common_kw):
         from mne_rt.viz.butterfly_plot import ButterflyPlot
+
         w = ButterflyPlot(**common_kw)
         assert w is not None
         w.close()
 
     def test_update_buffer_counts(self, qt_app, common_kw):
         from mne_rt.viz.butterfly_plot import ButterflyPlot
+
         w = ButterflyPlot(**common_kw)
         data, conds = _make_epochs(8)
         w.update(data, conds)
         qt_app.processEvents()
-        assert w._n_per["left"]  == 4
+        assert w._n_per["left"] == 4
         assert w._n_per["right"] == 4
         w.close()
 
     def test_update_incremental(self, qt_app, common_kw):
         from mne_rt.viz.butterfly_plot import ButterflyPlot
+
         w = ButterflyPlot(**common_kw)
         data1, c1 = _make_epochs(4)
         w.update(data1, c1)
         data2, c2 = _make_epochs(8)
         w.update(data2, c2)
         qt_app.processEvents()
-        assert w._n_per["left"]  + w._n_per["right"] == 8
+        assert w._n_per["left"] + w._n_per["right"] == 8
         w.close()
 
 
@@ -158,35 +170,40 @@ class TestButterflyPlot:
 # CompareEvoked
 # ---------------------------------------------------------------------------
 
+
 class TestCompareEvoked:
     def test_construct(self, qt_app, common_kw):
         from mne_rt.viz.compare_evoked import CompareEvoked
+
         w = CompareEvoked(**common_kw)
         assert w is not None
         w.close()
 
     def test_construct_with_channels(self, qt_app, common_kw):
         from mne_rt.viz.compare_evoked import CompareEvoked
+
         kw = {**common_kw, "channels": CH_NAMES[:3]}
-        w  = CompareEvoked(**kw)
+        w = CompareEvoked(**kw)
         assert w._disp_channels == CH_NAMES[:3]
         w.close()
 
     def test_update_buffer(self, qt_app, common_kw):
         from mne_rt.viz.compare_evoked import CompareEvoked
+
         w = CompareEvoked(**common_kw)
         data, conds = _make_epochs(10)
         w.update(data, conds)
         qt_app.processEvents()
-        assert w._n_per["left"]  == 5
+        assert w._n_per["left"] == 5
         assert w._n_per["right"] == 5
         w.close()
 
     def test_no_channel_cap(self, qt_app, common_kw):
         """All 8 channels selectable — no artificial cap."""
         from mne_rt.viz.compare_evoked import CompareEvoked
+
         kw = {**common_kw, "channels": CH_NAMES}  # all 8
-        w  = CompareEvoked(**kw)
+        w = CompareEvoked(**kw)
         assert len(w._disp_channels) == N_CH
         w.close()
 
@@ -195,15 +212,18 @@ class TestCompareEvoked:
 # TFRPlot
 # ---------------------------------------------------------------------------
 
+
 class TestTFRPlot:
     def test_construct_defaults(self, qt_app, common_kw):
         from mne_rt.viz.tfr_plot import TFRPlot
+
         w = TFRPlot(**common_kw)
         assert w is not None
         w.close()
 
     def test_construct_custom_freqs(self, qt_app, common_kw):
         from mne_rt.viz.tfr_plot import TFRPlot
+
         freqs = np.arange(8.0, 30.0, 2.0)
         w = TFRPlot(**common_kw, freqs=freqs, channels=CH_NAMES[:2])
         assert w._freqs is not None
@@ -212,6 +232,7 @@ class TestTFRPlot:
     def test_clip_freqs_removes_short_epoch_artifacts(self, qt_app, common_kw):
         """_clip_freqs must not error on 0.5-second epochs."""
         from mne_rt.viz.tfr_plot import TFRPlot
+
         freqs = np.arange(4.0, 80.0, 2.0)
         w = TFRPlot(**common_kw, freqs=freqs, channels=CH_NAMES[:1])
         # After clipping, all remaining freqs must be < Nyquist and
@@ -221,6 +242,7 @@ class TestTFRPlot:
 
     def test_update_stores_data(self, qt_app, common_kw):
         from mne_rt.viz.tfr_plot import TFRPlot
+
         w = TFRPlot(**common_kw, channels=CH_NAMES[:2])
         data, conds = _make_epochs(6)
         w.update(data, conds)
@@ -228,7 +250,7 @@ class TestTFRPlot:
         assert w._latest_data is not None
         assert w._latest_data.shape == data.shape
         assert len(w._latest_conds) == 6
-        assert w._latest_conds.count("left")  == 3
+        assert w._latest_conds.count("left") == 3
         assert w._latest_conds.count("right") == 3
         w.close()
 
@@ -237,9 +259,11 @@ class TestTFRPlot:
 # RawPlot
 # ---------------------------------------------------------------------------
 
+
 class TestRawPlot:
     def test_construct(self, qt_app):
         from mne_rt.viz.raw_plot import RawPlot
+
         w = RawPlot(CH_NAMES, sfreq=SFREQ)
         assert w._n_ch == N_CH
         assert w._sfreq == SFREQ
@@ -248,15 +272,17 @@ class TestRawPlot:
 
     def test_push_fills_buffer(self, qt_app):
         from mne_rt.viz.raw_plot import RawPlot
+
         w = RawPlot(CH_NAMES, sfreq=SFREQ, time_window=5.0)
         data = RNG.standard_normal((N_CH, 100)).astype(np.float32) * 1e-6
         w.push(data)
-        w._flush_data_queue()   # drain queue synchronously (timer-based in production)
+        w._flush_data_queue()  # drain queue synchronously (timer-based in production)
         assert np.any(w._buf != 0.0)
         w.close()
 
     def test_push_respects_pause(self, qt_app):
         from mne_rt.viz.raw_plot import RawPlot
+
         w = RawPlot(CH_NAMES, sfreq=SFREQ)
         w._paused = True
         data = RNG.standard_normal((N_CH, 50)).astype(np.float32) * 1e-6
@@ -267,6 +293,7 @@ class TestRawPlot:
 
     def test_filter_apply_sets_sos_and_zi(self, qt_app):
         from mne_rt.viz.raw_plot import RawPlot
+
         w = RawPlot(CH_NAMES, sfreq=SFREQ)
         w._cmb_filter.setCurrentIndex(3)  # Band-pass
         w._flo_spin.setValue(1.0)
@@ -279,8 +306,9 @@ class TestRawPlot:
 
     def test_reref_average_applied(self, qt_app):
         from mne_rt.viz.raw_plot import RawPlot
+
         w = RawPlot(CH_NAMES, sfreq=SFREQ)
-        w._cmb_reref.setCurrentIndex(1)   # Average
+        w._cmb_reref.setCurrentIndex(1)  # Average
         w._apply_reref_settings()
         assert w._reref_type == "average"
         # All-ones input after average ref → every channel should be ~0
@@ -293,8 +321,9 @@ class TestRawPlot:
 
     def test_reref_channel(self, qt_app):
         from mne_rt.viz.raw_plot import RawPlot
+
         w = RawPlot(CH_NAMES, sfreq=SFREQ)
-        w._cmb_reref.setCurrentIndex(4)   # Channel
+        w._cmb_reref.setCurrentIndex(4)  # Channel
         w._reref_ch_cmb.setCurrentIndex(0)  # first channel as reference
         w._apply_reref_settings()
         assert w._reref_type == "channel"
@@ -306,9 +335,11 @@ class TestRawPlot:
 # TopomapPlot
 # ---------------------------------------------------------------------------
 
+
 class TestTopomapPlot:
     def test_construct(self, qt_app, topo_info):
         from mne_rt.viz.topomap_plot import TopomapPlot
+
         w = TopomapPlot(topo_info, sfreq=SFREQ)
         assert w._sfreq == SFREQ
         assert len(w._bands) == len(w._visible_bands)
@@ -316,6 +347,7 @@ class TestTopomapPlot:
 
     def test_push_updates_last_data(self, qt_app, topo_info):
         from mne_rt.viz.topomap_plot import TopomapPlot
+
         w = TopomapPlot(topo_info, sfreq=SFREQ)
         data = RNG.standard_normal((N_TOPO, int(SFREQ))).astype(np.float32) * 1e-6
         w.push(data)
@@ -326,6 +358,7 @@ class TestTopomapPlot:
 
     def test_pause_inhibits_update(self, qt_app, topo_info):
         from mne_rt.viz.topomap_plot import TopomapPlot
+
         w = TopomapPlot(topo_info, sfreq=SFREQ)
         w._paused = True
         data = RNG.standard_normal((N_TOPO, int(SFREQ))).astype(np.float32) * 1e-6
@@ -336,6 +369,7 @@ class TestTopomapPlot:
 
     def test_custom_band_added(self, qt_app, topo_info):
         from mne_rt.viz.topomap_plot import TopomapPlot
+
         w = TopomapPlot(topo_info, sfreq=SFREQ)
         initial = len(w._bands)
         w._custom_flo.setValue(15.0)
@@ -348,6 +382,7 @@ class TestTopomapPlot:
 
     def test_toggle_band_visibility(self, qt_app, topo_info):
         from mne_rt.viz.topomap_plot import TopomapPlot
+
         w = TopomapPlot(topo_info, sfreq=SFREQ)
         first_band = list(w._bands.keys())[0]
         # Disable first band
@@ -363,9 +398,11 @@ class TestTopomapPlot:
 # EpochPlot
 # ---------------------------------------------------------------------------
 
+
 class TestEpochPlot:
     def test_construct(self, qt_app):
         from mne_rt.viz.epoch_plot import EpochPlot
+
         w = EpochPlot(CH_NAMES, sfreq=SFREQ, tmin=-0.1, tmax=0.5)
         assert w._n_ch == N_CH
         assert w._sfreq == SFREQ
@@ -376,16 +413,18 @@ class TestEpochPlot:
 
     def test_push_fills_buffer(self, qt_app):
         from mne_rt.viz.epoch_plot import EpochPlot
+
         w = EpochPlot(CH_NAMES, sfreq=SFREQ, time_window=5.0)
         data = RNG.standard_normal((N_CH, 100)).astype(np.float32) * 1e-6
         w.push(data)
-        w._process_pending()    # drain queue synchronously (timer-based in production)
+        w._process_pending()  # drain queue synchronously (timer-based in production)
         assert np.any(w._buf != 0.0)
         assert w._total_pushed == 100
         w.close()
 
     def test_push_respects_pause(self, qt_app):
         from mne_rt.viz.epoch_plot import EpochPlot
+
         w = EpochPlot(CH_NAMES, sfreq=SFREQ)
         w._paused = True
         data = RNG.standard_normal((N_CH, 50)).astype(np.float32) * 1e-6
@@ -396,11 +435,12 @@ class TestEpochPlot:
 
     def test_push_trigger_adds_entry(self, qt_app):
         from mne_rt.viz.epoch_plot import EpochPlot
+
         w = EpochPlot(CH_NAMES, sfreq=SFREQ, event_id={"stim": 1})
         data = RNG.standard_normal((N_CH, 64)).astype(np.float32) * 1e-6
         w.push(data)
         w.push_trigger(code=1)
-        w._process_pending()    # drain queue synchronously
+        w._process_pending()  # drain queue synchronously
         assert len(w._triggers) == 1
         trig_abs, trig_code = w._triggers[0]
         assert trig_abs == 64
@@ -409,6 +449,7 @@ class TestEpochPlot:
 
     def test_apply_epoch_window(self, qt_app):
         from mne_rt.viz.epoch_plot import EpochPlot
+
         w = EpochPlot(CH_NAMES, sfreq=SFREQ)
         w._tmin_spin.setValue(-0.2)
         w._tmax_spin.setValue(0.8)
@@ -419,10 +460,13 @@ class TestEpochPlot:
 
     def test_clear_triggers(self, qt_app):
         from mne_rt.viz.epoch_plot import EpochPlot
+
         w = EpochPlot(CH_NAMES, sfreq=SFREQ)
         data = RNG.standard_normal((N_CH, 32)).astype(np.float32) * 1e-6
-        w.push(data); w.push_trigger(1); w.push_trigger(2)
-        w._process_pending()    # drain queue so triggers land in _triggers
+        w.push(data)
+        w.push_trigger(1)
+        w.push_trigger(2)
+        w._process_pending()  # drain queue so triggers land in _triggers
         assert len(w._triggers) == 2
         w._clear_triggers()
         assert len(w._triggers) == 0
