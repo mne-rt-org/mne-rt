@@ -1,10 +1,17 @@
 """Tests for RiemannianPotatoDetector."""
 
+import importlib
 import sys
 from unittest.mock import MagicMock, patch
 
 import numpy as np
 import pytest
+
+pyriemann_available = importlib.util.find_spec("pyriemann") is not None
+requires_pyriemann = pytest.mark.skipif(
+    not pyriemann_available,
+    reason="pyriemann not installed (install with: pip install 'mne-rt[riemann]')",
+)
 
 # ---------------------------------------------------------------------------
 # Helpers / fixtures
@@ -29,6 +36,8 @@ def _artifact_windows(n_win=5, n_ch=N_CH, n_samp=N_SAMP, scale=100.0):
 
 @pytest.fixture
 def detector():
+    if not pyriemann_available:
+        pytest.skip("pyriemann not installed (install with: pip install 'mne-rt[riemann]')")
     from mne_rt.tools import RiemannianPotatoDetector
 
     return RiemannianPotatoDetector(threshold=3.0)
@@ -36,6 +45,8 @@ def detector():
 
 @pytest.fixture
 def fitted_detector():
+    if not pyriemann_available:
+        pytest.skip("pyriemann not installed (install with: pip install 'mne-rt[riemann]')")
     from mne_rt.tools import RiemannianPotatoDetector
 
     det = RiemannianPotatoDetector(threshold=3.0)
@@ -48,6 +59,7 @@ def fitted_detector():
 # ---------------------------------------------------------------------------
 
 
+@requires_pyriemann
 def test_default_params():
     from mne_rt.tools import RiemannianPotatoDetector
 
@@ -57,6 +69,7 @@ def test_default_params():
     assert det.metric == "riemann"
 
 
+@requires_pyriemann
 def test_custom_params():
     from mne_rt.tools import RiemannianPotatoDetector
 
@@ -66,6 +79,7 @@ def test_custom_params():
     assert det.metric == "logeuclid"
 
 
+@requires_pyriemann
 def test_invalid_threshold():
     from mne_rt.tools import RiemannianPotatoDetector
 
