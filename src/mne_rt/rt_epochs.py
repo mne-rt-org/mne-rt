@@ -20,18 +20,21 @@ Classes
 RTEpochs
     Event-triggered epoch accumulator backed by mne_lsl.EpochsStream.
 """
+
 from __future__ import annotations
 
-import time
 import threading
+import time
 from collections import defaultdict
 from typing import Callable, Optional, Union
 
+import mne
 import numpy as np
 
 try:
-    from mne_lsl.stream import StreamLSL, EpochsStream
     from mne_lsl.player import PlayerLSL
+    from mne_lsl.stream import EpochsStream, StreamLSL
+
     _mne_lsl_available = True
 except ImportError:
     _mne_lsl_available = False
@@ -141,9 +144,9 @@ class RTEpochs:
         self._connected = False
 
         # Populated by run() — persists for get_epochs/get_evoked/save
-        self._buf_: Optional[np.ndarray] = None        # (n_trials, n_ch, n_t)
-        self._cond_list_: list[str]  = []
-        self._code_list_: list[int]  = []
+        self._buf_: Optional[np.ndarray] = None  # (n_trials, n_ch, n_t)
+        self._cond_list_: list[str] = []
+        self._code_list_: list[int] = []
 
     # ------------------------------------------------------------------
     # Connection
@@ -191,7 +194,8 @@ class RTEpochs:
         self._stream.connect(acquisition_delay=0.005, timeout=timeout)
         logger.info(
             "RTEpochs: stream connected — %d ch @ %.0f Hz",
-            self._stream.info["nchan"], self._stream.info["sfreq"],
+            self._stream.info["nchan"],
+            self._stream.info["sfreq"],
         )
 
         logger.info("RTEpochs: setting up EpochsStream …")
@@ -255,13 +259,14 @@ class RTEpochs:
         erp_plot = None
         if show_erp:
             from mne_rt.viz.topo_plot import TopoPlot
+
             erp_plot = TopoPlot(
                 ch_names=list(es.info["ch_names"]),
                 sfreq=es.info["sfreq"],
                 tmin=self.tmin,
                 tmax=self.tmax,
                 event_id=self.event_id,
-                info=es.info,          # pass real Info for accurate layout
+                info=es.info,  # pass real Info for accurate layout
                 baseline=self.baseline,
             )
             erp_plot.show()
@@ -269,9 +274,9 @@ class RTEpochs:
         inv_event = {v: k for k, v in self.event_id.items()}
 
         # Pre-allocate epoch buffer — avoids O(N²) np.stack per trial
-        n_ch    = es.info["nchan"]
+        n_ch = es.info["nchan"]
         n_times = int(round((self.tmax - self.tmin) * es.info["sfreq"])) + 1
-        self._buf_       = np.zeros((n_trials, n_ch, n_times), dtype=np.float32)
+        self._buf_ = np.zeros((n_trials, n_ch, n_times), dtype=np.float32)
         self._cond_list_ = []
         self._code_list_ = []
 
@@ -287,18 +292,18 @@ class RTEpochs:
                 continue
 
             # Retrieve all new epochs at once — shape (n_new, n_ch, n_times)
-            data   = self.epochs_stream_.get_data(n_epochs=n_new)
+            data = self.epochs_stream_.get_data(n_epochs=n_new)
             events = self.epochs_stream_.events[-n_new:]
 
             for i in range(data.shape[0]):
                 if self.n_accepted_ >= n_trials:
                     break
-                code      = int(events[i]) if events.ndim == 1 else int(events[i, 2])
+                code = int(events[i]) if events.ndim == 1 else int(events[i, 2])
                 condition = inv_event.get(code, str(code))
 
                 # Write into pre-allocated buffer (O(1) copy)
                 ep = data[i]
-                t  = min(ep.shape[-1], n_times)
+                t = min(ep.shape[-1], n_times)
                 self._buf_[self.n_accepted_, :, :t] = ep[:, :t]
                 self._cond_list_.append(condition)
                 self._code_list_.append(code)
@@ -308,14 +313,14 @@ class RTEpochs:
                 if self.on_trial is not None:
                     self.on_trial(
                         self.n_accepted_,
-                        self._buf_[self.n_accepted_ - 1],   # view — no copy
+                        self._buf_[self.n_accepted_ - 1],  # view — no copy
                         code,
                         condition,
                     )
 
                 if erp_plot is not None and self.n_accepted_ % erp_update_every == 0:
                     # Pass a view of the filled portion — no copy
-                    erp_plot.update(self._buf_[:self.n_accepted_], list(self._cond_list_))
+                    erp_plot.update(self._buf_[: self.n_accepted_], list(self._cond_list_))
 
                 logger.debug("RTEpochs: accepted %d (%s)", self.n_accepted_, condition)
 
@@ -375,16 +380,17 @@ class RTEpochs:
         >>> epochs.plot_image()
         """
         import mne
+
         if self.epochs_stream_ is None or self._buf_ is None:
-            raise RuntimeError(
-                "No data yet — call connect_to_lsl() then run() first."
-            )
+            raise RuntimeError("No data yet — call connect_to_lsl() then run() first.")
         n = self.n_accepted_
-        events = np.column_stack([
-            np.arange(n, dtype=int),
-            np.zeros(n, dtype=int),
-            np.array(self._code_list_[:n], dtype=int),
-        ])
+        events = np.column_stack(
+            [
+                np.arange(n, dtype=int),
+                np.zeros(n, dtype=int),
+                np.array(self._code_list_[:n], dtype=int),
+            ]
+        )
         return mne.EpochsArray(
             self._buf_[:n].astype(np.float64),
             info=self.epochs_stream_.info,
@@ -481,10 +487,14 @@ class RTEpochs:
         >>> brain.update(stc["auditory/left"].data.mean(-1))
         """
         import mne.minimum_norm
+
         evoked = self.get_evoked()
         return {
             cond: mne.minimum_norm.apply_inverse(
-                ev, inverse_operator, lambda2=lambda2, method=method,
+                ev,
+                inverse_operator,
+                lambda2=lambda2,
+                method=method,
                 verbose=False,
             )
             for cond, ev in evoked.items()

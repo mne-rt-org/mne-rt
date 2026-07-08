@@ -19,16 +19,18 @@ the ``mne-rt`` shell command::
     [project.scripts]
     mne-rt = "mne_rt.cli:main"
 """
+
 from __future__ import annotations
 
 import argparse
+import os
 import sys
 import textwrap
-
 
 # ---------------------------------------------------------------------------
 # Top-level parser
 # ---------------------------------------------------------------------------
+
 
 def _build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
@@ -42,11 +44,13 @@ def _build_parser() -> argparse.ArgumentParser:
         epilog="Use 'mne-rt <command> --help' for per-command options.",
     )
     parser.add_argument(
-        "--version", action="store_true",
+        "--version",
+        action="store_true",
         help="Print the installed MNE-RT version and exit.",
     )
     parser.add_argument(
-        "--verbose", "-v",
+        "--verbose",
+        "-v",
         choices=["DEBUG", "INFO", "WARNING", "ERROR"],
         default="WARNING",
         help="Logging verbosity level (default: WARNING).",
@@ -66,6 +70,7 @@ def _build_parser() -> argparse.ArgumentParser:
 # ---------------------------------------------------------------------------
 # Sub-command parsers
 # ---------------------------------------------------------------------------
+
 
 def _add_info_parser(sub):
     p = sub.add_parser(
@@ -87,11 +92,14 @@ def _add_demo_parser(sub):
         formatter_class=argparse.RawDescriptionHelpFormatter,
     )
     p.add_argument(
-        "--duration", type=float, default=120.0,
+        "--duration",
+        type=float,
+        default=120.0,
         help="Session duration in seconds (default: 120).",
     )
     p.add_argument(
-        "--modality", nargs="+",
+        "--modality",
+        nargs="+",
         default=["sensor_power", "band_ratio", "entropy", "hjorth"],
         metavar="MODALITY",
         help=(
@@ -103,27 +111,34 @@ def _add_demo_parser(sub):
         ),
     )
     p.add_argument(
-        "--winsize", type=float, default=1.0,
+        "--winsize",
+        type=float,
+        default=1.0,
         help="Analysis window length in seconds (default: 1.0).",
     )
     p.add_argument(
-        "--no-nf", action="store_true",
+        "--no-nf",
+        action="store_true",
         help="Disable the scrolling real-time NF signal plot (NFPlot).",
     )
     p.add_argument(
-        "--no-raw", action="store_true",
+        "--no-raw",
+        action="store_true",
         help="Disable the scrolling raw M/EEG viewer (RawPlot).",
     )
     p.add_argument(
-        "--no-topomap", action="store_true",
+        "--no-topomap",
+        action="store_true",
         help="Disable the real-time scalp topomap display (TopomapPlot).",
     )
     p.add_argument(
-        "--no-brain", action="store_true",
+        "--no-brain",
+        action="store_true",
         help="Disable the 3-D brain activation display even if FreeSurfer is found.",
     )
     p.add_argument(
-        "--subjects-fs-dir", metavar="DIR",
+        "--subjects-fs-dir",
+        metavar="DIR",
         help=(
             "FreeSurfer subjects directory (must contain fsaverage5).  "
             "Auto-detected from FREESURFER_HOME/subjects if not given."
@@ -136,14 +151,18 @@ def _add_demo_parser(sub):
         help="Cortical surface geometry for brain display (default: inflated).",
     )
     p.add_argument(
-        "--smoothing", type=float, default=0.25, metavar="ALPHA",
+        "--smoothing",
+        type=float,
+        default=0.25,
+        metavar="ALPHA",
         help=(
             "EMA smoothing factor for feature values (default: 0.25). "
             "1.0 = no smoothing; 0.1 = heavy smoothing."
         ),
     )
     p.add_argument(
-        "--no-save", action="store_true",
+        "--no-save",
+        action="store_true",
         help="Skip saving session data and report at the end of the demo.",
     )
     return p
@@ -163,27 +182,35 @@ def _add_demo_erp_parser(sub):
         formatter_class=argparse.RawDescriptionHelpFormatter,
     )
     p.add_argument(
-        "--n-trials", type=int, default=70, metavar="N",
+        "--n-trials",
+        type=int,
+        default=70,
+        metavar="N",
         help="Number of EEG trials to collect (default: 70).",
     )
     p.add_argument(
-        "--no-epoch-plot", action="store_true",
+        "--no-epoch-plot",
+        action="store_true",
         help="Disable the EpochPlot scrolling raw viewer with trigger overlays.",
     )
     p.add_argument(
-        "--no-topo", action="store_true",
+        "--no-topo",
+        action="store_true",
         help="Disable the scalp-layout TopoPlot (ERP display).",
     )
     p.add_argument(
-        "--no-butterfly", action="store_true",
+        "--no-butterfly",
+        action="store_true",
         help="Disable the ButterflyPlot (all-channel overlay).",
     )
     p.add_argument(
-        "--no-compare", action="store_true",
+        "--no-compare",
+        action="store_true",
         help="Disable CompareEvoked (per-channel comparison with peak markers).",
     )
     p.add_argument(
-        "--no-tfr", action="store_true",
+        "--no-tfr",
+        action="store_true",
         help="Disable the TFRPlot (Morlet wavelet time-frequency heatmaps).",
     )
     return p
@@ -201,15 +228,19 @@ def _add_baseline_parser(sub):
     )
     _add_common_session_args(p)
     p.add_argument(
-        "--duration", type=float, default=120.0,
+        "--duration",
+        type=float,
+        default=120.0,
         help="Baseline duration in seconds (default: 120).",
     )
     p.add_argument(
-        "--mock", action="store_true",
+        "--mock",
+        action="store_true",
         help="Use simulated data instead of a live LSL stream.",
     )
     p.add_argument(
-        "--fname", metavar="FILE",
+        "--fname",
+        metavar="FILE",
         help="Any MNE-readable file to simulate (.fif, .vhdr, .edf, .bdf, .set, ...) - requires --mock.",
     )
     return p
@@ -227,25 +258,32 @@ def _add_run_parser(sub):
     )
     _add_common_session_args(p)
     p.add_argument(
-        "--duration", type=float, required=True,
+        "--duration",
+        type=float,
+        required=True,
         help="Session duration in seconds.",
     )
     p.add_argument(
-        "--modality", nargs="+",
+        "--modality",
+        nargs="+",
         default=["sensor_power"],
         metavar="MODALITY",
         help="Feature modality(ies) to extract (default: sensor_power).",
     )
     p.add_argument(
-        "--winsize", type=float, default=1.0,
+        "--winsize",
+        type=float,
+        default=1.0,
         help="Analysis window length in seconds (default: 1.0).",
     )
     p.add_argument(
-        "--mock", action="store_true",
+        "--mock",
+        action="store_true",
         help="Use simulated data instead of a live LSL stream.",
     )
     p.add_argument(
-        "--fname", metavar="FILE",
+        "--fname",
+        metavar="FILE",
         help="Any MNE-readable file to simulate (.fif, .vhdr, .edf, .bdf, .set, ...) - requires --mock.",
     )
     p.add_argument(
@@ -258,56 +296,74 @@ def _add_run_parser(sub):
         ),
     )
     p.add_argument(
-        "--no-nf", action="store_true",
+        "--no-nf",
+        action="store_true",
         help="Disable the scrolling real-time NF signal plot (NFPlot).",
     )
     p.add_argument(
-        "--no-raw", action="store_true",
+        "--no-raw",
+        action="store_true",
         help="Disable the scrolling raw M/EEG viewer (RawPlot).",
     )
     p.add_argument(
-        "--topomap", action="store_true",
+        "--topomap",
+        action="store_true",
         help="Show the real-time scalp topomap display (TopomapPlot).",
     )
     p.add_argument(
-        "--brain", action="store_true",
+        "--brain",
+        action="store_true",
         help="Show the 3-D brain activation display.",
     )
     # ERP / epoch plot flags
     p.add_argument(
-        "--topo", action="store_true",
+        "--topo",
+        action="store_true",
         help="Enable the scalp-layout TopoPlot ERP display (requires --stim-ch).",
     )
     p.add_argument(
-        "--epoch-plot", action="store_true",
+        "--epoch-plot",
+        action="store_true",
         help="Enable the EpochPlot scrolling raw viewer with trigger overlays (requires --stim-ch).",
     )
     p.add_argument(
-        "--butterfly", action="store_true",
+        "--butterfly",
+        action="store_true",
         help="Enable the ButterflyPlot overlay (requires --stim-ch).",
     )
     p.add_argument(
-        "--compare-evoked", action="store_true",
+        "--compare-evoked",
+        action="store_true",
         help="Enable CompareEvoked per-channel plot (requires --stim-ch).",
     )
     p.add_argument(
-        "--tfr", action="store_true",
+        "--tfr",
+        action="store_true",
         help="Enable the TFRPlot Morlet wavelet heatmap (requires --stim-ch).",
     )
     p.add_argument(
-        "--stim-ch", metavar="CHANNEL",
+        "--stim-ch",
+        metavar="CHANNEL",
         help="Stimulus/trigger channel name for epoch extraction (e.g. STI 014).",
     )
     p.add_argument(
-        "--tmin", type=float, default=-0.1, metavar="SEC",
+        "--tmin",
+        type=float,
+        default=-0.1,
+        metavar="SEC",
         help="Epoch start relative to stimulus in seconds (default: -0.1).",
     )
     p.add_argument(
-        "--tmax", type=float, default=0.5, metavar="SEC",
+        "--tmax",
+        type=float,
+        default=0.5,
+        metavar="SEC",
         help="Epoch end relative to stimulus in seconds (default: 0.5).",
     )
     p.add_argument(
-        "--event-id", nargs="+", metavar="NAME=CODE",
+        "--event-id",
+        nargs="+",
+        metavar="NAME=CODE",
         help=(
             "Event definitions as NAME=CODE pairs, e.g. "
             "--event-id left=1 right=2 (default: stimulus=1)."
@@ -320,19 +376,27 @@ def _add_run_parser(sub):
         help="Brain surface geometry (default: inflated).",
     )
     p.add_argument(
-        "--osc-host", metavar="HOST", default=None,
+        "--osc-host",
+        metavar="HOST",
+        default=None,
         help="Enable OSC output and send to this host (e.g. 127.0.0.1).",
     )
     p.add_argument(
-        "--osc-port", type=int, default=9000, metavar="PORT",
+        "--osc-port",
+        type=int,
+        default=9000,
+        metavar="PORT",
         help="OSC destination port (default: 9000).",
     )
     p.add_argument(
-        "--osc-prefix", metavar="PREFIX", default="/mne_rt",
+        "--osc-prefix",
+        metavar="PREFIX",
+        default="/mne_rt",
         help="OSC address prefix (default: /mne_rt).",
     )
     p.add_argument(
-        "--lsl-output", action="store_true",
+        "--lsl-output",
+        action="store_true",
         help=(
             "Broadcast feature values as an LSL stream outlet named 'MNE_RT'.  "
             "Any LSL-aware application (PsychoPy, Psychtoolbox, OpenViBE, ...) "
@@ -341,11 +405,16 @@ def _add_run_parser(sub):
         ),
     )
     p.add_argument(
-        "--lsl-stream-name", metavar="NAME", default="MNE_RT",
+        "--lsl-stream-name",
+        metavar="NAME",
+        default="MNE_RT",
         help="LSL outlet stream name (default: MNE_RT).  Only used with --lsl-output.",
     )
     p.add_argument(
-        "--smoothing", type=float, default=0.25, metavar="ALPHA",
+        "--smoothing",
+        type=float,
+        default=0.25,
+        metavar="ALPHA",
         help=(
             "EMA smoothing factor for feature values (default: 0.25). "
             "1.0 = no smoothing; 0.1 = heavy smoothing."
@@ -357,27 +426,38 @@ def _add_run_parser(sub):
 def _add_common_session_args(p: argparse.ArgumentParser) -> None:
     """Add subject/session args shared by baseline and run sub-commands."""
     p.add_argument(
-        "--subject", required=True, metavar="ID",
+        "--subject",
+        required=True,
+        metavar="ID",
         help="Subject identifier (BIDS subject label, e.g. 'sub01').",
     )
     p.add_argument(
-        "--session", default="01", metavar="LABEL",
+        "--session",
+        default="01",
+        metavar="LABEL",
         help="BIDS session label (e.g. '01', 'pre', 'week1'; default: '01').",
     )
     p.add_argument(
-        "--subjects-dir", required=True, metavar="DIR",
+        "--subjects-dir",
+        required=True,
+        metavar="DIR",
         help="Root directory containing one folder per subject.",
     )
     p.add_argument(
-        "--montage", default="easycap-M1", metavar="NAME",
+        "--montage",
+        default="easycap-M1",
+        metavar="NAME",
         help="EEG montage name or .bvct file path (default: easycap-M1).",
     )
     p.add_argument(
-        "--data-type", choices=["eeg", "meg"], default="eeg",
+        "--data-type",
+        choices=["eeg", "meg"],
+        default="eeg",
         help="Recording modality (default: eeg).",
     )
     p.add_argument(
-        "--subjects-fs-dir", metavar="DIR",
+        "--subjects-fs-dir",
+        metavar="DIR",
         help="FreeSurfer subjects directory (required for source modalities).",
     )
 
@@ -385,6 +465,7 @@ def _add_common_session_args(p: argparse.ArgumentParser) -> None:
 # ---------------------------------------------------------------------------
 # Command handlers
 # ---------------------------------------------------------------------------
+
 
 def _cmd_info(args) -> None:
     """Print version and dependency information."""
@@ -396,16 +477,27 @@ def _cmd_info(args) -> None:
     ]
     try:
         from mne_rt import __version__
+
         lines.append(f"  mne-rt version : {__version__}")
     except Exception:
         lines.append("  mne-rt version : unknown")
 
     lines.append(f"  Python         : {platform.python_version()}")
 
-    for pkg in ["mne", "numpy", "scipy", "pyvista", "qtpy", "pyqtgraph",
-                "mne_lsl", "mne_connectivity", "mne_features"]:
+    for pkg in [
+        "mne",
+        "numpy",
+        "scipy",
+        "pyvista",
+        "qtpy",
+        "pyqtgraph",
+        "mne_lsl",
+        "mne_connectivity",
+        "mne_features",
+    ]:
         try:
             from importlib.metadata import version
+
             lines.append(f"  {pkg:<22}: {version(pkg)}")
         except Exception:
             lines.append(f"  {pkg:<22}: not installed")
@@ -503,8 +595,8 @@ def _cmd_demo_erp(args) -> None:
     """Run an ERP demo using MNE sample data and the five epoch plot windows."""
     import os
     import sys
-    import time
     import threading
+    import time
 
     os.environ.setdefault("MPLBACKEND", "Agg")
 
@@ -512,84 +604,91 @@ def _cmd_demo_erp(args) -> None:
     import numpy as np
 
     print("MNE-RT ERP Demo - downloading/loading MNE sample data ...")
-    data_path  = mne.datasets.sample.data_path()
-    raw_full   = mne.io.read_raw_fif(
+    data_path = mne.datasets.sample.data_path()
+    raw_full = mne.io.read_raw_fif(
         str(data_path) + "/MEG/sample/sample_audvis_raw.fif",
-        preload=True, verbose=False,
+        preload=True,
+        verbose=False,
     )
     raw_full.filter(1.0, 40.0, verbose=False)
-    raw_demo   = raw_full.copy().crop(tmax=277.0)
+    raw_demo = raw_full.copy().crop(tmax=277.0)
 
-    mock_path  = "/tmp/mne_rt_demo_erp_raw.fif"
+    mock_path = "/tmp/mne_rt_demo_erp_raw.fif"
     raw_demo.save(mock_path, overwrite=True, verbose=False)
     print(f"  Saved {raw_demo.times[-1]:.0f} s demo file -> {mock_path}")
 
     from qtpy.QtWidgets import QApplication
+
     app = QApplication.instance() or QApplication(sys.argv)
 
-    stim_ch  = "STI 014"
+    stim_ch = "STI 014"
     event_id = {"auditory/left": 1, "auditory/right": 2}
     tmin, tmax = -0.1, 0.4
 
     show_epoch_plot = not getattr(args, "no_epoch_plot", False)
-    show_topo       = not args.no_topo
-    show_butterfly  = not args.no_butterfly
-    show_compare    = not args.no_compare
-    show_tfr        = not args.no_tfr
+    show_topo = not args.no_topo
+    show_butterfly = not args.no_butterfly
+    show_compare = not args.no_compare
+    show_tfr = not args.no_tfr
 
     if not any([show_epoch_plot, show_topo, show_butterfly, show_compare, show_tfr]):
-        print("All plots disabled - nothing to show.  "
-              "Remove --no-* flags to enable plots.")
+        print("All plots disabled - nothing to show.  Remove --no-* flags to enable plots.")
         return
 
     print("\n-- Connecting RTEpochs ----------------------------------------------")
     from mne_rt import RTEpochs
+
     rt = RTEpochs(
         event_id=event_id,
         event_channels=stim_ch,
-        tmin=tmin, tmax=tmax,
+        tmin=tmin,
+        tmax=tmax,
         baseline=(None, 0),
         picks="eeg",
         reject={"eeg": 150e-6},
     )
     rt.connect_to_lsl(mock_lsl=True, fname=mock_path, timeout=15.0)
 
-    from mne_rt.viz.epoch_plot     import EpochPlot
-    from mne_rt.viz.topo_plot      import TopoPlot as ERPTopoPlot
     from mne_rt.viz.butterfly_plot import ButterflyPlot
     from mne_rt.viz.compare_evoked import CompareEvoked
-    from mne_rt.viz.tfr_plot       import TFRPlot
+    from mne_rt.viz.epoch_plot import EpochPlot
+    from mne_rt.viz.tfr_plot import TFRPlot
+    from mne_rt.viz.topo_plot import TopoPlot as ERPTopoPlot
 
     ch_names = list(rt.epochs_stream_.info["ch_names"])
-    sfreq    = rt.epochs_stream_.info["sfreq"]
+    sfreq = rt.epochs_stream_.info["sfreq"]
 
     common_kw = dict(
-        ch_names = ch_names,
-        sfreq    = sfreq,
-        tmin     = tmin,
-        tmax     = tmax,
-        event_id = event_id,
-        info     = rt.epochs_stream_.info,
-        baseline = (None, 0),
+        ch_names=ch_names,
+        sfreq=sfreq,
+        tmin=tmin,
+        tmax=tmax,
+        event_id=event_id,
+        info=rt.epochs_stream_.info,
+        baseline=(None, 0),
     )
 
     # EpochPlot: scrolling raw viewer - epoch data is fed chunk-by-chunk
     # so the trigger marker lands at the correct t=0 position.
     # scale_uv=10 because ERP amplitudes are ~1-10 uV (default 100 is too coarse)
-    epoch_w = EpochPlot(
-        ch_names    = ch_names,
-        sfreq       = sfreq,
-        tmin        = tmin,
-        tmax        = tmax,
-        event_id    = event_id,
-        time_window = 15.0,
-        scale_uv    = 10.0,
-    ) if show_epoch_plot else None
+    epoch_w = (
+        EpochPlot(
+            ch_names=ch_names,
+            sfreq=sfreq,
+            tmin=tmin,
+            tmax=tmax,
+            event_id=event_id,
+            time_window=15.0,
+            scale_uv=10.0,
+        )
+        if show_epoch_plot
+        else None
+    )
 
-    topo_w  = ERPTopoPlot(**common_kw)   if show_topo      else None
-    butt_w  = ButterflyPlot(**common_kw) if show_butterfly else None
-    comp_w  = CompareEvoked(**common_kw) if show_compare   else None
-    tfr_w   = TFRPlot(**common_kw)       if show_tfr       else None
+    topo_w = ERPTopoPlot(**common_kw) if show_topo else None
+    butt_w = ButterflyPlot(**common_kw) if show_butterfly else None
+    comp_w = CompareEvoked(**common_kw) if show_compare else None
+    tfr_w = TFRPlot(**common_kw) if show_tfr else None
 
     _interactive = os.environ.get("QT_QPA_PLATFORM") != "offscreen"
     # EpochPlot gets a wider window at the top; the other four tile below it.
@@ -617,7 +716,7 @@ def _cmd_demo_erp(args) -> None:
     update_times: list[float] = []
 
     def on_trial(n_accepted: int, data, event_code: int, condition: str) -> None:
-        t0    = time.perf_counter()
+        t0 = time.perf_counter()
         batch = rt._buf_[:n_accepted]
         conds = list(rt._cond_list_)
 
@@ -625,14 +724,18 @@ def _cmd_demo_erp(args) -> None:
         # lands at the correct position.  `data` is the epoch itself:
         # shape (n_ch, n_times) - NOT a batch, so no [-1] indexing.
         if epoch_w is not None:
-            epoch_w.push(data[:, :n_pre])       # pre-trigger samples
+            epoch_w.push(data[:, :n_pre])  # pre-trigger samples
             epoch_w.push_trigger(code=event_code)
-            epoch_w.push(data[:, n_pre:])       # post-trigger samples
+            epoch_w.push(data[:, n_pre:])  # post-trigger samples
 
-        if topo_w  is not None: topo_w .update(batch, conds)
-        if butt_w  is not None: butt_w .update(batch, conds)
-        if comp_w  is not None: comp_w .update(batch, conds)
-        if tfr_w   is not None: tfr_w  .update(batch, conds)
+        if topo_w is not None:
+            topo_w.update(batch, conds)
+        if butt_w is not None:
+            butt_w.update(batch, conds)
+        if comp_w is not None:
+            comp_w.update(batch, conds)
+        if tfr_w is not None:
+            tfr_w.update(batch, conds)
         dt = (time.perf_counter() - t0) * 1000
         update_times.append(dt)
         print(f"  trial {n_accepted:3d} | {condition:<22s} | update {dt:.1f} ms")
@@ -662,8 +765,7 @@ def _cmd_demo_erp(args) -> None:
     rt.disconnect()
     print(f"\n  Accepted: {rt.n_accepted_} trials")
     if update_times:
-        print(f"  Latency : mean={np.mean(update_times):.1f} ms  "
-              f"max={np.max(update_times):.1f} ms")
+        print(f"  Latency : mean={np.mean(update_times):.1f} ms  max={np.max(update_times):.1f} ms")
 
     if any(w.isVisible() for w in all_windows):
         print("\nAll trials collected - close all windows to exit.")
@@ -675,6 +777,7 @@ def _cmd_demo_erp(args) -> None:
 def _cmd_baseline(args) -> None:
     """Record a baseline session."""
     from mne_rt import RTStream, set_log_level
+
     set_log_level(args.verbose)
 
     nf = RTStream(
@@ -698,22 +801,26 @@ def _cmd_baseline(args) -> None:
 def _cmd_run(args) -> None:
     """Run a real-time M/EEG session."""
     import sys
-    import time
     import threading
+    import time
 
     from mne_rt import RTStream, set_log_level
+
     set_log_level(args.verbose)
 
-    want_epoch_plots = any([
-        getattr(args, "topo", False),
-        getattr(args, "epoch_plot", False),
-        getattr(args, "butterfly", False),
-        getattr(args, "compare_evoked", False),
-        getattr(args, "tfr", False),
-    ])
+    want_epoch_plots = any(
+        [
+            getattr(args, "topo", False),
+            getattr(args, "epoch_plot", False),
+            getattr(args, "butterfly", False),
+            getattr(args, "compare_evoked", False),
+            getattr(args, "tfr", False),
+        ]
+    )
 
     if want_epoch_plots and not getattr(args, "stim_ch", None):
         import sys as _sys
+
         print(
             "ERROR: --topo / --epoch-plot / --butterfly / --compare-evoked / --tfr require "
             "--stim-ch <CHANNEL>  (e.g. --stim-ch 'STI 014')",
@@ -754,6 +861,7 @@ def _cmd_run(args) -> None:
     osc_sender = None
     if getattr(args, "osc_host", None):
         from mne_rt.osc import OSCSender
+
         osc_sender = OSCSender(
             host=args.osc_host,
             port=args.osc_port,
@@ -764,6 +872,7 @@ def _cmd_run(args) -> None:
     lsl_sender = None
     if getattr(args, "lsl_output", False):
         from mne_rt.lsl_output import LSLSender
+
         lsl_sender = LSLSender(stream_name=getattr(args, "lsl_stream_name", "MNE_RT"))
         print(f"LSL output -> stream '{lsl_sender.stream_name}'")
 
@@ -780,13 +889,15 @@ def _cmd_run(args) -> None:
             event_id[name.strip()] = int(code.strip())
 
         tmin = getattr(args, "tmin", -0.1)
-        tmax = getattr(args, "tmax",  0.5)
+        tmax = getattr(args, "tmax", 0.5)
 
         from mne_rt import RTEpochs
+
         rt_epochs = RTEpochs(
             event_id=event_id,
             event_channels=args.stim_ch,
-            tmin=tmin, tmax=tmax,
+            tmin=tmin,
+            tmax=tmax,
             baseline=(None, 0),
         )
         rt_epochs.connect_to_lsl(
@@ -795,38 +906,42 @@ def _cmd_run(args) -> None:
             timeout=30.0,
         )
 
-        from mne_rt.viz.epoch_plot     import EpochPlot
-        from mne_rt.viz.topo_plot      import TopoPlot as ERPTopoPlot
         from mne_rt.viz.butterfly_plot import ButterflyPlot
         from mne_rt.viz.compare_evoked import CompareEvoked
-        from mne_rt.viz.tfr_plot       import TFRPlot
+        from mne_rt.viz.epoch_plot import EpochPlot
+        from mne_rt.viz.tfr_plot import TFRPlot
+        from mne_rt.viz.topo_plot import TopoPlot as ERPTopoPlot
 
         _run_ch_names = list(rt_epochs.epochs_stream_.info["ch_names"])
-        _run_sfreq    = rt_epochs.epochs_stream_.info["sfreq"]
+        _run_sfreq = rt_epochs.epochs_stream_.info["sfreq"]
 
         common_kw = dict(
-            ch_names = _run_ch_names,
-            sfreq    = _run_sfreq,
-            tmin     = tmin,
-            tmax     = tmax,
-            event_id = event_id,
-            info     = rt_epochs.epochs_stream_.info,
-            baseline = (None, 0),
+            ch_names=_run_ch_names,
+            sfreq=_run_sfreq,
+            tmin=tmin,
+            tmax=tmax,
+            event_id=event_id,
+            info=rt_epochs.epochs_stream_.info,
+            baseline=(None, 0),
         )
 
-        epoch_w = EpochPlot(
-            ch_names    = _run_ch_names,
-            sfreq       = _run_sfreq,
-            tmin        = tmin,
-            tmax        = tmax,
-            event_id    = event_id,
-            time_window = 15.0,
-            scale_uv    = 10.0,
-        ) if getattr(args, "epoch_plot", False) else None
-        topo_w  = ERPTopoPlot(**common_kw)   if args.topo            else None
-        butt_w  = ButterflyPlot(**common_kw) if args.butterfly        else None
-        comp_w  = CompareEvoked(**common_kw) if args.compare_evoked   else None
-        tfr_w   = TFRPlot(**common_kw)       if args.tfr              else None
+        epoch_w = (
+            EpochPlot(
+                ch_names=_run_ch_names,
+                sfreq=_run_sfreq,
+                tmin=tmin,
+                tmax=tmax,
+                event_id=event_id,
+                time_window=15.0,
+                scale_uv=10.0,
+            )
+            if getattr(args, "epoch_plot", False)
+            else None
+        )
+        topo_w = ERPTopoPlot(**common_kw) if args.topo else None
+        butt_w = ButterflyPlot(**common_kw) if args.butterfly else None
+        comp_w = CompareEvoked(**common_kw) if args.compare_evoked else None
+        tfr_w = TFRPlot(**common_kw) if args.tfr else None
 
         _interactive = os.environ.get("QT_QPA_PLATFORM") != "offscreen"
         if epoch_w is not None:
@@ -855,10 +970,14 @@ def _cmd_run(args) -> None:
                 epoch_w.push(data[:, :_n_pre])
                 epoch_w.push_trigger(code=event_code)
                 epoch_w.push(data[:, _n_pre:])
-            if topo_w  is not None: topo_w .update(batch, conds)
-            if butt_w  is not None: butt_w .update(batch, conds)
-            if comp_w  is not None: comp_w .update(batch, conds)
-            if tfr_w   is not None: tfr_w  .update(batch, conds)
+            if topo_w is not None:
+                topo_w.update(batch, conds)
+            if butt_w is not None:
+                butt_w.update(batch, conds)
+            if comp_w is not None:
+                comp_w.update(batch, conds)
+            if tfr_w is not None:
+                tfr_w.update(batch, conds)
 
         rt_epochs.on_trial = _epoch_on_trial
 
@@ -901,6 +1020,7 @@ def _cmd_run(args) -> None:
 # Entry point
 # ---------------------------------------------------------------------------
 
+
 def main(argv=None) -> None:
     """CLI entry point.
 
@@ -915,6 +1035,7 @@ def main(argv=None) -> None:
     if args.version:
         try:
             from mne_rt import __version__
+
             print(f"mne-rt {__version__}")
         except Exception:
             print("mne-rt (version unknown)")
@@ -925,11 +1046,11 @@ def main(argv=None) -> None:
         return
 
     dispatch = {
-        "info":     _cmd_info,
-        "demo":     _cmd_demo,
+        "info": _cmd_info,
+        "demo": _cmd_demo,
         "demo-erp": _cmd_demo_erp,
         "baseline": _cmd_baseline,
-        "run":      _cmd_run,
+        "run": _cmd_run,
     }
 
     handler = dispatch.get(args.command)

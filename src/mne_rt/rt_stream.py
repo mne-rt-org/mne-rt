@@ -20,6 +20,7 @@ RTStream
     Main session controller — inherits all feature-extraction methods from
     :class:`~mne_rt.modalities.ModalityMixin`.
 """
+
 from __future__ import annotations
 
 import datetime
@@ -34,10 +35,8 @@ from typing import Any, Literal, Optional, Union
 from warnings import warn
 
 import matplotlib.pyplot as plt
-import numpy as np
-from pyqtgraph.Qt import QtWidgets
-
 import mne
+import numpy as np
 from mne import (
     Report,
     write_cov,
@@ -52,9 +51,10 @@ from mne.minimum_norm import (
 from mne_lsl.lsl import local_clock
 from mne_lsl.player import PlayerLSL as Player
 from mne_lsl.stream import StreamLSL as Stream
+from pyqtgraph.Qt import QtWidgets
 
-from mne_rt.modalities import ModalityMixin
 from mne_rt._logging import logger, set_log_level, verbose
+from mne_rt.modalities import ModalityMixin
 from mne_rt.tools import (
     _compute_inv_operator,
     create_blink_template,
@@ -250,9 +250,7 @@ class RTStream(ModalityMixin):
             montage in get_builtin_montages()
             or (montage.endswith(".bvct") and Path(montage).is_file())
         ):
-            raise ValueError(
-                "`montage` must be a built-in name, a valid '.bvct' path, or None."
-            )
+            raise ValueError("`montage` must be a built-in name, a valid '.bvct' path, or None.")
         if not isinstance(mri, bool):
             raise ValueError("`mri` must be a boolean.")
         if not subject_fs_id or not isinstance(subject_fs_id, str):
@@ -271,7 +269,9 @@ class RTStream(ModalityMixin):
         if notch_freq is not None:
             _nf = notch_freq if isinstance(notch_freq, list) else [notch_freq]
             if not all(isinstance(f, (int, float)) and f > 0 for f in _nf):
-                raise ValueError("`notch_freq` must be a positive float or list of positive floats.")
+                raise ValueError(
+                    "`notch_freq` must be a positive float or list of positive floats."
+                )
         if artifact_correction not in self._VALID_ARTIFACT_METHODS:
             raise ValueError(
                 f"`artifact_correction` must be one of "
@@ -308,9 +308,7 @@ class RTStream(ModalityMixin):
         self.save_nf_signal = save_nf_signal
         self.config_file = config
         self.verbose = verbose
-        self.subject_dir = (
-            Path(subjects_dir) / f"sub-{subject_id}" / f"ses-{session}"
-        )
+        self.subject_dir = Path(subjects_dir) / f"sub-{subject_id}" / f"ses-{session}"
 
         set_log_level(verbose)
 
@@ -438,9 +436,7 @@ class RTStream(ModalityMixin):
         if pick_types is not None:
             stream.pick(pick_types)
 
-        stream.set_meas_date(
-            datetime.datetime.now().replace(tzinfo=datetime.timezone.utc)
-        )
+        stream.set_meas_date(datetime.datetime.now().replace(tzinfo=datetime.timezone.utc))
         self.stream = stream
         self.sfreq = stream.info["sfreq"]
         self.rec_info = stream.info
@@ -807,8 +803,7 @@ class RTStream(ModalityMixin):
         self._mods = mods
         self.executor = ThreadPoolExecutor(max_workers=len(mods))
         self.mod_params_dict = {
-            mod: get_params(self.config_file, mod, self.modality_params)
-            for mod in mods
+            mod: get_params(self.config_file, mod, self.modality_params) for mod in mods
         }
         precomps: list[dict] = []
         nf_fns: list = []
@@ -826,24 +821,24 @@ class RTStream(ModalityMixin):
         # ---- Visualization setup (main thread) ----
 
         scales_dict = {
-            "sensor_power":         self._SENSOR_POWER_SCALE[self.data_type],
-            "band_ratio":           4.0,
-            "source_power":         3e-2,
-            "sensor_connectivity":  1.0,
-            "source_connectivity":  1.0,
-            "connectivity_ratio":   4.0,
-            "sensor_graph":         0.05,
-            "source_graph":         2e-17,
-            "entropy":              3.0,
-            "argmax_freq":          8.0,
-            "peak_alpha_freq":      13.0,
+            "sensor_power": self._SENSOR_POWER_SCALE[self.data_type],
+            "band_ratio": 4.0,
+            "source_power": 3e-2,
+            "sensor_connectivity": 1.0,
+            "source_connectivity": 1.0,
+            "connectivity_ratio": 4.0,
+            "sensor_graph": 0.05,
+            "source_graph": 2e-17,
+            "entropy": 3.0,
+            "argmax_freq": 8.0,
+            "peak_alpha_freq": 13.0,
             "individual_peak_power": self._SENSOR_POWER_SCALE[self.data_type],
-            "cfc_sensor":           1.0,
-            "erd_ers":              50.0,
-            "laterality":           2.0,
-            "hjorth":               5.0,
-            "spectral_centroid":    5.0,
-            "scp":                  50e-6,
+            "cfc_sensor": 1.0,
+            "erd_ers": 50.0,
+            "laterality": 2.0,
+            "hjorth": 5.0,
+            "spectral_centroid": 5.0,
+            "scp": 50e-6,
         }
 
         nf_plot: Optional[NFPlot] = None
@@ -861,7 +856,7 @@ class RTStream(ModalityMixin):
             nf_plot = NFPlot(
                 modalities=mods,
                 scales_dict=scales_dict,
-                sfreq=30.0,   # pump timer rate drives display at 30 fps
+                sfreq=30.0,  # pump timer rate drives display at 30 fps
                 time_window=time_window,
                 display_smoothing=display_smoothing,
             )
@@ -878,9 +873,7 @@ class RTStream(ModalityMixin):
 
         if show_brain_activation:
             if self.subjects_fs_dir is None:
-                raise ValueError(
-                    "subjects_fs_dir must be set to use brain activation display."
-                )
+                raise ValueError("subjects_fs_dir must be set to use brain activation display.")
             brain_plot = BrainPlot(
                 subjects_fs_dir=self.subjects_fs_dir,
                 clim=[0, 0.6],
@@ -897,15 +890,9 @@ class RTStream(ModalityMixin):
             raw_plot.show()
 
         if self.bandpass_freq is not None:
-            self.stream.filter(
-                l_freq=self.bandpass_freq[0], h_freq=self.bandpass_freq[1]
-            )
+            self.stream.filter(l_freq=self.bandpass_freq[0], h_freq=self.bandpass_freq[1])
         if self.notch_freq is not None:
-            _freqs = (
-                self.notch_freq
-                if isinstance(self.notch_freq, list)
-                else [self.notch_freq]
-            )
+            _freqs = self.notch_freq if isinstance(self.notch_freq, list) else [self.notch_freq]
             for _f in _freqs:
                 self.stream.notch_filter(freqs=_f)
 
@@ -936,10 +923,10 @@ class RTStream(ModalityMixin):
         reward_data: dict[str, list] = {m: [] for m in _proto_map}
 
         # Delay accumulators live in the thread, assigned to self when done
-        _acq_delays:     list[float] = []
-        _art_delays:     list[float] = []
-        _meth_delays:    dict[str, list] = {m: [] for m in mods}
-        _plot_delays:    list[float] = []  # only used when viz runs inline
+        _acq_delays: list[float] = []
+        _art_delays: list[float] = []
+        _meth_delays: dict[str, list] = {m: [] for m in mods}
+        _plot_delays: list[float] = []  # only used when viz runs inline
 
         # ---- Artifact rate tracking ----
         _n_total_windows: list[int] = [0]
@@ -948,15 +935,18 @@ class RTStream(ModalityMixin):
 
         # ---- SNR tracking ----
         _snr_data: list[float] = []
-        _snr_frange = snr_frange if snr_frange is not None else (
-            tuple(self.mod_params_dict[mods[0]].get("frange", [8, 13]))
-            if mods else (8.0, 13.0)
+        _snr_frange = (
+            snr_frange
+            if snr_frange is not None
+            else (
+                tuple(self.mod_params_dict[mods[0]].get("frange", [8, 13])) if mods else (8.0, 13.0)
+            )
         )
 
         # ---- Z-score normalisation state ----
-        _z_buf:   dict[str, list] = {m: [] for m in mods}
-        _z_mean:  dict[str, float] = {}
-        _z_std:   dict[str, float] = {}
+        _z_buf: dict[str, list] = {m: [] for m in mods}
+        _z_mean: dict[str, float] = {}
+        _z_std: dict[str, float] = {}
 
         def _apply_zscore(mod: str, val: float) -> float:
             if not zscore_normalize:
@@ -965,17 +955,16 @@ class RTStream(ModalityMixin):
             buf.append(float(val))
             n = len(buf)
             if n < zscore_warmup:
-                return val                          # pass-through during warmup
+                return val  # pass-through during warmup
             if n == zscore_warmup:
                 arr = np.array(buf, dtype=float)
                 _z_mean[mod] = float(arr.mean())
-                _z_std[mod]  = max(float(arr.std()), 1e-6)
+                _z_std[mod] = max(float(arr.std()), 1e-6)
             elif zscore_alpha > 0.0:
                 m_prev = _z_mean[mod]
                 _z_mean[mod] += zscore_alpha * (val - m_prev)
-                _z_std[mod]   = max(
-                    _z_std[mod] * (1.0 - zscore_alpha)
-                    + zscore_alpha * abs(val - m_prev),
+                _z_std[mod] = max(
+                    _z_std[mod] * (1.0 - zscore_alpha) + zscore_alpha * abs(val - m_prev),
                     1e-6,
                 )
             return (val - _z_mean[mod]) / _z_std[mod]
@@ -990,7 +979,9 @@ class RTStream(ModalityMixin):
                     _art_delays.append(time.time() - art_tic)
             elif self.artifact_correction == "orica":
                 art_tic = time.time()
-                data = self.orica.denoise(data, self.orica.find_blink_ic(self.blink_template, threshold=0.4)[0])
+                data = self.orica.denoise(
+                    data, self.orica.find_blink_ic(self.blink_template, threshold=0.4)[0]
+                )
                 if estimate_delays:
                     _art_delays.append(time.time() - art_tic)
             elif self.artifact_correction == "gedai":
@@ -1030,13 +1021,15 @@ class RTStream(ModalityMixin):
                 raw_d = self._prepare_raw_array(w)
                 if brain_mode == "power":
                     raw_d.filter(
-                        l_freq=brain_freq_range[0], h_freq=brain_freq_range[1],
-                        fir_design="firwin", verbose=False,
+                        l_freq=brain_freq_range[0],
+                        h_freq=brain_freq_range[1],
+                        fir_design="firwin",
+                        verbose=False,
                     )
                 stc = apply_inverse_raw(raw_d, self.inv, lambda2=1.0 / 9, pick_ori="normal")
                 if brain_mode == "power":
-                    lh = np.mean(stc.lh_data ** 2, axis=1)
-                    rh = np.mean(stc.rh_data ** 2, axis=1)
+                    lh = np.mean(stc.lh_data**2, axis=1)
+                    rh = np.mean(stc.rh_data**2, axis=1)
                 else:
                     lh = np.abs(stc.lh_data.mean(axis=1))
                     rh = np.abs(stc.rh_data.mean(axis=1))
@@ -1075,9 +1068,7 @@ class RTStream(ModalityMixin):
                         n_avail = self.stream.n_new_samples
                         if n_avail >= max(1, int(0.033 * self._sfreq)):
                             try:
-                                raw_chunk = self.stream.get_data(
-                                    n_avail / self._sfreq
-                                )[0]
+                                raw_chunk = self.stream.get_data(n_avail / self._sfreq)[0]
                                 if raw_chunk.shape[1] > 0:
                                     raw_queue.put_nowait(raw_chunk)
                             except (_queue.Full, Exception):
@@ -1101,14 +1092,16 @@ class RTStream(ModalityMixin):
 
                 if track_snr:
                     from mne_rt.tools import compute_bandpower
+
                     _sig = compute_bandpower(data, self._sfreq, _snr_frange, method="welch")
-                    _all = compute_bandpower(data, self._sfreq, (0.5, self._sfreq / 2 - 1), method="welch")
+                    _all = compute_bandpower(
+                        data, self._sfreq, (0.5, self._sfreq / 2 - 1), method="welch"
+                    )
                     _noise = _all.mean() - _sig.mean()
                     _snr_data.append(float(10.0 * np.log10(_sig.mean() / (abs(_noise) + 1e-300))))
 
                 futures = [
-                    self.executor.submit(nf_fns[i], data, **precomps[i])
-                    for i in range(len(mods))
+                    self.executor.submit(nf_fns[i], data, **precomps[i]) for i in range(len(mods))
                 ]
                 for m, fut in zip(mods, futures):
                     nf_val, m_delay = fut.result()
@@ -1207,7 +1200,7 @@ class RTStream(ModalityMixin):
                     QTimer.singleShot(600, app.quit)
 
             signal_timer = QTimer()
-            signal_timer.setInterval(33)   # ~30 fps
+            signal_timer.setInterval(33)  # ~30 fps
             signal_timer.timeout.connect(_pump_signal)
             signal_timer.start()
 
@@ -1215,6 +1208,7 @@ class RTStream(ModalityMixin):
             # pyqtgraph so we use a separate slower timer.
             topo_timer: Optional[QTimer] = None
             if topo_plot is not None:
+
                 def _pump_topo_qt() -> None:
                     topo_data = None
                     try:
@@ -1236,15 +1230,14 @@ class RTStream(ModalityMixin):
             # at the end of the callback so the signal timer can fire first.
             brain_timer: Optional[QTimer] = None
             if brain_plot is not None:
+
                 def _pump_brain() -> None:
                     """Slow timer (~5 fps) — brain render only."""
                     try:
                         updated = False
                         while not brain_queue.empty():
                             lh, rh = brain_queue.get_nowait()
-                            brain_plot.update_from_arrays(
-                                lh, rh, mode=brain_mode, deferred=True
-                            )
+                            brain_plot.update_from_arrays(lh, rh, mode=brain_mode, deferred=True)
                             updated = True
                         if updated:
                             brain_plot.plotter.render()
@@ -1259,6 +1252,7 @@ class RTStream(ModalityMixin):
 
             raw_timer: Optional[QTimer] = None
             if raw_plot is not None:
+
                 def _pump_raw() -> None:
                     try:
                         while not raw_queue.empty():
@@ -1272,10 +1266,10 @@ class RTStream(ModalityMixin):
                 raw_timer.timeout.connect(_pump_raw)
                 raw_timer.start()
 
-            app.exec()          # blocks here; drives all three windows in parallel
+            app.exec()  # blocks here; drives all three windows in parallel
 
         else:
-            acq_thread.join()   # headless: block until acquisition finishes
+            acq_thread.join()  # headless: block until acquisition finishes
 
         acq_thread.join(timeout=10)
 
@@ -1284,13 +1278,11 @@ class RTStream(ModalityMixin):
         self.nf_data = nf_data
         self.reward_data = reward_data
         if estimate_delays:
-            self.acq_delays      = _acq_delays
+            self.acq_delays = _acq_delays
             self.artifact_delays = _art_delays
-            self.method_delays   = _meth_delays
+            self.method_delays = _meth_delays
         n_tot = _n_total_windows[0]
-        self.artifact_rate = (
-            _n_artifact_windows[0] / n_tot if n_tot > 0 else 0.0
-        )
+        self.artifact_rate = _n_artifact_windows[0] / n_tot if n_tot > 0 else 0.0
         self.n_artifact_windows = _n_artifact_windows[0]
         self.n_total_windows = n_tot
         self.snr_data = _snr_data if track_snr else []
@@ -1306,8 +1298,8 @@ class RTStream(ModalityMixin):
         for kind, path in saved_files.items():
             logger.info("Saved %s → %s", kind, path)
 
-        if signal_plot is not None:
-            signal_plot.close()
+        if nf_plot is not None:
+            nf_plot.close()
 
     # ------------------------------------------------------------------
     # Offline replay
@@ -1476,7 +1468,8 @@ class RTStream(ModalityMixin):
 
             logger.info(
                 "run_blocks: starting block %d/%d (duration=%.0f s)",
-                i + 1, len(blocks),
+                i + 1,
+                len(blocks),
                 block_kwargs.get("duration", 0),
             )
             self.record_main(verbose=verbose, **block_kwargs)
@@ -1485,9 +1478,7 @@ class RTStream(ModalityMixin):
             all_snr_data.append(list(self.snr_data))
 
             if i < len(blocks) - 1 and post_rest > 0:
-                logger.info(
-                    "run_blocks: rest period %.0f s …", post_rest
-                )
+                logger.info("run_blocks: rest period %.0f s …", post_rest)
                 time.sleep(post_rest)
 
         self.block_nf_data = all_nf_data
@@ -2179,7 +2170,8 @@ class RTStream(ModalityMixin):
         self._ensure_dirs()
 
         stem = getattr(
-            self, "_session_stem",
+            self,
+            "_session_stem",
             f"sub-{self.subject_id}_ses-{self.session}",
         )
         saved: dict[str, Path] = {}
@@ -2193,11 +2185,11 @@ class RTStream(ModalityMixin):
             arr = np.asarray(vals, dtype=float) * 1000.0
             out: dict = {
                 "mean_ms": round(float(arr.mean()), 4),
-                "std_ms":  round(float(arr.std()), 4),
-                "min_ms":  round(float(arr.min()), 4),
-                "max_ms":  round(float(arr.max()), 4),
-                "p95_ms":  round(float(np.percentile(arr, 95)), 4),
-                "n":       int(len(arr)),
+                "std_ms": round(float(arr.std()), 4),
+                "min_ms": round(float(arr.min()), 4),
+                "max_ms": round(float(arr.max()), 4),
+                "p95_ms": round(float(np.percentile(arr, 95)), 4),
+                "n": int(len(arr)),
             }
             if include_trace:
                 out["trace_ms"] = [round(v, 4) for v in arr.tolist()]
@@ -2215,29 +2207,25 @@ class RTStream(ModalityMixin):
         if nf_data and hasattr(self, "nf_data"):
             start_iso = (
                 self._session_start_time.isoformat()
-                if hasattr(self, "_session_start_time") else None
+                if hasattr(self, "_session_start_time")
+                else None
             )
             payload: dict = {
                 "meta": {
-                    "subject_id":          self.subject_id,
-                    "session":             self.session,
-                    "data_type":           self.data_type,
-                    "modalities":          list(self.nf_data.keys()),
-                    "sfreq_hz":            float(getattr(self, "_sfreq", 0)),
-                    "winsize_s":           float(getattr(self, "winsize", 0)),
-                    "duration_s":          float(getattr(self, "duration", 0)),
-                    "n_windows":           {m: len(v) for m, v in self.nf_data.items()},
+                    "subject_id": self.subject_id,
+                    "session": self.session,
+                    "data_type": self.data_type,
+                    "modalities": list(self.nf_data.keys()),
+                    "sfreq_hz": float(getattr(self, "_sfreq", 0)),
+                    "winsize_s": float(getattr(self, "winsize", 0)),
+                    "duration_s": float(getattr(self, "duration", 0)),
+                    "n_windows": {m: len(v) for m, v in self.nf_data.items()},
                     "artifact_correction": str(self.artifact_correction),
-                    "artifact_rate":       getattr(self, "artifact_rate", None),
-                    "start_time":          start_iso,
-                    "end_time":            datetime.datetime.now(
-                                               datetime.timezone.utc
-                                           ).isoformat(),
+                    "artifact_rate": getattr(self, "artifact_rate", None),
+                    "start_time": start_iso,
+                    "end_time": datetime.datetime.now(datetime.timezone.utc).isoformat(),
                 },
-                "data": {
-                    m: [_ser(v) for v in vals]
-                    for m, vals in self.nf_data.items()
-                },
+                "data": {m: [_ser(v) for v in vals] for m, vals in self.nf_data.items()},
             }
             snr = getattr(self, "snr_data", [])
             if snr:
@@ -2260,9 +2248,11 @@ class RTStream(ModalityMixin):
                     cols.append("snr_db")
                 n_rows = max(len(self.nf_data[m]) for m in self.nf_data) if self.nf_data else 0
                 tsv_p = self.subject_dir / "beh" / f"{stem}_task-neurofeedback_beh.tsv"
-                combined = {**self.nf_data,
-                            **{f"reward_{m}": v for m, v in reward.items() if v},
-                            **({"snr_db": snr} if snr else {})}
+                combined = {
+                    **self.nf_data,
+                    **{f"reward_{m}": v for m, v in reward.items() if v},
+                    **({"snr_db": snr} if snr else {}),
+                }
                 with open(tsv_p, "w") as fh:
                     fh.write("\t".join(cols) + "\n")
                     for i in range(n_rows):
@@ -2280,9 +2270,7 @@ class RTStream(ModalityMixin):
         ):
             delays_payload: dict = {}
             if acq_delay and hasattr(self, "acq_delays"):
-                delays_payload["acquisition"] = _summarize(
-                    self.acq_delays, delay_include_trace
-                )
+                delays_payload["acquisition"] = _summarize(self.acq_delays, delay_include_trace)
             if artifact_delay and hasattr(self, "artifact_delays"):
                 delays_payload["artifact_correction"] = _summarize(
                     self.artifact_delays, delay_include_trace
@@ -2389,9 +2377,7 @@ class RTStream(ModalityMixin):
         RuntimeError
             If :meth:`record_baseline` has not been called yet.
         """
-        modalities = (
-            [self.modality] if isinstance(self.modality, str) else list(self.modality)
-        )
+        modalities = [self.modality] if isinstance(self.modality, str) else list(self.modality)
         report = Report(title=f"Neurofeedback Session — {', '.join(modalities)}")
 
         # ── Baseline recording ────────────────────────────────────────────
@@ -2412,7 +2398,7 @@ class RTStream(ModalityMixin):
 
         # ── Sensor layouts & brain labels per modality ────────────────────
 
-        '''
+        """
         source_modalities = {"source_power", "source_connectivity", "source_graph"}
 
         for mod in modalities:
@@ -2440,12 +2426,13 @@ class RTStream(ModalityMixin):
                     )
                 report.add_figure(fig=fig_brain, title=f"Brain labels — {mod}")
                 plt.close(fig_brain)
-        '''
+        """
 
         # ── signal time-series ─────────────────────────────────────────
         if include_nf_signal and hasattr(self, "nf_data") and self.nf_data:
             fig_nf, axes_nf = plt.subplots(
-                len(modalities), 1,
+                len(modalities),
+                1,
                 figsize=(12, 2.5 * len(modalities)),
                 sharex=True,
                 squeeze=False,
@@ -2463,10 +2450,14 @@ class RTStream(ModalityMixin):
             plt.close(fig_nf)
 
         # ── Summary table ─────────────────────────────────────────────────
-        n_windows = max(
-            (len(v) for v in self.nf_data.values() if isinstance(v, list)),
-            default=0,
-        ) if hasattr(self, "nf_data") else 0
+        n_windows = (
+            max(
+                (len(v) for v in self.nf_data.values() if isinstance(v, list)),
+                default=0,
+            )
+            if hasattr(self, "nf_data")
+            else 0
+        )
         summary_html = (
             "<table border='1' cellpadding='4' style='border-collapse:collapse'>"
             f"<tr><th>Subject</th><td>{self.subject_id}</td></tr>"
