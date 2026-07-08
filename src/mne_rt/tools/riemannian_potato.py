@@ -132,7 +132,11 @@ class RiemannianPotatoDetector:
             ) from exc
 
     def _make_estimators(self) -> None:
-        from pyriemann.clustering import Potato
+        try:
+            # pyriemann 0.12 moved Potato from pyriemann.clustering here
+            from pyriemann.artifact_detection import Potato
+        except ImportError:
+            from pyriemann.clustering import Potato
         from pyriemann.estimation import Covariances
 
         self._cov_estimator = Covariances(estimator=self.estimator)
