@@ -1,0 +1,59 @@
+name: CI
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.number }}-${{ github.event.ref }}
+  cancel-in-progress: true
+
+on:  # yamllint disable-line rule:truthy
+  push:
+    branches: ["main"]
+  pull_request:
+    branches: ["main"]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  style:
+    name: Style
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: astral-sh/setup-uv@v8
+        with:
+          python-version: "3.11"
+      - run: uv pip install --system -e ".[lint]"
+      - run: ruff check src tests
+      - run: ruff format --check src tests
+
+  pytest:
+    name: 'py${{ matrix.python }}'
+    needs: style
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    strategy:
+      fail-fast: false
+      matrix:
+        python: ["3.11", "3.12", "3.13"]
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      # mne-rt's live viz windows need a display even in headless CI
+      - uses: pyvista/setup-headless-display-action@v4
+        with:
+          qt: true
+          pyvista: false
+          wm: false
+      - uses: astral-sh/setup-uv@v8
+        with:
+          python-version: ${{ matrix.python }}
+      - run: uv pip install --system -e ".[dev,pyqt6]"
+      - run: pytest --cov=mne_rt --cov-report=xml
+      - uses: codecov/codecov-action@v5
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+        if: success() || failure()
