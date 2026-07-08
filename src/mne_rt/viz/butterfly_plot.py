@@ -10,6 +10,7 @@ ButterflyPlot
     Real-time butterfly overlay with region-colour coding and interactive
     sidebar.
 """
+
 from __future__ import annotations
 
 import math
@@ -19,69 +20,80 @@ import numpy as np
 
 try:
     from qtpy.QtCore import Qt, Signal
-    from qtpy.QtGui import QFont, QColor
+    from qtpy.QtGui import QColor, QFont
     from qtpy.QtWidgets import (
-        QApplication, QMainWindow, QWidget,
-        QVBoxLayout, QHBoxLayout, QLabel,
-        QCheckBox, QSlider, QPushButton,
-        QFrame, QSizePolicy, QScrollArea,
+        QApplication,
+        QCheckBox,
         QFileDialog,
+        QFrame,
+        QHBoxLayout,
+        QLabel,
+        QMainWindow,
+        QPushButton,
+        QScrollArea,
+        QSizePolicy,
+        QSlider,
+        QVBoxLayout,
+        QWidget,
     )
+
     _qt_available = True
 except ImportError:
     _qt_available = False
 
 try:
     import pyqtgraph as pg
+
     _pg_available = True
 except ImportError:
     _pg_available = False
 
 try:
     import mne
+
     _mne_available = True
 except ImportError:
     _mne_available = False
 
 from mne_rt._logging import logger, set_log_level
 
-
 # ---------------------------------------------------------------------------
 # Palette
 # ---------------------------------------------------------------------------
-_BG      = "#0d1117"
+_BG = "#0d1117"
 _SURFACE = "#161b22"
-_BORDER  = "#30363d"
-_TEXT    = "#e6edf3"
-_DIM     = "#8b949e"
-_ACCENT  = "#3b82f6"
+_BORDER = "#30363d"
+_TEXT = "#e6edf3"
+_DIM = "#8b949e"
+_ACCENT = "#3b82f6"
 
 _COND_COLORS = [
-    "#3b82f6",   # blue
-    "#ec4899",   # pink
-    "#10b981",   # green
-    "#f59e0b",   # amber
-    "#8b5cf6",   # violet
-    "#06b6d4",   # cyan
+    "#3b82f6",  # blue
+    "#ec4899",  # pink
+    "#10b981",  # green
+    "#f59e0b",  # amber
+    "#8b5cf6",  # violet
+    "#06b6d4",  # cyan
 ]
 
 # Region colour gradient stops: (normalised_y, R, G, B)
 # y=0 is frontal (top of scalp in standard orientation → small y),
 # y=1 is occipital (bottom).
 _REGION_STOPS = [
-    (0.0, 0x3b, 0x82, 0xf6),   # #3b82f6 blue       – frontal
-    (0.3, 0x06, 0xb6, 0xd4),   # #06b6d4 cyan       – fronto-central
-    (0.5, 0x10, 0xb9, 0x81),   # #10b981 green      – central
-    (0.7, 0xf5, 0x9e, 0x0b),   # #f59e0b amber      – parieto-occipital
-    (1.0, 0xef, 0x44, 0x44),   # #ef4444 red        – occipital
+    (0.0, 0x3B, 0x82, 0xF6),  # #3b82f6 blue       – frontal
+    (0.3, 0x06, 0xB6, 0xD4),  # #06b6d4 cyan       – fronto-central
+    (0.5, 0x10, 0xB9, 0x81),  # #10b981 green      – central
+    (0.7, 0xF5, 0x9E, 0x0B),  # #f59e0b amber      – parieto-occipital
+    (1.0, 0xEF, 0x44, 0x44),  # #ef4444 red        – occipital
 ]
 
-_SIDEBAR_W = 210   # px
+_SIDEBAR_W = 210  # px
 
 
 # ---------------------------------------------------------------------------
 # Sidebar helpers (mirrors erp_plot.py)
 # ---------------------------------------------------------------------------
+
 
 def _sep(parent: QWidget) -> QFrame:
     f = QFrame(parent)
@@ -93,8 +105,7 @@ def _sep(parent: QWidget) -> QFrame:
 def _section(text: str, parent: QWidget) -> QLabel:
     lbl = QLabel(text, parent)
     lbl.setStyleSheet(
-        f"color:{_DIM}; font-size:10px; font-weight:700; "
-        "letter-spacing:1px; padding-top:6px;"
+        f"color:{_DIM}; font-size:10px; font-weight:700; letter-spacing:1px; padding-top:6px;"
     )
     return lbl
 
@@ -109,9 +120,7 @@ def _row(parent: QWidget, spacing: int = 5) -> tuple[QWidget, QHBoxLayout]:
 
 def _val_lbl(text: str, parent: QWidget, color: str = _ACCENT) -> QLabel:
     lbl = QLabel(text, parent)
-    lbl.setStyleSheet(
-        f"color:{color}; font-size:11px; font-weight:600;"
-    )
+    lbl.setStyleSheet(f"color:{color}; font-size:11px; font-weight:600;")
     lbl.setAlignment(Qt.AlignmentFlag.AlignRight | Qt.AlignmentFlag.AlignVCenter)
     return lbl
 
@@ -132,6 +141,7 @@ def _slider(parent: QWidget, lo: int, hi: int, val: int) -> QSlider:
 # ---------------------------------------------------------------------------
 # Colour helpers
 # ---------------------------------------------------------------------------
+
 
 def _region_color(xn: float, yn: float) -> tuple[int, int, int]:
     """Return an RGB tuple for a channel at normalised scalp position.
@@ -167,6 +177,7 @@ def _region_color(xn: float, yn: float) -> tuple[int, int, int]:
 # ---------------------------------------------------------------------------
 # Main class
 # ---------------------------------------------------------------------------
+
 
 class ButterflyPlot(QMainWindow):
     """Real-time butterfly plot: all EEG/MEG channels overlaid per condition.
@@ -211,16 +222,16 @@ class ButterflyPlot(QMainWindow):
 
     def __init__(
         self,
-        ch_names:    list[str],
-        sfreq:       float,
-        tmin:        float,
-        tmax:        float,
-        event_id:    dict[str, int],
+        ch_names: list[str],
+        sfreq: float,
+        tmin: float,
+        tmax: float,
+        event_id: dict[str, int],
         info=None,
-        montage:     str = "standard_1020",
-        baseline:    Optional[tuple] = (None, 0),
+        montage: str = "standard_1020",
+        baseline: Optional[tuple] = (None, 0),
         window_size: tuple[int, int] = (1440, 900),
-        verbose:     Union[bool, str, None] = None,
+        verbose: Union[bool, str, None] = None,
     ) -> None:
         if not _qt_available or not _pg_available:
             raise ImportError(
@@ -233,36 +244,33 @@ class ButterflyPlot(QMainWindow):
         self._redraw_sig.connect(self._redraw)
         set_log_level(verbose)
 
-        self.ch_names   = list(ch_names)
-        self.sfreq      = sfreq
-        self.tmin       = tmin
-        self.tmax       = tmax
-        self.event_id   = event_id
-        self.montage    = montage
-        self.baseline   = baseline
-        self._info      = info
+        self.ch_names = list(ch_names)
+        self.sfreq = sfreq
+        self.tmin = tmin
+        self.tmax = tmax
+        self.event_id = event_id
+        self.montage = montage
+        self.baseline = baseline
+        self._info = info
 
         self._conditions = list(event_id.keys())
-        self._cmap       = {
-            c: _COND_COLORS[i % len(_COND_COLORS)]
-            for i, c in enumerate(self._conditions)
+        self._cmap = {
+            c: _COND_COLORS[i % len(_COND_COLORS)] for i, c in enumerate(self._conditions)
         }
-        self._n_ch  = len(ch_names)
-        self._n_t   = int(round((tmax - tmin) * sfreq)) + 1
+        self._n_ch = len(ch_names)
+        self._n_t = int(round((tmax - tmin) * sfreq)) + 1
         self._times = np.linspace(tmin, tmax, self._n_t)
 
-        self._epoch_buf: dict[str, list[np.ndarray]] = {
-            c: [] for c in self._conditions
-        }
+        self._epoch_buf: dict[str, list[np.ndarray]] = {c: [] for c in self._conditions}
         self._n_per: dict[str, int] = {c: 0 for c in self._conditions}
 
         # Display state
-        self._yscale    = 1.0
+        self._yscale = 1.0
         self._linewidth = 0.8
-        self._show_bl   = True
+        self._show_bl = True
         self._show_grid = False
-        self._x_start   = tmin
-        self._x_end     = tmax
+        self._x_start = tmin
+        self._x_end = tmax
 
         # Scalp positions for region colouring
         self._norm_pos = self._compute_positions(info, montage)
@@ -274,16 +282,17 @@ class ButterflyPlot(QMainWindow):
 
         logger.info(
             "ButterflyPlot: %d channels, %.0f–%.0f ms, %d conditions",
-            self._n_ch, tmin * 1000, tmax * 1000, len(self._conditions),
+            self._n_ch,
+            tmin * 1000,
+            tmax * 1000,
+            len(self._conditions),
         )
 
     # -----------------------------------------------------------------------
     # Scalp layout (for region colouring only)
     # -----------------------------------------------------------------------
 
-    def _compute_positions(
-        self, info, montage_name: str
-    ) -> list[tuple[float, float]]:
+    def _compute_positions(self, info, montage_name: str) -> list[tuple[float, float]]:
         """Return normalised (x, y) positions for each channel.
 
         y=0 is frontal, y=1 is occipital (standard EEG orientation).
@@ -294,9 +303,7 @@ class ButterflyPlot(QMainWindow):
                 if pos is not None:
                     return pos
             try:
-                tmp = mne.create_info(
-                    self.ch_names, sfreq=1.0, ch_types="eeg", verbose=False
-                )
+                tmp = mne.create_info(self.ch_names, sfreq=1.0, ch_types="eeg", verbose=False)
                 mont = mne.channels.make_standard_montage(montage_name)
                 tmp.set_montage(mont, on_missing="ignore", verbose=False)
                 pos = self._from_layout(mne.channels.find_layout(tmp))
@@ -323,7 +330,8 @@ class ButterflyPlot(QMainWindow):
         if n_matched < self._n_ch // 2:
             logger.debug(
                 "ButterflyPlot: only %d/%d channels matched layout — skipping.",
-                n_matched, self._n_ch,
+                n_matched,
+                self._n_ch,
             )
             return None
 
@@ -340,8 +348,10 @@ class ButterflyPlot(QMainWindow):
     def _circular_fallback(self) -> list[tuple[float, float]]:
         n = self._n_ch
         return [
-            (0.5 + 0.42 * math.cos(2 * math.pi * i / n - math.pi / 2),
-             0.5 + 0.42 * math.sin(2 * math.pi * i / n - math.pi / 2))
+            (
+                0.5 + 0.42 * math.cos(2 * math.pi * i / n - math.pi / 2),
+                0.5 + 0.42 * math.sin(2 * math.pi * i / n - math.pi / 2),
+            )
             for i in range(n)
         ]
 
@@ -390,9 +400,7 @@ class ButterflyPlot(QMainWindow):
 
         self._glw = pg.GraphicsLayoutWidget()
         self._glw.setBackground(_BG)
-        self._glw.setSizePolicy(
-            QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding
-        )
+        self._glw.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
         root.addWidget(self._glw, stretch=1)
 
         # ── Sidebar ──────────────────────────────────────────────────────
@@ -400,11 +408,11 @@ class ButterflyPlot(QMainWindow):
 
         # ── Condition plots ──────────────────────────────────────────────
         # curves[cond][ch_idx] → PlotCurveItem
-        self._cond_plots:  dict[str, pg.PlotItem]              = {}
-        self._curves:      dict[str, list[pg.PlotCurveItem]]   = {}
-        self._cond_titles: dict[str, pg.TextItem]              = {}
-        self._grid_items:  list[pg.GridItem]                   = []
-        self._t0_lines:    list[pg.InfiniteLine]               = []
+        self._cond_plots: dict[str, pg.PlotItem] = {}
+        self._curves: dict[str, list[pg.PlotCurveItem]] = {}
+        self._cond_titles: dict[str, pg.TextItem] = {}
+        self._grid_items: list[pg.GridItem] = []
+        self._t0_lines: list[pg.InfiniteLine] = []
 
         n_conds = len(self._conditions)
         for row_idx, cond in enumerate(self._conditions):
@@ -414,7 +422,7 @@ class ButterflyPlot(QMainWindow):
 
             # t = 0 dashed line
             t0_line = pg.InfiniteLine(
-                pos=self.tmin + (self.tmax - self.tmin) * 0,   # actual pos=0s
+                pos=self.tmin + (self.tmax - self.tmin) * 0,  # actual pos=0s
                 angle=90,
                 pen=pg.mkPen(_BORDER, width=1, style=Qt.PenStyle.DashLine),
             )
@@ -480,8 +488,7 @@ class ButterflyPlot(QMainWindow):
         scroll.setWidgetResizable(True)
         scroll.setHorizontalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
         scroll.setStyleSheet(
-            f"QScrollArea {{ background:{_SURFACE}; "
-            f"border-left:1px solid {_BORDER}; }}"
+            f"QScrollArea {{ background:{_SURFACE}; border-left:1px solid {_BORDER}; }}"
         )
 
         sb = QWidget()
@@ -492,16 +499,14 @@ class ButterflyPlot(QMainWindow):
 
         # ── Header ───────────────────────────────────────────────────────
         hdr = QLabel("BUTTERFLY CONTROLS")
-        hdr.setStyleSheet(
-            f"color:{_TEXT}; font-size:11px; font-weight:700; letter-spacing:1.5px;"
-        )
+        hdr.setStyleSheet(f"color:{_TEXT}; font-size:11px; font-weight:700; letter-spacing:1.5px;")
         ly.addWidget(hdr)
         ly.addWidget(_sep(sb))
 
         # ── CONDITIONS ───────────────────────────────────────────────────
         ly.addWidget(_section("CONDITIONS", sb))
         self._cond_checks: dict[str, QCheckBox] = {}
-        self._cond_n_lbl:  dict[str, QLabel]    = {}
+        self._cond_n_lbl: dict[str, QLabel] = {}
 
         for cond in self._conditions:
             col = self._cmap[cond]
@@ -509,8 +514,7 @@ class ButterflyPlot(QMainWindow):
             cb = QCheckBox()
             cb.setChecked(True)
             cb.setStyleSheet(
-                f"QCheckBox::indicator:checked{{"
-                f"background:{col};border-color:{col};}}"
+                f"QCheckBox::indicator:checked{{background:{col};border-color:{col};}}"
             )
             cb.toggled.connect(lambda chk, c=cond: self._toggle_cond(c, chk))
             self._cond_checks[cond] = cb
@@ -671,7 +675,7 @@ class ButterflyPlot(QMainWindow):
         if x1 >= x2:
             return
         self._x_start = x1
-        self._x_end   = x2
+        self._x_end = x2
         self._xstart_lbl.setText(f"{int(x1 * 1000)} ms")
         self._xend_lbl.setText(f"{int(x2 * 1000)} ms")
         for plot in self._cond_plots.values():
@@ -687,7 +691,9 @@ class ButterflyPlot(QMainWindow):
 
     def _export_png(self) -> None:
         path, _ = QFileDialog.getSaveFileName(
-            self, "Export Butterfly Plot", "butterfly_plot.png",
+            self,
+            "Export Butterfly Plot",
+            "butterfly_plot.png",
             "PNG Image (*.png);;JPEG Image (*.jpg)",
         )
         if path:
@@ -699,7 +705,7 @@ class ButterflyPlot(QMainWindow):
 
     def update(
         self,
-        data:       np.ndarray,
+        data: np.ndarray,
         conditions: list[str],
     ) -> None:
         """Redraw all butterfly plots with updated condition averages.
@@ -717,7 +723,7 @@ class ButterflyPlot(QMainWindow):
         for cond in self._conditions:
             mask = np.array([c == cond for c in conditions])
             self._epoch_buf[cond] = list(data[mask]) if mask.any() else []
-            self._n_per[cond]     = int(mask.sum())
+            self._n_per[cond] = int(mask.sum())
 
         self._redraw_sig.emit(n_total)
 
@@ -725,18 +731,12 @@ class ButterflyPlot(QMainWindow):
         """Slot — always runs on the main/GUI thread."""
         for cond in self._conditions:
             buf = self._epoch_buf[cond]
-            avg = (
-                np.mean(np.stack(buf, 0), 0)
-                if buf
-                else np.zeros((self._n_ch, self._n_t))
-            )
+            avg = np.mean(np.stack(buf, 0), 0) if buf else np.zeros((self._n_ch, self._n_t))
             for ch_i, curve in enumerate(self._curves[cond]):
                 curve.setData(self._times, avg[ch_i])
 
             # Update per-condition title with trial count
-            self._cond_titles[cond].setText(
-                f"{cond}  (n = {self._n_per[cond]})"
-            )
+            self._cond_titles[cond].setText(f"{cond}  (n = {self._n_per[cond]})")
             self._cond_n_lbl[cond].setText(f"n = {self._n_per[cond]}")
 
         self._total_lbl.setText(f"Total: {n_total} trials")

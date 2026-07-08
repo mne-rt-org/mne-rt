@@ -17,13 +17,13 @@ Appleton-Century-Crofts.
 Skinner, B. F. (1938). The behavior of organisms: An experimental analysis.
 Appleton-Century-Crofts.
 """
+
 from __future__ import annotations
 
 import time
 from typing import Any, Optional
 
 import numpy as np
-
 
 _VALID_SCHEDULES = ("FR", "VR", "FI", "VI")
 
@@ -117,17 +117,11 @@ class OperantProtocol:
         rng_seed: Optional[int] = None,
     ) -> None:
         if schedule not in _VALID_SCHEDULES:
-            raise ValueError(
-                f"schedule must be one of {_VALID_SCHEDULES}, got {schedule!r}"
-            )
+            raise ValueError(f"schedule must be one of {_VALID_SCHEDULES}, got {schedule!r}")
         if ratio < 1:
-            raise ValueError(
-                f"ratio must be >= 1, got {ratio}"
-            )
+            raise ValueError(f"ratio must be >= 1, got {ratio}")
         if interval <= 0.0:
-            raise ValueError(
-                f"interval must be > 0, got {interval}"
-            )
+            raise ValueError(f"interval must be > 0, got {interval}")
 
         self.base_protocol: Any = base_protocol
         self.schedule: str = schedule

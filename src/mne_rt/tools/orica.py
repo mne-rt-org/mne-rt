@@ -1,4 +1,5 @@
 """Online Recursive ICA (ORICA) for real-time EEG artifact removal."""
+
 from __future__ import annotations
 
 import numpy as np
@@ -54,7 +55,7 @@ class ORICA:
         self.mean_ = np.zeros((n_channels, 1))
         self.cov_ = np.eye(n_channels)
         self.whitening_ = np.eye(n_channels)
-        self.whitening_inv_ = np.eye(n_channels)   # cached inverse of whitening matrix
+        self.whitening_inv_ = np.eye(n_channels)  # cached inverse of whitening matrix
         self._mixing_matrix: np.ndarray | None = None  # cached pinv(W)
         self._calibrated = False
 
@@ -65,13 +66,13 @@ class ORICA:
     def _nonlinear_func(self, Y: np.ndarray) -> tuple[np.ndarray, np.ndarray]:
         if self.nonlinearity == "tanh":
             gY = np.tanh(Y)
-            gprime = 1.0 - gY ** 2
+            gprime = 1.0 - gY**2
         elif self.nonlinearity == "pow3":
-            gY = Y ** 3
-            gprime = 3 * Y ** 2
+            gY = Y**3
+            gprime = 3 * Y**2
         elif self.nonlinearity == "gauss":
-            gY = Y * np.exp(-0.5 * Y ** 2)
-            gprime = (1 - Y ** 2) * np.exp(-0.5 * Y ** 2)
+            gY = Y * np.exp(-0.5 * Y**2)
+            gprime = (1 - Y**2) * np.exp(-0.5 * Y**2)
         else:
             raise ValueError(f"Unknown nonlinearity {self.nonlinearity!r}")
         return gY, gprime
@@ -82,9 +83,8 @@ class ORICA:
 
     def _update_whitening(self, X: np.ndarray) -> np.ndarray:
         """Update whitening matrix with forgetting factor and return whitened data."""
-        self.mean_ = (
-            self.forgetfac * self.mean_
-            + (1 - self.forgetfac) * X.mean(axis=1, keepdims=True)
+        self.mean_ = self.forgetfac * self.mean_ + (1 - self.forgetfac) * X.mean(
+            axis=1, keepdims=True
         )
         Xc = X - self.mean_
 
@@ -94,10 +94,10 @@ class ORICA:
         d, E = np.linalg.eigh(self.cov_)
         d_safe = np.maximum(d, 1e-10)
         D_inv_sqrt = np.diag(1.0 / np.sqrt(d_safe))
-        D_sqrt     = np.diag(np.sqrt(d_safe))
+        D_sqrt = np.diag(np.sqrt(d_safe))
 
-        self.whitening_     = E @ D_inv_sqrt @ E.T
-        self.whitening_inv_ = E @ D_sqrt     @ E.T  # exact inverse of whitening_
+        self.whitening_ = E @ D_inv_sqrt @ E.T
+        self.whitening_inv_ = E @ D_sqrt @ E.T  # exact inverse of whitening_
 
         return self.whitening_ @ Xc
 
@@ -139,10 +139,9 @@ class ORICA:
         gY, gprime = self._nonlinear_func(Y)
 
         N = X.shape[1]
-        dW = (
-            (np.eye(self.n_channels) - np.mean(gprime, axis=1)[:, None]) @ self.W
-            + (gY @ Y.T) / N @ self.W
-        )
+        dW = (np.eye(self.n_channels) - np.mean(gprime, axis=1)[:, None]) @ self.W + (
+            gY @ Y.T
+        ) / N @ self.W
         self.W += self.learning_rate * dW
         self.W, _ = np.linalg.qr(self.W)
 
@@ -165,7 +164,9 @@ class ORICA:
         -------
         S : ndarray, shape (n_channels, n_samples)
         """
-        Xw = self._apply_whitening(X) if self.online_whitening else X - X.mean(axis=1, keepdims=True)
+        Xw = (
+            self._apply_whitening(X) if self.online_whitening else X - X.mean(axis=1, keepdims=True)
+        )
         return self.W @ Xw
 
     def fit_transform(self, X: np.ndarray) -> np.ndarray:
@@ -219,9 +220,7 @@ class ORICA:
         corrs : ndarray, shape (n_channels,)
         """
         A = self._get_mixing_matrix()
-        corrs = np.array(
-            [np.corrcoef(A[:, ic], template_map)[0, 1] for ic in range(A.shape[1])]
-        )
+        corrs = np.array([np.corrcoef(A[:, ic], template_map)[0, 1] for ic in range(A.shape[1])])
         blink_idx = np.where(np.abs(corrs) > threshold)[0].tolist()
         return blink_idx, corrs
 

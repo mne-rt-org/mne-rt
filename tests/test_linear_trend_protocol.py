@@ -5,10 +5,10 @@ import pytest
 
 from mne_rt.protocols import LinearTrendProtocol
 
-
 # ------------------------------------------------------------------
 # Constructor validation
 # ------------------------------------------------------------------
+
 
 def test_invalid_direction():
     with pytest.raises(ValueError):
@@ -44,6 +44,7 @@ def test_invalid_warmup_less_than_window():
 # Default constructor
 # ------------------------------------------------------------------
 
+
 def test_defaults():
     proto = LinearTrendProtocol()
     assert proto.direction == "up"
@@ -58,6 +59,7 @@ def test_defaults():
 # ------------------------------------------------------------------
 # Warmup behaviour
 # ------------------------------------------------------------------
+
 
 def test_warmup_suppresses_reward():
     proto = LinearTrendProtocol(direction="up", window=5, warmup_windows=5)
@@ -79,6 +81,7 @@ def test_warmup_completes():
 # ------------------------------------------------------------------
 # Upward trend detection
 # ------------------------------------------------------------------
+
 
 def test_up_trend_detected():
     proto = LinearTrendProtocol(direction="up", window=10, warmup_windows=10)
@@ -103,6 +106,7 @@ def test_down_trend_not_rewarded_when_up_direction():
 # Downward trend detection
 # ------------------------------------------------------------------
 
+
 def test_down_trend_detected():
     proto = LinearTrendProtocol(direction="down", window=10, warmup_windows=10)
     values = np.linspace(1, 0, 20)
@@ -118,19 +122,16 @@ def test_down_trend_detected():
 # slope_threshold gate
 # ------------------------------------------------------------------
 
+
 def test_slope_threshold_blocks_weak_trend():
-    proto = LinearTrendProtocol(
-        direction="up", window=5, warmup_windows=5, slope_threshold=999.0
-    )
+    proto = LinearTrendProtocol(direction="up", window=5, warmup_windows=5, slope_threshold=999.0)
     for i in range(10):
         crossed, mag = proto.evaluate(float(i))
     assert not crossed
 
 
 def test_slope_threshold_passes_strong_trend():
-    proto = LinearTrendProtocol(
-        direction="up", window=5, warmup_windows=5, slope_threshold=0.001
-    )
+    proto = LinearTrendProtocol(direction="up", window=5, warmup_windows=5, slope_threshold=0.001)
     for i in range(10):
         crossed, mag = proto.evaluate(float(i) * 10)
     assert crossed
@@ -140,11 +141,10 @@ def test_slope_threshold_passes_strong_trend():
 # min_r2 gate
 # ------------------------------------------------------------------
 
+
 def test_min_r2_blocks_noisy_trend():
     rng = np.random.default_rng(42)
-    proto = LinearTrendProtocol(
-        direction="up", window=10, warmup_windows=10, min_r2=0.99
-    )
+    proto = LinearTrendProtocol(direction="up", window=10, warmup_windows=10, min_r2=0.99)
     for i in range(20):
         proto.evaluate(float(i) + rng.normal(0, 50))
     # Very noisy data should have low R² and not cross
@@ -154,6 +154,7 @@ def test_min_r2_blocks_noisy_trend():
 # ------------------------------------------------------------------
 # Smoothing
 # ------------------------------------------------------------------
+
 
 def test_smoothing_does_not_crash():
     proto = LinearTrendProtocol(direction="up", window=5, warmup_windows=5, smoothing=0.5)
@@ -166,6 +167,7 @@ def test_smoothing_does_not_crash():
 # magnitude is non-negative
 # ------------------------------------------------------------------
 
+
 def test_magnitude_nonnegative():
     proto = LinearTrendProtocol(direction="up", window=5, warmup_windows=5)
     for i in range(15):
@@ -176,6 +178,7 @@ def test_magnitude_nonnegative():
 # ------------------------------------------------------------------
 # reset
 # ------------------------------------------------------------------
+
 
 def test_reset_clears_state():
     proto = LinearTrendProtocol(direction="up", window=5, warmup_windows=5)
@@ -199,6 +202,7 @@ def test_reset_preserves_params():
 # ------------------------------------------------------------------
 # repr
 # ------------------------------------------------------------------
+
 
 def test_repr():
     proto = LinearTrendProtocol()

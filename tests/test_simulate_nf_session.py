@@ -5,13 +5,14 @@ import pytest
 
 from mne_rt.tools.simulation import simulate_nf_session
 
-
 # ------------------------------------------------------------------
 # Basic output shape and types
 # ------------------------------------------------------------------
 
+
 def test_output_types():
     import mne
+
     raw, nf_state = simulate_nf_session(duration=2.0, sfreq=256.0, n_channels=64, rng_seed=0)
     assert isinstance(raw, mne.io.BaseRaw)
     assert isinstance(nf_state, np.ndarray)
@@ -38,6 +39,7 @@ def test_sfreq_preserved():
 # nf_state properties
 # ------------------------------------------------------------------
 
+
 def test_nf_state_is_bool():
     _, nf_state = simulate_nf_session(duration=4.0, sfreq=256.0, n_channels=64, rng_seed=0)
     assert nf_state.dtype == bool
@@ -47,8 +49,7 @@ def test_nf_state_fraction():
     """nf_state True fraction should be close to nf_epoch_fraction."""
     frac = 0.4
     _, nf_state = simulate_nf_session(
-        duration=10.0, sfreq=256.0, n_channels=64,
-        nf_epoch_fraction=frac, rng_seed=0
+        duration=10.0, sfreq=256.0, n_channels=64, nf_epoch_fraction=frac, rng_seed=0
     )
     observed = nf_state.sum() / len(nf_state)
     assert abs(observed - frac) < 0.05
@@ -56,16 +57,14 @@ def test_nf_state_fraction():
 
 def test_nf_state_zero_fraction():
     _, nf_state = simulate_nf_session(
-        duration=4.0, sfreq=256.0, n_channels=64,
-        nf_epoch_fraction=0.0, rng_seed=0
+        duration=4.0, sfreq=256.0, n_channels=64, nf_epoch_fraction=0.0, rng_seed=0
     )
     assert nf_state.sum() == 0
 
 
 def test_nf_state_full_fraction():
     _, nf_state = simulate_nf_session(
-        duration=4.0, sfreq=256.0, n_channels=64,
-        nf_epoch_fraction=1.0, rng_seed=0
+        duration=4.0, sfreq=256.0, n_channels=64, nf_epoch_fraction=1.0, rng_seed=0
     )
     assert nf_state.all()
 
@@ -74,15 +73,24 @@ def test_nf_state_full_fraction():
 # Alpha reactivity
 # ------------------------------------------------------------------
 
+
 def test_alpha_reactivity_reduces_power():
     """Alpha power should be lower during NF-state epochs when reactivity=True."""
     raw_react, nf_state = simulate_nf_session(
-        duration=20.0, sfreq=256.0, n_channels=64,
-        alpha_reactivity=True, nf_epoch_fraction=0.5, rng_seed=42
+        duration=20.0,
+        sfreq=256.0,
+        n_channels=64,
+        alpha_reactivity=True,
+        nf_epoch_fraction=0.5,
+        rng_seed=42,
     )
     raw_no_react, _ = simulate_nf_session(
-        duration=20.0, sfreq=256.0, n_channels=64,
-        alpha_reactivity=False, nf_epoch_fraction=0.5, rng_seed=42
+        duration=20.0,
+        sfreq=256.0,
+        n_channels=64,
+        alpha_reactivity=False,
+        nf_epoch_fraction=0.5,
+        rng_seed=42,
     )
     data_react = raw_react.get_data()
     data_no = raw_no_react.get_data()
@@ -97,6 +105,7 @@ def test_alpha_reactivity_reduces_power():
 # ------------------------------------------------------------------
 # Reproducibility
 # ------------------------------------------------------------------
+
 
 def test_rng_seed_reproducibility():
     kwargs = dict(duration=4.0, sfreq=256.0, n_channels=64, rng_seed=7)
@@ -116,6 +125,7 @@ def test_different_seeds_give_different_data():
 # ------------------------------------------------------------------
 # Data sanity
 # ------------------------------------------------------------------
+
 
 def test_data_has_no_nan_or_inf():
     raw, _ = simulate_nf_session(duration=4.0, sfreq=256.0, n_channels=64, rng_seed=0)

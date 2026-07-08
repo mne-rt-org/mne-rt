@@ -15,26 +15,28 @@ simulate_raw
 simulate_nf_session
     Generate a realistic multi-artifact EEG simulation for NF testing.
 """
+
 from __future__ import annotations
 
 import os
 from pathlib import Path
 from typing import Optional, Union
 
-import numpy as np
-
 import mne
+import numpy as np
 from mne.datasets import fetch_fsaverage
 from mne.label import select_sources
 from mne.simulation import (
     SourceSimulator,
-    simulate_raw as _mne_simulate_raw,
-    add_noise,
     add_eog,
+    add_noise,
+)
+from mne.simulation import (
+    simulate_raw as _mne_simulate_raw,
 )
 
-_MEG_AMPLITUDE_SCALE = 1e-12   # 1 pT — typical MEG dipole projection amplitude
-_EEG_AMPLITUDE_SCALE = 10e-9   # 10 nV scaling factor (matches original code)
+_MEG_AMPLITUDE_SCALE = 1e-12  # 1 pT — typical MEG dipole projection amplitude
+_EEG_AMPLITUDE_SCALE = 10e-9  # 10 nV scaling factor (matches original code)
 
 
 def simulate_raw(
@@ -233,7 +235,6 @@ def simulate_raw(
     return raw
 
 
-
 def simulate_nf_session(
     duration: float = 120.0,
     sfreq: float = 256.0,
@@ -357,7 +358,7 @@ def simulate_nf_session(
     nf_state = np.zeros(n_samples, dtype=bool)
     nf_n = int(nf_epoch_fraction * n_samples)
     nf_start = (n_samples - nf_n) // 2
-    nf_state[nf_start: nf_start + nf_n] = True
+    nf_state[nf_start : nf_start + nf_n] = True
 
     # ── 1. Pink noise (all channels) ──────────────────────────────────────
     def _pink_noise(n: int) -> np.ndarray:
@@ -370,7 +371,7 @@ def simulate_nf_session(
         fft_vals *= scale
         pink = np.fft.irfft(fft_vals, n=n)
         # Normalise to unit RMS
-        rms = np.sqrt(np.mean(pink ** 2))
+        rms = np.sqrt(np.mean(pink**2))
         return pink / (rms + 1e-30)
 
     data = np.zeros((n_channels, n_samples))
@@ -397,11 +398,9 @@ def simulate_nf_session(
         blink_sigma_samples = int(blink_duration_s / 2 * sfreq)
         blink_half_width = 3 * blink_sigma_samples
         blink_t = np.arange(-blink_half_width, blink_half_width + 1)
-        blink_template = np.exp(-(blink_t ** 2) / (2 * blink_sigma_samples ** 2))
+        blink_template = np.exp(-(blink_t**2) / (2 * blink_sigma_samples**2))
 
-        blink_times = rng.integers(
-            blink_half_width, n_samples - blink_half_width, size=n_blinks
-        )
+        blink_times = rng.integers(blink_half_width, n_samples - blink_half_width, size=n_blinks)
         for bt in blink_times:
             start = bt - blink_half_width
             end = bt + blink_half_width + 1
@@ -410,7 +409,7 @@ def simulate_nf_session(
             tmpl_end = tmpl_start + actual_len
             data_start = max(0, start)
             for c in range(n_channels):
-                data[c, data_start: data_start + actual_len] += (
+                data[c, data_start : data_start + actual_len] += (
                     blink_weights[c] * blink_amplitude * blink_template[tmpl_start:tmpl_end]
                 )
 
@@ -434,8 +433,8 @@ def simulate_nf_session(
         for c in range(n_channels):
             burst[c] = sosfiltfilt(sos, burst[c])
         # Normalise burst to unit RMS then scale
-        rms_burst = np.sqrt(np.mean(burst ** 2, axis=1, keepdims=True))
-        burst /= (rms_burst + 1e-30)
+        rms_burst = np.sqrt(np.mean(burst**2, axis=1, keepdims=True))
+        burst /= rms_burst + 1e-30
         data[:, ws:we] += muscle_amplitude * burst
 
     # ── 5. Slow electrode drift ───────────────────────────────────────────
@@ -461,6 +460,7 @@ def simulate_nf_session(
 # Internal helpers
 # ---------------------------------------------------------------------------
 
+
 def _make_sensor_info(data_type: str, sfreq: float, n_eeg_channels: int) -> mne.Info:
     """Build an :class:`mne.Info` object for the requested modality.
 
@@ -485,8 +485,8 @@ def _make_sensor_info(data_type: str, sfreq: float, n_eeg_channels: int) -> mne.
 
     # EEG — use a standard biosemi/easycap montage
     montage_map = {
-        32:  "easycap-M10",
-        64:  "biosemi64",
+        32: "easycap-M10",
+        64: "biosemi64",
         128: "biosemi128",
         256: "biosemi256",
     }

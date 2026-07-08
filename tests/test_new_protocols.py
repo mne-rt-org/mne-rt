@@ -1,23 +1,27 @@
 """Tests for RLProtocol, OperantProtocol, and TransferProtocol."""
+
 from __future__ import annotations
 
 import json
-import time
 import tempfile
+import time
 from pathlib import Path
 
 import numpy as np
 import pytest
 
 from mne_rt.protocols import (
-    RLProtocol, OperantProtocol, TransferProtocol,
-    ZScoreProtocol, ThresholdProtocol,
+    OperantProtocol,
+    RLProtocol,
+    ThresholdProtocol,
+    TransferProtocol,
+    ZScoreProtocol,
 )
-
 
 # ─────────────────────────────────────────────────────────────────────────────
 # RLProtocol
 # ─────────────────────────────────────────────────────────────────────────────
+
 
 class TestRLProtocol:
     def test_default_init(self):
@@ -115,6 +119,7 @@ class TestRLProtocol:
 # OperantProtocol
 # ─────────────────────────────────────────────────────────────────────────────
 
+
 class TestOperantProtocol:
     def _make_base(self):
         # ThresholdProtocol with threshold=0 always rewards positive values
@@ -197,6 +202,7 @@ class TestOperantProtocol:
 # TransferProtocol
 # ─────────────────────────────────────────────────────────────────────────────
 
+
 @pytest.fixture()
 def beh_json(tmp_path):
     """Write a minimal MNE-RT beh JSON and return its path."""
@@ -225,23 +231,24 @@ class TestTransferProtocol:
             TransferProtocol(fname=beh_json, modality="no_such_modality")
 
     def test_evaluate_uses_prior(self, beh_json):
-        p = TransferProtocol(fname=beh_json, modality="sensor_power",
-                             zscore_threshold=0.5)
+        p = TransferProtocol(fname=beh_json, modality="sensor_power", zscore_threshold=0.5)
         # Prior mean ~0.3; a very high value should produce a reward
         crossed, mag = p.evaluate(100.0)
         assert crossed
         assert mag > 0
 
     def test_low_value_not_crossed(self, beh_json):
-        p = TransferProtocol(fname=beh_json, modality="sensor_power",
-                             direction="up", zscore_threshold=0.5)
+        p = TransferProtocol(
+            fname=beh_json, modality="sensor_power", direction="up", zscore_threshold=0.5
+        )
         crossed, mag = p.evaluate(-100.0)
         assert not crossed
         assert mag == 0.0
 
     def test_direction_down(self, beh_json):
-        p = TransferProtocol(fname=beh_json, modality="sensor_power",
-                             direction="down", zscore_threshold=0.5)
+        p = TransferProtocol(
+            fname=beh_json, modality="sensor_power", direction="down", zscore_threshold=0.5
+        )
         crossed, mag = p.evaluate(-100.0)
         assert crossed
 
@@ -249,14 +256,12 @@ class TestTransferProtocol:
         p = TransferProtocol(fname=beh_json, modality="sensor_power")
         for _ in range(10):
             p.evaluate(1.0)
-        mean_after = p.mean_
         p.reset()
         assert p.mean_ == pytest.approx(p.prior_mean, rel=1e-6)
 
     def test_invalid_direction(self, beh_json):
         with pytest.raises(ValueError, match="direction"):
-            TransferProtocol(fname=beh_json, modality="sensor_power",
-                             direction="sideways")
+            TransferProtocol(fname=beh_json, modality="sensor_power", direction="sideways")
 
     def test_repr(self, beh_json):
         p = TransferProtocol(fname=beh_json, modality="sensor_power")

@@ -18,6 +18,7 @@ Appelhoff, S., et al. (2019). MNE-BIDS: Organizing electrophysiological data
 into the BIDS format and facilitating their analysis.
 Journal of Open Source Software, 4(44), 1896.
 """
+
 from __future__ import annotations
 
 import csv
@@ -26,8 +27,8 @@ import logging
 from pathlib import Path
 from typing import Optional, Union
 
-import numpy as np
 import mne
+import numpy as np
 
 logger = logging.getLogger(__name__)
 
@@ -100,6 +101,7 @@ def save_as_bids(
 
     try:
         import mne_bids  # noqa: F401
+
         _save_with_mne_bids(
             raw=raw,
             nf_data=nf_data,
@@ -133,6 +135,7 @@ def save_as_bids(
 # ---------------------------------------------------------------------------
 # mne-bids backend
 # ---------------------------------------------------------------------------
+
 
 def _save_with_mne_bids(
     raw: mne.io.BaseRaw,
@@ -179,6 +182,7 @@ def _save_with_mne_bids(
 # Minimal (manual) BIDS backend
 # ---------------------------------------------------------------------------
 
+
 def _save_minimal_bids(
     raw: mne.io.BaseRaw,
     nf_data: dict,
@@ -190,20 +194,15 @@ def _save_minimal_bids(
     overwrite: bool,
 ) -> None:
     """Write raw as .fif and NF data as _beh.tsv in a BIDS folder tree."""
-    entity_dir = _build_entity_dir(
-        output_dir=output_dir, subject=subject, session=session
-    )
+    entity_dir = _build_entity_dir(output_dir=output_dir, subject=subject, session=session)
     eeg_dir = entity_dir / "eeg"
     eeg_dir.mkdir(parents=True, exist_ok=True)
 
-    stem = _build_bids_stem(
-        subject=subject, session=session, task=task, run=run
-    )
+    stem = _build_bids_stem(subject=subject, session=session, task=task, run=run)
     fif_path = eeg_dir / f"{stem}_eeg.fif"
     if fif_path.exists() and not overwrite:
         raise FileExistsError(
-            f"Output file already exists: {fif_path}. "
-            "Set overwrite=True to overwrite."
+            f"Output file already exists: {fif_path}. Set overwrite=True to overwrite."
         )
     raw.save(fif_path, overwrite=overwrite, verbose=False)
     logger.info("Raw saved to %s", fif_path)
@@ -223,9 +222,8 @@ def _save_minimal_bids(
 # Shared helpers
 # ---------------------------------------------------------------------------
 
-def _build_entity_dir(
-    output_dir: Path, subject: str, session: Optional[str]
-) -> Path:
+
+def _build_entity_dir(output_dir: Path, subject: str, session: Optional[str]) -> Path:
     parts = [f"sub-{subject}"]
     if session is not None:
         parts.append(f"ses-{session}")
@@ -257,20 +255,15 @@ def _write_nf_beh_tsv(
     overwrite: bool,
 ) -> None:
     """Write per-window NF feature values to a _beh.tsv side-car file."""
-    entity_dir = _build_entity_dir(
-        output_dir=output_dir, subject=subject, session=session
-    )
+    entity_dir = _build_entity_dir(output_dir=output_dir, subject=subject, session=session)
     beh_dir = entity_dir / "beh"
     beh_dir.mkdir(parents=True, exist_ok=True)
 
-    stem = _build_bids_stem(
-        subject=subject, session=session, task=task, run=run
-    )
+    stem = _build_bids_stem(subject=subject, session=session, task=task, run=run)
     tsv_path = beh_dir / f"{stem}_beh.tsv"
     if tsv_path.exists() and not overwrite:
         raise FileExistsError(
-            f"Behavioural TSV already exists: {tsv_path}. "
-            "Set overwrite=True to overwrite."
+            f"Behavioural TSV already exists: {tsv_path}. Set overwrite=True to overwrite."
         )
 
     if not nf_data:
@@ -288,9 +281,7 @@ def _write_nf_beh_tsv(
             for col in columns:
                 vals = nf_data[col]
                 val = vals[i] if i < len(vals) else "n/a"
-                row.append(
-                    f"{val:.6g}" if isinstance(val, (int, float, np.floating)) else str(val)
-                )
+                row.append(f"{val:.6g}" if isinstance(val, (int, float, np.floating)) else str(val))
             writer.writerow(row)
 
     logger.info("NF behavioural data saved to %s", tsv_path)

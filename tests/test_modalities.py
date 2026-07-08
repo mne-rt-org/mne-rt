@@ -15,7 +15,9 @@ DATA = RNG.standard_normal((N_CHANNELS, N_TIMES)).astype(np.float64)
 def nf_obj(tmp_path):
     """Minimal RTStream-like object with only the mixin methods wired up."""
     from pathlib import Path
+
     import mne
+
     from mne_rt.modalities import ModalityMixin
 
     config_file = Path(__file__).parent.parent / "src" / "mne_rt" / "config_methods.yml"
@@ -45,6 +47,7 @@ def nf_obj(tmp_path):
 
 def _call_modality(nf_obj, mod_name, data):
     from mne_rt.tools import get_params
+
     nf_obj.params = get_params(nf_obj.config_file, mod_name, {})
     prep_fn = getattr(nf_obj, f"_{mod_name}_prep", None)
     precomp = prep_fn() if callable(prep_fn) else {}
@@ -81,7 +84,7 @@ def test_hjorth(nf_obj):
 def test_spectral_centroid(nf_obj):
     val, delay = _call_modality(nf_obj, "spectral_centroid", DATA)
     assert isinstance(val, float)
-    assert val > 0   # centroid should be positive frequency
+    assert val > 0  # centroid should be positive frequency
 
 
 def test_erd_ers_needs_baseline(nf_obj):

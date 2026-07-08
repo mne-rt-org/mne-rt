@@ -9,6 +9,7 @@ Classes
 ThresholdProtocol
     Threshold comparator with optional EMA smoothing and adaptive threshold.
 """
+
 from __future__ import annotations
 
 import collections
@@ -88,25 +89,15 @@ class ThresholdProtocol:
         history_len: int = 50,
     ) -> None:
         if direction not in ("up", "down"):
-            raise ValueError(
-                f"direction must be 'up' or 'down', got {direction!r}"
-            )
+            raise ValueError(f"direction must be 'up' or 'down', got {direction!r}")
         if adapt_rate <= 0:
-            raise ValueError(
-                f"adapt_rate must be > 0, got {adapt_rate}"
-            )
+            raise ValueError(f"adapt_rate must be > 0, got {adapt_rate}")
         if not (0 < target_hit_rate < 1):
-            raise ValueError(
-                f"target_hit_rate must be in (0, 1), got {target_hit_rate}"
-            )
+            raise ValueError(f"target_hit_rate must be in (0, 1), got {target_hit_rate}")
         if not (0 <= smoothing < 1):
-            raise ValueError(
-                f"smoothing must be in [0, 1), got {smoothing}"
-            )
+            raise ValueError(f"smoothing must be in [0, 1), got {smoothing}")
         if history_len < 5:
-            raise ValueError(
-                f"history_len must be >= 5, got {history_len}"
-            )
+            raise ValueError(f"history_len must be >= 5, got {history_len}")
 
         self._threshold: float = float(threshold)
         self.direction: str = direction
@@ -115,12 +106,8 @@ class ThresholdProtocol:
         self.target_hit_rate: float = target_hit_rate
         self.smoothing: float = smoothing
 
-        self._history: collections.deque[bool] = collections.deque(
-            maxlen=history_len
-        )
-        self._values_history: collections.deque[float] = collections.deque(
-            maxlen=history_len
-        )
+        self._history: collections.deque[bool] = collections.deque(maxlen=history_len)
+        self._values_history: collections.deque[float] = collections.deque(maxlen=history_len)
         self._smoothed: Optional[float] = None
         self._n_evaluated: int = 0
 
@@ -155,10 +142,7 @@ class ThresholdProtocol:
             if self._smoothed is None:
                 self._smoothed = value
             else:
-                self._smoothed = (
-                    (1.0 - self.smoothing) * value
-                    + self.smoothing * self._smoothed
-                )
+                self._smoothed = (1.0 - self.smoothing) * value + self.smoothing * self._smoothed
         else:
             self._smoothed = float(value)
 
@@ -174,9 +158,7 @@ class ThresholdProtocol:
         self._n_evaluated += 1
 
         running_std = (
-            float(np.std(list(self._values_history)))
-            if len(self._values_history) > 1
-            else 1.0
+            float(np.std(list(self._values_history))) if len(self._values_history) > 1 else 1.0
         ) or 1.0
 
         if self.adaptive and len(self._history) >= 10:

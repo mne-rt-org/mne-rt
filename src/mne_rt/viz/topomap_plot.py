@@ -10,14 +10,17 @@ Classes
 TopomapPlot
     Real-time scalp topomap showing per-band power distribution.
 """
+
 from __future__ import annotations
 
 import datetime
 from pathlib import Path
 from typing import Optional
 
+import mne
 import numpy as np
-
+from matplotlib.backends.backend_qtagg import FigureCanvasQTAgg
+from matplotlib.figure import Figure
 from qtpy.QtCore import Qt
 from qtpy.QtWidgets import (
     QCheckBox,
@@ -34,21 +37,16 @@ from qtpy.QtWidgets import (
     QWidget,
 )
 
-import mne
-from matplotlib.backends.backend_qtagg import FigureCanvasQTAgg
-from matplotlib.figure import Figure
-
-
 # ---------------------------------------------------------------------------
 # Constants
 # ---------------------------------------------------------------------------
 
 _DEFAULT_BANDS: dict[str, tuple[float, float]] = {
-    "δ  1–4 Hz":    (1.0,   4.0),
-    "θ  4–8 Hz":    (4.0,   8.0),
-    "α  8–13 Hz":   (8.0,  13.0),
-    "β  13–30 Hz":  (13.0, 30.0),
-    "γ  30–45 Hz":  (30.0, 45.0),
+    "δ  1–4 Hz": (1.0, 4.0),
+    "θ  4–8 Hz": (4.0, 8.0),
+    "α  8–13 Hz": (8.0, 13.0),
+    "β  13–30 Hz": (13.0, 30.0),
+    "γ  30–45 Hz": (30.0, 45.0),
 }
 
 _CMAPS = ["RdBu_r", "hot", "plasma", "viridis", "Reds", "RdYlBu_r"]
@@ -193,6 +191,7 @@ class TopomapPlot(QMainWindow):
         verbose=None,
     ) -> None:
         from mne_rt._logging import set_log_level
+
         set_log_level(verbose)
         super().__init__()
 
@@ -245,10 +244,7 @@ class TopomapPlot(QMainWindow):
         if len(picks) == 0:
             picks = np.arange(len(self._info["ch_names"]))
         # Drop channels whose 3D position is NaN (e.g. TP9/TP10 not in biosemi64 montage)
-        valid = np.array([
-            not np.any(np.isnan(self._info["chs"][p]["loc"][:3]))
-            for p in picks
-        ])
+        valid = np.array([not np.any(np.isnan(self._info["chs"][p]["loc"][:3])) for p in picks])
         picks = picks[valid]
         return picks
 
@@ -445,9 +441,7 @@ class TopomapPlot(QMainWindow):
     def _add_band_checkbox(self, band_name: str) -> None:
         chk = QCheckBox(band_name)
         chk.setChecked(band_name in self._visible_bands)
-        chk.toggled.connect(
-            lambda checked, b=band_name: self._toggle_band(b, checked)
-        )
+        chk.toggled.connect(lambda checked, b=band_name: self._toggle_band(b, checked))
         self._bands_layout.addWidget(chk)
         self._band_checks[band_name] = chk
 
@@ -478,11 +472,10 @@ class TopomapPlot(QMainWindow):
 
     def _screenshot(self) -> None:
         from qtpy.QtWidgets import QFileDialog
+
         ts = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
         default = str(Path.home() / f"ant_topo_{ts}.png")
-        path, _ = QFileDialog.getSaveFileName(
-            self, "Save Screenshot", default, "PNG Image (*.png)"
-        )
+        path, _ = QFileDialog.getSaveFileName(self, "Save Screenshot", default, "PNG Image (*.png)")
         if not path:
             return
         self._fig.savefig(path, dpi=150, facecolor=self._fig.get_facecolor())
@@ -507,8 +500,7 @@ class TopomapPlot(QMainWindow):
         orig_order = list(self._bands.keys())
         if checked and band_name not in self._visible_bands:
             self._visible_bands = [
-                b for b in orig_order
-                if b in self._visible_bands or b == band_name
+                b for b in orig_order if b in self._visible_bands or b == band_name
             ]
         elif not checked and band_name in self._visible_bands:
             self._visible_bands.remove(band_name)
@@ -553,7 +545,9 @@ class TopomapPlot(QMainWindow):
                 if band not in self._bp_ema:
                     self._bp_ema[band] = pw.copy()
                 else:
-                    self._bp_ema[band] = self._display_alpha * pw + (1.0 - self._display_alpha) * self._bp_ema[band]
+                    self._bp_ema[band] = (
+                        self._display_alpha * pw + (1.0 - self._display_alpha) * self._bp_ema[band]
+                    )
                 band_powers[band] = self._bp_ema[band]
         topo_info = mne.pick_info(self._info, self._topo_picks)
 
@@ -595,10 +589,14 @@ class TopomapPlot(QMainWindow):
                 )
             except Exception as _e:
                 ax.text(
-                    0.5, 0.5, f"Topo error:\n{_e}",
+                    0.5,
+                    0.5,
+                    f"Topo error:\n{_e}",
                     transform=ax.transAxes,
-                    ha="center", va="center",
-                    color="#606080", fontsize=7,
+                    ha="center",
+                    va="center",
+                    color="#606080",
+                    fontsize=7,
                     wrap=True,
                 )
 

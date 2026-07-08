@@ -15,6 +15,7 @@ Taulu, S., & Simola, J. (2006). Spatiotemporal signal space separation method
 for rejecting nearby interference in MEG measurements. *Phys. Med. Biol.*,
 51(7), 1759–1768. https://doi.org/10.1088/0031-9155/51/7/008
 """
+
 from __future__ import annotations
 
 from typing import Optional, Union
@@ -199,14 +200,13 @@ class RTMaxwellFilter:
 
         # Channel index arrays
         self._meg_good_picks = mne.pick_types(info, meg=True, exclude="bads")
-        self._meg_all_picks  = mne.pick_types(info, meg=True, exclude=[])
+        self._meg_all_picks = mne.pick_types(info, meg=True, exclude=[])
         n_meg_good = len(self._meg_good_picks)
         n_ch = len(info["ch_names"])
 
         if n_meg_good == 0:
             raise ValueError(
-                "No MEG channels found in info. "
-                "RTMaxwellFilter operates on MEG data only."
+                "No MEG channels found in info. RTMaxwellFilter operates on MEG data only."
             )
 
         # Resolve expansion origin — fall back gracefully when digitisation is absent
@@ -217,8 +217,7 @@ class RTMaxwellFilter:
             except RuntimeError:
                 origin = (0.0, 0.0, 0.04)  # 4 cm: centre of a typical head
                 logger.warning(
-                    "RTMaxwellFilter: no head digitisation found; "
-                    "using origin=(0, 0, 0.04) m."
+                    "RTMaxwellFilter: no head digitisation found; using origin=(0, 0, 0.04) m."
                 )
         self._resolved_origin = origin
 
@@ -237,17 +236,17 @@ class RTMaxwellFilter:
         if empty_room_raw is None:
             logger.info(
                 "RTMaxwellFilter: computing SSS basis (int=%d, ext=%d) …",
-                self.int_order, self.ext_order,
+                self.int_order,
+                self.ext_order,
             )
-            S, pS, _reg_moments, n_use_in = compute_maxwell_basis(
-                info, **common_kw, verbose=False
-            )
+            S, pS, _reg_moments, n_use_in = compute_maxwell_basis(info, **common_kw, verbose=False)
             # P_sss = S_in @ S_in†  —  eq. 38, Taulu & Kajola 2005
             self._P_sss = S[:, :n_use_in] @ pS[:n_use_in]
             self.n_use_in = n_use_in
             logger.info(
                 "RTMaxwellFilter: SSS operator ready — %d/%d internal moments retained.",
-                n_use_in, (self.int_order + 1) ** 2 - 1,
+                n_use_in,
+                (self.int_order + 1) ** 2 - 1,
             )
         else:
             logger.info(
@@ -329,7 +328,7 @@ class RTMaxwellFilter:
         # Accumulate buffer; trim to st_duration
         self._buffer = np.concatenate([self._buffer, sss_data], axis=1)
         if self._buffer.shape[1] > self._buf_samp:
-            self._buffer = self._buffer[:, -self._buf_samp:]
+            self._buffer = self._buffer[:, -self._buf_samp :]
 
         self._chunk_count += 1
 
@@ -337,7 +336,8 @@ class RTMaxwellFilter:
         if self._buffer.shape[1] < self._buf_samp:
             logger.debug(
                 "RTMaxwellFilter: buffer %.1f/%.1f s — SSS fallback.",
-                self._buffer.shape[1] / self._sfreq, self.st_duration,
+                self._buffer.shape[1] / self._sfreq,
+                self.st_duration,
             )
             return sss_data
 
@@ -346,9 +346,7 @@ class RTMaxwellFilter:
             return sss_data
 
         try:
-            buf_raw = mne.io.RawArray(
-                self._buffer.copy(), self._info.copy(), verbose=False
-            )
+            buf_raw = mne.io.RawArray(self._buffer.copy(), self._info.copy(), verbose=False)
             tsss_kw = dict(
                 origin=self._resolved_origin,
                 int_order=self.int_order,
@@ -360,18 +358,16 @@ class RTMaxwellFilter:
                 mag_scale=self.mag_scale,
                 st_duration=self.st_duration,
                 st_correlation=self.st_correlation,
-                st_only=True,     # skip spatial SSS (already applied above)
+                st_only=True,  # skip spatial SSS (already applied above)
                 ignore_ref=True,
                 bad_condition="warning",
                 verbose=False,
             )
             clean_buf = maxwell_filter(buf_raw, **tsss_kw).get_data()
-            self._buffer = clean_buf          # update buffer to cleaned version
-            return clean_buf[:, -n_chunk:]    # return latest chunk only
+            self._buffer = clean_buf  # update buffer to cleaned version
+            return clean_buf[:, -n_chunk:]  # return latest chunk only
         except Exception as exc:
-            logger.warning(
-                "RTMaxwellFilter: tSSS step failed (%s) — SSS fallback.", exc
-            )
+            logger.warning("RTMaxwellFilter: tSSS step failed (%s) — SSS fallback.", exc)
             return sss_data
 
     # ------------------------------------------------------------------
@@ -408,9 +404,7 @@ class RTMaxwellFilter:
         X_all[self._meg_good_picks] = rng.standard_normal((n_meg_good, n_samp)) * 1e-12
 
         test_raw = mne.io.RawArray(X_all, info.copy(), verbose=False)
-        er_prep = maxwell_filter_prepare_emptyroom(
-            empty_room_raw, raw=test_raw, verbose=False
-        )
+        er_prep = maxwell_filter_prepare_emptyroom(empty_room_raw, raw=test_raw, verbose=False)
         filtered = maxwell_filter(
             test_raw,
             **common_kw,
@@ -422,9 +416,9 @@ class RTMaxwellFilter:
             verbose=False,
         ).get_data()
 
-        Y = filtered[self._meg_all_picks]         # (n_meg_all, n_samp)
-        X = X_all[self._meg_good_picks]           # (n_meg_good, n_samp)
-        P_sss = Y @ np.linalg.pinv(X)             # (n_meg_all, n_meg_good)
+        Y = filtered[self._meg_all_picks]  # (n_meg_all, n_samp)
+        X = X_all[self._meg_good_picks]  # (n_meg_good, n_samp)
+        P_sss = Y @ np.linalg.pinv(X)  # (n_meg_all, n_meg_good)
 
         sv = np.linalg.svd(P_sss, compute_uv=False)
         n_use_in = int(np.sum(sv > sv[0] * 1e-6))

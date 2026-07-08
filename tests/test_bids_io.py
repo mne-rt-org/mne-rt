@@ -4,16 +4,16 @@ import csv
 import json
 from pathlib import Path
 
+import mne
 import numpy as np
 import pytest
-import mne
 
 from mne_rt.tools.bids_io import save_as_bids
-
 
 # ------------------------------------------------------------------
 # Fixture: minimal raw + nf_data
 # ------------------------------------------------------------------
+
 
 @pytest.fixture
 def minimal_raw():
@@ -38,11 +38,9 @@ def nf_data():
 # Files created
 # ------------------------------------------------------------------
 
+
 def test_creates_expected_files(tmp_path, minimal_raw, nf_data):
-    save_as_bids(
-        minimal_raw, nf_data, tmp_path, subject="01",
-        session="nf", task="neurofeedback"
-    )
+    save_as_bids(minimal_raw, nf_data, tmp_path, subject="01", session="nf", task="neurofeedback")
     assert (tmp_path / "dataset_description.json").exists()
     assert (tmp_path / "participants.tsv").exists()
     # Minimal backend: eeg .fif file
@@ -69,6 +67,7 @@ def test_with_session_level(tmp_path, minimal_raw, nf_data):
 # ------------------------------------------------------------------
 # TSV content
 # ------------------------------------------------------------------
+
 
 def test_beh_tsv_columns(tmp_path, minimal_raw, nf_data):
     save_as_bids(minimal_raw, nf_data, tmp_path, subject="04", session="nf")
@@ -104,6 +103,7 @@ def test_beh_tsv_na_for_missing_values(tmp_path, minimal_raw):
 # dataset_description.json
 # ------------------------------------------------------------------
 
+
 def test_dataset_description_content(tmp_path, minimal_raw, nf_data):
     save_as_bids(minimal_raw, nf_data, tmp_path, subject="07")
     desc = json.loads((tmp_path / "dataset_description.json").read_text())
@@ -114,6 +114,7 @@ def test_dataset_description_content(tmp_path, minimal_raw, nf_data):
 # ------------------------------------------------------------------
 # participants.tsv
 # ------------------------------------------------------------------
+
 
 def test_participants_tsv_updated(tmp_path, minimal_raw, nf_data):
     save_as_bids(minimal_raw, nf_data, tmp_path, subject="08")
@@ -138,27 +139,23 @@ def test_participants_tsv_no_duplicate(tmp_path, minimal_raw, nf_data):
 # overwrite=False raises
 # ------------------------------------------------------------------
 
+
 def test_overwrite_false_raises(tmp_path, minimal_raw, nf_data):
     save_as_bids(minimal_raw, nf_data, tmp_path, subject="10", session="nf")
     with pytest.raises(FileExistsError):
-        save_as_bids(
-            minimal_raw, nf_data, tmp_path, subject="10",
-            session="nf", overwrite=False
-        )
+        save_as_bids(minimal_raw, nf_data, tmp_path, subject="10", session="nf", overwrite=False)
 
 
 def test_overwrite_true_succeeds(tmp_path, minimal_raw, nf_data):
     save_as_bids(minimal_raw, nf_data, tmp_path, subject="11", session="nf")
     # Should not raise
-    save_as_bids(
-        minimal_raw, nf_data, tmp_path, subject="11",
-        session="nf", overwrite=True
-    )
+    save_as_bids(minimal_raw, nf_data, tmp_path, subject="11", session="nf", overwrite=True)
 
 
 # ------------------------------------------------------------------
 # Return value
 # ------------------------------------------------------------------
+
 
 def test_returns_output_dir_path(tmp_path, minimal_raw, nf_data):
     result = save_as_bids(minimal_raw, nf_data, tmp_path, subject="12")
@@ -169,6 +166,7 @@ def test_returns_output_dir_path(tmp_path, minimal_raw, nf_data):
 # ------------------------------------------------------------------
 # empty nf_data
 # ------------------------------------------------------------------
+
 
 def test_empty_nf_data_skips_tsv(tmp_path, minimal_raw):
     save_as_bids(minimal_raw, {}, tmp_path, subject="13", session="nf")

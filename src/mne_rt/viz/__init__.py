@@ -24,15 +24,16 @@ CompareEvoked
     Real-time per-channel condition comparison with SEM shading, peak
     markers, and a clickable scalp-topomap for interactive channel selection.
 """
-from .nf_plot import NFPlot
-from .raw_plot import RawPlot
-from .epoch_plot import EpochPlot
+
 from .brain_plot import BrainPlot
-from .topomap_plot import TopomapPlot
-from .topo_plot import TopoPlot
-from .tfr_plot import TFRPlot
 from .butterfly_plot import ButterflyPlot
 from .compare_evoked import CompareEvoked
+from .epoch_plot import EpochPlot
+from .nf_plot import NFPlot
+from .raw_plot import RawPlot
+from .tfr_plot import TFRPlot
+from .topo_plot import TopoPlot
+from .topomap_plot import TopomapPlot
 
 __all__ = [
     "NFPlot",

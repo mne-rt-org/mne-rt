@@ -17,6 +17,7 @@ Journal of the Acoustical Society of America, 49(2B), 467–477.
 García-Pérez, M. A. (1998). Forced-choice staircases with fixed step sizes:
 Asymptotic and small-sample properties. Vision Research, 38(12), 1861–1881.
 """
+
 from __future__ import annotations
 
 from typing import Optional
@@ -110,9 +111,7 @@ class UpDownStaircaseProtocol:
         max_reversals: Optional[int] = None,
     ) -> None:
         if direction not in ("up", "down"):
-            raise ValueError(
-                f"direction must be 'up' or 'down', got {direction!r}"
-            )
+            raise ValueError(f"direction must be 'up' or 'down', got {direction!r}")
         if n_up < 1:
             raise ValueError(f"n_up must be >= 1, got {n_up}")
         if n_down < 1:
@@ -176,10 +175,7 @@ class UpDownStaircaseProtocol:
             if self._smoothed is None:
                 self._smoothed = float(value)
             else:
-                self._smoothed = (
-                    (1.0 - self.smoothing) * value
-                    + self.smoothing * self._smoothed
-                )
+                self._smoothed = (1.0 - self.smoothing) * value + self.smoothing * self._smoothed
         else:
             self._smoothed = float(value)
 
@@ -193,10 +189,7 @@ class UpDownStaircaseProtocol:
 
         magnitude = abs(smoothed - self.threshold) if crossed else 0.0
 
-        frozen = (
-            self.max_reversals is not None
-            and self.n_reversals >= self.max_reversals
-        )
+        frozen = self.max_reversals is not None and self.n_reversals >= self.max_reversals
 
         if not frozen:
             self._update_staircase(crossed)
@@ -237,9 +230,7 @@ class UpDownStaircaseProtocol:
                 self.n_reversals >= self.n_reversals_before_halving
                 and self._step_size * self.step_factor >= self.min_step
             ):
-                self._step_size = max(
-                    self._step_size * self.step_factor, self.min_step
-                )
+                self._step_size = max(self._step_size * self.step_factor, self.min_step)
 
         self._last_direction = change_dir
 

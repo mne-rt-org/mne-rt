@@ -31,6 +31,7 @@ Pass to :meth:`~mne_rt.RTStream.record_main` alongside (or instead of) OSC::
     nf.record_main(duration=300, modality="sensor_power",
                    lsl_sender=LSLSender())
 """
+
 from __future__ import annotations
 
 import threading
@@ -114,11 +115,13 @@ class LSLSender:
         """Return (StreamInfo, StreamOutlet) from whichever LSL binding is available."""
         try:
             from mne_lsl.lsl import StreamInfo, StreamOutlet
+
             return StreamInfo, StreamOutlet
         except ImportError:
             pass
         try:
             from pylsl import StreamInfo, StreamOutlet  # type: ignore[no-redef]
+
             return StreamInfo, StreamOutlet
         except ImportError as exc:
             raise ImportError(

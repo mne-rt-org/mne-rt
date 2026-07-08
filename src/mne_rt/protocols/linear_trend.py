@@ -11,6 +11,7 @@ LinearTrendProtocol
     OLS-based trend detector with configurable window, slope threshold,
     and minimum goodness-of-fit (R²).
 """
+
 from __future__ import annotations
 
 import collections
@@ -106,29 +107,19 @@ class LinearTrendProtocol:
         smoothing: float = 0.0,
     ) -> None:
         if direction not in ("up", "down"):
-            raise ValueError(
-                f"direction must be 'up' or 'down', got {direction!r}"
-            )
+            raise ValueError(f"direction must be 'up' or 'down', got {direction!r}")
         if window < 3:
             raise ValueError(f"window must be >= 3, got {window}")
         if slope_threshold < 0.0:
-            raise ValueError(
-                f"slope_threshold must be >= 0, got {slope_threshold}"
-            )
+            raise ValueError(f"slope_threshold must be >= 0, got {slope_threshold}")
         if not (0.0 <= min_r2 <= 1.0):
-            raise ValueError(
-                f"min_r2 must be in [0.0, 1.0], got {min_r2}"
-            )
+            raise ValueError(f"min_r2 must be in [0.0, 1.0], got {min_r2}")
         if not (0.0 <= smoothing < 1.0):
-            raise ValueError(
-                f"smoothing must be in [0, 1), got {smoothing}"
-            )
+            raise ValueError(f"smoothing must be in [0, 1), got {smoothing}")
 
         _warmup = warmup_windows if warmup_windows is not None else window
         if _warmup < window:
-            raise ValueError(
-                f"warmup_windows ({_warmup}) must be >= window ({window})"
-            )
+            raise ValueError(f"warmup_windows ({_warmup}) must be >= window ({window})")
 
         self.direction = direction
         self.window = window
@@ -166,9 +157,7 @@ class LinearTrendProtocol:
             if self._smoothed is None:
                 self._smoothed = float(value)
             else:
-                self._smoothed = (
-                    (1.0 - self.smoothing) * value + self.smoothing * self._smoothed
-                )
+                self._smoothed = (1.0 - self.smoothing) * value + self.smoothing * self._smoothed
         else:
             self._smoothed = float(value)
 

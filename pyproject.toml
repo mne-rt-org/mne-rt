@@ -192,6 +192,9 @@ ignore = [
 [tool.ruff.lint.per-file-ignores]
 "src/mne_rt/__init__.py" = ["F401"]
 "src/mne_rt/tools/__init__.py" = ["F401", "F403"]
+# standalone script (`python tests/test_rt_epochs_erp.py`) — imports are
+# deliberately interleaved with setup code, not collected as pytest cases
+"tests/test_rt_epochs_erp.py" = ["E402"]
 
 # ---------------------------------------------------------------------------
 # Mypy (optional type checking)

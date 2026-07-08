@@ -37,6 +37,7 @@ Classes
 OSCSender
     Thread-safe OSC client for real-time NF data streaming.
 """
+
 from __future__ import annotations
 
 import threading
@@ -94,10 +95,11 @@ class OSCSender:
         bundle: bool = False,
     ) -> None:
         try:
-            from pythonosc.udp_client import SimpleUDPClient  # type: ignore
+            import pythonosc.osc_bundle as _osc_bundle
             from pythonosc.osc_bundle_builder import OscBundleBuilder  # type: ignore
             from pythonosc.osc_message_builder import OscMessageBuilder  # type: ignore
-            import pythonosc.osc_bundle as _osc_bundle
+            from pythonosc.udp_client import SimpleUDPClient  # type: ignore
+
             self._SimpleUDPClient = SimpleUDPClient
             self._OscBundleBuilder = OscBundleBuilder
             self._OscMessageBuilder = OscMessageBuilder
@@ -175,9 +177,7 @@ class OSCSender:
                 self._send_bundle(modalities, values)
             else:
                 for mod, val in zip(modalities, values):
-                    self._client.send_message(
-                        f"{self.prefix}/{mod}", float(val)
-                    )
+                    self._client.send_message(f"{self.prefix}/{mod}", float(val))
 
     def send_raw(self, address: str, *args) -> None:
         """Send an arbitrary OSC message to a custom address.
@@ -190,7 +190,9 @@ class OSCSender:
             OSC arguments (int, float, str, bytes).
         """
         with self._lock:
-            self._client.send_message(address, list(args) if len(args) > 1 else (args[0] if args else 0))
+            self._client.send_message(
+                address, list(args) if len(args) > 1 else (args[0] if args else 0)
+            )
 
     def close(self) -> None:
         """Close the underlying UDP socket.
@@ -233,9 +235,10 @@ class OSCSender:
         values: Sequence[float],
     ) -> None:
         """Pack all messages into one OSC bundle and dispatch."""
+        import time
+
         import pythonosc.osc_bundle_builder as bb
         import pythonosc.osc_message_builder as mb
-        import time
 
         builder = bb.OscBundleBuilder(bb.IMMEDIATELY)
         for mod, val in zip(modalities, values):

@@ -23,13 +23,13 @@ The ``verbose`` parameter accepts the same values as ``mne.set_log_level``:
 * ``"DEBUG"``, ``"INFO"``, ``"WARNING"``, ``"ERROR"``, ``"CRITICAL"``
 * An integer MNE/Python logging level
 """
+
 from __future__ import annotations
 
 import functools
 import inspect
 import logging
 from typing import Union
-
 
 # ---------------------------------------------------------------------------
 # Module-level logger
@@ -97,6 +97,7 @@ def set_log_level(verbose: Union[bool, str, int, None]) -> None:
     # Mirror to MNE so MNE-internal calls respect the same level
     try:
         import mne
+
         mne_level = {
             logging.DEBUG: "DEBUG",
             logging.INFO: "INFO",
@@ -111,6 +112,7 @@ def set_log_level(verbose: Union[bool, str, int, None]) -> None:
 # ---------------------------------------------------------------------------
 # Decorator
 # ---------------------------------------------------------------------------
+
 
 def verbose(func):
     """Decorator that applies the ``verbose`` kwarg to ANT and MNE logging.

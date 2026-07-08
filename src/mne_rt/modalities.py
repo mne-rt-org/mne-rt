@@ -23,28 +23,27 @@ New modalities added:
 - ``hjorth``           — mean of Hjorth mobility and complexity (no FFT)
 - ``spectral_centroid``— frequency-weighted centre-of-mass of the PSD within a band
 """
+
 from __future__ import annotations
 
 from typing import Optional
 from warnings import warn
 
-import numpy as np
-from scipy.optimize import curve_fit
-from scipy.signal import butter, sosfiltfilt, welch
-from pactools import Comodulogram
-
 import mne
+import numpy as np
 from mne import read_labels_from_annot
-from mne.minimum_norm import apply_inverse_raw, read_inverse_operator
 from mne.beamformer import apply_lcmv_raw, make_lcmv
+from mne.minimum_norm import apply_inverse_raw, read_inverse_operator
 from mne_connectivity import spectral_connectivity_time
 from mne_features.univariate import (
     compute_app_entropy,
     compute_samp_entropy,
     compute_spect_entropy,
     compute_svd_entropy,
-    
 )
+from pactools import Comodulogram
+from scipy.optimize import curve_fit
+from scipy.signal import butter, sosfiltfilt, welch
 
 from mne_rt._logging import logger
 from mne_rt.tools import (
@@ -125,8 +124,7 @@ class ModalityMixin:
             method=self.params["method"],
         )
         candidates = [
-            p[0] for p in peak_params_
-            if self.params["frange"][0] < p[0] < self.params["frange"][1]
+            p[0] for p in peak_params_ if self.params["frange"][0] < p[0] < self.params["frange"][1]
         ]
         if len(candidates) == 1:
             cf = candidates[0]
@@ -142,8 +140,10 @@ class ModalityMixin:
 
     def _entropy_prep(self) -> dict:
         sos = butter_bandpass(
-            self.params["frange"][0], self.params["frange"][1],
-            self._sfreq, order=5,
+            self.params["frange"][0],
+            self.params["frange"][1],
+            self._sfreq,
+            order=5,
         )
         return {
             "sos": sos,
@@ -153,9 +153,7 @@ class ModalityMixin:
 
     def _argmax_freq_prep(self) -> dict:
         if not hasattr(self, "raw_baseline"):
-            raise RuntimeError(
-                "Baseline recording must be completed before using 'argmax_freq'."
-            )
+            raise RuntimeError("Baseline recording must be completed before using 'argmax_freq'.")
         ap_params, _ = estimate_aperiodic_component(
             raw_baseline=self.raw_baseline,
             picks=self.picks,
@@ -169,7 +167,7 @@ class ModalityMixin:
         ap_model = (10 ** ap_params[0]) / (freqs_band ** ap_params[1])
 
         def _gaussian(x: np.ndarray, a: float, mu: float, sigma: float) -> np.ndarray:
-            return a * np.exp(-(x - mu) ** 2 / (2 * sigma ** 2))
+            return a * np.exp(-((x - mu) ** 2) / (2 * sigma**2))
 
         return {
             "fft_window": fft_window,
@@ -197,9 +195,13 @@ class ModalityMixin:
             )
         elif method == "LCMV":
             inverse_operator = make_lcmv(
-                self.rec_info, self.fwd, self.noise_cov,
-                reg=0.05, pick_ori="max-power",
-                weight_norm="unit-noise-gain", rank=None,
+                self.rec_info,
+                self.fwd,
+                self.noise_cov,
+                reg=0.05,
+                pick_ori="max-power",
+                weight_norm="unit-noise-gain",
+                rank=None,
             )
         else:
             raise ValueError(
@@ -219,8 +221,7 @@ class ModalityMixin:
         ch_names = self.rec_info["ch_names"]
         chs = self.params["channels"]
         indices = tuple(
-            np.array([ch_names.index(ch1), ch_names.index(ch2)])
-            for ch1, ch2 in zip(chs[0], chs[1])
+            np.array([ch_names.index(ch1), ch_names.index(ch2)]) for ch1, ch2 in zip(chs[0], chs[1])
         )
         freqs = np.linspace(self.params["frange"][0], self.params["frange"][1], 6)
         return {
@@ -245,9 +246,7 @@ class ModalityMixin:
             subjects_dir=self.subjects_fs_dir,
         )
         bl_names = [bl.name for bl in bls]
-        merged_label = (
-            bls[bl_names.index(lbl1)] + bls[bl_names.index(lbl2)]
-        )
+        merged_label = bls[bl_names.index(lbl1)] + bls[bl_names.index(lbl2)]
         inverse_operator = read_inverse_operator(
             fname=self.subject_dir / "inv" / f"visit_{self.visit}-inv.fif"
         )
@@ -262,12 +261,13 @@ class ModalityMixin:
         ch_names = self.rec_info["ch_names"]
         chs = self.params["channels"]
         indices = tuple(
-            np.array([ch_names.index(ch1), ch_names.index(ch2)])
-            for ch1, ch2 in zip(chs[0], chs[1])
+            np.array([ch_names.index(ch1), ch_names.index(ch2)]) for ch1, ch2 in zip(chs[0], chs[1])
         )
         sos = butter_bandpass(
-            self.params["frange"][0], self.params["frange"][1],
-            self._sfreq, order=5,
+            self.params["frange"][0],
+            self.params["frange"][1],
+            self._sfreq,
+            order=5,
         )
         return {
             "indices": indices,
@@ -292,8 +292,10 @@ class ModalityMixin:
             fname=self.subject_dir / "inv" / f"visit_{self.visit}-inv.fif"
         )
         sos = butter_bandpass(
-            self.params["frange"][0], self.params["frange"][1],
-            self._sfreq, order=5,
+            self.params["frange"][0],
+            self.params["frange"][1],
+            self._sfreq,
+            order=5,
         )
         return {
             "bls": bls,
@@ -305,12 +307,8 @@ class ModalityMixin:
     def _cfc_sensor_prep(self) -> dict:
         comod = Comodulogram(
             fs=self._sfreq,
-            low_fq_range=np.linspace(
-                self.params["frange_1"][0], self.params["frange_1"][1], 5
-            ),
-            high_fq_range=np.linspace(
-                self.params["frange_2"][0], self.params["frange_2"][1], 5
-            ),
+            low_fq_range=np.linspace(self.params["frange_1"][0], self.params["frange_1"][1], 5),
+            high_fq_range=np.linspace(self.params["frange_2"][0], self.params["frange_2"][1], 5),
             method=self.params["method"],
             n_surrogates=0,
         )
@@ -357,8 +355,11 @@ class ModalityMixin:
     ) -> float:
         """Band power in a narrow window around the individual peak frequency."""
         bp = compute_bandpower(
-            data, sfreq, (cf - freq_var, cf + freq_var),
-            method="welch", relative=False,
+            data,
+            sfreq,
+            (cf - freq_var, cf + freq_var),
+            method="welch",
+            relative=False,
         )
         return float(bp.mean())
 
@@ -377,9 +378,7 @@ class ModalityMixin:
         elif method == "SampEn":
             ents = compute_samp_entropy(data_filt)
         elif method == "Spectral":
-            ents = compute_spect_entropy(
-                sfreq=self._sfreq, data=data_filt, psd_method=psd_method
-            )
+            ents = compute_spect_entropy(sfreq=self._sfreq, data=data_filt, psd_method=psd_method)
         elif method == "SVD":
             ents = compute_svd_entropy(data_filt)
         else:
@@ -433,9 +432,12 @@ class ModalityMixin:
 
         if method in ("MNE", "dSPM", "sLORETA", "eLORETA"):
             stc_data = apply_inverse_raw(
-                raw_data, inverse_operator,
-                lambda2=1.0 / 9, method=method,
-                pick_ori="normal", label=brain_label,
+                raw_data,
+                inverse_operator,
+                lambda2=1.0 / 9,
+                method=method,
+                pick_ori="normal",
+                label=brain_label,
             ).data
         else:
             stc_data = apply_lcmv_raw(raw_data, inverse_operator).data
@@ -482,8 +484,11 @@ class ModalityMixin:
         """Source-level connectivity between two brain labels."""
         raw_data = self._prepare_raw_array(data)
         stcs = apply_inverse_raw(
-            raw_data, inverse_operator,
-            lambda2=1.0 / 9, pick_ori="normal", label=merged_label,
+            raw_data,
+            inverse_operator,
+            lambda2=1.0 / 9,
+            pick_ori="normal",
+            label=merged_label,
         )
         con = spectral_connectivity_time(
             data=np.array([[stcs.lh_data.mean(axis=0), stcs.rh_data.mean(axis=0)]]),
@@ -512,9 +517,7 @@ class ModalityMixin:
     ) -> float:
         """Graph-theoretic connectivity from sensor-space M/EEG."""
         data_filt = sosfiltfilt(sos, data)
-        graph_matrix = log_degree_barrier(
-            data_filt, dist_type=dist_type, alpha=alpha, beta=beta
-        )
+        graph_matrix = log_degree_barrier(data_filt, dist_type=dist_type, alpha=alpha, beta=beta)
         return float(np.mean([graph_matrix[idxs] for idxs in indices]) - 0.025)
 
     @timed
@@ -529,8 +532,10 @@ class ModalityMixin:
         """Graph-theoretic connectivity from source-space M/EEG."""
         raw_data = self._prepare_raw_array(data)
         stcs = apply_inverse_raw(
-            raw_data, inverse_operator,
-            lambda2=1.0 / 9, pick_ori="normal",
+            raw_data,
+            inverse_operator,
+            lambda2=1.0 / 9,
+            pick_ori="normal",
         )
         tcs = stcs.extract_label_time_course(
             bls,
@@ -560,8 +565,7 @@ class ModalityMixin:
     def _erd_ers_prep(self) -> dict:
         if not hasattr(self, "raw_baseline") or self.raw_baseline is None:
             raise RuntimeError(
-                "erd_ers requires a completed baseline recording. "
-                "Call record_baseline() first."
+                "erd_ers requires a completed baseline recording. Call record_baseline() first."
             )
         baseline_power = compute_bandpower(
             self.raw_baseline.get_data(),
@@ -590,7 +594,9 @@ class ModalityMixin:
 
         Positive values = synchronisation (ERS); negative = desynchronisation (ERD).
         """
-        current_power = compute_bandpower(data, sfreq, tuple(frange), method=method, relative=False).mean()
+        current_power = compute_bandpower(
+            data, sfreq, tuple(frange), method=method, relative=False
+        ).mean()
         return float((current_power - baseline_power) / (baseline_power + 1e-300) * 100.0)
 
     # ------------------------------------------------------------------
@@ -649,8 +655,12 @@ class ModalityMixin:
 
         Positive → right dominance; negative → left dominance.
         """
-        lh_power = compute_bandpower(data[lh_idx], sfreq, tuple(frange), method=method, relative=False).mean()
-        rh_power = compute_bandpower(data[rh_idx], sfreq, tuple(frange), method=method, relative=False).mean()
+        lh_power = compute_bandpower(
+            data[lh_idx], sfreq, tuple(frange), method=method, relative=False
+        ).mean()
+        rh_power = compute_bandpower(
+            data[rh_idx], sfreq, tuple(frange), method=method, relative=False
+        ).mean()
         return float(np.log(rh_power + 1e-300) - np.log(lh_power + 1e-300))
 
     # ------------------------------------------------------------------
@@ -659,8 +669,10 @@ class ModalityMixin:
 
     def _hjorth_prep(self) -> dict:
         sos = butter_bandpass(
-            self.params["frange"][0], self.params["frange"][1],
-            self._sfreq, order=5,
+            self.params["frange"][0],
+            self.params["frange"][1],
+            self._sfreq,
+            order=5,
         )
         return {"sos": sos}
 
@@ -671,15 +683,15 @@ class ModalityMixin:
         Mobility ≈ dominant frequency proxy; complexity ≈ signal irregularity.
         No FFT required — pure time-domain.
         """
-        x = sosfiltfilt(sos, data)   # shape (n_ch, n_samples)
+        x = sosfiltfilt(sos, data)  # shape (n_ch, n_samples)
         dx = np.diff(x, axis=1)
         ddx = np.diff(dx, axis=1)
 
-        var_x  = np.var(x,   axis=1) + 1e-300
-        var_dx = np.var(dx,  axis=1) + 1e-300
+        var_x = np.var(x, axis=1) + 1e-300
+        var_dx = np.var(dx, axis=1) + 1e-300
         var_ddx = np.var(ddx, axis=1) + 1e-300
 
-        mobility   = np.sqrt(var_dx / var_x)
+        mobility = np.sqrt(var_dx / var_x)
         mobility_d = np.sqrt(var_ddx / var_dx)
         complexity = mobility_d / mobility
 
@@ -712,7 +724,7 @@ class ModalityMixin:
         mask = (freqs >= frange[0]) & (freqs <= frange[1])
         freqs_band = freqs[mask]
 
-        psd = np.abs(np.fft.rfft(data, axis=1)) ** 2   # shape (n_ch, n_freqs)
+        psd = np.abs(np.fft.rfft(data, axis=1)) ** 2  # shape (n_ch, n_freqs)
         psd_band = psd[:, mask]
 
         total = psd_band.sum(axis=1, keepdims=True) + 1e-300
@@ -734,12 +746,13 @@ class ModalityMixin:
         ch_names = self.rec_info["ch_names"]
 
         def _is_left(name):
-            for i in range(len(name)-1, -1, -1):
+            for i in range(len(name) - 1, -1, -1):
                 if name[i].isdigit():
                     return int(name[i]) % 2 == 1
             return False
+
         def _is_right(name):
-            for i in range(len(name)-1, -1, -1):
+            for i in range(len(name) - 1, -1, -1):
                 if name[i].isdigit():
                     return int(name[i]) % 2 == 0
             return False
@@ -747,7 +760,11 @@ class ModalityMixin:
         lh_idx = [i for i, ch in enumerate(ch_names) if _is_left(ch)]
         rh_idx = [i for i, ch in enumerate(ch_names) if _is_right(ch)]
         if not lh_idx or not rh_idx:
-            warn("laterality_erd_ers: hemispheric auto-detection failed; splitting by index.", UserWarning, stacklevel=2)
+            warn(
+                "laterality_erd_ers: hemispheric auto-detection failed; splitting by index.",
+                UserWarning,
+                stacklevel=2,
+            )
             mid = len(ch_names) // 2
             lh_idx = list(range(mid))
             rh_idx = list(range(mid, len(ch_names)))
@@ -755,8 +772,16 @@ class ModalityMixin:
         baseline_data = self.raw_baseline.get_data()
         frange = tuple(self.params["frange"])
         method = self.params["method"]
-        baseline_lh = float(compute_bandpower(baseline_data[lh_idx], self._sfreq, frange, method=method, relative=False).mean())
-        baseline_rh = float(compute_bandpower(baseline_data[rh_idx], self._sfreq, frange, method=method, relative=False).mean())
+        baseline_lh = float(
+            compute_bandpower(
+                baseline_data[lh_idx], self._sfreq, frange, method=method, relative=False
+            ).mean()
+        )
+        baseline_rh = float(
+            compute_bandpower(
+                baseline_data[rh_idx], self._sfreq, frange, method=method, relative=False
+            ).mean()
+        )
 
         return {
             "sfreq": self._sfreq,
@@ -795,8 +820,12 @@ class ModalityMixin:
         alpha ERD, so the feature becomes strongly negative during the task
         and recovers toward zero at rest.
         """
-        lh_now = compute_bandpower(data[lh_idx], sfreq, frange, method=method, relative=False).mean()
-        rh_now = compute_bandpower(data[rh_idx], sfreq, frange, method=method, relative=False).mean()
+        lh_now = compute_bandpower(
+            data[lh_idx], sfreq, frange, method=method, relative=False
+        ).mean()
+        rh_now = compute_bandpower(
+            data[rh_idx], sfreq, frange, method=method, relative=False
+        ).mean()
         erd_lh = (lh_now - baseline_lh) / (baseline_lh + 1e-300) * 100.0
         erd_rh = (rh_now - baseline_rh) / (baseline_rh + 1e-300) * 100.0
         return float(erd_rh - erd_lh)
@@ -852,9 +881,9 @@ class ModalityMixin:
 
         # Collapse channels
         if reference == "median":
-            channel_summary = np.median(sig, axis=0)   # shape: (n_samples,)
+            channel_summary = np.median(sig, axis=0)  # shape: (n_samples,)
         else:
-            channel_summary = np.mean(sig, axis=0)     # shape: (n_samples,)
+            channel_summary = np.mean(sig, axis=0)  # shape: (n_samples,)
 
         return float(channel_summary.mean())
 
@@ -871,8 +900,8 @@ class ModalityMixin:
 
         # Compute initial PAF from baseline if available; else use band midpoint
         if hasattr(self, "raw_baseline") and self.raw_baseline is not None:
-            baseline_data = self.raw_baseline.get_data()   # (n_ch, n_samples)
-            mean_sig = baseline_data.mean(axis=0)           # (n_samples,)
+            baseline_data = self.raw_baseline.get_data()  # (n_ch, n_samples)
+            mean_sig = baseline_data.mean(axis=0)  # (n_samples,)
             if method == "welch":
                 freqs_bl, psd_bl = welch(mean_sig, fs=sfreq, nperseg=min(256, mean_sig.shape[-1]))
             else:
@@ -893,7 +922,7 @@ class ModalityMixin:
             "frange": list(frange),
             "method": method,
             "smoothing": float(smoothing),
-            "_paf_state": [initial_paf],   # mutable reference cell for EMA state
+            "_paf_state": [initial_paf],  # mutable reference cell for EMA state
         }
 
     @timed
@@ -915,7 +944,7 @@ class ModalityMixin:
         Returns the EMA-smoothed PAF in Hz.
         """
         # Average across channels to get a single time series
-        mean_sig = data.mean(axis=0)   # shape: (n_samples,)
+        mean_sig = data.mean(axis=0)  # shape: (n_samples,)
 
         # Compute PSD
         if method == "welch":
@@ -930,7 +959,7 @@ class ModalityMixin:
         if mask.any():
             peak_freq = float(freqs[mask][np.argmax(psd[mask])])
         else:
-            peak_freq = float(_paf_state[0])   # fallback: keep current estimate
+            peak_freq = float(_paf_state[0])  # fallback: keep current estimate
 
         # EMA update — mutate the state cell so state persists across windows
         new_paf = (1.0 - smoothing) * peak_freq + smoothing * _paf_state[0]

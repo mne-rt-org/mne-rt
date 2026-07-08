@@ -7,14 +7,16 @@ verifies shapes and TopoPlot data path.
 Run with:
     python tests/test_rt_epochs_erp.py
 """
+
 import os
 import sys
 import time
 import warnings
-warnings.filterwarnings("ignore")   # suppress pyqtgraph render-time noise
+
+warnings.filterwarnings("ignore")  # suppress pyqtgraph render-time noise
 import threading
 
-os.environ.setdefault("MPLBACKEND", "Agg")   # headless matplotlib
+os.environ.setdefault("MPLBACKEND", "Agg")  # headless matplotlib
 os.environ["QT_QPA_PLATFORM"] = "offscreen"  # headless Qt
 
 # Make sure src/ is on the path when running without install
@@ -22,7 +24,6 @@ sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "src"))
 
 import mne
 import numpy as np
-
 
 # ---------------------------------------------------------------------------
 # 1. Locate sample data
@@ -32,11 +33,11 @@ data_path = mne.datasets.sample.data_path()
 raw_path = str(data_path) + "/MEG/sample/sample_audvis_raw.fif"
 
 raw = mne.io.read_raw_fif(raw_path, preload=True, verbose=False)
-raw.pick(["eeg", "stim"], verbose=False)   # keep EEG + STIM only to keep it lightweight
+raw.pick(["eeg", "stim"], verbose=False)  # keep EEG + STIM only to keep it lightweight
 raw.filter(1.0, 40.0, verbose=False)
 
 # Save a trimmed version so PlayerLSL doesn't stream the full 4.5 min
-raw_trim = raw.copy().crop(tmax=60.0)     # first 60 s — enough for ~20 epochs
+raw_trim = raw.copy().crop(tmax=60.0)  # first 60 s — enough for ~20 epochs
 trim_path = "/tmp/mne_rt_test_trim.fif"
 raw_trim.save(trim_path, overwrite=True, verbose=False)
 print(f"  Saved trimmed raw ({raw_trim.times[-1]:.1f} s) → {trim_path}")
@@ -53,9 +54,11 @@ from mne_rt import RTEpochs
 received: list[np.ndarray] = []
 conditions_received: list[str] = []
 
+
 def on_trial(n_accepted, data, event_code, condition):
     received.append(data.copy())
     print(f"  Trial {n_accepted} ({condition}): shape={data.shape}")
+
 
 rt = RTEpochs(
     event_id=event_id,
@@ -73,9 +76,11 @@ rt.connect_to_lsl(mock_lsl=True, fname=trim_path, timeout=15.0)
 # Run in a thread so we can time it out
 done = threading.Event()
 
+
 def _run():
     rt.run(n_trials=10, show_erp=False)
     done.set()
+
 
 t = threading.Thread(target=_run, daemon=True)
 t.start()
@@ -109,7 +114,7 @@ from mne_rt.viz.topo_plot import TopoPlot
 ch_names_eeg = [c for c in raw_trim.ch_names if c.startswith("EEG")]
 sfreq = raw_trim.info["sfreq"]
 tmin, tmax = -0.1, 0.4
-n_times = epoch.shape[1]   # 301 — MNE includes both endpoints
+n_times = epoch.shape[1]  # 301 — MNE includes both endpoints
 
 # Build a synthetic 4-epoch dataset (2 conditions × 2 trials)
 rng = np.random.default_rng(0)
@@ -120,6 +125,7 @@ fake_conditions = ["auditory/left", "auditory/right", "auditory/left", "auditory
 # TopoPlot.__init__ needs Qt; wrap in try/except so the test degrades gracefully
 try:
     from qtpy.QtWidgets import QApplication
+
     app = QApplication.instance() or QApplication(sys.argv)
 
     erp = TopoPlot(

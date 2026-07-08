@@ -5,10 +5,10 @@ import pytest
 
 from mne_rt.protocols import ZScoreProtocol
 
-
 # ------------------------------------------------------------------
 # Constructor validation
 # ------------------------------------------------------------------
+
 
 def test_invalid_direction():
     with pytest.raises(ValueError):
@@ -39,6 +39,7 @@ def test_invalid_zscore_threshold():
 # Defaults
 # ------------------------------------------------------------------
 
+
 def test_defaults():
     proto = ZScoreProtocol()
     assert proto.direction == "up"
@@ -55,6 +56,7 @@ def test_defaults():
 # Warmup suppresses reward
 # ------------------------------------------------------------------
 
+
 def test_warmup_suppresses_reward():
     proto = ZScoreProtocol(warmup_windows=10)
     for i in range(10):
@@ -66,6 +68,7 @@ def test_warmup_suppresses_reward():
 # ------------------------------------------------------------------
 # Post-warmup upward crossing
 # ------------------------------------------------------------------
+
 
 def test_up_crossing_after_warmup():
     proto = ZScoreProtocol(direction="up", warmup_windows=10, zscore_threshold=0.5)
@@ -91,6 +94,7 @@ def test_up_no_crossing_negative_spike():
 # Downward crossing
 # ------------------------------------------------------------------
 
+
 def test_down_crossing_after_warmup():
     proto = ZScoreProtocol(direction="down", warmup_windows=10, zscore_threshold=0.5)
     for _ in range(10):
@@ -103,6 +107,7 @@ def test_down_crossing_after_warmup():
 # ------------------------------------------------------------------
 # Running statistics accuracy
 # ------------------------------------------------------------------
+
 
 def test_running_mean_converges():
     proto = ZScoreProtocol(warmup_windows=1)
@@ -125,6 +130,7 @@ def test_running_std_converges():
 # magnitude
 # ------------------------------------------------------------------
 
+
 def test_magnitude_equals_abs_zscore_when_crossed():
     proto = ZScoreProtocol(direction="up", warmup_windows=5, zscore_threshold=0.0)
     for i in range(5):
@@ -138,6 +144,7 @@ def test_magnitude_equals_abs_zscore_when_crossed():
 # Smoothing
 # ------------------------------------------------------------------
 
+
 def test_smoothing_does_not_crash():
     proto = ZScoreProtocol(smoothing=0.7, warmup_windows=5)
     for i in range(15):
@@ -148,6 +155,7 @@ def test_smoothing_does_not_crash():
 # ------------------------------------------------------------------
 # reset
 # ------------------------------------------------------------------
+
 
 def test_reset_clears_state():
     proto = ZScoreProtocol(warmup_windows=5)
@@ -170,6 +178,7 @@ def test_reset_preserves_params():
 # ------------------------------------------------------------------
 # repr
 # ------------------------------------------------------------------
+
 
 def test_repr():
     proto = ZScoreProtocol()

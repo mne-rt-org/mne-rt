@@ -1,13 +1,13 @@
-from .threshold import ThresholdProtocol
-from .zscores import ZScoreProtocol
-from .percentile import PercentileProtocol
 from .linear_trend import LinearTrendProtocol
+from .multiband import MultiBandProtocol
+from .operant import OperantProtocol
+from .percentile import PercentileProtocol
+from .rl_protocol import RLProtocol
 from .sham import ShamProtocol
 from .staircase import UpDownStaircaseProtocol
-from .multiband import MultiBandProtocol
-from .rl_protocol import RLProtocol
-from .operant import OperantProtocol
+from .threshold import ThresholdProtocol
 from .transfer import TransferProtocol
+from .zscores import ZScoreProtocol
 
 __all__ = [
     "ThresholdProtocol",

@@ -15,6 +15,7 @@ de Cheveigné, A., & Arzounian, D. (2018). Robust detrending, referencing,
 outlier detection, and inpainting for multichannel data. *NeuroImage*, 172,
 903–912. https://doi.org/10.1016/j.neuroimage.2018.01.035
 """
+
 from __future__ import annotations
 
 from typing import Optional
@@ -123,8 +124,8 @@ class ASRDenoiser:
         self.max_dropout_fraction = max_dropout_fraction
         self.window_overlap = window_overlap
 
-        self._U: Optional[np.ndarray] = None   # calibration eigenvectors
-        self._T: Optional[np.ndarray] = None   # per-component RMS thresholds
+        self._U: Optional[np.ndarray] = None  # calibration eigenvectors
+        self._T: Optional[np.ndarray] = None  # per-component RMS thresholds
         self._fitted: bool = False
 
     # ------------------------------------------------------------------
@@ -168,17 +169,17 @@ class ASRDenoiser:
                 "too short for covariance estimation."
             )
         if n_samp < win_samp:
-            raise ValueError(
-                f"Data has {n_samp} samples but window_len needs {win_samp}."
-            )
+            raise ValueError(f"Data has {n_samp} samples but window_len needs {win_samp}.")
 
         hop = max(int(win_samp * (1.0 - self.window_overlap)), 1)
         X = data - data.mean(axis=1, keepdims=True)
 
         # Per-window sample covariance matrices
         covs = np.stack(
-            [(X[:, s:s + win_samp] @ X[:, s:s + win_samp].T) / win_samp
-             for s in range(0, n_samp - win_samp + 1, hop)]
+            [
+                (X[:, s : s + win_samp] @ X[:, s : s + win_samp].T) / win_samp
+                for s in range(0, n_samp - win_samp + 1, hop)
+            ]
         )
 
         # Discard windows with highest total power (likely artifact)
@@ -194,7 +195,7 @@ class ASRDenoiser:
         C0 += np.eye(n_ch) * (1e-8 * np.trace(C0) / n_ch)
 
         d, U = linalg.eigh(C0)
-        order = np.argsort(d)[::-1]   # descending eigenvalue order
+        order = np.argsort(d)[::-1]  # descending eigenvalue order
         self._U = U[:, order]
         self._T = self.cutoff * np.sqrt(np.maximum(d[order], 0.0))
         self._fitted = True
@@ -225,13 +226,13 @@ class ASRDenoiser:
         """
         self._check_fitted()
         mean = data.mean(axis=1, keepdims=True)
-        Z = self._U.T @ (data - mean)           # project to component space
-        rms = np.sqrt(np.mean(Z ** 2, axis=1))  # per-component RMS
+        Z = self._U.T @ (data - mean)  # project to component space
+        rms = np.sqrt(np.mean(Z**2, axis=1))  # per-component RMS
         bad = rms > self._T
         if not bad.any():
             return data
         Z[bad] = 0.0
-        return self._U @ Z + mean               # back-project + restore mean
+        return self._U @ Z + mean  # back-project + restore mean
 
     # ------------------------------------------------------------------
     # Properties & helpers

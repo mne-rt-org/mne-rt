@@ -8,10 +8,10 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
-
 # ------------------------------------------------------------------
 # Helpers
 # ------------------------------------------------------------------
+
 
 def _make_mock_lsl():
     """Return (MockStreamInfo, MockStreamOutlet) pair."""
@@ -23,6 +23,7 @@ def _make_mock_lsl():
 def _make_sender(**kwargs):
     """Instantiate LSLSender with a mocked LSL backend."""
     from mne_rt.lsl_output import LSLSender
+
     MockInfo, MockOutlet = _make_mock_lsl()
     with patch.object(LSLSender, "_import_lsl", staticmethod(lambda: (MockInfo, MockOutlet))):
         sender = LSLSender(**kwargs)
@@ -32,6 +33,7 @@ def _make_sender(**kwargs):
 # ------------------------------------------------------------------
 # Instantiation
 # ------------------------------------------------------------------
+
 
 def test_default_construction():
     sender, MockInfo, MockOutlet = _make_sender()
@@ -50,8 +52,10 @@ def test_custom_params():
 # push
 # ------------------------------------------------------------------
 
+
 def test_push_single_channel():
     from mne_rt.lsl_output import LSLSender
+
     MockInfo, MockOutlet = _make_mock_lsl()
     outlet_instance = MagicMock()
     MockOutlet.return_value = outlet_instance
@@ -73,6 +77,7 @@ def test_push_sets_channel_labels():
 
 def test_push_pads_with_zeros():
     from mne_rt.lsl_output import LSLSender
+
     MockInfo, MockOutlet = _make_mock_lsl()
     outlet_instance = MagicMock()
     MockOutlet.return_value = outlet_instance
@@ -97,8 +102,10 @@ def test_push_length_mismatch_raises():
 # push_value (single-channel convenience)
 # ------------------------------------------------------------------
 
+
 def test_push_value():
     from mne_rt.lsl_output import LSLSender
+
     MockInfo, MockOutlet = _make_mock_lsl()
     outlet_instance = MagicMock()
     MockOutlet.return_value = outlet_instance
@@ -116,6 +123,7 @@ def test_push_value():
 # n_channels property
 # ------------------------------------------------------------------
 
+
 def test_n_channels_property():
     sender, _, _ = _make_sender(n_channels=6)
     assert sender.n_channels == 6
@@ -125,8 +133,10 @@ def test_n_channels_property():
 # close
 # ------------------------------------------------------------------
 
+
 def test_close_sets_outlet_none():
     from mne_rt.lsl_output import LSLSender
+
     MockInfo, MockOutlet = _make_mock_lsl()
     outlet_instance = MagicMock()
     outlet_instance.close = MagicMock()
@@ -149,8 +159,10 @@ def test_close_is_idempotent():
 # Context manager
 # ------------------------------------------------------------------
 
+
 def test_context_manager():
     from mne_rt.lsl_output import LSLSender
+
     MockInfo, MockOutlet = _make_mock_lsl()
     outlet_instance = MagicMock()
     outlet_instance.close = MagicMock()
@@ -166,6 +178,7 @@ def test_context_manager():
 # ------------------------------------------------------------------
 # Thread safety — concurrent pushes
 # ------------------------------------------------------------------
+
 
 def test_concurrent_push_does_not_crash():
     sender, _, _ = _make_sender(n_channels=2)
@@ -190,6 +203,7 @@ def test_concurrent_push_does_not_crash():
 # ------------------------------------------------------------------
 # repr
 # ------------------------------------------------------------------
+
 
 def test_repr():
     sender, _, _ = _make_sender(stream_name="TestStream")

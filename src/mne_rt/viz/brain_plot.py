@@ -8,6 +8,7 @@ Classes
 BrainPlot
     Interactive real-time 3D brain surface with NF activity overlay.
 """
+
 from __future__ import annotations
 
 import datetime
@@ -16,8 +17,10 @@ from pathlib import Path
 from typing import Union
 
 import numpy as np
+
 try:
     import pyvista as pv
+
     _pyvista_available = True
 except ImportError:
     pv = None  # type: ignore[assignment]
@@ -25,6 +28,7 @@ except ImportError:
 
 try:
     from pyvistaqt import BackgroundPlotter as _BackgroundPlotter
+
     _pyvistaqt_available = True
 except ImportError:
     _BackgroundPlotter = None  # type: ignore[assignment]
@@ -32,7 +36,6 @@ except ImportError:
 
 from mne_rt._logging import logger
 from mne_rt.tools import setup_surface
-
 
 # ---------------------------------------------------------------------------
 # Constants
@@ -54,20 +57,20 @@ _DISPLAY_MODES = [
 
 # Suggested clim ranges for each display mode
 _DISPLAY_CLIM_HINTS: dict[str, tuple[float, float]] = {
-    "Source Activation":   (0.0, 0.6),
-    "Alpha Power  (8–13 Hz)":  (0.0, 0.5),
+    "Source Activation": (0.0, 0.6),
+    "Alpha Power  (8–13 Hz)": (0.0, 0.5),
     "Beta Power   (13–30 Hz)": (0.0, 0.3),
-    "Theta Power  (4–8 Hz)":   (0.0, 0.5),
+    "Theta Power  (4–8 Hz)": (0.0, 0.5),
     "Gamma Power  (30–80 Hz)": (0.0, 0.2),
     "SMR Power    (12–15 Hz)": (0.0, 0.4),
 }
 
 _VIEW_PRESETS: dict[str, dict] = {
-    "lateral_lh": {"position": (-450, 0, 0),  "focal": (0, 0, 0), "up": (0, 0, 1)},
-    "lateral_rh": {"position": (450, 0, 0),   "focal": (0, 0, 0), "up": (0, 0, 1)},
-    "dorsal":     {"position": (0, 0, 450),   "focal": (0, 0, 0), "up": (0, 1, 0)},
-    "frontal":    {"position": (0, -450, 0),  "focal": (0, 0, 0), "up": (0, 0, 1)},
-    "ventral":    {"position": (0, 0, -450),  "focal": (0, 0, 0), "up": (0, 1, 0)},
+    "lateral_lh": {"position": (-450, 0, 0), "focal": (0, 0, 0), "up": (0, 0, 1)},
+    "lateral_rh": {"position": (450, 0, 0), "focal": (0, 0, 0), "up": (0, 0, 1)},
+    "dorsal": {"position": (0, 0, 450), "focal": (0, 0, 0), "up": (0, 1, 0)},
+    "frontal": {"position": (0, -450, 0), "focal": (0, 0, 0), "up": (0, 0, 1)},
+    "ventral": {"position": (0, 0, -450), "focal": (0, 0, 0), "up": (0, 1, 0)},
 }
 
 # Dark stylesheet for the Qt control panel — matches the dark UI of other plots
@@ -168,12 +171,12 @@ _PANEL_DARK_STYLE = """
 
 # Background colour presets  (bottom_hex, top_hex)
 _BACKGROUNDS: dict[str, tuple[str, str]] = {
-    "Deep space":   ("#040810", "#0b1628"),
-    "Midnight":     ("#050d1a", "#0d1b35"),
-    "Slate":        ("#0d1117", "#1c2333"),
-    "Charcoal":     ("#111111", "#1e1e1e"),
-    "Black":        ("#000000", "#050505"),
-    "Light":        ("#e8eaf0", "#ffffff"),   # publication / presentations
+    "Deep space": ("#040810", "#0b1628"),
+    "Midnight": ("#050d1a", "#0d1b35"),
+    "Slate": ("#0d1117", "#1c2333"),
+    "Charcoal": ("#111111", "#1e1e1e"),
+    "Black": ("#000000", "#050505"),
+    "Light": ("#e8eaf0", "#ffffff"),  # publication / presentations
 }
 
 _DEFAULT_BG = "Midnight"
@@ -247,6 +250,7 @@ class BrainPlot:
                 "Install them with:  pip install 'mne-rt[viz]'"
             )
         from mne_rt._logging import set_log_level
+
         set_log_level(verbose)
 
         if cmap not in _CMAPS:
@@ -381,12 +385,20 @@ class BrainPlot:
 
     def _add_control_panel(self, p: "_BackgroundPlotter") -> None:
         """Dock a Qt control panel on the right side of the brain window."""
-        from qtpy.QtWidgets import (
-            QDockWidget, QWidget, QVBoxLayout, QHBoxLayout,
-            QLabel, QSlider, QComboBox, QCheckBox, QPushButton, QGroupBox,
-            QDoubleSpinBox,
-        )
         from qtpy.QtCore import Qt as Qt_
+        from qtpy.QtWidgets import (
+            QCheckBox,
+            QComboBox,
+            QDockWidget,
+            QDoubleSpinBox,
+            QGroupBox,
+            QHBoxLayout,
+            QLabel,
+            QPushButton,
+            QSlider,
+            QVBoxLayout,
+            QWidget,
+        )
 
         # ── helpers ──────────────────────────────────────────────────────
         def _hslider(lo: int = 0, hi: int = 100, val: int = 0) -> QSlider:
@@ -556,9 +568,9 @@ class BrainPlot:
         for label, key, tip in [
             ("L", "lateral_lh", "Left lateral"),
             ("R", "lateral_rh", "Right lateral"),
-            ("D", "dorsal",     "Dorsal (top)"),
-            ("F", "frontal",    "Frontal"),
-            ("V", "ventral",    "Ventral (bottom)"),
+            ("D", "dorsal", "Dorsal (top)"),
+            ("F", "frontal", "Frontal"),
+            ("V", "ventral", "Ventral (bottom)"),
         ]:
             btn = QPushButton(label)
             btn.setFixedSize(32, 28)
@@ -735,6 +747,7 @@ class BrainPlot:
     def _sync_scalar_bar_lut(self) -> None:
         """Sync the scalar bar LUT with the current activity actor's mapper."""
         import matplotlib
+
         cmap_obj = matplotlib.colormaps[_CMAPS[self._cmap_idx]]
         lut = self._act_actor.GetMapper().GetLookupTable()
         lut.SetNumberOfColors(256)
@@ -765,18 +778,26 @@ class BrainPlot:
             self._parc_status_lbl.setText("Loading …")
 
         try:
-            import mne
             from pathlib import Path as _Path
+
+            import mne
+
             fs_dir = _Path(mne.datasets.fetch_fsaverage(verbose=False))
             subjects_dir = str(fs_dir.parent)
 
             labels_lh = mne.read_labels_from_annot(
-                "fsaverage", parc=parc_id, hemi="lh",
-                subjects_dir=subjects_dir, verbose=False,
+                "fsaverage",
+                parc=parc_id,
+                hemi="lh",
+                subjects_dir=subjects_dir,
+                verbose=False,
             )
             labels_rh = mne.read_labels_from_annot(
-                "fsaverage", parc=parc_id, hemi="rh",
-                subjects_dir=subjects_dir, verbose=False,
+                "fsaverage",
+                parc=parc_id,
+                hemi="rh",
+                subjects_dir=subjects_dir,
+                verbose=False,
             )
 
             n_lh = self._n_lh
@@ -974,11 +995,7 @@ class BrainPlot:
             for hemi in ("lh", "rh"):
                 raw_d = stc.rh_data if hemi == "rh" else stc.lh_data
                 chunk = raw_d[:, b_start:b_end]
-                src_vals = (
-                    np.mean(chunk ** 2, axis=1)
-                    if mode == "power"
-                    else chunk.mean(axis=1)
-                )
+                src_vals = np.mean(chunk**2, axis=1) if mode == "power" else chunk.mean(axis=1)
                 nn = self._nn_map[hemi]
                 if hemi == "lh":
                     self._scalars_full[:n_lh] = src_vals[nn]
@@ -1056,6 +1073,7 @@ class BrainPlot:
         path : Path
         """
         import imageio
+
         if self._recording:
             raise RuntimeError("Already recording. Call stop_recording() first.")
         if path is None:

@@ -9,6 +9,7 @@ Classes
 ZScoreProtocol
     Rolling z-score normaliser with configurable direction and warmup.
 """
+
 from __future__ import annotations
 
 import collections
@@ -80,25 +81,15 @@ class ZScoreProtocol:
         zscore_threshold: float = 0.5,
     ) -> None:
         if direction not in ("up", "down"):
-            raise ValueError(
-                f"direction must be 'up' or 'down', got {direction!r}"
-            )
+            raise ValueError(f"direction must be 'up' or 'down', got {direction!r}")
         if warmup_windows < 1:
-            raise ValueError(
-                f"warmup_windows must be >= 1, got {warmup_windows}"
-            )
+            raise ValueError(f"warmup_windows must be >= 1, got {warmup_windows}")
         if not (0.0 <= smoothing < 1.0):
-            raise ValueError(
-                f"smoothing must be in [0, 1), got {smoothing}"
-            )
+            raise ValueError(f"smoothing must be in [0, 1), got {smoothing}")
         if min_std <= 0.0:
-            raise ValueError(
-                f"min_std must be > 0, got {min_std}"
-            )
+            raise ValueError(f"min_std must be > 0, got {min_std}")
         if zscore_threshold < 0.0:
-            raise ValueError(
-                f"zscore_threshold must be >= 0, got {zscore_threshold}"
-            )
+            raise ValueError(f"zscore_threshold must be >= 0, got {zscore_threshold}")
 
         self.direction: str = direction
         self.warmup_windows: int = warmup_windows
@@ -144,10 +135,7 @@ class ZScoreProtocol:
             if self._smoothed is None:
                 self._smoothed = float(value)
             else:
-                self._smoothed = (
-                    (1.0 - self.smoothing) * value
-                    + self.smoothing * self._smoothed
-                )
+                self._smoothed = (1.0 - self.smoothing) * value + self.smoothing * self._smoothed
         else:
             self._smoothed = float(value)
 
