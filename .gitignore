@@ -80,6 +80,10 @@ docs/_static/
 docs/*.html
 docs/*.js
 docs/*.inv
+docs/auto_examples/
+docs/source/auto_examples/
+docs/source/generated/
+.doctrees/
 notebooks/
 test.ipynb
 
