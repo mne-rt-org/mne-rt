@@ -22,7 +22,7 @@ jobs:
       - uses: actions/checkout@v4
         with:
           persist-credentials: false
-      - uses: astral-sh/setup-uv@v8
+      - uses: astral-sh/setup-uv@v8.3.1
         with:
           python-version: "3.11"
       - run: uv pip install --system -e ".[lint]"
@@ -48,7 +48,7 @@ jobs:
           qt: true
           pyvista: false
           wm: false
-      - uses: astral-sh/setup-uv@v8
+      - uses: astral-sh/setup-uv@v8.3.1
         with:
           python-version: ${{ matrix.python }}
       - run: uv pip install --system -e ".[dev,pyqt6]"
