@@ -162,7 +162,7 @@ def get_params(config_file, modality, modality_params):
     from the YAML file. If ``modality_params`` is provided, the defaults
     are updated with the user-specified overrides.
     """
-    with open(config_file, "r") as f:
+    with open(config_file, "r", encoding="utf-8") as f:
         config = yaml.safe_load(f)
 
     if modality not in config["NF_modality"]:
