@@ -21,7 +21,7 @@ import mne
 import numpy as np
 from matplotlib.backends.backend_qtagg import FigureCanvasQTAgg
 from matplotlib.figure import Figure
-from qtpy.QtCore import Qt
+from qtpy.QtCore import Qt, Signal
 from qtpy.QtWidgets import (
     QCheckBox,
     QComboBox,
@@ -178,6 +178,11 @@ class TopomapPlot(QMainWindow):
 
     .. versionadded:: 1.0.0
     """
+
+    #: Emitted when the window is closed, *before* Qt tears down the widget.
+    #: :meth:`~mne_rt.RTStream.record_main` connects this to stop pumping
+    #: new data into a closed window while other plot windows stay open.
+    closed = Signal()
 
     def __init__(
         self,
@@ -630,3 +635,7 @@ class TopomapPlot(QMainWindow):
         self._update_topomaps(data)
         now = datetime.datetime.now().strftime("%H:%M:%S.%f")[:-3]
         self._status.showMessage(f"Updated {now}")
+
+    def closeEvent(self, event) -> None:
+        self.closed.emit()
+        super().closeEvent(event)
