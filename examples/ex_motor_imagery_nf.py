@@ -50,7 +50,7 @@ mne.set_log_level("WARNING")
 
 SUBJECT = 1
 RUNS    = [6, 10, 14]
-files   = mne.datasets.eegbci.load_data(SUBJECT, RUNS, verbose=False)
+files   = mne.datasets.eegbci.load_data(SUBJECT, RUNS, update_path=True, verbose=False)
 raws    = [mne.io.read_raw_edf(f, preload=True, verbose=False) for f in files]
 raw     = mne.concatenate_raws(raws)
 mne.datasets.eegbci.standardize(raw)
