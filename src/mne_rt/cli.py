@@ -165,6 +165,74 @@ def _add_demo_parser(sub):
         action="store_true",
         help="Skip saving session data and report at the end of the demo.",
     )
+    p.add_argument(
+        "--protocol",
+        choices=["threshold", "zscore"],
+        default=None,
+        metavar="TYPE",
+        help=(
+            "Reward protocol applied to the first modality, drawn as a "
+            "dashed horizontal line on NFPlot.  'threshold' -> "
+            "ThresholdProtocol, a fixed level (see --threshold).  "
+            "'zscore' -> ZScoreProtocol, an adaptive boundary that tracks "
+            "a rolling mean/std (see --zscore-threshold/--zscore-warmup). "
+            "Usually inferred automatically from whichever of --threshold "
+            "or --zscore-*  you pass; only needed to disambiguate if both "
+            "are given together. Omit all three to run without a protocol "
+            "(no line shown)."
+        ),
+    )
+    p.add_argument(
+        "--threshold",
+        type=float,
+        default=argparse.SUPPRESS,
+        metavar="VALUE",
+        help=("Fixed reward level; passing this alone enables ThresholdProtocol (default: 0.0)."),
+    )
+    p.add_argument(
+        "--threshold-direction",
+        choices=["up", "down"],
+        default="up",
+        help=(
+            "Reward direction, shared by both protocol types: 'up' rewards "
+            "values above the boundary, 'down' rewards values below it "
+            "(default: up)."
+        ),
+    )
+    p.add_argument(
+        "--zscore-threshold",
+        type=float,
+        default=argparse.SUPPRESS,
+        metavar="Z",
+        help=(
+            "Minimum |z-score| required to reward; passing this or "
+            "--zscore-warmup alone enables ZScoreProtocol (default: 0.5)."
+        ),
+    )
+    p.add_argument(
+        "--zscore-warmup",
+        type=int,
+        default=argparse.SUPPRESS,
+        metavar="N",
+        help=(
+            "Windows used only to seed the rolling mean/std baseline before "
+            "any reward can be issued; passing this or --zscore-threshold "
+            "alone enables ZScoreProtocol (default: 20)."
+        ),
+    )
+    p.add_argument(
+        "--zscore-min-std",
+        type=float,
+        default=argparse.SUPPRESS,
+        metavar="STD",
+        help=(
+            "Floor applied to the running standard deviation, in the same "
+            "raw units as the modality's feature values (default: 1e-6). "
+            "MUST be well below your signal's real magnitude or the floor "
+            "dominates and the threshold line ends up wildly off-scale -- "
+            "e.g. for sensor_power (~1e-13 range), try 1e-15."
+        ),
+    )
     return p
 
 
@@ -299,6 +367,74 @@ def _add_run_parser(sub):
         "--no-nf",
         action="store_true",
         help="Disable the scrolling real-time NF signal plot (NFPlot).",
+    )
+    p.add_argument(
+        "--protocol",
+        choices=["threshold", "zscore"],
+        default=None,
+        metavar="TYPE",
+        help=(
+            "Reward protocol applied to the first modality, drawn as a "
+            "dashed horizontal line on NFPlot.  'threshold' -> "
+            "ThresholdProtocol, a fixed level (see --threshold).  "
+            "'zscore' -> ZScoreProtocol, an adaptive boundary that tracks "
+            "a rolling mean/std (see --zscore-threshold/--zscore-warmup). "
+            "Usually inferred automatically from whichever of --threshold "
+            "or --zscore-*  you pass; only needed to disambiguate if both "
+            "are given together. Omit all three to run without a protocol "
+            "(no line shown)."
+        ),
+    )
+    p.add_argument(
+        "--threshold",
+        type=float,
+        default=argparse.SUPPRESS,
+        metavar="VALUE",
+        help=("Fixed reward level; passing this alone enables ThresholdProtocol (default: 0.0)."),
+    )
+    p.add_argument(
+        "--threshold-direction",
+        choices=["up", "down"],
+        default="up",
+        help=(
+            "Reward direction, shared by both protocol types: 'up' rewards "
+            "values above the boundary, 'down' rewards values below it "
+            "(default: up)."
+        ),
+    )
+    p.add_argument(
+        "--zscore-threshold",
+        type=float,
+        default=argparse.SUPPRESS,
+        metavar="Z",
+        help=(
+            "Minimum |z-score| required to reward; passing this or "
+            "--zscore-warmup alone enables ZScoreProtocol (default: 0.5)."
+        ),
+    )
+    p.add_argument(
+        "--zscore-warmup",
+        type=int,
+        default=argparse.SUPPRESS,
+        metavar="N",
+        help=(
+            "Windows used only to seed the rolling mean/std baseline before "
+            "any reward can be issued; passing this or --zscore-threshold "
+            "alone enables ZScoreProtocol (default: 20)."
+        ),
+    )
+    p.add_argument(
+        "--zscore-min-std",
+        type=float,
+        default=argparse.SUPPRESS,
+        metavar="STD",
+        help=(
+            "Floor applied to the running standard deviation, in the same "
+            "raw units as the modality's feature values (default: 1e-6). "
+            "MUST be well below your signal's real magnitude or the floor "
+            "dominates and the threshold line ends up wildly off-scale -- "
+            "e.g. for sensor_power (~1e-13 range), try 1e-15."
+        ),
     )
     p.add_argument(
         "--no-raw",
@@ -467,6 +603,70 @@ def _add_common_session_args(p: argparse.ArgumentParser) -> None:
 # ---------------------------------------------------------------------------
 
 
+def _build_protocol_from_args(args):
+    """Build the reward protocol requested via ``--protocol`` (or ``None``).
+
+    Shared by ``demo`` and ``run``, which expose identical
+    ``--protocol``/``--threshold*``/``--zscore*`` flags. ``--threshold`` and
+    ``--zscore-*`` default to :data:`argparse.SUPPRESS`, so their presence on
+    ``args`` means the user explicitly passed them -- this lets a bare
+    ``--threshold`` (without ``--protocol threshold``) still enable
+    :class:`~mne_rt.protocols.ThresholdProtocol`.
+    """
+    proto_type = getattr(args, "protocol", None)
+    has_threshold = hasattr(args, "threshold")
+    has_zscore = (
+        hasattr(args, "zscore_threshold")
+        or hasattr(args, "zscore_warmup")
+        or hasattr(args, "zscore_min_std")
+    )
+
+    if proto_type is None:
+        if has_threshold and has_zscore:
+            raise SystemExit(
+                "Both --threshold and --zscore-* flags were given without "
+                "--protocol; pass --protocol threshold or --protocol zscore "
+                "to disambiguate."
+            )
+        if has_threshold:
+            proto_type = "threshold"
+        elif has_zscore:
+            proto_type = "zscore"
+        else:
+            return None
+
+    direction = getattr(args, "threshold_direction", "up")
+
+    if proto_type == "threshold":
+        from mne_rt.protocols import ThresholdProtocol
+
+        threshold = getattr(args, "threshold", 0.0)
+        protocol = ThresholdProtocol(threshold=threshold, direction=direction)
+        print(
+            f"Protocol -> ThresholdProtocol(threshold={threshold}, "
+            f"direction={protocol.direction!r})"
+        )
+        return protocol
+
+    from mne_rt.protocols import ZScoreProtocol
+
+    zscore_threshold = getattr(args, "zscore_threshold", 0.5)
+    zscore_warmup = getattr(args, "zscore_warmup", 20)
+    zscore_min_std = getattr(args, "zscore_min_std", 1e-6)
+    protocol = ZScoreProtocol(
+        direction=direction,
+        warmup_windows=zscore_warmup,
+        zscore_threshold=zscore_threshold,
+        min_std=zscore_min_std,
+    )
+    print(
+        f"Protocol -> ZScoreProtocol(zscore_threshold={zscore_threshold}, "
+        f"warmup_windows={zscore_warmup}, min_std={zscore_min_std}, "
+        f"direction={protocol.direction!r})"
+    )
+    return protocol
+
+
 def _cmd_info(args) -> None:
     """Print version and dependency information."""
     import platform
@@ -551,6 +751,8 @@ def _cmd_demo(args) -> None:
     if show_brain:
         print(f"Brain activation: using {subjects_fs_dir}")
 
+    protocol = _build_protocol_from_args(args)
+
     nf = RTStream(
         subject_id="demo",
         session="01",
@@ -577,6 +779,7 @@ def _cmd_demo(args) -> None:
         show_brain_activation=show_brain,
         brain_surf=getattr(args, "surf", "pial"),
         save_raw=do_save,
+        protocol=protocol,
         verbose=args.verbose,
     )
 
@@ -876,6 +1079,8 @@ def _cmd_run(args) -> None:
         lsl_sender = LSLSender(stream_name=getattr(args, "lsl_stream_name", "MNE_RT"))
         print(f"LSL output -> stream '{lsl_sender.stream_name}'")
 
+    protocol = _build_protocol_from_args(args)
+
     # -- Epoch plot windows (RTEpochs side-channel) ------------------------
     rt_epochs = None
     epoch_w = topo_w = butt_w = comp_w = tfr_w = None
@@ -1002,6 +1207,7 @@ def _cmd_run(args) -> None:
             show_brain_activation=args.brain,
             osc_sender=osc_sender,
             lsl_sender=lsl_sender,
+            protocol=protocol,
             verbose=args.verbose,
         )
     finally:
