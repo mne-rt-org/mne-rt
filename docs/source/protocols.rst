@@ -19,6 +19,32 @@ All protocols share the same two-value contract:
 
 ----
 
+Live Threshold Display
+-----------------------
+
+Every protocol also exposes a read-only ``current_threshold`` property, in
+the same raw units as the NF feature it evaluates.  For protocols with a
+literal fixed or adaptive level (:class:`~mne_rt.protocols.ThresholdProtocol`,
+:class:`~mne_rt.protocols.UpDownStaircaseProtocol`,
+:class:`~mne_rt.protocols.RLProtocol`, :class:`~mne_rt.protocols.PercentileProtocol`)
+this is just that level.  For relative-criterion protocols
+(:class:`~mne_rt.protocols.ZScoreProtocol`, :class:`~mne_rt.protocols.TransferProtocol`)
+it is the z-score boundary converted back to raw units
+(``mean ± zscore_threshold × std``).  Wrapper protocols
+(:class:`~mne_rt.protocols.ShamProtocol`, :class:`~mne_rt.protocols.OperantProtocol`)
+pass the value through from whatever they wrap.
+:class:`~mne_rt.protocols.LinearTrendProtocol` always returns ``None`` since
+it rewards a *trend*, not a level.
+
+When a protocol is passed to :meth:`~mne_rt.RTStream.record_main` (or
+:meth:`~mne_rt.RTStream.replay`) with ``show_nf_signal=True``,
+``current_threshold`` is read on every analysis window and drawn as a
+dashed horizontal line on the corresponding :class:`~mne_rt.viz.NFPlot`
+subplot — updating live for adaptive protocols.  The line can be toggled
+from the *Display* panel of the NFPlot window.  See :doc:`visualization`.
+
+----
+
 Choosing a Protocol
 -------------------
 

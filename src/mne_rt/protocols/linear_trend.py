@@ -218,6 +218,16 @@ class LinearTrendProtocol:
         """Total number of values evaluated since init or last :meth:`reset`."""
         return self._n_evaluated
 
+    @property
+    def current_threshold(self) -> None:
+        """Always ``None`` — this protocol rewards a *trend*, not a level.
+
+        Present for interface uniformity with the other protocol classes
+        (used by :class:`~mne_rt.viz.NFPlot` to draw a threshold line);
+        since there is no single signal level to cross, no line is drawn.
+        """
+        return None
+
     def __repr__(self) -> str:
         return (
             f"LinearTrendProtocol("

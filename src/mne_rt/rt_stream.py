@@ -531,7 +531,7 @@ class RTStream(ModalityMixin):
         modality_params: Optional[dict[str, Any]] = None,
         show_raw_signal: bool = True,
         show_nf_signal: bool = True,
-        time_window: float = 10.0,
+        time_window: float = 30.0,
         show_topo: bool = False,
         topo_bands: Optional[dict] = None,
         show_brain_activation: bool = False,
@@ -601,7 +601,7 @@ class RTStream(ModalityMixin):
             Show the :class:`~mne_rt.viz.RawPlot` scrolling raw M/EEG viewer.
         show_nf_signal : bool, default True
             Show the :class:`~mne_rt.viz.NFPlot` real-time NF monitor.
-        time_window : float, default 10.0
+        time_window : float, default 30.0
             Visible time range in seconds for the signal plot.
         show_topo : bool, default False
             Show the :class:`~mne_rt.viz.TopomapPlot` real-time scalp topomap
@@ -658,7 +658,13 @@ class RTStream(ModalityMixin):
             apply different protocols to different modalities.  On each
             window the protocol's ``evaluate(value)`` method is called and
             ``(crossed, magnitude)`` is recorded.  Results are accessible via
-            :attr:`reward_data` after the session.
+            :attr:`reward_data` after the session.  When ``show_nf_signal=True``,
+            each protocol's ``current_threshold`` (fixed or adaptive) is also
+            drawn live as a dashed horizontal line on the corresponding
+            :class:`~mne_rt.viz.NFPlot` subplot; modalities without a
+            protocol, or protocols with no single-level threshold (e.g.
+            :class:`~mne_rt.protocols.LinearTrendProtocol`), simply show no
+            line.
         save_raw : bool, default False
             Persist the raw pre-correction M/EEG acquired during the main
             session to ``raw/<stem>-raw.fif``.  Off by default because FIF
@@ -1103,6 +1109,7 @@ class RTStream(ModalityMixin):
                 futures = [
                     self.executor.submit(nf_fns[i], data, **precomps[i]) for i in range(len(mods))
                 ]
+                _crossed_map: dict = {}
                 for m, fut in zip(mods, futures):
                     nf_val, m_delay = fut.result()
                     nf_val = _apply_zscore(m, float(nf_val))
@@ -1116,12 +1123,18 @@ class RTStream(ModalityMixin):
                     if m in _proto_map:
                         _crossed, _mag = _proto_map[m].evaluate(nf_val)
                         reward_data[m].append(_mag if _crossed else 0.0)
+                        _crossed_map[m] = _crossed
                     if estimate_delays:
                         _meth_delays[m].append(m_delay)
 
                 _vals = [nf_data[m][-1] for m in mods]
+                _threshs = [
+                    getattr(_proto_map[m], "current_threshold", None) if m in _proto_map else None
+                    for m in mods
+                ]
+                _rewards = [_crossed_map.get(m) for m in mods]
                 try:
-                    nf_queue.put_nowait(_vals)
+                    nf_queue.put_nowait((_vals, _threshs, _rewards))
                 except _queue.Full:
                     pass
 
@@ -1160,6 +1173,11 @@ class RTStream(ModalityMixin):
             # 30-fps ticks.
             _interp: list = [[], [], [0]]
             _n_steps: int = max(1, int(30 * winsize // 2))
+            # Threshold lines and reward zones update once per analysis
+            # window (not per display frame), so the latest snapshot is
+            # just held as-is rather than ramped like the value trace.
+            _latest_threshs: list = [None] * len(mods)
+            _latest_rewards: list = [None] * len(mods)
 
             def _pump_signal() -> None:
                 """Fast timer (~30 fps) — signal plot only.
@@ -1169,10 +1187,12 @@ class RTStream(ModalityMixin):
                 """
                 try:
                     while not nf_queue.empty():
-                        new_vals = nf_queue.get_nowait()
+                        new_vals, new_threshs, new_rewards = nf_queue.get_nowait()
                         _interp[0] = _interp[1] if _interp[1] else new_vals
                         _interp[1] = new_vals
                         _interp[2][0] = 0
+                        _latest_threshs[:] = new_threshs
+                        _latest_rewards[:] = new_rewards
                 except Exception:
                     pass
 
@@ -1186,7 +1206,7 @@ class RTStream(ModalityMixin):
                         ]
                     else:
                         vals = _interp[1]
-                    nf_plot.push(vals)
+                    nf_plot.push(vals, thresholds=_latest_threshs, rewards=_latest_rewards)
                     _interp[2][0] += 1
 
                 if done_event.is_set():
@@ -1203,6 +1223,11 @@ class RTStream(ModalityMixin):
             signal_timer.setInterval(33)  # ~30 fps
             signal_timer.timeout.connect(_pump_signal)
             signal_timer.start()
+            if nf_plot is not None:
+                # Stop pumping the instant this window closes -- otherwise
+                # the timer keeps firing into a closed widget while other
+                # plot windows stay open, which crashes Qt/pyqtgraph.
+                nf_plot.closed.connect(signal_timer.stop)
 
             # Topomap timer (~5 fps) — matplotlib redraws are slower than
             # pyqtgraph so we use a separate slower timer.
@@ -1223,6 +1248,7 @@ class RTStream(ModalityMixin):
                 topo_timer.setInterval(200)  # 5 fps
                 topo_timer.timeout.connect(_pump_topo_qt)
                 topo_timer.start()
+                topo_plot.closed.connect(topo_timer.stop)
 
             # Separate slow timer for the brain plot so its render never
             # blocks the signal pump.  Scalars are updated without an
@@ -1265,6 +1291,7 @@ class RTStream(ModalityMixin):
                 raw_timer.setInterval(33)  # ~30 fps
                 raw_timer.timeout.connect(_pump_raw)
                 raw_timer.start()
+                raw_plot.closed.connect(raw_timer.stop)
 
             app.exec()  # blocks here; drives all three windows in parallel
 

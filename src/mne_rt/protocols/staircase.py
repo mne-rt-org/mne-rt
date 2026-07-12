@@ -256,6 +256,15 @@ class UpDownStaircaseProtocol:
         self._n_evaluated = 0
         self._smoothed = None
 
+    @property
+    def current_threshold(self) -> float:
+        """Current threshold in raw NF-signal units (alias of :attr:`threshold`).
+
+        Uniform read-only accessor shared by all protocol classes, used by
+        :class:`~mne_rt.viz.NFPlot` to draw the live threshold line.
+        """
+        return self.threshold
+
     def __repr__(self) -> str:
         return (
             f"UpDownStaircaseProtocol("

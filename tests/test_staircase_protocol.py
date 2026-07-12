@@ -225,6 +225,24 @@ def test_smoothing_does_not_crash():
 
 
 # ------------------------------------------------------------------
+# current_threshold
+# ------------------------------------------------------------------
+
+
+def test_current_threshold_matches_threshold():
+    proto = UpDownStaircaseProtocol(initial_threshold=0.5)
+    assert proto.current_threshold == proto.threshold == 0.5
+
+
+def test_current_threshold_tracks_adaptation():
+    proto = UpDownStaircaseProtocol(initial_threshold=0.5, n_up=1, n_down=100, step_size=0.05)
+    for _ in range(5):
+        proto.evaluate(100.0)  # always crosses -> threshold rises every step
+    assert proto.current_threshold == proto.threshold
+    assert proto.current_threshold > 0.5
+
+
+# ------------------------------------------------------------------
 # reset
 # ------------------------------------------------------------------
 
