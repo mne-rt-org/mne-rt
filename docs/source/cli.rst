@@ -57,6 +57,8 @@ is found (via ``FREESURFER_HOME`` or ``--subjects-fs-dir``).
     $ mne-rt demo --duration 120 --modality sensor_power erd_ers
     $ mne-rt demo --no-topomap
     $ mne-rt demo --no-brain
+    $ mne-rt demo --threshold 2e-13 --threshold-direction up
+    $ mne-rt demo --zscore-threshold 0.5 --zscore-warmup 20 --zscore-min-std 1e-15
 
 Options:
 
@@ -103,6 +105,41 @@ Options:
    * - ``--no-save``
      - —
      - Skip saving session data and report
+   * - ``--protocol``
+     - —
+     - Reward protocol applied to the first modality, drawn as a dashed
+       horizontal line on :class:`~mne_rt.viz.NFPlot`.  ``threshold`` ->
+       :class:`~mne_rt.protocols.ThresholdProtocol` (fixed level, see
+       ``--threshold``).  ``zscore`` -> :class:`~mne_rt.protocols.ZScoreProtocol`
+       (adaptive boundary tracking a rolling mean/std, see
+       ``--zscore-threshold``/``--zscore-warmup``).  Usually inferred
+       automatically from whichever of ``--threshold`` or ``--zscore-*`` you
+       pass; only needed to disambiguate if both are given together.  Omit
+       all three to run without a protocol (no line shown)
+   * - ``--threshold``
+     - 0.0
+     - Fixed reward level; passing this alone enables
+       :class:`~mne_rt.protocols.ThresholdProtocol`
+   * - ``--threshold-direction``
+     - up
+     - Reward direction, shared by both protocol types: ``up`` rewards
+       values above the boundary, ``down`` rewards values below it
+   * - ``--zscore-threshold``
+     - 0.5
+     - Minimum |z-score| required to reward; passing this or
+       ``--zscore-warmup`` alone enables
+       :class:`~mne_rt.protocols.ZScoreProtocol`
+   * - ``--zscore-warmup``
+     - 20
+     - Windows used only to seed the rolling mean/std baseline before any
+       reward can be issued; passing this or ``--zscore-threshold`` alone
+       enables :class:`~mne_rt.protocols.ZScoreProtocol`
+   * - ``--zscore-min-std``
+     - 1e-6
+     - Floor on the running standard deviation, in the modality's raw
+       units.  **Must be well below your signal's real magnitude** or it
+       dominates and the threshold line ends up wildly off-scale -- e.g.
+       for ``sensor_power`` (~1e-13 range), try ``1e-15``
 
 ``mne-rt demo-erp``
 --------------------
@@ -228,6 +265,18 @@ and live visualisation.
                  --mock --fname /data/sub01/session.fif \
                  --artifact-correction asr --topo
 
+    # With a fixed reward threshold shown live on NFPlot
+    $ mne-rt run --subject sub01 --subjects-dir /data --duration 600 \
+                 --modality sensor_power \
+                 --threshold 2e-13 --threshold-direction up
+
+    # With an adaptive z-score boundary shown live on NFPlot
+    # (--zscore-min-std must be well below the modality's raw scale --
+    # sensor_power is ~1e-13, so the default 1e-6 floor would dominate)
+    $ mne-rt run --subject sub01 --subjects-dir /data --duration 600 \
+                 --modality sensor_power \
+                 --zscore-threshold 0.5 --zscore-warmup 20 --zscore-min-std 1e-15
+
 Options (inherits all ``baseline`` flags above, plus):
 
 .. list-table::
@@ -252,6 +301,41 @@ Options (inherits all ``baseline`` flags above, plus):
    * - ``--no-nf``
      - —
      - Disable the scrolling real-time NF signal plot (:class:`~mne_rt.viz.NFPlot`)
+   * - ``--protocol``
+     - —
+     - Reward protocol applied to the first modality, drawn as a dashed
+       horizontal line on :class:`~mne_rt.viz.NFPlot`.  ``threshold`` ->
+       :class:`~mne_rt.protocols.ThresholdProtocol` (fixed level, see
+       ``--threshold``).  ``zscore`` -> :class:`~mne_rt.protocols.ZScoreProtocol`
+       (adaptive boundary tracking a rolling mean/std, see
+       ``--zscore-threshold``/``--zscore-warmup``).  Usually inferred
+       automatically from whichever of ``--threshold`` or ``--zscore-*`` you
+       pass; only needed to disambiguate if both are given together.  Omit
+       all three to run without a protocol (no line shown)
+   * - ``--threshold``
+     - 0.0
+     - Fixed reward level; passing this alone enables
+       :class:`~mne_rt.protocols.ThresholdProtocol`
+   * - ``--threshold-direction``
+     - up
+     - Reward direction, shared by both protocol types: ``up`` rewards
+       values above the boundary, ``down`` rewards values below it
+   * - ``--zscore-threshold``
+     - 0.5
+     - Minimum |z-score| required to reward; passing this or
+       ``--zscore-warmup`` alone enables
+       :class:`~mne_rt.protocols.ZScoreProtocol`
+   * - ``--zscore-warmup``
+     - 20
+     - Windows used only to seed the rolling mean/std baseline before any
+       reward can be issued; passing this or ``--zscore-threshold`` alone
+       enables :class:`~mne_rt.protocols.ZScoreProtocol`
+   * - ``--zscore-min-std``
+     - 1e-6
+     - Floor on the running standard deviation, in the modality's raw
+       units.  **Must be well below your signal's real magnitude** or it
+       dominates and the threshold line ends up wildly off-scale -- e.g.
+       for ``sensor_power`` (~1e-13 range), try ``1e-15``
    * - ``--no-raw``
      - —
      - Disable the scrolling raw M/EEG viewer (:class:`~mne_rt.viz.RawPlot`)

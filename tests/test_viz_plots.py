@@ -471,3 +471,192 @@ class TestEpochPlot:
         w._clear_triggers()
         assert len(w._triggers) == 0
         w.close()
+
+
+# ---------------------------------------------------------------------------
+# NFPlot  (scrolling real-time neurofeedback signal monitor)
+# ---------------------------------------------------------------------------
+
+NF_MODALITIES = ["sensor_power", "erd_ers"]
+NF_SCALES = {"sensor_power": 1e-12, "erd_ers": 1.0}
+
+
+def _reward_visible(w, i):
+    """Whether any pooled reward-span region is currently shown for modality ``i``."""
+    return any(r.isVisible() for r in w._reward_regions[i])
+
+
+class TestNFPlot:
+    def test_construct(self, qt_app):
+        from mne_rt.viz.nf_plot import NFPlot
+
+        w = NFPlot(NF_MODALITIES, NF_SCALES, sfreq=30)
+        assert w._n == 2
+        assert w._buf.shape == (2, max(int(30 * 30.0), 30))
+        assert w._reward_buf.shape == w._buf.shape
+        assert len(w._threshold_lines) == 2
+        assert all(not line.isVisible() for line in w._threshold_lines)
+        assert len(w._reward_regions) == 2
+        assert all(pool == [] for pool in w._reward_regions)
+        w.close()
+
+    def test_push_without_thresholds_updates_traces_only(self, qt_app):
+        from mne_rt.viz.nf_plot import NFPlot
+
+        w = NFPlot(NF_MODALITIES, NF_SCALES, sfreq=30, display_smoothing=1.0)
+        w.push([3.2e-13, 0.5])
+        assert w._buf[0, -1] != 0.0
+        assert all(not line.isVisible() for line in w._threshold_lines)
+        w.close()
+
+    def test_push_with_threshold_shows_line_at_correct_position(self, qt_app):
+        from mne_rt.viz.nf_plot import NFPlot
+
+        w = NFPlot(NF_MODALITIES, NF_SCALES, sfreq=30)
+        w.push([3.2e-13, 0.5], thresholds=[2.0e-13, None])
+        assert w._threshold_lines[0].isVisible()
+        assert w._threshold_lines[0].value() == pytest.approx(0.2)  # 2e-13 / 1e-12
+        assert not w._threshold_lines[1].isVisible()
+        assert w._threshold_active == [True, False]
+        w.close()
+
+    def test_threshold_label_shows_physical_value_not_normalised_position(self, qt_app):
+        """InfiniteLine's ``{value}`` placeholder would auto-fill from the
+        line's *position* (the normalised/rescaled plot coordinate), not
+        the physical threshold -- push() must override it with the real
+        value, e.g. ``2e-13``, not the normalised ``0.2``.
+        """
+        from mne_rt.viz.nf_plot import NFPlot
+
+        w = NFPlot(NF_MODALITIES, NF_SCALES, sfreq=30)
+        w.push([3.2e-13, 0.5], thresholds=[2.0e-13, None])
+        assert w._threshold_lines[0].label.toPlainText() == "thr 2e-13 V²/Hz"
+        w.close()
+
+    def test_push_none_threshold_hides_previously_shown_line(self, qt_app):
+        from mne_rt.viz.nf_plot import NFPlot
+
+        w = NFPlot(NF_MODALITIES, NF_SCALES, sfreq=30)
+        w.push([3.2e-13, 0.5], thresholds=[2.0e-13, None])
+        assert w._threshold_lines[0].isVisible()
+        w.push([3.2e-13, 0.5], thresholds=[None, None])
+        assert not w._threshold_lines[0].isVisible()
+        assert w._threshold_active == [False, False]
+        w.close()
+
+    def test_push_nan_threshold_hides_line(self, qt_app):
+        from mne_rt.viz.nf_plot import NFPlot
+
+        w = NFPlot(NF_MODALITIES, NF_SCALES, sfreq=30)
+        w.push([3.2e-13, 0.5], thresholds=[float("nan"), None])
+        assert not w._threshold_lines[0].isVisible()
+        assert w._threshold_active == [False, False]
+        w.close()
+
+    def test_threshold_visibility_toggle(self, qt_app):
+        from mne_rt.viz.nf_plot import NFPlot
+
+        w = NFPlot(NF_MODALITIES, NF_SCALES, sfreq=30)
+        w.push([3.2e-13, 0.5], thresholds=[2.0e-13, None])
+        assert w._threshold_lines[0].isVisible()
+
+        w._set_threshold_visible(False)
+        assert not w._threshold_lines[0].isVisible()
+
+        w._set_threshold_visible(True)
+        assert w._threshold_lines[0].isVisible()
+        # Modality with no active threshold must stay hidden even when re-enabled.
+        assert not w._threshold_lines[1].isVisible()
+        w.close()
+
+    def test_push_respects_pause(self, qt_app):
+        from mne_rt.viz.nf_plot import NFPlot
+
+        w = NFPlot(NF_MODALITIES, NF_SCALES, sfreq=30)
+        w._paused = True
+        w.push([3.2e-13, 0.5], thresholds=[2.0e-13, None])
+        assert not w._threshold_lines[0].isVisible()
+        assert np.all(w._buf == 0.0)
+        w.close()
+
+    def test_push_without_rewards_leaves_spans_untouched(self, qt_app):
+        from mne_rt.viz.nf_plot import NFPlot
+
+        w = NFPlot(NF_MODALITIES, NF_SCALES, sfreq=30)
+        w.push([3.2e-13, 0.5])
+        assert w._reward_active == [False, False]
+        assert all(pool == [] for pool in w._reward_regions)
+        w.close()
+
+    def test_push_with_reward_shows_span(self, qt_app):
+        from mne_rt.viz.nf_plot import NFPlot
+
+        w = NFPlot(NF_MODALITIES, NF_SCALES, sfreq=30)
+        w.push([3.2e-13, 0.5], rewards=[True, None])
+        assert _reward_visible(w, 0)
+        assert w._reward_buf[0, -1] == 1
+        assert not _reward_visible(w, 1)
+        assert w._reward_active == [True, False]
+        w.close()
+
+    def test_push_reward_false_keeps_span_active_but_off(self, qt_app):
+        from mne_rt.viz.nf_plot import NFPlot
+
+        w = NFPlot(NF_MODALITIES, NF_SCALES, sfreq=30)
+        w.push([3.2e-13, 0.5], rewards=[False, None])
+        # A modality with a driving protocol stays "active" (the span
+        # exists) even on windows where the reward condition isn't met --
+        # only the most recent sample in the ring buffer is unset.
+        assert w._reward_active == [True, False]
+        assert w._reward_buf[0, -1] == 0
+        w.close()
+
+    def test_reward_visibility_toggle(self, qt_app):
+        from mne_rt.viz.nf_plot import NFPlot
+
+        w = NFPlot(NF_MODALITIES, NF_SCALES, sfreq=30)
+        w.push([3.2e-13, 0.5], rewards=[True, None])
+        assert _reward_visible(w, 0)
+
+        w._set_reward_visible(False)
+        assert not _reward_visible(w, 0)
+
+        w._set_reward_visible(True)
+        assert _reward_visible(w, 0)
+        # Modality with no active reward info must stay hidden even when re-enabled.
+        assert not _reward_visible(w, 1)
+        w.close()
+
+    def test_push_respects_pause_with_rewards(self, qt_app):
+        from mne_rt.viz.nf_plot import NFPlot
+
+        w = NFPlot(NF_MODALITIES, NF_SCALES, sfreq=30)
+        w._paused = True
+        w.push([3.2e-13, 0.5], rewards=[True, None])
+        assert w._reward_active == [False, False]
+        assert np.all(w._reward_buf == 0)
+        w.close()
+
+    def test_auto_range_includes_threshold_line(self, qt_app):
+        """A threshold far outside the trace's span must not be auto-ranged
+        out of view (regression: _auto_range used to only look at _buf)."""
+        from mne_rt.viz.nf_plot import NFPlot
+
+        w = NFPlot(NF_MODALITIES, NF_SCALES, sfreq=30, display_smoothing=1.0)
+        # Trace sits near 0.2-0.3; threshold is far above that span.
+        for _ in range(5):
+            w.push([2.5e-13, 0.5], thresholds=[9.0e-13, None])
+        w._auto_range()
+        lo, hi = w._plots[0].viewRange()[1]
+        thr_val = w._threshold_lines[0].value()
+        assert lo <= thr_val <= hi
+        w.close()
+
+    def test_closed_signal_emitted_on_close(self, qt_app):
+        from mne_rt.viz.nf_plot import NFPlot
+
+        w = NFPlot(NF_MODALITIES, NF_SCALES, sfreq=30)
+        received = []
+        w.closed.connect(lambda: received.append(True))
+        w.close()
+        assert received == [True]

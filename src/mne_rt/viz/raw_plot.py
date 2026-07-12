@@ -17,7 +17,7 @@ from pathlib import Path
 import numpy as np
 import pyqtgraph as pg
 import pyqtgraph.exporters
-from qtpy.QtCore import QEvent, QObject, Qt, QTimer
+from qtpy.QtCore import QEvent, QObject, Qt, QTimer, Signal
 from qtpy.QtWidgets import (
     QCheckBox,
     QComboBox,
@@ -252,6 +252,11 @@ class RawPlot(QMainWindow):
 
     .. versionadded:: 1.0.0
     """
+
+    #: Emitted when the window is closed, *before* Qt tears down the widget.
+    #: :meth:`~mne_rt.RTStream.record_main` connects this to stop pumping
+    #: new data into a closed window while other plot windows stay open.
+    closed = Signal()
 
     def __init__(
         self,
@@ -1615,4 +1620,5 @@ class RawPlot(QMainWindow):
 
     def closeEvent(self, event) -> None:
         self._flush_timer.stop()
+        self.closed.emit()
         super().closeEvent(event)

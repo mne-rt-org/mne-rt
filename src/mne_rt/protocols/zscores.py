@@ -215,6 +215,23 @@ class ZScoreProtocol:
             self.min_std,
         )
 
+    @property
+    def current_threshold(self) -> Optional[float]:
+        """Current reward boundary in raw NF-signal units, or ``None``.
+
+        ``ZScoreProtocol`` rewards on a *relative* criterion
+        (``zscore_threshold`` standard deviations from the running mean)
+        rather than a fixed level, so this converts that criterion back to
+        the signal's native units as ``mean_ ± zscore_threshold * std_``
+        (``+`` for ``direction="up"``, ``-`` for ``"down"``) for display by
+        :class:`~mne_rt.viz.NFPlot`.  Returns ``None`` during warmup, before
+        the baseline mean/std are meaningful.
+        """
+        if self._n_evaluated < self.warmup_windows:
+            return None
+        sign = 1.0 if self.direction == "up" else -1.0
+        return self.mean_ + sign * self.zscore_threshold * self.std_
+
     def __repr__(self) -> str:
         return (
             f"ZScoreProtocol("

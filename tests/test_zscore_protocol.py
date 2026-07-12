@@ -176,6 +176,34 @@ def test_reset_preserves_params():
 
 
 # ------------------------------------------------------------------
+# current_threshold
+# ------------------------------------------------------------------
+
+
+def test_current_threshold_none_during_warmup():
+    proto = ZScoreProtocol(warmup_windows=10)
+    for i in range(9):
+        proto.evaluate(float(i))
+        assert proto.current_threshold is None
+
+
+def test_current_threshold_after_warmup_up():
+    proto = ZScoreProtocol(direction="up", warmup_windows=5, zscore_threshold=1.0)
+    for _ in range(5):
+        proto.evaluate(1.0)
+    expected = proto.mean_ + 1.0 * proto.std_
+    assert proto.current_threshold == pytest.approx(expected)
+
+
+def test_current_threshold_after_warmup_down():
+    proto = ZScoreProtocol(direction="down", warmup_windows=5, zscore_threshold=1.0)
+    for _ in range(5):
+        proto.evaluate(1.0)
+    expected = proto.mean_ - 1.0 * proto.std_
+    assert proto.current_threshold == pytest.approx(expected)
+
+
+# ------------------------------------------------------------------
 # repr
 # ------------------------------------------------------------------
 

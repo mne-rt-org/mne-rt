@@ -214,6 +214,15 @@ class ThresholdProtocol:
         self._threshold = float(val)
 
     @property
+    def current_threshold(self) -> float:
+        """Current threshold in raw NF-signal units (alias of :attr:`threshold`).
+
+        Uniform read-only accessor shared by all protocol classes, used by
+        :class:`~mne_rt.viz.NFPlot` to draw the live threshold line.
+        """
+        return self._threshold
+
+    @property
     def n_evaluated(self) -> int:
         """Total number of values evaluated since init or last reset."""
         return self._n_evaluated

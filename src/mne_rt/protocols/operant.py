@@ -230,9 +230,13 @@ class OperantProtocol:
     def current_threshold(self) -> Optional[float]:
         """Pass-through threshold from the base protocol, if available.
 
-        Returns None if the base protocol does not expose a ``threshold``
-        attribute.
+        Every built-in protocol exposes ``current_threshold``; this checks
+        that first and falls back to a plain ``threshold`` attribute for
+        third-party base protocols that only implement the older name.
+        Returns ``None`` if neither is available.
         """
+        if hasattr(self.base_protocol, "current_threshold"):
+            return self.base_protocol.current_threshold
         return getattr(self.base_protocol, "threshold", None)
 
     # ------------------------------------------------------------------

@@ -11,7 +11,9 @@ import numpy as np
 import pytest
 
 from mne_rt.protocols import (
+    LinearTrendProtocol,
     OperantProtocol,
+    PercentileProtocol,
     RLProtocol,
     ThresholdProtocol,
     TransferProtocol,
@@ -114,6 +116,10 @@ class TestRLProtocol:
         crossed, mag = p.evaluate(0.0)  # 0.0 < 10.0 → should cross for "down"
         assert crossed
 
+    def test_current_threshold_matches_threshold(self):
+        p = RLProtocol(initial_threshold=1.5)
+        assert p.current_threshold == p.threshold == 1.5
+
 
 # ─────────────────────────────────────────────────────────────────────────────
 # OperantProtocol
@@ -197,6 +203,24 @@ class TestOperantProtocol:
             p.evaluate(1.0)
         assert p.reward_rate == pytest.approx(0.5, abs=0.1)
 
+    def test_current_threshold_passes_through_threshold_attr(self):
+        base = ThresholdProtocol(threshold=2.5, direction="up")
+        p = OperantProtocol(base_protocol=base, schedule="FR", ratio=2)
+        assert p.current_threshold == 2.5
+
+    def test_current_threshold_passes_through_current_threshold_property(self):
+        # PercentileProtocol only exposes `current_threshold`, not `.threshold`.
+        base = PercentileProtocol(percentile=75.0)
+        p = OperantProtocol(base_protocol=base, schedule="FR", ratio=2)
+        p.evaluate(1.0)
+        p.evaluate(2.0)
+        assert p.current_threshold == base.current_threshold
+
+    def test_current_threshold_none_when_unavailable(self):
+        base = LinearTrendProtocol()
+        p = OperantProtocol(base_protocol=base, schedule="FR", ratio=2)
+        assert p.current_threshold is None
+
 
 # ─────────────────────────────────────────────────────────────────────────────
 # TransferProtocol
@@ -262,6 +286,19 @@ class TestTransferProtocol:
     def test_invalid_direction(self, beh_json):
         with pytest.raises(ValueError, match="direction"):
             TransferProtocol(fname=beh_json, modality="sensor_power", direction="sideways")
+
+    def test_current_threshold_defined_before_any_evaluation(self, beh_json):
+        # Unlike ZScoreProtocol, no warmup is needed — prior stats seed it.
+        p = TransferProtocol(fname=beh_json, modality="sensor_power", zscore_threshold=0.5)
+        expected = p.mean_ + 0.5 * p.std_
+        assert p.current_threshold == pytest.approx(expected)
+
+    def test_current_threshold_direction_down(self, beh_json):
+        p = TransferProtocol(
+            fname=beh_json, modality="sensor_power", direction="down", zscore_threshold=0.5
+        )
+        expected = p.mean_ - 0.5 * p.std_
+        assert p.current_threshold == pytest.approx(expected)
 
     def test_repr(self, beh_json):
         p = TransferProtocol(fname=beh_json, modality="sensor_power")

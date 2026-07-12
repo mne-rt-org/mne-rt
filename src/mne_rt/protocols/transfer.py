@@ -330,6 +330,20 @@ class TransferProtocol:
             )
         return max(self._prior_std, 1e-6)
 
+    @property
+    def current_threshold(self) -> float:
+        """Current reward boundary in raw NF-signal units.
+
+        Converts the relative z-score criterion back to the signal's native
+        units as ``mean_ ± zscore_threshold * std_`` (``+`` for
+        ``direction="up"``, ``-`` for ``"down"``), for display by
+        :class:`~mne_rt.viz.NFPlot`.  Unlike :class:`~mne_rt.protocols.ZScoreProtocol`
+        this is always defined (never ``None``) since the prior-seeded
+        statistics are meaningful from the first evaluation.
+        """
+        sign = 1.0 if self.direction == "up" else -1.0
+        return self.mean_ + sign * self.zscore_threshold * self.std_
+
     def __repr__(self) -> str:
         return (
             f"TransferProtocol("

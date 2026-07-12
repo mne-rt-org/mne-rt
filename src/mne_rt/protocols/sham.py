@@ -167,6 +167,19 @@ class ShamProtocol:
         total = self.n_real + self.n_sham
         return self.n_sham / total if total > 0 else 0.0
 
+    @property
+    def current_threshold(self) -> Optional[float]:
+        """Pass-through threshold from the wrapped ``inner`` protocol, if any.
+
+        On sham windows the *displayed* threshold still reflects the real
+        (non-sham) inner protocol's state, since sham only substitutes the
+        reward decision, not the underlying signal criterion.  Returns
+        ``None`` if ``inner`` does not expose a threshold.
+        """
+        if hasattr(self.inner, "current_threshold"):
+            return self.inner.current_threshold
+        return getattr(self.inner, "threshold", None)
+
     def __repr__(self) -> str:
         return (
             f"ShamProtocol("

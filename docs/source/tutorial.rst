@@ -346,6 +346,12 @@ Or in Python:
     )
     nf.save()                               # writes BIDS-compatible output
 
+With ``show_nf_signal=True``, the protocol's current threshold — fixed for
+:class:`~mne_rt.protocols.ThresholdProtocol`, or converted from the z-score
+boundary here since ``proto`` is a :class:`~mne_rt.protocols.ZScoreProtocol`
+— is drawn live as a dashed line on the NFPlot trace, so the participant
+(or operator) can see exactly where the reward boundary sits at every moment.
+
 **Step 5 — Inspect results**
 
 .. code-block:: python

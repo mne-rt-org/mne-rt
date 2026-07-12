@@ -200,6 +200,20 @@ def test_reset_preserves_params():
 
 
 # ------------------------------------------------------------------
+# current_threshold
+# ------------------------------------------------------------------
+
+
+def test_current_threshold_always_none():
+    """LinearTrendProtocol rewards a trend, not a level -- no line to draw."""
+    proto = LinearTrendProtocol(window=5, warmup_windows=5)
+    assert proto.current_threshold is None
+    for i in range(10):
+        proto.evaluate(float(i))
+        assert proto.current_threshold is None
+
+
+# ------------------------------------------------------------------
 # repr
 # ------------------------------------------------------------------
 

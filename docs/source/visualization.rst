@@ -180,7 +180,11 @@ all rendering happens on the main Qt thread via an internal 30 Hz timer.
                One colour-coded trace per active neurofeedback modality is updated
                live as each analysis window completes.  The amplitude scale is
                adjustable on the fly and each modality gets a distinct hue for
-               instant visual separation.
+               instant visual separation.  When a reward protocol is active,
+               its current threshold (fixed or adaptive) is overlaid as a
+               dashed horizontal line, and windows where the subject is
+               currently being rewarded are washed in a translucent green
+               span behind the trace.
              </p>
              <div class="viz-feature-grid">
                <div class="viz-feature-item">
@@ -197,6 +201,14 @@ all rendering happens on the main Qt thread via an internal 30 Hz timer.
                </div>
                <div class="viz-feature-item">
                  <span class="viz-fi-icon">✓</span>
+                 <span class="viz-fi-text"><strong>Live threshold line</strong> — fixed or adaptive, toggleable</span>
+               </div>
+               <div class="viz-feature-item">
+                 <span class="viz-fi-icon">✓</span>
+                 <span class="viz-fi-text"><strong>Reward-on span</strong> — scrolling green wash, toggleable</span>
+               </div>
+               <div class="viz-feature-item">
+                 <span class="viz-fi-icon">✓</span>
                  <span class="viz-fi-text"><strong>Pause / Resume</strong> and screenshot export</span>
                </div>
              </div>
@@ -210,11 +222,26 @@ all rendering happens on the main Qt thread via an internal 30 Hz timer.
 
       .. code-block:: python
 
-         nf_plot = NFPlot("alpha", "beta", "gamma")   # one trace per modality
+         nf_plot = NFPlot(
+             modalities=["alpha", "beta", "gamma"],
+             scales_dict={"alpha": 1e-12, "beta": 1e-12, "gamma": 1e-12},
+             sfreq=30,
+         )
          nf_plot.show()
          # inside the acquisition loop:
-         nf_plot.push({"alpha": alpha_val, "beta": beta_val, "gamma": gamma_val})
+         nf_plot.push([alpha_val, beta_val, gamma_val])
+         # with a per-modality threshold line (None = no line for that modality):
+         nf_plot.push([alpha_val, beta_val, gamma_val], thresholds=[alpha_thr, None, None])
+         # with reward spans too (True/False = reward on/off, None = no protocol):
+         nf_plot.push(
+             [alpha_val, beta_val, gamma_val],
+             thresholds=[alpha_thr, None, None],
+             rewards=[alpha_rewarded, None, None],
+         )
 
+      :meth:`~mne_rt.RTStream.record_main` drives
+      ``push(..., thresholds=..., rewards=...)`` automatically from each
+      modality's protocol — see :doc:`protocols`.
       See :class:`mne_rt.viz.NFPlot` for the full API reference.
 
    .. tab:: ButterflyPlot

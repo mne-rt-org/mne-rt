@@ -107,6 +107,29 @@ def test_inner_state_advances_on_sham():
 
 
 # ------------------------------------------------------------------
+# current_threshold
+# ------------------------------------------------------------------
+
+
+def test_current_threshold_passes_through_inner():
+    inner = ThresholdProtocol(threshold=3.0, direction="up")
+    proto = ShamProtocol(inner, sham_rate=1.0, rng_seed=0)
+    # Displayed threshold reflects the real inner protocol even on sham windows.
+    assert proto.current_threshold == 3.0
+    proto.evaluate(1.0)
+    assert proto.current_threshold == 3.0
+
+
+def test_current_threshold_none_when_inner_lacks_it():
+    class _NoThreshold:
+        def evaluate(self, value):
+            return False, 0.0
+
+    proto = ShamProtocol(_NoThreshold(), rng_seed=0)
+    assert proto.current_threshold is None
+
+
+# ------------------------------------------------------------------
 # sham_log length
 # ------------------------------------------------------------------
 
