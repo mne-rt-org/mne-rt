@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="https://raw.githubusercontent.com/payamsash/mne-rt/main/docs/source/_static/mne_rt_logo.svg" alt="MNE-RT Logo" width="480"/>
+  <img src="https://raw.githubusercontent.com/mne-rt-org/mne-rt/main/docs/source/_static/mne_rt_logo.svg" alt="MNE-RT Logo" width="480"/>
 </p>
 
 <p align="center">
@@ -8,10 +8,10 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/payamsash/mne-rt/blob/main/LICENSE"><img alt="License: MIT" src="https://img.shields.io/github/license/payamsash/mne-rt?color=green"></a>
+  <a href="https://github.com/mne-rt-org/mne-rt/blob/main/LICENSE"><img alt="License: MIT" src="https://img.shields.io/github/license/mne-rt-org/mne-rt?color=green"></a>
   <a href="https://pypi.org/project/mne-rt/"><img alt="PyPI" src="https://img.shields.io/pypi/v/mne-rt?color=blue"></a>
   <a href="https://pypi.org/project/mne-rt/"><img alt="Python" src="https://img.shields.io/pypi/pyversions/mne-rt"></a>
-  <a href="https://payamsash.github.io/mne-rt/"><img alt="Docs" src="https://img.shields.io/badge/docs-online-brightgreen?logo=readthedocs&logoColor=white"></a>
+  <a href="https://mne-rt-org.github.io/mne-rt/"><img alt="Docs" src="https://img.shields.io/badge/docs-online-brightgreen?logo=readthedocs&logoColor=white"></a>
 </p>
 
 ---
@@ -40,10 +40,10 @@ streaming library. It provides modern Python bindings for the
 — together with high-level objects: `StreamInlet` and `StreamOutlet` for reading
 and writing LSL streams, `StreamPlayer` for replaying recorded files without
 hardware, `StreamRecorder` for saving streams to disk, and `EpochStream` for
-real-time epoching with online filtering. [MNE-RT](https://payamsash.github.io/mne-rt/) 
+real-time epoching with online filtering. [MNE-RT](https://mne-rt-org.github.io/mne-rt/) 
 uses [MNE-LSL](https://mne.tools/mne-lsl) as its data-acquisition backbone.
 
-**[MNE-RT](https://payamsash.github.io/mne-rt/)** (this package) is an actively
+**[MNE-RT](https://mne-rt-org.github.io/mne-rt/)** (this package) is an actively
 maintained, high-level neurofeedback and BCI application framework built on top of
 [MNE-Python](https://mne.tools) and [MNE-LSL](https://mne.tools/mne-lsl). It adds
 the full closed-loop pipeline that neither of the above provides: **neural
@@ -91,7 +91,7 @@ uv pip install "mne-rt[full]"
 
 **Development install from source:**
 ```bash
-git clone https://github.com/payamsash/mne-rt.git
+git clone https://github.com/mne-rt-org/mne-rt.git
 cd mne-rt
 pip install -e ".[dev]"
 ```
@@ -159,7 +159,7 @@ mne-rt run --subject sub01 --subjects-dir /data --duration 600 \
 ## Documentation
 
 Full documentation (API reference, tutorials, visualization gallery) is available at
-**[payamsash.github.io/mne-rt](https://payamsash.github.io/mne-rt/)**.
+**[mne-rt-org.github.io/mne-rt](https://mne-rt-org.github.io/mne-rt/)**.
 
 ## Cite
 

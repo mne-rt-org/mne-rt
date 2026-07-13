@@ -156,10 +156,10 @@ mne-rt = "mne_rt.cli:main"
 # ---------------------------------------------------------------------------
 
 [project.urls]
-Homepage      = "https://github.com/payamsash/mne-rt"
-Documentation = "https://payamsash.github.io/mne-rt/"
-Repository    = "https://github.com/payamsash/mne-rt"
-"Bug Tracker" = "https://github.com/payamsash/mne-rt/issues"
+Homepage      = "https://github.com/mne-rt-org/mne-rt"
+Documentation = "https://mne-rt-org.github.io/mne-rt/"
+Repository    = "https://github.com/mne-rt-org/mne-rt"
+"Bug Tracker" = "https://github.com/mne-rt-org/mne-rt/issues"
 
 # ---------------------------------------------------------------------------
 # Package discovery
