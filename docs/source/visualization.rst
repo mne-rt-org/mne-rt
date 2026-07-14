@@ -137,6 +137,10 @@ all rendering happens on the main Qt thread via an internal 30 Hz timer.
                </div>
                <div class="viz-feature-item">
                  <span class="viz-fi-icon">✓</span>
+                 <span class="viz-fi-text"><strong>Left-click</strong> an epoch's shaded band → mark it bad (red); click again to unmark</span>
+               </div>
+               <div class="viz-feature-item">
+                 <span class="viz-fi-icon">✓</span>
                  <span class="viz-fi-text">Dashed boundary lines · Pause / Resume · Clear · Screenshot</span>
                </div>
              </div>
@@ -160,6 +164,8 @@ all rendering happens on the main Qt thread via an internal 30 Hz timer.
          ep.show()
          ep.push(chunk)       # continuous data — shape (n_ch, n_samples)
          ep.push_trigger(1)   # mark event code 1 at the current position
+         ...
+         ep.bad_epoch_ids     # -> [2, 5]  (ids the user marked bad by clicking)
 
       See :class:`mne_rt.viz.EpochPlot` for the full API reference.
 
