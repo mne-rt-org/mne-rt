@@ -7,7 +7,9 @@ Shows a scrolling multi-channel raw signal overlaid with event markers:
 * Dashed boundary lines at the epoch edges (tmin, tmax)
 
 tmin / tmax are adjustable live in the sidebar.  Different event codes
-are assigned distinct colours via the ``event_id`` mapping.
+are assigned distinct colours via the ``event_id`` mapping.  Left-click a
+shaded epoch span to interactively mark it bad (drawn in red); see
+:attr:`EpochPlot.bad_epoch_ids`.
 
 Classes
 -------
@@ -216,6 +218,13 @@ class EpochPlot(QMainWindow):
     events with :meth:`push_trigger`.  Both calls are safe to make from
     an acquisition thread.
 
+    Left-click a shaded epoch span to mark it bad (rendered in red); click
+    again to unmark it.  Marked epochs are tracked by :attr:`bad_epoch_ids`
+    for use downstream (e.g. excluding them when building an
+    :class:`mne.Epochs` object from the corresponding trigger stream).
+    The "Clear bad-epoch marks" sidebar button resets all marks without
+    discarding the triggers themselves.
+
     .. versionadded:: 1.1.0
     """
 
@@ -256,10 +265,16 @@ class EpochPlot(QMainWindow):
         self._time_axis = np.linspace(0.0, time_window, n_pts)
         self._buf = np.zeros((self._n_ch, n_pts))
 
-        # Trigger history: (abs_sample_idx, event_code)
-        self._triggers: deque[tuple[int, int]] = deque(maxlen=500)
+        # Trigger history: (abs_sample_idx, event_code, epoch_id)
+        self._triggers: deque[tuple[int, int, int]] = deque(maxlen=500)
+        self._next_epoch_id: int = 0
         # Overlay items currently on the plot (cleared each redraw)
         self._epoch_overlay_items: list = []
+        # Epoch ids marked bad by left-clicking their shaded span
+        self._bad_epoch_ids: set[int] = set()
+        # (epoch_id, x_lo, x_hi) for epochs drawn in the current redraw —
+        # used to hit-test left-clicks against the visible epoch spans.
+        self._visible_epoch_spans: list[tuple[int, float, float]] = []
 
         # Thread-safe pending queue: ('data', ndarray) | ('trigger', int)
         # push()/push_trigger() enqueue here (any thread); _process_pending()
@@ -504,6 +519,15 @@ class EpochPlot(QMainWindow):
         btn_clear_trigs.clicked.connect(self._clear_triggers)
         lay.addWidget(btn_clear_trigs)
 
+        bad_hint = QLabel("Click an epoch's shaded\nspan to mark it bad (red)")
+        bad_hint.setWordWrap(True)
+        bad_hint.setStyleSheet("color:#7a7a9a; font-size:9px;")
+        lay.addWidget(bad_hint)
+
+        btn_clear_bad = QPushButton("Clear bad-epoch marks")
+        btn_clear_bad.clicked.connect(self._clear_bad_epochs)
+        lay.addWidget(btn_clear_bad)
+
         # Legend: one colour swatch per event code
         if self._event_id:
             lay.addWidget(QLabel("─── Legend ───"))
@@ -561,19 +585,46 @@ class EpochPlot(QMainWindow):
         self._set_page_start(self._page_start - direction * step, source="wheel")
 
     def _on_scene_clicked(self, event) -> None:
-        if event.button() != Qt.MouseButton.RightButton:
-            return
         pos = event.scenePos()
-        axis = self._pi.getAxis("left")
-        if not axis.sceneBoundingRect().contains(pos):
+        btn = event.button()
+        vb = self._pi.getViewBox()
+
+        if btn == Qt.MouseButton.RightButton:
+            axis = self._pi.getAxis("left")
+            if not axis.sceneBoundingRect().contains(pos):
+                return
+            y_val = vb.mapSceneToView(pos).y()
+            end = min(self._page_start + self._n_shown, self._n_ch)
+            n_actual = end - self._page_start
+            vis_idx = int(round(n_actual - 1 - y_val))
+            if 0 <= vis_idx < n_actual:
+                ch_idx = self._page_start + vis_idx
+                self._show_channel_location(self._ch_names[ch_idx])
             return
-        y_val = self._pi.getViewBox().mapSceneToView(pos).y()
-        end = min(self._page_start + self._n_shown, self._n_ch)
-        n_actual = end - self._page_start
-        vis_idx = int(round(n_actual - 1 - y_val))
-        if 0 <= vis_idx < n_actual:
-            ch_idx = self._page_start + vis_idx
-            self._show_channel_location(self._ch_names[ch_idx])
+
+        if btn == Qt.MouseButton.LeftButton and not event.double():
+            if vb.sceneBoundingRect().contains(pos):
+                x_val = vb.mapSceneToView(pos).x()
+                epoch_id = self._epoch_id_at(x_val)
+                if epoch_id is not None:
+                    # Defer to keep Qt widget calls in the main thread, same
+                    # pattern as RawPlot._toggle_bad_channel.
+                    QTimer.singleShot(0, lambda eid=epoch_id: self._toggle_bad_epoch(eid))
+
+    def _epoch_id_at(self, x_val: float) -> int | None:
+        """Return the epoch id whose span contains ``x_val``, if any."""
+        for epoch_id, x_lo, x_hi in self._visible_epoch_spans:
+            if x_lo <= x_val <= x_hi:
+                return epoch_id
+        return None
+
+    def _toggle_bad_epoch(self, epoch_id: int) -> None:
+        if epoch_id in self._bad_epoch_ids:
+            self._bad_epoch_ids.discard(epoch_id)
+        else:
+            self._bad_epoch_ids.add(epoch_id)
+        self._update_event_count_label()
+        self._redraw()
 
     def _show_channel_location(self, ch_name: str) -> None:
         if self._info is None:
@@ -612,6 +663,9 @@ class EpochPlot(QMainWindow):
         self._buf[:] = 0.0
         self._triggers.clear()
         self._epoch_overlay_items.clear()
+        self._bad_epoch_ids.clear()
+        self._visible_epoch_spans.clear()
+        self._next_epoch_id = 0
         self._total_pushed = 0
         self._redraw()
 
@@ -662,18 +716,42 @@ class EpochPlot(QMainWindow):
 
     def _clear_triggers(self) -> None:
         self._triggers.clear()
+        self._bad_epoch_ids.clear()
         self._event_count_lbl.setText("No triggers received")
         self._event_count_lbl.setStyleSheet("color:#505070; font-size:10px;")
         self._redraw()
+
+    def _clear_bad_epochs(self) -> None:
+        self._bad_epoch_ids.clear()
+        self._update_event_count_label()
+        self._redraw()
+
+    def _update_event_count_label(self) -> None:
+        n_t = len(self._triggers)
+        n_bad = len(self._bad_epoch_ids)
+        if n_t == 0:
+            self._event_count_lbl.setText("No triggers received")
+            self._event_count_lbl.setStyleSheet("color:#505070; font-size:10px;")
+            return
+        text = f"{n_t} trigger{'s' if n_t != 1 else ''} received"
+        if n_bad:
+            text += f"  ✕ {n_bad} bad"
+        self._event_count_lbl.setText(text)
+        self._event_count_lbl.setStyleSheet("color:#80d8ff; font-size:10px;")
 
     # ------------------------------------------------------------------
     # Epoch overlay rendering
     # ------------------------------------------------------------------
 
+    #: Bad-epoch overlay colour (red) — overrides the per-code colour so a
+    #: rejected epoch is unmistakable regardless of its event code.
+    _BAD_EPOCH_COLOR = "#ff5252"
+
     def _redraw_epoch_overlays(self) -> None:
         for item in self._epoch_overlay_items:
             self._pi.removeItem(item)
         self._epoch_overlay_items.clear()
+        self._visible_epoch_spans.clear()
 
         if not self._triggers:
             return
@@ -682,7 +760,7 @@ class EpochPlot(QMainWindow):
         buf_start = self._total_pushed - buf_size  # absolute sample of leftmost buf column
         dash_style = Qt.PenStyle.DashLine
 
-        for trig_abs, code in self._triggers:
+        for trig_abs, code, epoch_id in self._triggers:
             # x coordinate of the trigger (t=0) in the current view
             x0 = (trig_abs - buf_start) / self._sfreq
             # Accept if the epoch window overlaps the visible range
@@ -691,13 +769,15 @@ class EpochPlot(QMainWindow):
             if x_hi < 0 or x_lo > self._time_window:
                 continue
 
-            color = self._trigger_color(code)
+            is_bad = epoch_id in self._bad_epoch_ids
+            color = self._BAD_EPOCH_COLOR if is_bad else self._trigger_color(code)
+            self._visible_epoch_spans.append((epoch_id, x_lo, x_hi))
 
             # ── solid trigger line at t=0 ──────────────────────────────
             trig_line = pg.InfiniteLine(
                 pos=x0,
                 angle=90,
-                pen=pg.mkPen(color=color, width=2),
+                pen=pg.mkPen(color=color, width=3 if is_bad else 2),
             )
             self._pi.addItem(trig_line)
             self._epoch_overlay_items.append(trig_line)
@@ -707,9 +787,9 @@ class EpochPlot(QMainWindow):
                 r, g, b = self._hex_to_rgb(color)
                 region = pg.LinearRegionItem(
                     values=(x_lo, x_hi),
-                    brush=pg.mkBrush(r, g, b, 30),
+                    brush=pg.mkBrush(r, g, b, 70 if is_bad else 30),
                     movable=False,
-                    pen=pg.mkPen(None),  # no border line on the region itself
+                    pen=pg.mkPen(color=color, width=1) if is_bad else pg.mkPen(None),
                 )
                 self._pi.addItem(region)
                 self._epoch_overlay_items.append(region)
@@ -757,6 +837,23 @@ class EpochPlot(QMainWindow):
     # Public interface
     # ------------------------------------------------------------------
 
+    @property
+    def bad_epoch_ids(self) -> list[int]:
+        """Sorted list of epoch ids marked bad by clicking their span."""
+        return sorted(self._bad_epoch_ids)
+
+    def is_epoch_bad(self, epoch_id: int) -> bool:
+        """Whether ``epoch_id`` has been marked bad.
+
+        Parameters
+        ----------
+        epoch_id : int
+            Epoch id, as assigned in push order starting at 0 (the id of
+            the ``n``-th call to :meth:`push_trigger` is ``n``, ignoring
+            any epochs since dropped from the trigger history).
+        """
+        return epoch_id in self._bad_epoch_ids
+
     def push(self, data: np.ndarray) -> None:
         """Enqueue a raw data chunk for display.
 
@@ -800,10 +897,10 @@ class EpochPlot(QMainWindow):
                 self._total_pushed += n
                 changed = True
             else:  # trigger
-                self._triggers.append((self._total_pushed, payload))
-                n_t = len(self._triggers)
-                self._event_count_lbl.setText(f"{n_t} trigger{'s' if n_t != 1 else ''} received")
-                self._event_count_lbl.setStyleSheet("color:#80d8ff; font-size:10px;")
+                epoch_id = self._next_epoch_id
+                self._next_epoch_id += 1
+                self._triggers.append((self._total_pushed, payload, epoch_id))
+                self._update_event_count_label()
                 changed = True
         if changed:
             end = min(self._page_start + self._n_shown, self._n_ch)

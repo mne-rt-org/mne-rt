@@ -21,6 +21,7 @@ os.environ.setdefault("QT_QPA_PLATFORM", "offscreen")
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "src"))
 
 import numpy as np
+import pyqtgraph as pg
 import pytest
 
 # ---------------------------------------------------------------------------
@@ -442,9 +443,10 @@ class TestEpochPlot:
         w.push_trigger(code=1)
         w._process_pending()  # drain queue synchronously
         assert len(w._triggers) == 1
-        trig_abs, trig_code = w._triggers[0]
+        trig_abs, trig_code, epoch_id = w._triggers[0]
         assert trig_abs == 64
         assert trig_code == 1
+        assert epoch_id == 0
         w.close()
 
     def test_apply_epoch_window(self, qt_app):
@@ -470,6 +472,93 @@ class TestEpochPlot:
         assert len(w._triggers) == 2
         w._clear_triggers()
         assert len(w._triggers) == 0
+        w.close()
+
+    def test_epoch_ids_increment_and_survive_clear_triggers(self, qt_app):
+        from mne_rt.viz.epoch_plot import EpochPlot
+
+        w = EpochPlot(CH_NAMES, sfreq=SFREQ)
+        w.push_trigger(1)
+        w.push_trigger(1)
+        w._process_pending()
+        ids = [t[2] for t in w._triggers]
+        assert ids == [0, 1]
+        # next_epoch_id keeps counting monotonically even after clearing
+        # the (now orphaned) trigger records.
+        w._clear_triggers()
+        w.push_trigger(1)
+        w._process_pending()
+        assert w._triggers[0][2] == 2
+        w.close()
+
+    def test_toggle_bad_epoch_marks_and_unmarks(self, qt_app):
+        from mne_rt.viz.epoch_plot import EpochPlot
+
+        w = EpochPlot(CH_NAMES, sfreq=SFREQ)
+        w.push_trigger(1)
+        w._process_pending()
+        assert w.bad_epoch_ids == []
+        assert not w.is_epoch_bad(0)
+
+        w._toggle_bad_epoch(0)
+        assert w.bad_epoch_ids == [0]
+        assert w.is_epoch_bad(0)
+
+        w._toggle_bad_epoch(0)
+        assert w.bad_epoch_ids == []
+        assert not w.is_epoch_bad(0)
+        w.close()
+
+    def test_bad_epoch_renders_in_red(self, qt_app):
+        from mne_rt.viz.epoch_plot import EpochPlot
+
+        w = EpochPlot(CH_NAMES, sfreq=SFREQ, time_window=5.0)
+        w.push_trigger(1)
+        w._process_pending()
+        assert len(w._visible_epoch_spans) == 1
+        assert w._visible_epoch_spans[0][0] == 0
+
+        w._toggle_bad_epoch(0)
+        # After marking bad, the trigger line for epoch 0 is drawn in the
+        # dedicated bad-epoch red, not the default event-code colour.
+        trig_lines = [
+            item
+            for item in w._epoch_overlay_items
+            if isinstance(item, pg.InfiniteLine) and item.angle == 90
+        ]
+        assert any(line.pen.color().name() == w._BAD_EPOCH_COLOR for line in trig_lines)
+        w.close()
+
+    def test_epoch_id_at_hit_tests_visible_spans(self, qt_app):
+        from mne_rt.viz.epoch_plot import EpochPlot
+
+        w = EpochPlot(CH_NAMES, sfreq=SFREQ, tmin=-0.1, tmax=0.5, time_window=5.0)
+        # Trigger fired "now" (at the right edge); pushing data afterwards
+        # scrolls it left to the middle of the visible window, at x0 = 2.5 s.
+        w.push_trigger(1)
+        n_shift = int(2.5 * SFREQ)
+        data = RNG.standard_normal((N_CH, n_shift)).astype(np.float32) * 1e-6
+        w.push(data)
+        w._process_pending()
+        assert w._visible_epoch_spans[0] == (0, pytest.approx(2.4), pytest.approx(3.0))
+        assert w._epoch_id_at(2.7) == 0
+        assert w._epoch_id_at(4.9) is None
+        w.close()
+
+    def test_clear_bad_epochs_resets_marks_but_keeps_triggers(self, qt_app):
+        from mne_rt.viz.epoch_plot import EpochPlot
+
+        w = EpochPlot(CH_NAMES, sfreq=SFREQ)
+        w.push_trigger(1)
+        w.push_trigger(1)
+        w._process_pending()
+        w._toggle_bad_epoch(0)
+        w._toggle_bad_epoch(1)
+        assert w.bad_epoch_ids == [0, 1]
+
+        w._clear_bad_epochs()
+        assert w.bad_epoch_ids == []
+        assert len(w._triggers) == 2
         w.close()
 
 

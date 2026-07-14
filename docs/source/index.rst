@@ -124,6 +124,7 @@ Key capabilities
    denoising
    modalities
    protocols
+   whats_new
 
 .. toctree::
    :hidden:
