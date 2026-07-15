@@ -1,9 +1,9 @@
-"""Tests for simulate_nf_session."""
+"""Tests for simulate_nf_session and simulate_raw."""
 
 import numpy as np
 import pytest
 
-from mne_rt.tools.simulation import simulate_nf_session
+from mne_rt.tools.simulation import simulate_nf_session, simulate_raw
 
 # ------------------------------------------------------------------
 # Basic output shape and types
@@ -138,3 +138,74 @@ def test_data_amplitude_reasonable():
     raw, _ = simulate_nf_session(duration=4.0, sfreq=256.0, n_channels=64, rng_seed=0)
     data = raw.get_data()
     assert np.max(np.abs(data)) < 1e-3  # < 1 mV
+
+
+# ------------------------------------------------------------------
+# simulate_raw
+# ------------------------------------------------------------------
+
+
+def test_simulate_raw_invalid_data_type():
+    with pytest.raises(ValueError, match="data_type"):
+        simulate_raw(
+            brain_label="bankssts-lh",
+            frequency=10.0,
+            amplitude=1.0,
+            duration=0.5,
+            gap_duration=0.1,
+            n_repetition=1,
+            start=0.0,
+            data_type="fnirs",
+        )
+
+
+@pytest.fixture(scope="module")
+def small_simulated_raw_path(tmp_path_factory):
+    return tmp_path_factory.mktemp("simulate_raw") / "sim-raw.fif"
+
+
+@pytest.fixture(scope="module")
+def small_simulated_raw(small_simulated_raw_path):
+    """Build a minimal simulate_raw() output, or skip if fsaverage is unavailable."""
+    pytest.importorskip("mne")
+    try:
+        return simulate_raw(
+            brain_label="bankssts-lh",
+            frequency=10.0,
+            amplitude=1.0,
+            duration=0.5,
+            gap_duration=0.1,
+            n_repetition=1,
+            start=0.0,
+            data_type="eeg",
+            sfreq=128.0,
+            n_eeg_channels=32,  # maps to the 61-channel easycap-M10 montage (see montage_map)
+            add_eog_artifacts=False,
+            fname_save=small_simulated_raw_path,
+            verbose="ERROR",
+        )
+    except Exception as exc:
+        pytest.skip(f"simulate_raw dependencies unavailable: {exc}")
+
+
+def test_simulate_raw_returns_raw(small_simulated_raw):
+    import mne
+
+    assert isinstance(small_simulated_raw, mne.io.BaseRaw)
+
+
+def test_simulate_raw_n_channels(small_simulated_raw):
+    assert len(small_simulated_raw.ch_names) == 61
+
+
+def test_simulate_raw_sfreq(small_simulated_raw):
+    assert small_simulated_raw.info["sfreq"] == pytest.approx(128.0)
+
+
+def test_simulate_raw_saved_file(small_simulated_raw, small_simulated_raw_path):
+    assert small_simulated_raw_path.exists()
+
+
+def test_simulate_raw_data_finite(small_simulated_raw):
+    data = small_simulated_raw.get_data()
+    assert np.all(np.isfinite(data))

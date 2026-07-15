@@ -40,3 +40,10 @@ Bug fixes
 - :func:`mne.datasets.eegbci.load_data` is now called with
   ``update_path=True`` in the motor-imagery example, avoiding an
   interactive prompt that hung non-interactive/CI gallery builds.
+- Fixed :func:`~mne_rt.tools.compute_bandpower` always raising ``TypeError``
+  with ``method="multitaper"`` due to an invalid ``axis`` argument passed to
+  MNE's :func:`~mne.time_frequency.psd_array_multitaper`.
+- Fixed :meth:`~mne_rt.RTStream.create_report` raising ``FileNotFoundError``
+  when called without a prior :meth:`~mne_rt.RTStream.record_baseline` or
+  :meth:`~mne_rt.RTStream.record_main` call, since the session's output
+  directories were never created in that path.
