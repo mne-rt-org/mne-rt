@@ -1,0 +1,1180 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../../../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>mne_rt.viz.topomap_plot &#8212; MNE-RT</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../../_static/styles/theme.css?digest=90905a2f556bf617f1a9" rel="stylesheet" />
+<link href="../../../_static/styles/pydata-sphinx-theme.css?digest=90905a2f556bf617f1a9" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/sg_gallery.css?v=fd6457a4" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/sg_gallery-binder.css?v=f4aeca0c" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/sg_gallery-dataframe.css?v=2082cf3c" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/sg_gallery-rendered-html.css?v=1277b6f3" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/custom.css?v=5bf657dd" />
+  
+  <!-- So that users can add custom icons -->
+  <script defer src="../../../_static/scripts/fontawesome.js?digest=90905a2f556bf617f1a9"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../../_static/scripts/bootstrap.js?digest=90905a2f556bf617f1a9" />
+<link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=90905a2f556bf617f1a9" />
+
+    <script src="../../../_static/documentation_options.js?v=8d563738"></script>
+    <script src="../../../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="../../../_static/sg-tags.js?v=d80f6fa4"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = '_modules/mne_rt/viz/topomap_plot';</script>
+    <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="" />
+  
+    
+    <script src="../../../_static/searchtools.js"></script>
+    <script src="../../../_static/language_data.js"></script>
+    <script src="../../../searchindex.js"></script>
+  
+  </head>
+  <body data-default-mode="">
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+  
+  
+  
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../../../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header id="pst-header" class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../../../index.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../../../_static/mne_rt_logo.svg" class="logo__image only-light" alt="MNE-RT - Home"/>
+    <img src="../../../_static/mne_rt_logo.svg" class="logo__image only-dark pst-js-only" alt="MNE-RT - Home"/>
+  
+  
+</a></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../install.html">
+    Installation
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../tutorial.html">
+    User Guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../api.html">
+    API Reference
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../visualization.html">
+    Visualisation
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../cli.html">
+    CLI
+  </a>
+</li>
+
+            <li class="nav-item dropdown">
+                <button class="btn dropdown-toggle nav-item" type="button"
+                data-bs-toggle="dropdown" aria-expanded="false"
+                aria-controls="pst-nav-more-links">
+                    More
+                </button>
+                <ul id="pst-nav-more-links" class="dropdown-menu">
+                    
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../../../denoising.html">
+    Artifact Correction
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../../../modalities.html">
+    Real-time Feature Modalities
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../../../protocols.html">
+    NF Protocols
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../../../whats_new.html">
+    What’s new
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../../../auto_examples/index.html">
+    Examples Gallery
+  </a>
+</li>
+
+                </ul>
+            </li>
+            
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+        </div>
+      
+      
+        <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/payamsash/mne-rt" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-square-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
+        </li>
+</ul></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+    </div>
+  
+
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+        
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar hide-on-wide">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../install.html">
+    Installation
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../tutorial.html">
+    User Guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../api.html">
+    API Reference
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../visualization.html">
+    Visualisation
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../cli.html">
+    CLI
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../denoising.html">
+    Artifact Correction
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../modalities.html">
+    Real-time Feature Modalities
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../protocols.html">
+    NF Protocols
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../whats_new.html">
+    What’s new
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../auto_examples/index.html">
+    Examples Gallery
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/payamsash/mne-rt" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-square-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
+        </li>
+</ul></div>
+        
+      </div>
+    
+  </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../../../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    
+    <li class="breadcrumb-item"><a href="../../index.html" class="nav-link">Module code</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">mne_rt.viz.topomap_plot</span></li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <h1>Source code for mne_rt.viz.topomap_plot</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;Real-time scalp topomap and band-power display.</span>
+
+<span class="sd">Dark-themed window built on Qt (via qtpy) + matplotlib (embedded via</span>
+<span class="sd">:class:`~matplotlib.backends.backend_qtagg.FigureCanvasQTAgg`).  Displays one</span>
+<span class="sd">topomap per selected frequency band, updated in real-time from raw EEG/MEG</span>
+<span class="sd">windows.</span>
+
+<span class="sd">Classes</span>
+<span class="sd">-------</span>
+<span class="sd">TopomapPlot</span>
+<span class="sd">    Real-time scalp topomap showing per-band power distribution.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">datetime</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Optional</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">mne</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">matplotlib.backends.backend_qtagg</span><span class="w"> </span><span class="kn">import</span> <span class="n">FigureCanvasQTAgg</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">matplotlib.figure</span><span class="w"> </span><span class="kn">import</span> <span class="n">Figure</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">qtpy.QtCore</span><span class="w"> </span><span class="kn">import</span> <span class="n">Qt</span><span class="p">,</span> <span class="n">Signal</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">qtpy.QtWidgets</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">QCheckBox</span><span class="p">,</span>
+    <span class="n">QComboBox</span><span class="p">,</span>
+    <span class="n">QDoubleSpinBox</span><span class="p">,</span>
+    <span class="n">QGroupBox</span><span class="p">,</span>
+    <span class="n">QHBoxLayout</span><span class="p">,</span>
+    <span class="n">QLabel</span><span class="p">,</span>
+    <span class="n">QMainWindow</span><span class="p">,</span>
+    <span class="n">QPushButton</span><span class="p">,</span>
+    <span class="n">QScrollArea</span><span class="p">,</span>
+    <span class="n">QSpinBox</span><span class="p">,</span>
+    <span class="n">QVBoxLayout</span><span class="p">,</span>
+    <span class="n">QWidget</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="c1"># ---------------------------------------------------------------------------</span>
+<span class="c1"># Constants</span>
+<span class="c1"># ---------------------------------------------------------------------------</span>
+
+<span class="n">_DEFAULT_BANDS</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">]]</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">&quot;δ  1–4 Hz&quot;</span><span class="p">:</span> <span class="p">(</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">4.0</span><span class="p">),</span>
+    <span class="s2">&quot;θ  4–8 Hz&quot;</span><span class="p">:</span> <span class="p">(</span><span class="mf">4.0</span><span class="p">,</span> <span class="mf">8.0</span><span class="p">),</span>
+    <span class="s2">&quot;α  8–13 Hz&quot;</span><span class="p">:</span> <span class="p">(</span><span class="mf">8.0</span><span class="p">,</span> <span class="mf">13.0</span><span class="p">),</span>
+    <span class="s2">&quot;β  13–30 Hz&quot;</span><span class="p">:</span> <span class="p">(</span><span class="mf">13.0</span><span class="p">,</span> <span class="mf">30.0</span><span class="p">),</span>
+    <span class="s2">&quot;γ  30–45 Hz&quot;</span><span class="p">:</span> <span class="p">(</span><span class="mf">30.0</span><span class="p">,</span> <span class="mf">45.0</span><span class="p">),</span>
+<span class="p">}</span>
+
+<span class="n">_CMAPS</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;RdBu_r&quot;</span><span class="p">,</span> <span class="s2">&quot;hot&quot;</span><span class="p">,</span> <span class="s2">&quot;plasma&quot;</span><span class="p">,</span> <span class="s2">&quot;viridis&quot;</span><span class="p">,</span> <span class="s2">&quot;Reds&quot;</span><span class="p">,</span> <span class="s2">&quot;RdYlBu_r&quot;</span><span class="p">]</span>
+
+<span class="n">_QSS</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">QMainWindow, QWidget {</span>
+<span class="s2">    background-color: #1a1a2e;</span>
+<span class="s2">    color: #e0e0e0;</span>
+<span class="s2">    font-family: &quot;Segoe UI&quot;, sans-serif;</span>
+<span class="s2">}</span>
+<span class="s2">QPushButton {</span>
+<span class="s2">    background-color: #16213e;</span>
+<span class="s2">    color: #d0d0e8;</span>
+<span class="s2">    border: 1px solid #0f3460;</span>
+<span class="s2">    border-radius: 5px;</span>
+<span class="s2">    padding: 5px 10px;</span>
+<span class="s2">    font-size: 12px;</span>
+<span class="s2">}</span>
+<span class="s2">QPushButton:hover  { background-color: #0f3460; }</span>
+<span class="s2">QPushButton:pressed { background-color: #533483; }</span>
+<span class="s2">QPushButton:checked {</span>
+<span class="s2">    background-color: #533483;</span>
+<span class="s2">    border-color: #a882dd;</span>
+<span class="s2">    color: #ffffff;</span>
+<span class="s2">}</span>
+<span class="s2">QComboBox {</span>
+<span class="s2">    background-color: #16213e;</span>
+<span class="s2">    color: #d0d0e8;</span>
+<span class="s2">    border: 1px solid #0f3460;</span>
+<span class="s2">    border-radius: 4px;</span>
+<span class="s2">    padding: 3px 6px;</span>
+<span class="s2">}</span>
+<span class="s2">QComboBox QAbstractItemView {</span>
+<span class="s2">    background-color: #16213e;</span>
+<span class="s2">    color: #d0d0e8;</span>
+<span class="s2">    selection-background-color: #0f3460;</span>
+<span class="s2">}</span>
+<span class="s2">QGroupBox {</span>
+<span class="s2">    border: 1px solid #2a2a4a;</span>
+<span class="s2">    border-radius: 6px;</span>
+<span class="s2">    margin-top: 10px;</span>
+<span class="s2">    padding-top: 6px;</span>
+<span class="s2">    font-weight: bold;</span>
+<span class="s2">    font-size: 11px;</span>
+<span class="s2">    color: #8888aa;</span>
+<span class="s2">}</span>
+<span class="s2">QGroupBox::title {</span>
+<span class="s2">    subcontrol-origin: margin;</span>
+<span class="s2">    left: 8px;</span>
+<span class="s2">    padding: 0 4px;</span>
+<span class="s2">}</span>
+<span class="s2">QLabel  { color: #b0b0c8; font-size: 11px; }</span>
+<span class="s2">QCheckBox { color: #b0b0c8; font-size: 11px; }</span>
+<span class="s2">QScrollArea { border: none; }</span>
+<span class="s2">QStatusBar { background-color: #0d0d1a; color: #606080; font-size: 10px; }</span>
+<span class="s2">QSpinBox {</span>
+<span class="s2">    background-color: #16213e;</span>
+<span class="s2">    color: #d0d0e8;</span>
+<span class="s2">    border: 1px solid #0f3460;</span>
+<span class="s2">    border-radius: 4px;</span>
+<span class="s2">    padding: 2px 4px;</span>
+<span class="s2">}</span>
+<span class="s2">&quot;&quot;&quot;</span>
+
+
+<div class="viewcode-block" id="TopomapPlot">
+<a class="viewcode-back" href="../../../generated/mne_rt.viz.TopomapPlot.html#mne_rt.viz.TopomapPlot">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">TopomapPlot</span><span class="p">(</span><span class="n">QMainWindow</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Real-time scalp topomap showing per-band power distribution.</span>
+
+<span class="sd">    Displays one colour-mapped topomap per selected frequency band,</span>
+<span class="sd">    updated in real-time by :meth:`push`.  Built on Qt (via qtpy) with a</span>
+<span class="sd">    matplotlib figure embedded via</span>
+<span class="sd">    :class:`~matplotlib.backends.backend_qtagg.FigureCanvasQTAgg`.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    info : mne.Info</span>
+<span class="sd">        Channel info containing electrode positions (montage must be set).</span>
+<span class="sd">    sfreq : float</span>
+<span class="sd">        Sampling frequency of the incoming data in Hz.</span>
+<span class="sd">    bands : dict[str, tuple[float, float]] | None, default None</span>
+<span class="sd">        Frequency bands to display as ``{label: (f_low, f_high)}``.</span>
+<span class="sd">        Defaults to δ/θ/α/β/γ standard bands.</span>
+<span class="sd">    cmap : str, default &quot;RdBu_r&quot;</span>
+<span class="sd">        Initial colourmap.  Must be one of</span>
+<span class="sd">        ``[&quot;RdBu_r&quot;, &quot;hot&quot;, &quot;plasma&quot;, &quot;viridis&quot;, &quot;Reds&quot;, &quot;RdYlBu_r&quot;]``.</span>
+<span class="sd">    sensors : bool, default True</span>
+<span class="sd">        Whether to draw sensor markers on the topomap.</span>
+<span class="sd">    contours : int, default 6</span>
+<span class="sd">        Number of contour lines.  Set to ``0`` to disable.</span>
+<span class="sd">    display_smoothing : float, default 1.0</span>
+<span class="sd">        EMA factor applied to the per-channel band-power maps before</span>
+<span class="sd">        rendering.  ``1.0`` disables smoothing (raw per-window estimate</span>
+<span class="sd">        shown directly — good for artifact monitoring); lower values</span>
+<span class="sd">        progressively smooth the spatial maps across consecutive windows.</span>
+<span class="sd">    verbose : bool | str | None, default None</span>
+<span class="sd">        Verbosity level.  See :func:`~mne_rt._logging.set_log_level`.</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    mne_rt.viz.NFPlot : Scrolling NF signal display.</span>
+<span class="sd">    mne_rt.viz.BrainPlot : 3D brain activation display.</span>
+<span class="sd">    mne_rt.RTStream.record_main : Main NF loop that drives all plots.</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    The control panel (right sidebar) provides:</span>
+
+<span class="sd">    * **Playback** — pause/resume, screenshot.</span>
+<span class="sd">    * **Display** — colormap selector, contours, sensor toggle, colorbar mode.</span>
+<span class="sd">    * **Bands** — per-band visibility checkboxes.  Toggling rebuilds the</span>
+<span class="sd">      figure layout automatically.</span>
+
+<span class="sd">    Band power is estimated via FFT on each incoming window (Hanning window</span>
+<span class="sd">    applied to reduce spectral leakage).</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    Minimal offline usage:</span>
+
+<span class="sd">    &gt;&gt;&gt; from mne import create_info</span>
+<span class="sd">    &gt;&gt;&gt; import numpy as np</span>
+<span class="sd">    &gt;&gt;&gt; app = QApplication([])</span>
+<span class="sd">    &gt;&gt;&gt; info = create_info([&quot;Fp1&quot;, &quot;Fz&quot;, &quot;Cz&quot;, &quot;Oz&quot;], sfreq=256, ch_types=&quot;eeg&quot;)</span>
+<span class="sd">    &gt;&gt;&gt; plot = TopomapPlot(info, sfreq=256)</span>
+<span class="sd">    &gt;&gt;&gt; plot.show()</span>
+<span class="sd">    &gt;&gt;&gt; data = np.random.randn(4, 256)   # 1 s window</span>
+<span class="sd">    &gt;&gt;&gt; plot.push(data)</span>
+<span class="sd">    &gt;&gt;&gt; app.exec()</span>
+
+<span class="sd">    .. versionadded:: 1.0.0</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1">#: Emitted when the window is closed, *before* Qt tears down the widget.</span>
+    <span class="c1">#: :meth:`~mne_rt.RTStream.record_main` connects this to stop pumping</span>
+    <span class="c1">#: new data into a closed window while other plot windows stay open.</span>
+    <span class="n">closed</span> <span class="o">=</span> <span class="n">Signal</span><span class="p">()</span>
+
+<div class="viewcode-block" id="TopomapPlot.__init__">
+<a class="viewcode-back" href="../../../generated/mne_rt.viz.TopomapPlot.html#mne_rt.viz.TopomapPlot.__init__">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">info</span><span class="p">:</span> <span class="n">mne</span><span class="o">.</span><span class="n">Info</span><span class="p">,</span>
+        <span class="n">sfreq</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+        <span class="n">bands</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">]]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">cmap</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;RdBu_r&quot;</span><span class="p">,</span>
+        <span class="n">sensors</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+        <span class="n">contours</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">6</span><span class="p">,</span>
+        <span class="n">display_smoothing</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1.0</span><span class="p">,</span>
+        <span class="n">verbose</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">mne_rt._logging</span><span class="w"> </span><span class="kn">import</span> <span class="n">set_log_level</span>
+
+        <span class="n">set_log_level</span><span class="p">(</span><span class="n">verbose</span><span class="p">)</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_info</span> <span class="o">=</span> <span class="n">info</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_sfreq</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">sfreq</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_bands</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">]]</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="nb">dict</span><span class="p">(</span><span class="n">bands</span><span class="p">)</span> <span class="k">if</span> <span class="n">bands</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="nb">dict</span><span class="p">(</span><span class="n">_DEFAULT_BANDS</span><span class="p">)</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_cmap</span> <span class="o">=</span> <span class="n">cmap</span> <span class="k">if</span> <span class="n">cmap</span> <span class="ow">in</span> <span class="n">_CMAPS</span> <span class="k">else</span> <span class="s2">&quot;RdBu_r&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_sensors</span> <span class="o">=</span> <span class="n">sensors</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_contours</span> <span class="o">=</span> <span class="n">contours</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_paused</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_last_data</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_visible_bands</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_bands</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_display_alpha</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">clip</span><span class="p">(</span><span class="n">display_smoothing</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_bp_ema</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+
+        <span class="c1"># Detect channel type for plot_topomap</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_ch_type</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_detect_ch_type</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_topo_picks</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_topo_picks</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_build_ui</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">setWindowTitle</span><span class="p">(</span><span class="s2">&quot;MNE-RT — Topomap&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">resize</span><span class="p">(</span><span class="mi">1200</span><span class="p">,</span> <span class="mi">540</span><span class="p">)</span></div>
+
+
+    <span class="c1"># ------------------------------------------------------------------</span>
+    <span class="c1"># Setup helpers</span>
+    <span class="c1"># ------------------------------------------------------------------</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_detect_ch_type</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="n">n_eeg</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">mne</span><span class="o">.</span><span class="n">pick_types</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_info</span><span class="p">,</span> <span class="n">eeg</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">meg</span><span class="o">=</span><span class="kc">False</span><span class="p">))</span>
+        <span class="n">n_mag</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">mne</span><span class="o">.</span><span class="n">pick_types</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_info</span><span class="p">,</span> <span class="n">meg</span><span class="o">=</span><span class="s2">&quot;mag&quot;</span><span class="p">,</span> <span class="n">eeg</span><span class="o">=</span><span class="kc">False</span><span class="p">))</span>
+        <span class="n">n_grad</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">mne</span><span class="o">.</span><span class="n">pick_types</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_info</span><span class="p">,</span> <span class="n">meg</span><span class="o">=</span><span class="s2">&quot;grad&quot;</span><span class="p">,</span> <span class="n">eeg</span><span class="o">=</span><span class="kc">False</span><span class="p">))</span>
+        <span class="k">if</span> <span class="n">n_eeg</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">return</span> <span class="s2">&quot;eeg&quot;</span>
+        <span class="k">if</span> <span class="n">n_mag</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">return</span> <span class="s2">&quot;mag&quot;</span>
+        <span class="k">if</span> <span class="n">n_grad</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">return</span> <span class="s2">&quot;grad&quot;</span>
+        <span class="k">return</span> <span class="s2">&quot;eeg&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_get_topo_picks</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Indices of channels to use for the topomap.&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ch_type</span> <span class="o">==</span> <span class="s2">&quot;eeg&quot;</span><span class="p">:</span>
+            <span class="n">picks</span> <span class="o">=</span> <span class="n">mne</span><span class="o">.</span><span class="n">pick_types</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_info</span><span class="p">,</span> <span class="n">eeg</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">meg</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">exclude</span><span class="o">=</span><span class="s2">&quot;bads&quot;</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ch_type</span> <span class="o">==</span> <span class="s2">&quot;mag&quot;</span><span class="p">:</span>
+            <span class="n">picks</span> <span class="o">=</span> <span class="n">mne</span><span class="o">.</span><span class="n">pick_types</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_info</span><span class="p">,</span> <span class="n">meg</span><span class="o">=</span><span class="s2">&quot;mag&quot;</span><span class="p">,</span> <span class="n">eeg</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">exclude</span><span class="o">=</span><span class="s2">&quot;bads&quot;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">picks</span> <span class="o">=</span> <span class="n">mne</span><span class="o">.</span><span class="n">pick_types</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_info</span><span class="p">,</span> <span class="n">meg</span><span class="o">=</span><span class="s2">&quot;grad&quot;</span><span class="p">,</span> <span class="n">eeg</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">exclude</span><span class="o">=</span><span class="s2">&quot;bads&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">picks</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">picks</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_info</span><span class="p">[</span><span class="s2">&quot;ch_names&quot;</span><span class="p">]))</span>
+        <span class="c1"># Drop channels whose 3D position is NaN (e.g. TP9/TP10 not in biosemi64 montage)</span>
+        <span class="n">valid</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_info</span><span class="p">[</span><span class="s2">&quot;chs&quot;</span><span class="p">][</span><span class="n">p</span><span class="p">][</span><span class="s2">&quot;loc&quot;</span><span class="p">][:</span><span class="mi">3</span><span class="p">]))</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">picks</span><span class="p">])</span>
+        <span class="n">picks</span> <span class="o">=</span> <span class="n">picks</span><span class="p">[</span><span class="n">valid</span><span class="p">]</span>
+        <span class="k">return</span> <span class="n">picks</span>
+
+    <span class="c1"># ------------------------------------------------------------------</span>
+    <span class="c1"># UI construction</span>
+    <span class="c1"># ------------------------------------------------------------------</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_build_ui</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">setStyleSheet</span><span class="p">(</span><span class="n">_QSS</span><span class="p">)</span>
+        <span class="n">central</span> <span class="o">=</span> <span class="n">QWidget</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">setCentralWidget</span><span class="p">(</span><span class="n">central</span><span class="p">)</span>
+        <span class="n">root</span> <span class="o">=</span> <span class="n">QHBoxLayout</span><span class="p">(</span><span class="n">central</span><span class="p">)</span>
+        <span class="n">root</span><span class="o">.</span><span class="n">setContentsMargins</span><span class="p">(</span><span class="mi">8</span><span class="p">,</span> <span class="mi">8</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">8</span><span class="p">)</span>
+        <span class="n">root</span><span class="o">.</span><span class="n">setSpacing</span><span class="p">(</span><span class="mi">6</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_canvas_holder</span> <span class="o">=</span> <span class="n">QWidget</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_canvas_layout</span> <span class="o">=</span> <span class="n">QVBoxLayout</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_canvas_holder</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_canvas_layout</span><span class="o">.</span><span class="n">setContentsMargins</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_build_canvas</span><span class="p">()</span>
+
+        <span class="n">root</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_canvas_holder</span><span class="p">,</span> <span class="n">stretch</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
+        <span class="n">root</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_build_control_panel</span><span class="p">(),</span> <span class="n">stretch</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_status</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">statusBar</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_status</span><span class="o">.</span><span class="n">showMessage</span><span class="p">(</span><span class="s2">&quot;Waiting for data …&quot;</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_build_canvas</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">n_vis</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_visible_bands</span><span class="p">),</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="n">n_cols</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">n_vis</span><span class="p">,</span> <span class="mi">5</span><span class="p">)</span>
+        <span class="n">n_rows</span> <span class="o">=</span> <span class="p">(</span><span class="n">n_vis</span> <span class="o">+</span> <span class="n">n_cols</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">//</span> <span class="n">n_cols</span>
+
+        <span class="n">fig_w</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="mf">3.2</span> <span class="o">*</span> <span class="n">n_cols</span><span class="p">,</span> <span class="mf">6.0</span><span class="p">)</span>
+        <span class="n">fig_h</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="mf">3.2</span> <span class="o">*</span> <span class="n">n_rows</span><span class="p">,</span> <span class="mf">3.2</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_fig</span> <span class="o">=</span> <span class="n">Figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="n">fig_w</span><span class="p">,</span> <span class="n">fig_h</span><span class="p">),</span> <span class="n">facecolor</span><span class="o">=</span><span class="s2">&quot;#0d0d1a&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_canvas</span> <span class="o">=</span> <span class="n">FigureCanvasQTAgg</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_fig</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_canvas_layout</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_canvas</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_axes</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">object</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">band_name</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_visible_bands</span><span class="p">):</span>
+            <span class="n">ax</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_fig</span><span class="o">.</span><span class="n">add_subplot</span><span class="p">(</span><span class="n">n_rows</span><span class="p">,</span> <span class="n">n_cols</span><span class="p">,</span> <span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+            <span class="n">ax</span><span class="o">.</span><span class="n">set_facecolor</span><span class="p">(</span><span class="s2">&quot;#0d0d1a&quot;</span><span class="p">)</span>
+            <span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="n">band_name</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;#b0b0c8&quot;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">pad</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_axes</span><span class="p">[</span><span class="n">band_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">ax</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_fig</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">(</span><span class="n">pad</span><span class="o">=</span><span class="mf">1.2</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_rebuild_canvas</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">old</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_canvas_layout</span><span class="o">.</span><span class="n">itemAt</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">old</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">w</span> <span class="o">=</span> <span class="n">old</span><span class="o">.</span><span class="n">widget</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_canvas_layout</span><span class="o">.</span><span class="n">removeWidget</span><span class="p">(</span><span class="n">w</span><span class="p">)</span>
+            <span class="n">w</span><span class="o">.</span><span class="n">deleteLater</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_fig</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_axes</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_build_canvas</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_last_data</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_update_topomaps</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_last_data</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_canvas</span><span class="o">.</span><span class="n">draw</span><span class="p">()</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_build_control_panel</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">QScrollArea</span><span class="p">:</span>
+        <span class="n">scroll</span> <span class="o">=</span> <span class="n">QScrollArea</span><span class="p">()</span>
+        <span class="n">scroll</span><span class="o">.</span><span class="n">setWidgetResizable</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">scroll</span><span class="o">.</span><span class="n">setFixedWidth</span><span class="p">(</span><span class="mi">215</span><span class="p">)</span>
+        <span class="n">scroll</span><span class="o">.</span><span class="n">setHorizontalScrollBarPolicy</span><span class="p">(</span><span class="n">Qt</span><span class="o">.</span><span class="n">ScrollBarPolicy</span><span class="o">.</span><span class="n">ScrollBarAlwaysOff</span><span class="p">)</span>
+
+        <span class="n">panel</span> <span class="o">=</span> <span class="n">QWidget</span><span class="p">()</span>
+        <span class="n">layout</span> <span class="o">=</span> <span class="n">QVBoxLayout</span><span class="p">(</span><span class="n">panel</span><span class="p">)</span>
+        <span class="n">layout</span><span class="o">.</span><span class="n">setSpacing</span><span class="p">(</span><span class="mi">8</span><span class="p">)</span>
+        <span class="n">layout</span><span class="o">.</span><span class="n">setContentsMargins</span><span class="p">(</span><span class="mi">6</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">6</span><span class="p">)</span>
+
+        <span class="n">layout</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_grp_playback</span><span class="p">())</span>
+        <span class="n">layout</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_grp_display</span><span class="p">())</span>
+        <span class="n">layout</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_grp_bands</span><span class="p">())</span>
+        <span class="n">layout</span><span class="o">.</span><span class="n">addStretch</span><span class="p">()</span>
+
+        <span class="n">scroll</span><span class="o">.</span><span class="n">setWidget</span><span class="p">(</span><span class="n">panel</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">scroll</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_grp_playback</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">QGroupBox</span><span class="p">:</span>
+        <span class="n">grp</span> <span class="o">=</span> <span class="n">QGroupBox</span><span class="p">(</span><span class="s2">&quot;Playback&quot;</span><span class="p">)</span>
+        <span class="n">lay</span> <span class="o">=</span> <span class="n">QVBoxLayout</span><span class="p">(</span><span class="n">grp</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_btn_pause</span> <span class="o">=</span> <span class="n">QPushButton</span><span class="p">(</span><span class="s2">&quot;⏸  Pause&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_btn_pause</span><span class="o">.</span><span class="n">setCheckable</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_btn_pause</span><span class="o">.</span><span class="n">clicked</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_toggle_pause</span><span class="p">)</span>
+
+        <span class="n">btn_shot</span> <span class="o">=</span> <span class="n">QPushButton</span><span class="p">(</span><span class="s2">&quot;📷  Screenshot&quot;</span><span class="p">)</span>
+        <span class="n">btn_shot</span><span class="o">.</span><span class="n">clicked</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_screenshot</span><span class="p">)</span>
+
+        <span class="n">btn_freeze</span> <span class="o">=</span> <span class="n">QPushButton</span><span class="p">(</span><span class="s2">&quot;🔒  Freeze clim&quot;</span><span class="p">)</span>
+        <span class="n">btn_freeze</span><span class="o">.</span><span class="n">setCheckable</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">btn_freeze</span><span class="o">.</span><span class="n">clicked</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_toggle_freeze_clim</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_btn_freeze</span> <span class="o">=</span> <span class="n">btn_freeze</span>
+
+        <span class="k">for</span> <span class="n">w</span> <span class="ow">in</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_btn_pause</span><span class="p">,</span> <span class="n">btn_shot</span><span class="p">,</span> <span class="n">btn_freeze</span><span class="p">):</span>
+            <span class="n">lay</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="n">w</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">grp</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_grp_display</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">QGroupBox</span><span class="p">:</span>
+        <span class="n">grp</span> <span class="o">=</span> <span class="n">QGroupBox</span><span class="p">(</span><span class="s2">&quot;Display&quot;</span><span class="p">)</span>
+        <span class="n">lay</span> <span class="o">=</span> <span class="n">QVBoxLayout</span><span class="p">(</span><span class="n">grp</span><span class="p">)</span>
+
+        <span class="n">row_cmap</span> <span class="o">=</span> <span class="n">QHBoxLayout</span><span class="p">()</span>
+        <span class="n">row_cmap</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="n">QLabel</span><span class="p">(</span><span class="s2">&quot;Colormap:&quot;</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_cmb_cmap</span> <span class="o">=</span> <span class="n">QComboBox</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">_CMAPS</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_cmb_cmap</span><span class="o">.</span><span class="n">addItem</span><span class="p">(</span><span class="n">c</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_cmb_cmap</span><span class="o">.</span><span class="n">setCurrentText</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_cmap</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_cmb_cmap</span><span class="o">.</span><span class="n">currentTextChanged</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_change_cmap</span><span class="p">)</span>
+        <span class="n">row_cmap</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_cmb_cmap</span><span class="p">)</span>
+        <span class="n">lay</span><span class="o">.</span><span class="n">addLayout</span><span class="p">(</span><span class="n">row_cmap</span><span class="p">)</span>
+
+        <span class="n">row_cont</span> <span class="o">=</span> <span class="n">QHBoxLayout</span><span class="p">()</span>
+        <span class="n">row_cont</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="n">QLabel</span><span class="p">(</span><span class="s2">&quot;Contours:&quot;</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_spn_contours</span> <span class="o">=</span> <span class="n">QSpinBox</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_spn_contours</span><span class="o">.</span><span class="n">setRange</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">12</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_spn_contours</span><span class="o">.</span><span class="n">setValue</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_contours</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_spn_contours</span><span class="o">.</span><span class="n">valueChanged</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_change_contours</span><span class="p">)</span>
+        <span class="n">row_cont</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_spn_contours</span><span class="p">)</span>
+        <span class="n">lay</span><span class="o">.</span><span class="n">addLayout</span><span class="p">(</span><span class="n">row_cont</span><span class="p">)</span>
+
+        <span class="n">chk_sensors</span> <span class="o">=</span> <span class="n">QCheckBox</span><span class="p">(</span><span class="s2">&quot;Show sensors&quot;</span><span class="p">)</span>
+        <span class="n">chk_sensors</span><span class="o">.</span><span class="n">setChecked</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_sensors</span><span class="p">)</span>
+        <span class="n">chk_sensors</span><span class="o">.</span><span class="n">toggled</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_toggle_sensors</span><span class="p">)</span>
+        <span class="n">lay</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="n">chk_sensors</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">grp</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_grp_bands</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">QGroupBox</span><span class="p">:</span>
+        <span class="n">grp</span> <span class="o">=</span> <span class="n">QGroupBox</span><span class="p">(</span><span class="s2">&quot;Bands&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_bands_layout</span> <span class="o">=</span> <span class="n">QVBoxLayout</span><span class="p">(</span><span class="n">grp</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_bands_layout</span><span class="o">.</span><span class="n">setSpacing</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_band_checks</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">QCheckBox</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="n">band_name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_bands</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_add_band_checkbox</span><span class="p">(</span><span class="n">band_name</span><span class="p">)</span>
+
+        <span class="c1"># ── Custom frequency range ────────────────────────────────────────</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_bands_layout</span><span class="o">.</span><span class="n">addSpacing</span><span class="p">(</span><span class="mi">6</span><span class="p">)</span>
+        <span class="n">lbl</span> <span class="o">=</span> <span class="n">QLabel</span><span class="p">(</span><span class="s2">&quot;Custom band (Hz):&quot;</span><span class="p">)</span>
+        <span class="n">lbl</span><span class="o">.</span><span class="n">setStyleSheet</span><span class="p">(</span><span class="s2">&quot;color:#8888aa; font-size:10px; font-weight:600;&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_bands_layout</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="n">lbl</span><span class="p">)</span>
+
+        <span class="n">row</span> <span class="o">=</span> <span class="n">QWidget</span><span class="p">()</span>
+        <span class="n">row_lay</span> <span class="o">=</span> <span class="n">QHBoxLayout</span><span class="p">(</span><span class="n">row</span><span class="p">)</span>
+        <span class="n">row_lay</span><span class="o">.</span><span class="n">setContentsMargins</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+        <span class="n">row_lay</span><span class="o">.</span><span class="n">setSpacing</span><span class="p">(</span><span class="mi">4</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_custom_flo</span> <span class="o">=</span> <span class="n">QDoubleSpinBox</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_custom_flo</span><span class="o">.</span><span class="n">setRange</span><span class="p">(</span><span class="mf">0.1</span><span class="p">,</span> <span class="mf">200.0</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_custom_flo</span><span class="o">.</span><span class="n">setSingleStep</span><span class="p">(</span><span class="mf">0.5</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_custom_flo</span><span class="o">.</span><span class="n">setValue</span><span class="p">(</span><span class="mf">1.0</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_custom_flo</span><span class="o">.</span><span class="n">setDecimals</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_custom_flo</span><span class="o">.</span><span class="n">setSuffix</span><span class="p">(</span><span class="s2">&quot; Hz&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_custom_flo</span><span class="o">.</span><span class="n">setFixedWidth</span><span class="p">(</span><span class="mi">72</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_custom_flo</span><span class="o">.</span><span class="n">setStyleSheet</span><span class="p">(</span>
+            <span class="s2">&quot;background:#16213e; color:#d0d0e8; border:1px solid #0f3460;&quot;</span>
+            <span class="s2">&quot;border-radius:4px; padding:2px 4px;&quot;</span>
+        <span class="p">)</span>
+
+        <span class="n">dash</span> <span class="o">=</span> <span class="n">QLabel</span><span class="p">(</span><span class="s2">&quot;–&quot;</span><span class="p">)</span>
+        <span class="n">dash</span><span class="o">.</span><span class="n">setStyleSheet</span><span class="p">(</span><span class="s2">&quot;color:#8888aa; font-size:11px;&quot;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_custom_fhi</span> <span class="o">=</span> <span class="n">QDoubleSpinBox</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_custom_fhi</span><span class="o">.</span><span class="n">setRange</span><span class="p">(</span><span class="mf">0.2</span><span class="p">,</span> <span class="mf">200.0</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_custom_fhi</span><span class="o">.</span><span class="n">setSingleStep</span><span class="p">(</span><span class="mf">0.5</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_custom_fhi</span><span class="o">.</span><span class="n">setValue</span><span class="p">(</span><span class="mf">4.0</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_custom_fhi</span><span class="o">.</span><span class="n">setDecimals</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_custom_fhi</span><span class="o">.</span><span class="n">setSuffix</span><span class="p">(</span><span class="s2">&quot; Hz&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_custom_fhi</span><span class="o">.</span><span class="n">setFixedWidth</span><span class="p">(</span><span class="mi">72</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_custom_fhi</span><span class="o">.</span><span class="n">setStyleSheet</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_custom_flo</span><span class="o">.</span><span class="n">styleSheet</span><span class="p">())</span>
+
+        <span class="n">btn_add</span> <span class="o">=</span> <span class="n">QPushButton</span><span class="p">(</span><span class="s2">&quot;Add&quot;</span><span class="p">)</span>
+        <span class="n">btn_add</span><span class="o">.</span><span class="n">setFixedHeight</span><span class="p">(</span><span class="mi">24</span><span class="p">)</span>
+        <span class="n">btn_add</span><span class="o">.</span><span class="n">setStyleSheet</span><span class="p">(</span>
+            <span class="s2">&quot;background:#0f3460; color:#d0d0e8; border:1px solid #533483;&quot;</span>
+            <span class="s2">&quot;border-radius:4px; font-size:11px; padding:0 6px;&quot;</span>
+        <span class="p">)</span>
+        <span class="n">btn_add</span><span class="o">.</span><span class="n">clicked</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_add_custom_band</span><span class="p">)</span>
+
+        <span class="n">row_lay</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_custom_flo</span><span class="p">)</span>
+        <span class="n">row_lay</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="n">dash</span><span class="p">)</span>
+        <span class="n">row_lay</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_custom_fhi</span><span class="p">)</span>
+        <span class="n">row_lay</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="n">btn_add</span><span class="p">)</span>
+        <span class="n">row_lay</span><span class="o">.</span><span class="n">addStretch</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_bands_layout</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="n">row</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">grp</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_add_band_checkbox</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">band_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">chk</span> <span class="o">=</span> <span class="n">QCheckBox</span><span class="p">(</span><span class="n">band_name</span><span class="p">)</span>
+        <span class="n">chk</span><span class="o">.</span><span class="n">setChecked</span><span class="p">(</span><span class="n">band_name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_visible_bands</span><span class="p">)</span>
+        <span class="n">chk</span><span class="o">.</span><span class="n">toggled</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="k">lambda</span> <span class="n">checked</span><span class="p">,</span> <span class="n">b</span><span class="o">=</span><span class="n">band_name</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_toggle_band</span><span class="p">(</span><span class="n">b</span><span class="p">,</span> <span class="n">checked</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_bands_layout</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="n">chk</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_band_checks</span><span class="p">[</span><span class="n">band_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">chk</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_add_custom_band</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">flo</span> <span class="o">=</span> <span class="nb">round</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_custom_flo</span><span class="o">.</span><span class="n">value</span><span class="p">(),</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="n">fhi</span> <span class="o">=</span> <span class="nb">round</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_custom_fhi</span><span class="o">.</span><span class="n">value</span><span class="p">(),</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">flo</span> <span class="o">&gt;=</span> <span class="n">fhi</span><span class="p">:</span>
+            <span class="k">return</span>
+        <span class="n">band_name</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;Custom </span><span class="si">{</span><span class="n">flo</span><span class="si">}</span><span class="s2">–</span><span class="si">{</span><span class="n">fhi</span><span class="si">}</span><span class="s2"> Hz&quot;</span>
+        <span class="k">if</span> <span class="n">band_name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_bands</span><span class="p">:</span>
+            <span class="k">return</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_bands</span><span class="p">[</span><span class="n">band_name</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">flo</span><span class="p">,</span> <span class="n">fhi</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_visible_bands</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">band_name</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_add_band_checkbox</span><span class="p">(</span><span class="n">band_name</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_rebuild_canvas</span><span class="p">()</span>
+
+    <span class="c1"># ------------------------------------------------------------------</span>
+    <span class="c1"># Callbacks</span>
+    <span class="c1"># ------------------------------------------------------------------</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_toggle_pause</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">checked</span><span class="p">:</span> <span class="nb">bool</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_paused</span> <span class="o">=</span> <span class="n">checked</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_btn_pause</span><span class="o">.</span><span class="n">setText</span><span class="p">(</span><span class="s2">&quot;▶  Resume&quot;</span> <span class="k">if</span> <span class="n">checked</span> <span class="k">else</span> <span class="s2">&quot;⏸  Pause&quot;</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_toggle_freeze_clim</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">checked</span><span class="p">:</span> <span class="nb">bool</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_freeze_clim</span> <span class="o">=</span> <span class="n">checked</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_btn_freeze</span><span class="o">.</span><span class="n">setText</span><span class="p">(</span><span class="s2">&quot;🔓  Unfreeze clim&quot;</span> <span class="k">if</span> <span class="n">checked</span> <span class="k">else</span> <span class="s2">&quot;🔒  Freeze clim&quot;</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_screenshot</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">qtpy.QtWidgets</span><span class="w"> </span><span class="kn">import</span> <span class="n">QFileDialog</span>
+
+        <span class="n">ts</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s2">&quot;%Y%m</span><span class="si">%d</span><span class="s2">_%H%M%S&quot;</span><span class="p">)</span>
+        <span class="n">default</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">Path</span><span class="o">.</span><span class="n">home</span><span class="p">()</span> <span class="o">/</span> <span class="sa">f</span><span class="s2">&quot;ant_topo_</span><span class="si">{</span><span class="n">ts</span><span class="si">}</span><span class="s2">.png&quot;</span><span class="p">)</span>
+        <span class="n">path</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">QFileDialog</span><span class="o">.</span><span class="n">getSaveFileName</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;Save Screenshot&quot;</span><span class="p">,</span> <span class="n">default</span><span class="p">,</span> <span class="s2">&quot;PNG Image (*.png)&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">path</span><span class="p">:</span>
+            <span class="k">return</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_fig</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">dpi</span><span class="o">=</span><span class="mi">150</span><span class="p">,</span> <span class="n">facecolor</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_fig</span><span class="o">.</span><span class="n">get_facecolor</span><span class="p">())</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_status</span><span class="o">.</span><span class="n">showMessage</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Screenshot saved: </span><span class="si">{</span><span class="n">Path</span><span class="p">(</span><span class="n">path</span><span class="p">)</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_change_cmap</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cmap</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_cmap</span> <span class="o">=</span> <span class="n">cmap</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_last_data</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_paused</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_update_topomaps</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_last_data</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_change_contours</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">val</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_contours</span> <span class="o">=</span> <span class="n">val</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_last_data</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_paused</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_update_topomaps</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_last_data</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_toggle_sensors</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">checked</span><span class="p">:</span> <span class="nb">bool</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_sensors</span> <span class="o">=</span> <span class="n">checked</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_last_data</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_paused</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_update_topomaps</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_last_data</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_toggle_band</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">band_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">checked</span><span class="p">:</span> <span class="nb">bool</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">orig_order</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_bands</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
+        <span class="k">if</span> <span class="n">checked</span> <span class="ow">and</span> <span class="n">band_name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_visible_bands</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_visible_bands</span> <span class="o">=</span> <span class="p">[</span>
+                <span class="n">b</span> <span class="k">for</span> <span class="n">b</span> <span class="ow">in</span> <span class="n">orig_order</span> <span class="k">if</span> <span class="n">b</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_visible_bands</span> <span class="ow">or</span> <span class="n">b</span> <span class="o">==</span> <span class="n">band_name</span>
+            <span class="p">]</span>
+        <span class="k">elif</span> <span class="ow">not</span> <span class="n">checked</span> <span class="ow">and</span> <span class="n">band_name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_visible_bands</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_visible_bands</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">band_name</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_rebuild_canvas</span><span class="p">()</span>
+
+    <span class="c1"># ------------------------------------------------------------------</span>
+    <span class="c1"># Core update logic</span>
+    <span class="c1"># ------------------------------------------------------------------</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_compute_band_powers</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Compute per-channel FFT mean power for each frequency band.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        data : ndarray of shape (n_channels, n_times)</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        dict mapping band label → ndarray of shape (n_topo_picks,)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">topo_data</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_topo_picks</span><span class="p">]</span>
+        <span class="n">n_times</span> <span class="o">=</span> <span class="n">topo_data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+        <span class="n">win</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">hanning</span><span class="p">(</span><span class="n">n_times</span><span class="p">)</span>
+        <span class="n">fft_out</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">fft</span><span class="o">.</span><span class="n">rfft</span><span class="p">(</span><span class="n">topo_data</span> <span class="o">*</span> <span class="n">win</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">freqs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">fft</span><span class="o">.</span><span class="n">rfftfreq</span><span class="p">(</span><span class="n">n_times</span><span class="p">,</span> <span class="n">d</span><span class="o">=</span><span class="mf">1.0</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sfreq</span><span class="p">)</span>
+        <span class="n">psd</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">fft_out</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span>
+
+        <span class="n">result</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="n">band_name</span><span class="p">,</span> <span class="p">(</span><span class="n">flo</span><span class="p">,</span> <span class="n">fhi</span><span class="p">)</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_bands</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">mask</span> <span class="o">=</span> <span class="p">(</span><span class="n">freqs</span> <span class="o">&gt;=</span> <span class="n">flo</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">freqs</span> <span class="o">&lt;=</span> <span class="n">fhi</span><span class="p">)</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">mask</span><span class="o">.</span><span class="n">any</span><span class="p">():</span>
+                <span class="n">result</span><span class="p">[</span><span class="n">band_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_topo_picks</span><span class="p">))</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">result</span><span class="p">[</span><span class="n">band_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">psd</span><span class="p">[:,</span> <span class="n">mask</span><span class="p">]</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">result</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_update_topomaps</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Redraw all visible topomaps from a raw data window.&quot;&quot;&quot;</span>
+        <span class="n">band_powers</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_compute_band_powers</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_display_alpha</span> <span class="o">&lt;</span> <span class="mf">1.0</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">band</span><span class="p">,</span> <span class="n">pw</span> <span class="ow">in</span> <span class="n">band_powers</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                <span class="k">if</span> <span class="n">band</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_bp_ema</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_bp_ema</span><span class="p">[</span><span class="n">band</span><span class="p">]</span> <span class="o">=</span> <span class="n">pw</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_bp_ema</span><span class="p">[</span><span class="n">band</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">_display_alpha</span> <span class="o">*</span> <span class="n">pw</span> <span class="o">+</span> <span class="p">(</span><span class="mf">1.0</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">_display_alpha</span><span class="p">)</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">_bp_ema</span><span class="p">[</span><span class="n">band</span><span class="p">]</span>
+                    <span class="p">)</span>
+                <span class="n">band_powers</span><span class="p">[</span><span class="n">band</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_bp_ema</span><span class="p">[</span><span class="n">band</span><span class="p">]</span>
+        <span class="n">topo_info</span> <span class="o">=</span> <span class="n">mne</span><span class="o">.</span><span class="n">pick_info</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_info</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_topo_picks</span><span class="p">)</span>
+
+        <span class="n">freeze</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;_freeze_clim&quot;</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">band_name</span><span class="p">,</span> <span class="n">ax</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_axes</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">powers</span> <span class="o">=</span> <span class="n">band_powers</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">band_name</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">powers</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">continue</span>
+
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">freeze</span><span class="p">:</span>
+                <span class="n">vmax</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">percentile</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">powers</span><span class="p">),</span> <span class="mi">97</span><span class="p">))</span> <span class="ow">or</span> <span class="mf">1e-20</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cmap</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;RdBu_r&quot;</span><span class="p">,</span> <span class="s2">&quot;RdYlBu_r&quot;</span><span class="p">,</span> <span class="s2">&quot;bwr&quot;</span><span class="p">):</span>
+                    <span class="n">vmin</span><span class="p">,</span> <span class="n">vmax_use</span> <span class="o">=</span> <span class="o">-</span><span class="n">vmax</span><span class="p">,</span> <span class="n">vmax</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">vmin</span><span class="p">,</span> <span class="n">vmax_use</span> <span class="o">=</span> <span class="mf">0.0</span><span class="p">,</span> <span class="n">vmax</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_clim_cache</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;_clim_cache&quot;</span><span class="p">,</span> <span class="p">{})</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_clim_cache</span><span class="p">[</span><span class="n">band_name</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">vmin</span><span class="p">,</span> <span class="n">vmax_use</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">cache</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;_clim_cache&quot;</span><span class="p">,</span> <span class="p">{})</span>
+                <span class="n">vmin</span><span class="p">,</span> <span class="n">vmax_use</span> <span class="o">=</span> <span class="n">cache</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">band_name</span><span class="p">,</span> <span class="p">(</span><span class="o">-</span><span class="mf">1e-20</span><span class="p">,</span> <span class="mf">1e-20</span><span class="p">))</span>
+
+            <span class="n">ax</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
+            <span class="n">ax</span><span class="o">.</span><span class="n">set_facecolor</span><span class="p">(</span><span class="s2">&quot;#0d0d1a&quot;</span><span class="p">)</span>
+            <span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="n">band_name</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;#b0b0c8&quot;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">pad</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span>
+
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">mne</span><span class="o">.</span><span class="n">viz</span><span class="o">.</span><span class="n">plot_topomap</span><span class="p">(</span>
+                    <span class="n">powers</span><span class="p">,</span>
+                    <span class="n">topo_info</span><span class="p">,</span>
+                    <span class="n">axes</span><span class="o">=</span><span class="n">ax</span><span class="p">,</span>
+                    <span class="n">show</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+                    <span class="n">cmap</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_cmap</span><span class="p">,</span>
+                    <span class="n">vlim</span><span class="o">=</span><span class="p">(</span><span class="n">vmin</span><span class="p">,</span> <span class="n">vmax_use</span><span class="p">),</span>
+                    <span class="n">sensors</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_sensors</span><span class="p">,</span>
+                    <span class="n">contours</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_contours</span><span class="p">,</span>
+                    <span class="n">res</span><span class="o">=</span><span class="mi">32</span><span class="p">,</span>
+                    <span class="n">extrapolate</span><span class="o">=</span><span class="s2">&quot;auto&quot;</span><span class="p">,</span>
+                <span class="p">)</span>
+            <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">_e</span><span class="p">:</span>
+                <span class="n">ax</span><span class="o">.</span><span class="n">text</span><span class="p">(</span>
+                    <span class="mf">0.5</span><span class="p">,</span>
+                    <span class="mf">0.5</span><span class="p">,</span>
+                    <span class="sa">f</span><span class="s2">&quot;Topo error:</span><span class="se">\n</span><span class="si">{</span><span class="n">_e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+                    <span class="n">transform</span><span class="o">=</span><span class="n">ax</span><span class="o">.</span><span class="n">transAxes</span><span class="p">,</span>
+                    <span class="n">ha</span><span class="o">=</span><span class="s2">&quot;center&quot;</span><span class="p">,</span>
+                    <span class="n">va</span><span class="o">=</span><span class="s2">&quot;center&quot;</span><span class="p">,</span>
+                    <span class="n">color</span><span class="o">=</span><span class="s2">&quot;#606080&quot;</span><span class="p">,</span>
+                    <span class="n">fontsize</span><span class="o">=</span><span class="mi">7</span><span class="p">,</span>
+                    <span class="n">wrap</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                <span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_fig</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">(</span><span class="n">pad</span><span class="o">=</span><span class="mf">1.2</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_canvas</span><span class="o">.</span><span class="n">draw_idle</span><span class="p">()</span>
+
+    <span class="c1"># ------------------------------------------------------------------</span>
+    <span class="c1"># Public interface</span>
+    <span class="c1"># ------------------------------------------------------------------</span>
+
+<div class="viewcode-block" id="TopomapPlot.push">
+<a class="viewcode-back" href="../../../generated/mne_rt.viz.TopomapPlot.html#mne_rt.viz.TopomapPlot.push">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">push</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Update all visible topomaps from a new raw data window.</span>
+
+<span class="sd">        Called at ~5 fps by the Qt pump timer inside</span>
+<span class="sd">        :meth:`~mne_rt.RTStream.record_main`.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        data : ndarray of shape (n_channels, n_times)</span>
+<span class="sd">            Raw EEG/MEG data for the current analysis window.</span>
+
+<span class="sd">        Notes</span>
+<span class="sd">        -----</span>
+<span class="sd">        The call is a no-op when paused (⏸ button pressed).  Band power</span>
+<span class="sd">        is estimated via FFT and the topomaps are redrawn via</span>
+<span class="sd">        :func:`mne.viz.plot_topomap`.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_paused</span><span class="p">:</span>
+            <span class="k">return</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_last_data</span> <span class="o">=</span> <span class="n">data</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_update_topomaps</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+        <span class="n">now</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s2">&quot;%H:%M:%S.</span><span class="si">%f</span><span class="s2">&quot;</span><span class="p">)[:</span><span class="o">-</span><span class="mi">3</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_status</span><span class="o">.</span><span class="n">showMessage</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Updated </span><span class="si">{</span><span class="n">now</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="TopomapPlot.closeEvent">
+<a class="viewcode-back" href="../../../generated/mne_rt.viz.TopomapPlot.html#mne_rt.viz.TopomapPlot.closeEvent">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">closeEvent</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">closed</span><span class="o">.</span><span class="n">emit</span><span class="p">()</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">closeEvent</span><span class="p">(</span><span class="n">event</span><span class="p">)</span></div>
+</div>
+
+</pre></div>
+
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../../../_static/scripts/bootstrap.js?digest=90905a2f556bf617f1a9"></script>
+<script defer src="../../../_static/scripts/pydata-sphinx-theme.js?digest=90905a2f556bf617f1a9"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright 2025, Payam S. Shabestari.
+      <br/>
+    
+  </p>
+</div>
+      
+        <div class="footer-item">
+
+  <p class="sphinx-version">
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 9.0.4.
+    <br/>
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
+<p class="theme-version">
+  <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.20.0.
+</p></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>

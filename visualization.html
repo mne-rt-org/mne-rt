@@ -1,0 +1,1129 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="./" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Visualisation &#8212; MNE-RT</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="_static/styles/theme.css?digest=90905a2f556bf617f1a9" rel="stylesheet" />
+<link href="_static/styles/pydata-sphinx-theme.css?digest=90905a2f556bf617f1a9" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="_static/sg_gallery.css?v=fd6457a4" />
+    <link rel="stylesheet" type="text/css" href="_static/sg_gallery-binder.css?v=f4aeca0c" />
+    <link rel="stylesheet" type="text/css" href="_static/sg_gallery-dataframe.css?v=2082cf3c" />
+    <link rel="stylesheet" type="text/css" href="_static/sg_gallery-rendered-html.css?v=1277b6f3" />
+    <link rel="stylesheet" type="text/css" href="_static/tabs.css?v=a5c4661c" />
+    <link rel="stylesheet" type="text/css" href="_static/custom.css?v=5bf657dd" />
+  
+  <!-- So that users can add custom icons -->
+  <script defer src="_static/scripts/fontawesome.js?digest=90905a2f556bf617f1a9"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="_static/scripts/bootstrap.js?digest=90905a2f556bf617f1a9" />
+<link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=90905a2f556bf617f1a9" />
+
+    <script src="_static/documentation_options.js?v=8d563738"></script>
+    <script src="_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="_static/sg-tags.js?v=d80f6fa4"></script>
+    <script src="_static/tabs.js?v=3030b3cb"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'visualization';</script>
+    <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="CLI" href="cli.html" />
+    <link rel="prev" title="mne_rt.set_log_level" href="generated/mne_rt.set_log_level.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="" />
+  
+    
+    <script src="_static/searchtools.js"></script>
+    <script src="_static/language_data.js"></script>
+    <script src="searchindex.js"></script>
+  
+  </head>
+  <body data-default-mode="">
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+  
+  
+  
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header id="pst-header" class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="index.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="_static/mne_rt_logo.svg" class="logo__image only-light" alt="MNE-RT - Home"/>
+    <img src="_static/mne_rt_logo.svg" class="logo__image only-dark pst-js-only" alt="MNE-RT - Home"/>
+  
+  
+</a></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="install.html">
+    Installation
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="tutorial.html">
+    User Guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="api.html">
+    API Reference
+  </a>
+</li>
+
+
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="#">
+    Visualisation
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="cli.html">
+    CLI
+  </a>
+</li>
+
+            <li class="nav-item dropdown">
+                <button class="btn dropdown-toggle nav-item" type="button"
+                data-bs-toggle="dropdown" aria-expanded="false"
+                aria-controls="pst-nav-more-links">
+                    More
+                </button>
+                <ul id="pst-nav-more-links" class="dropdown-menu">
+                    
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="denoising.html">
+    Artifact Correction
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="modalities.html">
+    Real-time Feature Modalities
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="protocols.html">
+    NF Protocols
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="whats_new.html">
+    What’s new
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="auto_examples/index.html">
+    Examples Gallery
+  </a>
+</li>
+
+                </ul>
+            </li>
+            
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+        </div>
+      
+      
+        <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/payamsash/mne-rt" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-square-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
+        </li>
+</ul></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+    </div>
+  
+
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="install.html">
+    Installation
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="tutorial.html">
+    User Guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="api.html">
+    API Reference
+  </a>
+</li>
+
+
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="#">
+    Visualisation
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="cli.html">
+    CLI
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="denoising.html">
+    Artifact Correction
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="modalities.html">
+    Real-time Feature Modalities
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="protocols.html">
+    NF Protocols
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="whats_new.html">
+    What’s new
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="auto_examples/index.html">
+    Examples Gallery
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/payamsash/mne-rt" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-square-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
+        </li>
+</ul></div>
+        
+      </div>
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+
+<nav class="bd-docs-nav bd-links"
+     aria-label="Section Navigation">
+  <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
+  <div class="bd-toc-item navbar-nav"></div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">Visualisation</span></li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section id="visualisation">
+<span id="visualization"></span><h1>Visualisation<a class="headerlink" href="#visualisation" title="Link to this heading">#</a></h1>
+<p>Multiple purpose-built live display windows — each dark-themed, Qt-native,
+and fully thread-safe. Push data from a background acquisition thread;
+all rendering happens on the main Qt thread via an internal 30 Hz timer.</p>
+<div class="sphinx-tabs docutils container">
+<div aria-label="Tabbed content" class="closeable" role="tablist"><button aria-controls="panel-0-0-0" aria-selected="true" class="sphinx-tabs-tab" id="tab-0-0-0" name="0-0" role="tab" tabindex="0">RawPlot</button><button aria-controls="panel-0-0-1" aria-selected="false" class="sphinx-tabs-tab" id="tab-0-0-1" name="0-1" role="tab" tabindex="-1">EpochPlot</button><button aria-controls="panel-0-0-2" aria-selected="false" class="sphinx-tabs-tab" id="tab-0-0-2" name="0-2" role="tab" tabindex="-1">NFPlot</button><button aria-controls="panel-0-0-3" aria-selected="false" class="sphinx-tabs-tab" id="tab-0-0-3" name="0-3" role="tab" tabindex="-1">ButterflyPlot</button><button aria-controls="panel-0-0-4" aria-selected="false" class="sphinx-tabs-tab" id="tab-0-0-4" name="0-4" role="tab" tabindex="-1">CompareEvoked</button><button aria-controls="panel-0-0-5" aria-selected="false" class="sphinx-tabs-tab" id="tab-0-0-5" name="0-5" role="tab" tabindex="-1">TopoPlot</button><button aria-controls="panel-0-0-6" aria-selected="false" class="sphinx-tabs-tab" id="tab-0-0-6" name="0-6" role="tab" tabindex="-1">TopomapPlot</button><button aria-controls="panel-0-0-7" aria-selected="false" class="sphinx-tabs-tab" id="tab-0-0-7" name="0-7" role="tab" tabindex="-1">TFRPlot</button><button aria-controls="panel-0-0-8" aria-selected="false" class="sphinx-tabs-tab" id="tab-0-0-8" name="0-8" role="tab" tabindex="-1">BrainPlot</button></div><div aria-labelledby="tab-0-0-0" class="sphinx-tabs-panel" id="panel-0-0-0" name="0-0" role="tabpanel" tabindex="0"><div class="viz-tab-card">
+  <div class="viz-tab-header">
+    <div class="viz-tab-title-row">
+      <h3 class="viz-tab-title">RawPlot</h3>
+    </div>
+    <p class="viz-tab-subtitle">Multi-channel scrolling M/EEG raw signal viewer</p>
+  </div>
+  <div class="viz-tab-body">
+    <p class="viz-tab-desc">
+      Dark-themed multi-channel raw signal display.  All channels are stacked
+      vertically with colour-coded traces and channel-name Y-axis labels,
+      modelled on the standard M/EEG browser layout.
+      All signal processing is applied <em>from now</em>: enabling a filter
+      or re-reference leaves existing buffer data intact and processes only
+      newly incoming chunks.  A built-in Riemannian Potato detector can
+      automatically flag artefacted segments in real time.
+    </p>
+    <div class="viz-feature-grid">
+      <div class="viz-feature-item">
+        <span class="viz-fi-icon">✓</span>
+        <span class="viz-fi-text"><strong>Left-click</strong> Y-axis label → toggle bad channel (greyed trace)</span>
+      </div>
+      <div class="viz-feature-item">
+        <span class="viz-fi-icon">✓</span>
+        <span class="viz-fi-text"><strong>Double-click</strong> signal area → mark bad-segment start / end</span>
+      </div>
+      <div class="viz-feature-item">
+        <span class="viz-fi-icon">✓</span>
+        <span class="viz-fi-text"><strong>Online filter</strong> — HP / LP / band-pass / notch (causal SOS)</span>
+      </div>
+      <div class="viz-feature-item">
+        <span class="viz-fi-icon">✓</span>
+        <span class="viz-fi-text"><strong>Re-reference</strong> — Average, Mastoid (TP9/TP10), any single channel</span>
+      </div>
+      <div class="viz-feature-item">
+        <span class="viz-fi-icon">✓</span>
+        <span class="viz-fi-text"><strong>Artifact correction</strong> — LMS, ASR, GEDAI, ORICA, Maxwell SSS</span>
+      </div>
+      <div class="viz-feature-item">
+        <span class="viz-fi-icon">✓</span>
+        <span class="viz-fi-text"><strong>Riemannian Potato</strong> — automatic bad-segment detection (pyriemann)</span>
+      </div>
+      <div class="viz-feature-item">
+        <span class="viz-fi-icon">✓</span>
+        <span class="viz-fi-text"><strong>SSP projector</strong> checkbox when <code>info</code> is provided</span>
+      </div>
+      <div class="viz-feature-item">
+        <span class="viz-fi-icon">✓</span>
+        <span class="viz-fi-text"><strong>Export</strong> bad segments via <code>raw_plot.to_annotations()</code></span>
+      </div>
+      <div class="viz-feature-item">
+        <span class="viz-fi-icon">✓</span>
+        <span class="viz-fi-text">Vertical scrollbar + mouse-wheel channel paging</span>
+      </div>
+      <div class="viz-feature-item">
+        <span class="viz-fi-icon">✓</span>
+        <span class="viz-fi-text">÷2 / ×2 amplitude scale · DC-removal toggle</span>
+      </div>
+    </div>
+    <div class="viz-media-wrap">
+      <video autoplay muted loop playsinline>
+        <source src="_static/RawPlot.mp4" type="video/mp4">
+      </video>
+    </div>
+  </div>
+</div><div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">raw_plot</span> <span class="o">=</span> <span class="n">RawPlot</span><span class="p">(</span>
+    <span class="n">ch_names</span><span class="o">=</span><span class="n">info</span><span class="p">[</span><span class="s2">&quot;ch_names&quot;</span><span class="p">],</span>
+    <span class="n">sfreq</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span>
+    <span class="n">info</span><span class="o">=</span><span class="n">info</span><span class="p">,</span>       <span class="c1"># enables SSP projector checkbox</span>
+<span class="p">)</span>
+<span class="n">raw_plot</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+<span class="c1"># background acquisition thread:</span>
+<span class="n">raw_plot</span><span class="o">.</span><span class="n">push</span><span class="p">(</span><span class="n">chunk</span><span class="p">)</span>   <span class="c1"># shape (n_channels, n_samples)</span>
+</pre></div>
+</div>
+<p>See <a class="reference internal" href="generated/mne_rt.viz.RawPlot.html#mne_rt.viz.RawPlot" title="mne_rt.viz.RawPlot"><code class="xref py py-class docutils literal notranslate"><span class="pre">mne_rt.viz.RawPlot</span></code></a> for the full API reference.</p>
+</div><div aria-labelledby="tab-0-0-1" class="sphinx-tabs-panel" hidden="true" id="panel-0-0-1" name="0-1" role="tabpanel" tabindex="0"><div class="viz-tab-card">
+  <div class="viz-tab-header">
+    <div class="viz-tab-title-row">
+      <h3 class="viz-tab-title">EpochPlot</h3>
+    </div>
+    <p class="viz-tab-subtitle">Scrolling viewer with live epoch and trigger overlays</p>
+  </div>
+  <div class="viz-tab-body">
+    <p class="viz-tab-desc">
+      Same dark-themed scrolling display as RawPlot, extended with visual
+      epoch markers.  Each stimulus event (<code>push_trigger</code>) draws three
+      overlays in a per-condition colour: a <strong>solid vertical line</strong>
+      at t&nbsp;=&nbsp;0, a <strong>semi-transparent shaded band</strong> spanning
+      [tmin, tmax], and <strong>dashed boundary lines</strong> at the epoch edges.
+      The epoch window is adjustable live without stopping the stream.
+      Event colours are distinct (green, cyan, yellow, …).
+    </p>
+    <div class="viz-feature-grid">
+      <div class="viz-feature-item">
+        <span class="viz-fi-icon">✓</span>
+        <span class="viz-fi-text"><strong>Trigger line</strong> — solid vertical at t = 0 per condition</span>
+      </div>
+      <div class="viz-feature-item">
+        <span class="viz-fi-icon">✓</span>
+        <span class="viz-fi-text"><strong>Epoch band</strong> — semi-transparent [tmin, tmax] shading</span>
+      </div>
+      <div class="viz-feature-item">
+        <span class="viz-fi-icon">✓</span>
+        <span class="viz-fi-text"><strong>Live tmin / tmax</strong> spinboxes — adjust without restarting</span>
+      </div>
+      <div class="viz-feature-item">
+        <span class="viz-fi-icon">✓</span>
+        <span class="viz-fi-text"><strong>Per-condition colour legend</strong> from event_id mapping</span>
+      </div>
+      <div class="viz-feature-item">
+        <span class="viz-fi-icon">✓</span>
+        <span class="viz-fi-text">Time window options: 2, 5, 10, 20 seconds</span>
+      </div>
+      <div class="viz-feature-item">
+        <span class="viz-fi-icon">✓</span>
+        <span class="viz-fi-text"><strong>Left-click</strong> an epoch's shaded band → mark it bad (red); click again to unmark</span>
+      </div>
+      <div class="viz-feature-item">
+        <span class="viz-fi-icon">✓</span>
+        <span class="viz-fi-text">Dashed boundary lines · Pause / Resume · Clear · Screenshot</span>
+      </div>
+    </div>
+    <div class="viz-media-wrap">
+      <video autoplay muted loop playsinline>
+        <source src="_static/EpochPlot.mp4" type="video/mp4">
+      </video>
+    </div>
+  </div>
+</div><div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">ep</span> <span class="o">=</span> <span class="n">EpochPlot</span><span class="p">(</span>
+    <span class="n">ch_names</span><span class="o">=</span><span class="n">info</span><span class="p">[</span><span class="s2">&quot;ch_names&quot;</span><span class="p">],</span>
+    <span class="n">sfreq</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span>
+    <span class="n">event_id</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;target&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;standard&quot;</span><span class="p">:</span> <span class="mi">2</span><span class="p">},</span>
+    <span class="n">tmin</span><span class="o">=-</span><span class="mf">0.1</span><span class="p">,</span>
+    <span class="n">tmax</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="n">ep</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+<span class="n">ep</span><span class="o">.</span><span class="n">push</span><span class="p">(</span><span class="n">chunk</span><span class="p">)</span>       <span class="c1"># continuous data — shape (n_ch, n_samples)</span>
+<span class="n">ep</span><span class="o">.</span><span class="n">push_trigger</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>   <span class="c1"># mark event code 1 at the current position</span>
+<span class="o">...</span>
+<span class="n">ep</span><span class="o">.</span><span class="n">bad_epoch_ids</span>     <span class="c1"># -&gt; [2, 5]  (ids the user marked bad by clicking)</span>
+</pre></div>
+</div>
+<p>See <a class="reference internal" href="generated/mne_rt.viz.EpochPlot.html#mne_rt.viz.EpochPlot" title="mne_rt.viz.EpochPlot"><code class="xref py py-class docutils literal notranslate"><span class="pre">mne_rt.viz.EpochPlot</span></code></a> for the full API reference.</p>
+</div><div aria-labelledby="tab-0-0-2" class="sphinx-tabs-panel" hidden="true" id="panel-0-0-2" name="0-2" role="tabpanel" tabindex="0"><div class="viz-tab-card">
+  <div class="viz-tab-header">
+    <div class="viz-tab-title-row">
+      <h3 class="viz-tab-title">NFPlot</h3>
+    </div>
+    <p class="viz-tab-subtitle">Scrolling real-time neurofeedback signal monitor</p>
+  </div>
+  <div class="viz-tab-body">
+    <p class="viz-tab-desc">
+      A scrolling dark-themed multi-channel NF feature monitor.
+      One colour-coded trace per active neurofeedback modality is updated
+      live as each analysis window completes.  The amplitude scale is
+      adjustable on the fly and each modality gets a distinct hue for
+      instant visual separation.  When a reward protocol is active,
+      its current threshold (fixed or adaptive) is overlaid as a
+      dashed horizontal line, and windows where the subject is
+      currently being rewarded are washed in a translucent green
+      span behind the trace.
+    </p>
+    <div class="viz-feature-grid">
+      <div class="viz-feature-item">
+        <span class="viz-fi-icon">✓</span>
+        <span class="viz-fi-text"><strong>One trace per modality</strong> — colour-coded scrolling lines</span>
+      </div>
+      <div class="viz-feature-item">
+        <span class="viz-fi-icon">✓</span>
+        <span class="viz-fi-text"><strong>÷2 / ×2 scale buttons</strong> with live µV readout</span>
+      </div>
+      <div class="viz-feature-item">
+        <span class="viz-fi-icon">✓</span>
+        <span class="viz-fi-text"><strong>Configurable time window</strong> — 5 s to 60 s</span>
+      </div>
+      <div class="viz-feature-item">
+        <span class="viz-fi-icon">✓</span>
+        <span class="viz-fi-text"><strong>Live threshold line</strong> — fixed or adaptive, toggleable</span>
+      </div>
+      <div class="viz-feature-item">
+        <span class="viz-fi-icon">✓</span>
+        <span class="viz-fi-text"><strong>Reward-on span</strong> — scrolling green wash, toggleable</span>
+      </div>
+      <div class="viz-feature-item">
+        <span class="viz-fi-icon">✓</span>
+        <span class="viz-fi-text"><strong>Pause / Resume</strong> and screenshot export</span>
+      </div>
+    </div>
+    <div class="viz-media-wrap">
+      <video autoplay muted loop playsinline>
+        <source src="_static/NFPlot.mp4" type="video/mp4">
+      </video>
+    </div>
+  </div>
+</div><div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">nf_plot</span> <span class="o">=</span> <span class="n">NFPlot</span><span class="p">(</span>
+    <span class="n">modalities</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;alpha&quot;</span><span class="p">,</span> <span class="s2">&quot;beta&quot;</span><span class="p">,</span> <span class="s2">&quot;gamma&quot;</span><span class="p">],</span>
+    <span class="n">scales_dict</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;alpha&quot;</span><span class="p">:</span> <span class="mf">1e-12</span><span class="p">,</span> <span class="s2">&quot;beta&quot;</span><span class="p">:</span> <span class="mf">1e-12</span><span class="p">,</span> <span class="s2">&quot;gamma&quot;</span><span class="p">:</span> <span class="mf">1e-12</span><span class="p">},</span>
+    <span class="n">sfreq</span><span class="o">=</span><span class="mi">30</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="n">nf_plot</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+<span class="c1"># inside the acquisition loop:</span>
+<span class="n">nf_plot</span><span class="o">.</span><span class="n">push</span><span class="p">([</span><span class="n">alpha_val</span><span class="p">,</span> <span class="n">beta_val</span><span class="p">,</span> <span class="n">gamma_val</span><span class="p">])</span>
+<span class="c1"># with a per-modality threshold line (None = no line for that modality):</span>
+<span class="n">nf_plot</span><span class="o">.</span><span class="n">push</span><span class="p">([</span><span class="n">alpha_val</span><span class="p">,</span> <span class="n">beta_val</span><span class="p">,</span> <span class="n">gamma_val</span><span class="p">],</span> <span class="n">thresholds</span><span class="o">=</span><span class="p">[</span><span class="n">alpha_thr</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">])</span>
+<span class="c1"># with reward spans too (True/False = reward on/off, None = no protocol):</span>
+<span class="n">nf_plot</span><span class="o">.</span><span class="n">push</span><span class="p">(</span>
+    <span class="p">[</span><span class="n">alpha_val</span><span class="p">,</span> <span class="n">beta_val</span><span class="p">,</span> <span class="n">gamma_val</span><span class="p">],</span>
+    <span class="n">thresholds</span><span class="o">=</span><span class="p">[</span><span class="n">alpha_thr</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">],</span>
+    <span class="n">rewards</span><span class="o">=</span><span class="p">[</span><span class="n">alpha_rewarded</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">],</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<p><a class="reference internal" href="generated/mne_rt.RTStream.html#mne_rt.RTStream.record_main" title="mne_rt.RTStream.record_main"><code class="xref py py-meth docutils literal notranslate"><span class="pre">record_main()</span></code></a> drives
+<code class="docutils literal notranslate"><span class="pre">push(...,</span> <span class="pre">thresholds=...,</span> <span class="pre">rewards=...)</span></code> automatically from each
+modality’s protocol — see <a class="reference internal" href="protocols.html"><span class="doc">NF Protocols</span></a>.
+See <a class="reference internal" href="generated/mne_rt.viz.NFPlot.html#mne_rt.viz.NFPlot" title="mne_rt.viz.NFPlot"><code class="xref py py-class docutils literal notranslate"><span class="pre">mne_rt.viz.NFPlot</span></code></a> for the full API reference.</p>
+</div><div aria-labelledby="tab-0-0-3" class="sphinx-tabs-panel" hidden="true" id="panel-0-0-3" name="0-3" role="tabpanel" tabindex="0"><div class="viz-tab-card">
+  <div class="viz-tab-header">
+    <div class="viz-tab-title-row">
+      <h3 class="viz-tab-title">ButterflyPlot</h3>
+    </div>
+    <p class="viz-tab-subtitle">All channels overlaid per condition with region colour gradient</p>
+  </div>
+  <div class="viz-tab-body">
+    <p class="viz-tab-desc">
+      All channels overlaid in a single panel per condition, coloured by scalp
+      region:
+      <span style="color:#58a6ff;">blue (frontal)</span> →
+      <span style="color:#4dd0e1;">cyan</span> →
+      <span style="color:#66bb6a;">green</span> →
+      <span style="color:#ffb74d;">amber</span> →
+      <span style="color:#ef5350;">red (occipital)</span>.
+      The gradient makes spatial ERP patterns instantly readable and outlier
+      channels visually obvious without any manual channel selection.
+    </p>
+    <div class="viz-feature-grid">
+      <div class="viz-feature-item">
+        <span class="viz-fi-icon">✓</span>
+        <span class="viz-fi-text"><strong>One panel per condition</strong> — all channels overlaid</span>
+      </div>
+      <div class="viz-feature-item">
+        <span class="viz-fi-icon">✓</span>
+        <span class="viz-fi-text"><strong>Region gradient</strong> — frontal blue → occipital red</span>
+      </div>
+      <div class="viz-feature-item">
+        <span class="viz-fi-icon">✓</span>
+        <span class="viz-fi-text"><strong>Trial counts</strong> — shown per condition panel header</span>
+      </div>
+      <div class="viz-feature-item">
+        <span class="viz-fi-icon">✓</span>
+        <span class="viz-fi-text">Y-scale, time window, line width, grid, export PNG</span>
+      </div>
+    </div>
+    <div class="viz-media-wrap">
+      <video autoplay muted loop playsinline>
+        <source src="_static/ButterflyPlot.mp4" type="video/mp4">
+      </video>
+    </div>
+  </div>
+</div><div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">butt</span> <span class="o">=</span> <span class="n">ButterflyPlot</span><span class="p">(</span>
+    <span class="n">ch_names</span><span class="o">=</span><span class="n">ch_names</span><span class="p">,</span>
+    <span class="n">sfreq</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span>
+    <span class="n">tmin</span><span class="o">=-</span><span class="mf">0.1</span><span class="p">,</span>
+    <span class="n">tmax</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span>
+    <span class="n">event_id</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;left&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;right&quot;</span><span class="p">:</span> <span class="mi">2</span><span class="p">},</span>
+    <span class="n">montage</span><span class="o">=</span><span class="s2">&quot;easycap-M1&quot;</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="n">butt</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">epochs</span><span class="p">,</span> <span class="n">conditions</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>See <a class="reference internal" href="generated/mne_rt.viz.ButterflyPlot.html#mne_rt.viz.ButterflyPlot" title="mne_rt.viz.ButterflyPlot"><code class="xref py py-class docutils literal notranslate"><span class="pre">mne_rt.viz.ButterflyPlot</span></code></a> for the full API reference.</p>
+</div><div aria-labelledby="tab-0-0-4" class="sphinx-tabs-panel" hidden="true" id="panel-0-0-4" name="0-4" role="tabpanel" tabindex="0"><div class="viz-tab-card">
+  <div class="viz-tab-header">
+    <div class="viz-tab-title-row">
+      <h3 class="viz-tab-title">CompareEvoked</h3>
+    </div>
+    <p class="viz-tab-subtitle">Per-channel large plots with all conditions overlaid and peak markers</p>
+  </div>
+  <div class="viz-tab-body">
+    <p class="viz-tab-desc">
+      Large individual plots per electrode with all conditions overlaid,
+      ±1 SEM shading, and a scatter dot marking the peak latency in the
+      post-stimulus window.  Channels are selected by clicking on a
+      clickable mini scalp-topomap in the sidebar — making it trivially
+      easy to drill into any electrode without hunting through a list.
+    </p>
+    <div class="viz-feature-grid">
+      <div class="viz-feature-item">
+        <span class="viz-fi-icon">✓</span>
+        <span class="viz-fi-text"><strong>Click-to-select</strong> channels via sidebar topomap</span>
+      </div>
+      <div class="viz-feature-item">
+        <span class="viz-fi-icon">✓</span>
+        <span class="viz-fi-text"><strong>±1 SEM shading</strong> per condition</span>
+      </div>
+      <div class="viz-feature-item">
+        <span class="viz-fi-icon">✓</span>
+        <span class="viz-fi-text"><strong>Peak-latency markers</strong> — auto-detected in post-stimulus window</span>
+      </div>
+      <div class="viz-feature-item">
+        <span class="viz-fi-icon">✓</span>
+        <span class="viz-fi-text">Visible ms and amplitude axes with gridlines</span>
+      </div>
+      <div class="viz-feature-item">
+        <span class="viz-fi-icon">✓</span>
+        <span class="viz-fi-text">Y-scale, SEM and peak toggles, export PNG</span>
+      </div>
+    </div>
+    <div class="viz-media-wrap">
+      <video autoplay muted loop playsinline>
+        <source src="_static/CompareEvoked.mp4" type="video/mp4">
+      </video>
+    </div>
+  </div>
+</div><div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">cmp</span> <span class="o">=</span> <span class="n">CompareEvoked</span><span class="p">(</span>
+    <span class="n">ch_names</span><span class="o">=</span><span class="n">ch_names</span><span class="p">,</span>
+    <span class="n">sfreq</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span>
+    <span class="n">tmin</span><span class="o">=-</span><span class="mf">0.1</span><span class="p">,</span>
+    <span class="n">tmax</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span>
+    <span class="n">event_id</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;left&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;right&quot;</span><span class="p">:</span> <span class="mi">2</span><span class="p">},</span>
+    <span class="n">montage</span><span class="o">=</span><span class="s2">&quot;easycap-M1&quot;</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="n">cmp</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">epochs</span><span class="p">,</span> <span class="n">conditions</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>See <a class="reference internal" href="generated/mne_rt.viz.CompareEvoked.html#mne_rt.viz.CompareEvoked" title="mne_rt.viz.CompareEvoked"><code class="xref py py-class docutils literal notranslate"><span class="pre">mne_rt.viz.CompareEvoked</span></code></a> for the full API reference.</p>
+</div><div aria-labelledby="tab-0-0-5" class="sphinx-tabs-panel" hidden="true" id="panel-0-0-5" name="0-5" role="tabpanel" tabindex="0"><div class="viz-tab-card">
+  <div class="viz-tab-header">
+    <div class="viz-tab-title-row">
+      <h3 class="viz-tab-title">TopoPlot</h3>
+    </div>
+    <p class="viz-tab-subtitle">Scalp-layout evoked display — one mini plot per electrode</p>
+  </div>
+  <div class="viz-tab-body">
+    <p class="viz-tab-desc">
+      One mini plot per electrode placed at its true 2-D scalp position
+      (from <code>mne.channels.find_layout</code>).  Condition averages
+      with ±1 SEM shading re-render after every accepted trial, giving an
+      instant whole-brain view of the evolving ERP.
+      Re-referencing, smoothing, and y-scale are all adjustable from the sidebar.
+    </p>
+    <div class="viz-feature-grid">
+      <div class="viz-feature-item">
+        <span class="viz-fi-icon">✓</span>
+        <span class="viz-fi-text"><strong>Scalp-layout grid</strong> — true electrode positions (EEG &amp; MEG)</span>
+      </div>
+      <div class="viz-feature-item">
+        <span class="viz-fi-icon">✓</span>
+        <span class="viz-fi-text"><strong>±1 SEM shading</strong> per condition, updates every trial</span>
+      </div>
+      <div class="viz-feature-item">
+        <span class="viz-fi-icon">✓</span>
+        <span class="viz-fi-text"><strong>Re-reference</strong> — None / Average / Mastoids</span>
+      </div>
+      <div class="viz-feature-item">
+        <span class="viz-fi-icon">✓</span>
+        <span class="viz-fi-text"><strong>Unit-aware</strong> — µV, fT, fT/cm auto-detected</span>
+      </div>
+      <div class="viz-feature-item">
+        <span class="viz-fi-icon">✓</span>
+        <span class="viz-fi-text">Stimulus-time marker · channel labels · export PNG</span>
+      </div>
+      <div class="viz-feature-item">
+        <span class="viz-fi-icon">✓</span>
+        <span class="viz-fi-text">Y-scale, line width, smoothing, background colour controls</span>
+      </div>
+    </div>
+    <div class="viz-media-wrap">
+      <video autoplay muted loop playsinline>
+        <source src="_static/TopoPlot.mp4" type="video/mp4">
+      </video>
+    </div>
+  </div>
+</div><div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">topo</span> <span class="o">=</span> <span class="n">TopoPlot</span><span class="p">(</span>
+    <span class="n">ch_names</span><span class="o">=</span><span class="n">ch_names</span><span class="p">,</span>
+    <span class="n">sfreq</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span>
+    <span class="n">tmin</span><span class="o">=-</span><span class="mf">0.1</span><span class="p">,</span>
+    <span class="n">tmax</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span>
+    <span class="n">event_id</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;left&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;right&quot;</span><span class="p">:</span> <span class="mi">2</span><span class="p">},</span>
+    <span class="n">montage</span><span class="o">=</span><span class="s2">&quot;easycap-M1&quot;</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="n">topo</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">epochs</span><span class="p">,</span> <span class="n">conditions</span><span class="p">)</span>   <span class="c1"># call after each accepted trial</span>
+</pre></div>
+</div>
+<p>See <a class="reference internal" href="generated/mne_rt.viz.TopoPlot.html#mne_rt.viz.TopoPlot" title="mne_rt.viz.TopoPlot"><code class="xref py py-class docutils literal notranslate"><span class="pre">mne_rt.viz.TopoPlot</span></code></a> for the full API reference.</p>
+</div><div aria-labelledby="tab-0-0-6" class="sphinx-tabs-panel" hidden="true" id="panel-0-0-6" name="0-6" role="tabpanel" tabindex="0"><div class="viz-tab-card">
+  <div class="viz-tab-header">
+    <div class="viz-tab-title-row">
+      <h3 class="viz-tab-title">TopomapPlot</h3>
+    </div>
+    <p class="viz-tab-subtitle">Live per-band power scalp topographic map</p>
+  </div>
+  <div class="viz-tab-body">
+    <p class="viz-tab-desc">
+      Live scalp topographic map that displays the spatial distribution of
+      per-band power in real time.  Built on MNE-Python's matplotlib pipeline
+      with a Qt canvas, it refreshes continuously as new data windows arrive.
+      Electrode positions are overlaid and a custom frequency range can be
+      typed directly into the sidebar without restarting.
+    </p>
+    <div class="viz-feature-grid">
+      <div class="viz-feature-item">
+        <span class="viz-fi-icon">✓</span>
+        <span class="viz-fi-text"><strong>Per-band power</strong> — interpolated scalp colour map</span>
+      </div>
+      <div class="viz-feature-item">
+        <span class="viz-fi-icon">✓</span>
+        <span class="viz-fi-text"><strong>Built-in bands</strong> — delta, theta, alpha, beta, gamma</span>
+      </div>
+      <div class="viz-feature-item">
+        <span class="viz-fi-icon">✓</span>
+        <span class="viz-fi-text"><strong>Custom frequency range</strong> — set any lo–hi Hz in the sidebar</span>
+      </div>
+      <div class="viz-feature-item">
+        <span class="viz-fi-icon">✓</span>
+        <span class="viz-fi-text"><strong>Electrode overlay</strong> — sensor positions on the scalp map</span>
+      </div>
+    </div>
+  <div class="viz-media-wrap">
+      <video autoplay muted loop playsinline>
+        <source src="_static/TopomapPlot.mp4" type="video/mp4">
+      </video>
+    </div>
+  </div>
+</div><div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">tmap</span> <span class="o">=</span> <span class="n">TopomapPlot</span><span class="p">(</span>
+    <span class="n">info</span><span class="o">=</span><span class="n">raw_info</span><span class="p">,</span>
+    <span class="n">sfreq</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span>
+    <span class="n">frange</span><span class="o">=</span><span class="p">(</span><span class="mi">8</span><span class="p">,</span> <span class="mi">13</span><span class="p">),</span>       <span class="c1"># start with the alpha band</span>
+<span class="p">)</span>
+<span class="n">tmap</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+<span class="n">tmap</span><span class="o">.</span><span class="n">push</span><span class="p">(</span><span class="n">data_window</span><span class="p">)</span>    <span class="c1"># shape (n_channels, n_samples)</span>
+</pre></div>
+</div>
+<p>See <a class="reference internal" href="generated/mne_rt.viz.TopomapPlot.html#mne_rt.viz.TopomapPlot" title="mne_rt.viz.TopomapPlot"><code class="xref py py-class docutils literal notranslate"><span class="pre">mne_rt.viz.TopomapPlot</span></code></a> for the full API reference.</p>
+</div><div aria-labelledby="tab-0-0-7" class="sphinx-tabs-panel" hidden="true" id="panel-0-0-7" name="0-7" role="tabpanel" tabindex="0"><div class="viz-tab-card">
+  <div class="viz-tab-header">
+    <div class="viz-tab-title-row">
+      <h3 class="viz-tab-title">TFRPlot</h3>
+    </div>
+    <p class="viz-tab-subtitle">Morlet wavelet time-frequency heatmaps across conditions</p>
+  </div>
+  <div class="viz-tab-body">
+    <p class="viz-tab-desc">
+      Morlet wavelet TFR heatmaps arranged in a (channels × conditions) grid.
+      Two modes: <em>induced</em> (average of per-epoch TFR) and
+      <em>evoked</em> (TFR of the trial average).
+      Colour limits are shared across conditions for direct comparison.
+      Channels are selected via a clickable sidebar topomap — the same
+      click-to-inspect paradigm used in CompareEvoked.
+    </p>
+    <div class="viz-feature-grid">
+      <div class="viz-feature-item">
+        <span class="viz-fi-icon">✓</span>
+        <span class="viz-fi-text"><strong>Induced vs Evoked</strong> mode toggle</span>
+      </div>
+      <div class="viz-feature-item">
+        <span class="viz-fi-icon">✓</span>
+        <span class="viz-fi-text"><strong>Click-to-select</strong> channels via sidebar topomap</span>
+      </div>
+      <div class="viz-feature-item">
+        <span class="viz-fi-icon">✓</span>
+        <span class="viz-fi-text"><strong>dB baseline</strong> correction or raw power display</span>
+      </div>
+      <div class="viz-feature-item">
+        <span class="viz-fi-icon">✓</span>
+        <span class="viz-fi-text"><strong>Shared colour scale</strong> across all conditions</span>
+      </div>
+      <div class="viz-feature-item">
+        <span class="viz-fi-icon">✓</span>
+        <span class="viz-fi-text"><strong>Colormaps</strong> — Hot, RdBu, Viridis, Plasma, Turbo, Greys</span>
+      </div>
+      <div class="viz-feature-item">
+        <span class="viz-fi-icon">✓</span>
+        <span class="viz-fi-text">Manual vmin / vmax or auto percentile limits</span>
+      </div>
+      <div class="viz-feature-item">
+        <span class="viz-fi-icon">✓</span>
+        <span class="viz-fi-text">Frequency range sliders · export PNG</span>
+      </div>
+    </div>
+    <div class="viz-media-wrap">
+      <video autoplay muted loop playsinline>
+        <source src="_static/TFRPlot.mp4" type="video/mp4">
+      </video>
+    </div>
+  </div>
+</div><div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="n">tfr</span> <span class="o">=</span> <span class="n">TFRPlot</span><span class="p">(</span>
+    <span class="n">ch_names</span><span class="o">=</span><span class="n">ch_names</span><span class="p">,</span>
+    <span class="n">sfreq</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span>
+    <span class="n">tmin</span><span class="o">=-</span><span class="mf">0.1</span><span class="p">,</span>
+    <span class="n">tmax</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span>
+    <span class="n">freqs</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="mi">40</span><span class="p">),</span>
+    <span class="n">event_id</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;left&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;right&quot;</span><span class="p">:</span> <span class="mi">2</span><span class="p">},</span>
+    <span class="n">montage</span><span class="o">=</span><span class="s2">&quot;easycap-M1&quot;</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="n">tfr</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">epochs</span><span class="p">,</span> <span class="n">conditions</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>See <a class="reference internal" href="generated/mne_rt.viz.TFRPlot.html#mne_rt.viz.TFRPlot" title="mne_rt.viz.TFRPlot"><code class="xref py py-class docutils literal notranslate"><span class="pre">mne_rt.viz.TFRPlot</span></code></a> for the full API reference.</p>
+</div><div aria-labelledby="tab-0-0-8" class="sphinx-tabs-panel" hidden="true" id="panel-0-0-8" name="0-8" role="tabpanel" tabindex="0"><div class="viz-tab-card">
+  <div class="viz-tab-header">
+    <div class="viz-tab-title-row">
+      <h3 class="viz-tab-title">BrainPlot</h3>
+    </div>
+    <p class="viz-tab-subtitle">Interactive 3-D cortical surface with colour-mapped source activity</p>
+  </div>
+  <div class="viz-tab-body">
+    <p class="viz-tab-desc">
+      Interactive 3-D cortical surface rendered with PyVista, with colour-mapped
+      source-space activity that updates live as new NF windows arrive.
+      Hemisphere toggles, surface switching, anatomical parcellation borders,
+      and a full set of view presets make it the most feature-rich display in
+      the suite.  Video recording (MP4) is built in.
+    </p>
+    <div class="viz-feature-grid">
+      <div class="viz-feature-item">
+        <span class="viz-fi-icon">✓</span>
+        <span class="viz-fi-text"><strong>Live colour map</strong> — EMA-smoothed source-space activity</span>
+      </div>
+      <div class="viz-feature-item">
+        <span class="viz-fi-icon">✓</span>
+        <span class="viz-fi-text"><strong>Hemisphere toggles</strong> — left / right / both</span>
+      </div>
+      <div class="viz-feature-item">
+        <span class="viz-fi-icon">✓</span>
+        <span class="viz-fi-text"><strong>Surface modes</strong> — inflated, pial, white, sphere</span>
+      </div>
+      <div class="viz-feature-item">
+        <span class="viz-fi-icon">✓</span>
+        <span class="viz-fi-text"><strong>Parcellation borders</strong> — aparc (DK) or aparc.a2009s (Destrieux)</span>
+      </div>
+      <div class="viz-feature-item">
+        <span class="viz-fi-icon">✓</span>
+        <span class="viz-fi-text"><strong>Display modes</strong> — Alpha, Beta, Theta, Gamma, SMR, custom band</span>
+      </div>
+      <div class="viz-feature-item">
+        <span class="viz-fi-icon">✓</span>
+        <span class="viz-fi-text"><strong>5 view presets</strong> — lateral L/R, dorsal, frontal, ventral + key bindings</span>
+      </div>
+      <div class="viz-feature-item">
+        <span class="viz-fi-icon">✓</span>
+        <span class="viz-fi-text">Colormap, opacity, threshold, clim, background controls</span>
+      </div>
+      <div class="viz-feature-item">
+        <span class="viz-fi-icon">✓</span>
+        <span class="viz-fi-text"><strong>Video recording</strong> — MP4 export via imageio-ffmpeg</span>
+      </div>
+    </div>
+    <div class="viz-media-wrap">
+      <video autoplay muted loop playsinline>
+        <source src="_static/BrainPlot.mp4" type="video/mp4">
+      </video>
+    </div>
+  </div>
+</div><div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">brain</span> <span class="o">=</span> <span class="n">BrainPlot</span><span class="p">(</span>
+    <span class="n">subjects_fs_dir</span><span class="o">=</span><span class="s2">&quot;/path/to/freesurfer&quot;</span><span class="p">,</span>
+    <span class="n">surf</span><span class="o">=</span><span class="s2">&quot;inflated&quot;</span><span class="p">,</span>
+    <span class="n">clim</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mf">0.6</span><span class="p">],</span>
+    <span class="n">display_smoothing</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="n">brain</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+<span class="n">brain</span><span class="o">.</span><span class="n">push</span><span class="p">(</span><span class="n">stc_data</span><span class="p">)</span>   <span class="c1"># source-space activity array</span>
+</pre></div>
+</div>
+<p>See <a class="reference internal" href="generated/mne_rt.viz.BrainPlot.html#mne_rt.viz.BrainPlot" title="mne_rt.viz.BrainPlot"><code class="xref py py-class docutils literal notranslate"><span class="pre">mne_rt.viz.BrainPlot</span></code></a> for the full API reference.</p>
+</div></div>
+</section>
+
+
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="generated/mne_rt.set_log_level.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">mne_rt.set_log_level</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="cli.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">CLI</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="_static/scripts/bootstrap.js?digest=90905a2f556bf617f1a9"></script>
+<script defer src="_static/scripts/pydata-sphinx-theme.js?digest=90905a2f556bf617f1a9"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright 2025, Payam S. Shabestari.
+      <br/>
+    
+  </p>
+</div>
+      
+        <div class="footer-item">
+
+  <p class="sphinx-version">
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 9.0.4.
+    <br/>
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
+<p class="theme-version">
+  <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.20.0.
+</p></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>

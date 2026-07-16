@@ -1,0 +1,1151 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="./" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>NF Protocols &#8212; MNE-RT</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="_static/styles/theme.css?digest=90905a2f556bf617f1a9" rel="stylesheet" />
+<link href="_static/styles/pydata-sphinx-theme.css?digest=90905a2f556bf617f1a9" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="_static/sg_gallery.css?v=fd6457a4" />
+    <link rel="stylesheet" type="text/css" href="_static/sg_gallery-binder.css?v=f4aeca0c" />
+    <link rel="stylesheet" type="text/css" href="_static/sg_gallery-dataframe.css?v=2082cf3c" />
+    <link rel="stylesheet" type="text/css" href="_static/sg_gallery-rendered-html.css?v=1277b6f3" />
+    <link rel="stylesheet" type="text/css" href="_static/custom.css?v=5bf657dd" />
+  
+  <!-- So that users can add custom icons -->
+  <script defer src="_static/scripts/fontawesome.js?digest=90905a2f556bf617f1a9"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="_static/scripts/bootstrap.js?digest=90905a2f556bf617f1a9" />
+<link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=90905a2f556bf617f1a9" />
+
+    <script src="_static/documentation_options.js?v=8d563738"></script>
+    <script src="_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="_static/sg-tags.js?v=d80f6fa4"></script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-mml-chtml.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'protocols';</script>
+    <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="What’s new" href="whats_new.html" />
+    <link rel="prev" title="Real-time Feature Modalities" href="modalities.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="" />
+  
+    
+    <script src="_static/searchtools.js"></script>
+    <script src="_static/language_data.js"></script>
+    <script src="searchindex.js"></script>
+  
+  </head>
+  <body data-default-mode="">
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+  
+  
+  
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header id="pst-header" class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="index.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="_static/mne_rt_logo.svg" class="logo__image only-light" alt="MNE-RT - Home"/>
+    <img src="_static/mne_rt_logo.svg" class="logo__image only-dark pst-js-only" alt="MNE-RT - Home"/>
+  
+  
+</a></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="install.html">
+    Installation
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="tutorial.html">
+    User Guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="api.html">
+    API Reference
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="visualization.html">
+    Visualisation
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="cli.html">
+    CLI
+  </a>
+</li>
+
+            <li class="nav-item dropdown">
+                <button class="btn dropdown-toggle nav-item" type="button"
+                data-bs-toggle="dropdown" aria-expanded="false"
+                aria-controls="pst-nav-more-links">
+                    More
+                </button>
+                <ul id="pst-nav-more-links" class="dropdown-menu">
+                    
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="denoising.html">
+    Artifact Correction
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="modalities.html">
+    Real-time Feature Modalities
+  </a>
+</li>
+
+
+<li class=" current active">
+  <a class="nav-link dropdown-item nav-internal" href="#">
+    NF Protocols
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="whats_new.html">
+    What’s new
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="auto_examples/index.html">
+    Examples Gallery
+  </a>
+</li>
+
+                </ul>
+            </li>
+            
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+        </div>
+      
+      
+        <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/payamsash/mne-rt" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-square-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
+        </li>
+</ul></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+    </div>
+  
+
+  
+    <button class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="On this page">
+      <span class="fa-solid fa-outdent"></span>
+    </button>
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="install.html">
+    Installation
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="tutorial.html">
+    User Guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="api.html">
+    API Reference
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="visualization.html">
+    Visualisation
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="cli.html">
+    CLI
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="denoising.html">
+    Artifact Correction
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="modalities.html">
+    Real-time Feature Modalities
+  </a>
+</li>
+
+
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="#">
+    NF Protocols
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="whats_new.html">
+    What’s new
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="auto_examples/index.html">
+    Examples Gallery
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/payamsash/mne-rt" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-square-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
+        </li>
+</ul></div>
+        
+      </div>
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+
+<nav class="bd-docs-nav bd-links"
+     aria-label="Section Navigation">
+  <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
+  <div class="bd-toc-item navbar-nav"></div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">NF Protocols</span></li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section id="nf-protocols">
+<span id="protocols"></span><h1>NF Protocols<a class="headerlink" href="#nf-protocols" title="Link to this heading">#</a></h1>
+<p>A <strong>neurofeedback protocol</strong> decides <em>when</em> and <em>how much</em> to reward.
+It sits between the raw NF feature value (e.g. alpha power) and the
+feedback signal delivered to the participant.  MNE-RT ships ten protocols,
+covering the full spectrum from simple fixed-threshold designs to
+adaptive psychophysics staircases, reinforcement-learning thresholds,
+operant conditioning schedules, cross-session transfer, and double-blind
+sham control.</p>
+<p>All protocols share the same two-value contract:</p>
+<nav class="contents local" id="contents">
+<ul class="simple">
+<li><p><a class="reference internal" href="#live-threshold-display" id="id9">Live Threshold Display</a></p></li>
+<li><p><a class="reference internal" href="#choosing-a-protocol" id="id10">Choosing a Protocol</a></p></li>
+<li><p><a class="reference internal" href="#threshold-protocol" id="id11">Threshold Protocol</a></p></li>
+<li><p><a class="reference internal" href="#z-score-protocol" id="id12">Z-Score Protocol</a></p></li>
+<li><p><a class="reference internal" href="#percentile-protocol" id="id13">Percentile Protocol</a></p></li>
+<li><p><a class="reference internal" href="#linear-trend-protocol" id="id14">Linear-Trend Protocol</a></p></li>
+<li><p><a class="reference internal" href="#sham-protocol" id="id15">Sham Protocol</a></p></li>
+<li><p><a class="reference internal" href="#up-down-staircase-protocol" id="id16">Up-Down Staircase Protocol</a></p></li>
+<li><p><a class="reference internal" href="#multi-band-protocol" id="id17">Multi-Band Protocol</a></p></li>
+<li><p><a class="reference internal" href="#rl-protocol" id="id18">RL Protocol</a></p></li>
+<li><p><a class="reference internal" href="#operant-protocol" id="id19">Operant Protocol</a></p></li>
+<li><p><a class="reference internal" href="#transfer-protocol" id="id20">Transfer Protocol</a></p></li>
+<li><p><a class="reference internal" href="#references" id="id21">References</a></p></li>
+</ul>
+</nav>
+<hr class="docutils" />
+<section id="live-threshold-display">
+<h2><a class="toc-backref" href="#id9" role="doc-backlink">Live Threshold Display</a><a class="headerlink" href="#live-threshold-display" title="Link to this heading">#</a></h2>
+<p>Every protocol also exposes a read-only <code class="docutils literal notranslate"><span class="pre">current_threshold</span></code> property, in
+the same raw units as the NF feature it evaluates.  For protocols with a
+literal fixed or adaptive level (<a class="reference internal" href="generated/mne_rt.protocols.ThresholdProtocol.html#mne_rt.protocols.ThresholdProtocol" title="mne_rt.protocols.ThresholdProtocol"><code class="xref py py-class docutils literal notranslate"><span class="pre">ThresholdProtocol</span></code></a>,
+<a class="reference internal" href="generated/mne_rt.protocols.UpDownStaircaseProtocol.html#mne_rt.protocols.UpDownStaircaseProtocol" title="mne_rt.protocols.UpDownStaircaseProtocol"><code class="xref py py-class docutils literal notranslate"><span class="pre">UpDownStaircaseProtocol</span></code></a>,
+<a class="reference internal" href="generated/mne_rt.protocols.RLProtocol.html#mne_rt.protocols.RLProtocol" title="mne_rt.protocols.RLProtocol"><code class="xref py py-class docutils literal notranslate"><span class="pre">RLProtocol</span></code></a>, <a class="reference internal" href="generated/mne_rt.protocols.PercentileProtocol.html#mne_rt.protocols.PercentileProtocol" title="mne_rt.protocols.PercentileProtocol"><code class="xref py py-class docutils literal notranslate"><span class="pre">PercentileProtocol</span></code></a>)
+this is just that level.  For relative-criterion protocols
+(<a class="reference internal" href="generated/mne_rt.protocols.ZScoreProtocol.html#mne_rt.protocols.ZScoreProtocol" title="mne_rt.protocols.ZScoreProtocol"><code class="xref py py-class docutils literal notranslate"><span class="pre">ZScoreProtocol</span></code></a>, <a class="reference internal" href="generated/mne_rt.protocols.TransferProtocol.html#mne_rt.protocols.TransferProtocol" title="mne_rt.protocols.TransferProtocol"><code class="xref py py-class docutils literal notranslate"><span class="pre">TransferProtocol</span></code></a>)
+it is the z-score boundary converted back to raw units
+(<code class="docutils literal notranslate"><span class="pre">mean</span> <span class="pre">±</span> <span class="pre">zscore_threshold</span> <span class="pre">×</span> <span class="pre">std</span></code>).  Wrapper protocols
+(<a class="reference internal" href="generated/mne_rt.protocols.ShamProtocol.html#mne_rt.protocols.ShamProtocol" title="mne_rt.protocols.ShamProtocol"><code class="xref py py-class docutils literal notranslate"><span class="pre">ShamProtocol</span></code></a>, <a class="reference internal" href="generated/mne_rt.protocols.OperantProtocol.html#mne_rt.protocols.OperantProtocol" title="mne_rt.protocols.OperantProtocol"><code class="xref py py-class docutils literal notranslate"><span class="pre">OperantProtocol</span></code></a>)
+pass the value through from whatever they wrap.
+<a class="reference internal" href="generated/mne_rt.protocols.LinearTrendProtocol.html#mne_rt.protocols.LinearTrendProtocol" title="mne_rt.protocols.LinearTrendProtocol"><code class="xref py py-class docutils literal notranslate"><span class="pre">LinearTrendProtocol</span></code></a> always returns <code class="docutils literal notranslate"><span class="pre">None</span></code> since
+it rewards a <em>trend</em>, not a level.</p>
+<p>When a protocol is passed to <a class="reference internal" href="generated/mne_rt.RTStream.html#mne_rt.RTStream.record_main" title="mne_rt.RTStream.record_main"><code class="xref py py-meth docutils literal notranslate"><span class="pre">record_main()</span></code></a> (or
+<a class="reference internal" href="generated/mne_rt.RTStream.html#mne_rt.RTStream.replay" title="mne_rt.RTStream.replay"><code class="xref py py-meth docutils literal notranslate"><span class="pre">replay()</span></code></a>) with <code class="docutils literal notranslate"><span class="pre">show_nf_signal=True</span></code>,
+<code class="docutils literal notranslate"><span class="pre">current_threshold</span></code> is read on every analysis window and drawn as a
+dashed horizontal line on the corresponding <a class="reference internal" href="generated/mne_rt.viz.NFPlot.html#mne_rt.viz.NFPlot" title="mne_rt.viz.NFPlot"><code class="xref py py-class docutils literal notranslate"><span class="pre">NFPlot</span></code></a>
+subplot — updating live for adaptive protocols.  The line can be toggled
+from the <em>Display</em> panel of the NFPlot window.  See <a class="reference internal" href="visualization.html"><span class="doc">Visualisation</span></a>.</p>
+</section>
+<hr class="docutils" />
+<section id="choosing-a-protocol">
+<h2><a class="toc-backref" href="#id10" role="doc-backlink">Choosing a Protocol</a><a class="headerlink" href="#choosing-a-protocol" title="Link to this heading">#</a></h2>
+<div style="overflow-x:auto; margin:16px 0;">
+<table style="border-collapse:separate; border-spacing:0; width:100%; font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif; font-size:13px;">
+<thead>
+  <tr>
+    <th style="background:#1e40af;color:white;padding:8px 14px;border-radius:8px 0 0 0;">Protocol</th>
+    <th style="background:#1e40af;color:white;padding:8px 14px;">Best for</th>
+    <th style="background:#1e40af;color:white;padding:8px 14px;">Key property</th>
+    <th style="background:#1e40af;color:white;padding:8px 14px;border-radius:0 8px 0 0;">Requires baseline?</th>
+  </tr>
+</thead>
+<tbody>
+  <tr style="background:#eff6ff;">
+    <td style="padding:7px 14px;border-bottom:1px solid #dbeafe;font-weight:600;">ThresholdProtocol</td>
+    <td style="padding:7px 14px;border-bottom:1px solid #dbeafe;">Clinical NF, demos, debugging</td>
+    <td style="padding:7px 14px;border-bottom:1px solid #dbeafe;">Fixed or slowly-adapting threshold; most interpretable</td>
+    <td style="padding:7px 14px;border-bottom:1px solid #dbeafe;">No</td>
+  </tr>
+  <tr style="background:#f0fdf4;">
+    <td style="padding:7px 14px;border-bottom:1px solid #dcfce7;font-weight:600;">ZScoreProtocol</td>
+    <td style="padding:7px 14px;border-bottom:1px solid #dcfce7;">Within-session adaptation, variable signals</td>
+    <td style="padding:7px 14px;border-bottom:1px solid #dcfce7;">Rewards deviation from running mean — self-calibrating</td>
+    <td style="padding:7px 14px;border-bottom:1px solid #dcfce7;">No (warmup windows)</td>
+  </tr>
+  <tr style="background:#eff6ff;">
+    <td style="padding:7px 14px;border-bottom:1px solid #dbeafe;font-weight:600;">PercentileProtocol</td>
+    <td style="padding:7px 14px;border-bottom:1px solid #dbeafe;">Gamification, progressive training</td>
+    <td style="padding:7px 14px;border-bottom:1px solid #dbeafe;">Threshold tracks own rolling distribution — difficulty auto-scales</td>
+    <td style="padding:7px 14px;border-bottom:1px solid #dbeafe;">No</td>
+  </tr>
+  <tr style="background:#f0fdf4;">
+    <td style="padding:7px 14px;border-bottom:1px solid #dcfce7;font-weight:600;">LinearTrendProtocol</td>
+    <td style="padding:7px 14px;border-bottom:1px solid #dcfce7;">Slow-learning paradigms, gradual skill acquisition</td>
+    <td style="padding:7px 14px;border-bottom:1px solid #dcfce7;">Rewards slope, not level — sustained change wins</td>
+    <td style="padding:7px 14px;border-bottom:1px solid #dcfce7;">No</td>
+  </tr>
+  <tr style="background:#eff6ff;">
+    <td style="padding:7px 14px;border-bottom:1px solid #dbeafe;font-weight:600;">ShamProtocol</td>
+    <td style="padding:7px 14px;border-bottom:1px solid #dbeafe;">RCTs, sham control conditions</td>
+    <td style="padding:7px 14px;border-bottom:1px solid #dbeafe;">Wraps any protocol; shuffles feedback on fraction of windows</td>
+    <td style="padding:7px 14px;border-bottom:1px solid #dbeafe;">Depends on inner</td>
+  </tr>
+  <tr style="background:#f0fdf4;">
+    <td style="padding:7px 14px;border-bottom:1px solid #dcfce7;font-weight:600;">UpDownStaircaseProtocol</td>
+    <td style="padding:7px 14px;border-bottom:1px solid #dcfce7;">Threshold estimation, psychophysics</td>
+    <td style="padding:7px 14px;border-bottom:1px solid #dcfce7;">Converges threshold to target success rate via n-up/n-down rule</td>
+    <td style="padding:7px 14px;border-bottom:1px solid #dcfce7;">No</td>
+  </tr>
+  <tr style="background:#eff6ff;">
+    <td style="padding:7px 14px;border-bottom:1px solid #dbeafe;font-weight:600;">MultiBandProtocol</td>
+    <td style="padding:7px 14px;border-bottom:1px solid #dbeafe;">Dual-band NF (alpha↑ + theta↓, SMR↑ + theta↓)</td>
+    <td style="padding:7px 14px;border-bottom:1px solid #dbeafe;">AND/OR combination of two independent inner protocols</td>
+    <td style="padding:7px 14px;border-bottom:1px solid #dbeafe;">Depends on inner protocols</td>
+  </tr>
+  <tr style="background:#f0fdf4;">
+    <td style="padding:7px 14px;border-bottom:1px solid #dcfce7;font-weight:600;">RLProtocol</td>
+    <td style="padding:7px 14px;border-bottom:1px solid #dcfce7;">Automated threshold search, fully adaptive training</td>
+    <td style="padding:7px 14px;border-bottom:1px solid #dcfce7;">ε-greedy exploration + hit-rate-driven threshold update</td>
+    <td style="padding:7px 14px;border-bottom:1px solid #dcfce7;">No (warmup windows)</td>
+  </tr>
+  <tr style="background:#eff6ff;">
+    <td style="padding:7px 14px;border-bottom:1px solid #dbeafe;font-weight:600;">OperantProtocol</td>
+    <td style="padding:7px 14px;border-bottom:1px solid #dbeafe;">Partial reinforcement, ratio/interval schedules</td>
+    <td style="padding:7px 14px;border-bottom:1px solid #dbeafe;">Wraps any protocol; gates rewards by FR/VR/FI/VI schedule</td>
+    <td style="padding:7px 14px;border-bottom:1px solid #dbeafe;">Depends on inner</td>
+  </tr>
+  <tr style="background:#f0fdf4;">
+    <td style="padding:7px 14px;font-weight:600;">TransferProtocol</td>
+    <td style="padding:7px 14px;">Cross-session transfer, prior-seeded z-score</td>
+    <td style="padding:7px 14px;">Seeds running statistics from a prior session file — zero warmup</td>
+    <td style="padding:7px 14px;">No (prior file)</td>
+  </tr>
+</tbody>
+</table>
+</div></section>
+<hr class="docutils" />
+<section id="threshold-protocol">
+<h2><a class="toc-backref" href="#id11" role="doc-backlink">Threshold Protocol</a><a class="headerlink" href="#threshold-protocol" title="Link to this heading">#</a></h2>
+<div style="background:#eff6ff; border-left:4px solid #3b82f6; padding:10px 16px; margin-bottom:16px; border-radius:0 8px 8px 0; font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif; font-size:13px;">
+<strong>Reward rule:</strong> &nbsp;
+crossed &nbsp;=&nbsp; <em>x</em> &gt; <em>θ</em> &nbsp;&nbsp;(direction = "up")
+&nbsp;|&nbsp; <em>x</em> &lt; <em>θ</em> &nbsp;&nbsp;(direction = "down")
+</div><p>The simplest and most widely used protocol.  A fixed threshold
+<span class="math notranslate nohighlight">\(\theta\)</span> is placed on the NF feature scale and the participant
+receives feedback whenever the signal crosses it.</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}\text{crossed} = \begin{cases}
+  x_t &gt; \theta &amp; \text{if direction = &quot;up&quot;} \\
+  x_t &lt; \theta &amp; \text{if direction = &quot;down&quot;}
+\end{cases}
+\qquad
+\text{magnitude} = \begin{cases}
+  |x_t - \theta| &amp; \text{if crossed} \\
+  0 &amp; \text{otherwise}
+\end{cases}\end{split}\]</div>
+<p>The <code class="docutils literal notranslate"><span class="pre">adapt_rate</span></code> parameter adds slow threshold drift to maintain a
+target success rate over time — increase <span class="math notranslate nohighlight">\(\theta\)</span> after rewarded
+windows, decrease after missed windows.</p>
+<p><strong>When to use:</strong>  Quick prototyping, clinical applications where the
+threshold is set by an expert, or as the inner protocol for
+<a class="reference internal" href="generated/mne_rt.protocols.ShamProtocol.html#mne_rt.protocols.ShamProtocol" title="mne_rt.protocols.ShamProtocol"><code class="xref py py-class docutils literal notranslate"><span class="pre">ShamProtocol</span></code></a> or
+<a class="reference internal" href="generated/mne_rt.protocols.MultiBandProtocol.html#mne_rt.protocols.MultiBandProtocol" title="mne_rt.protocols.MultiBandProtocol"><code class="xref py py-class docutils literal notranslate"><span class="pre">MultiBandProtocol</span></code></a>.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">mne_rt.protocols</span><span class="w"> </span><span class="kn">import</span> <span class="n">ThresholdProtocol</span>
+
+<span class="n">proto</span> <span class="o">=</span> <span class="n">ThresholdProtocol</span><span class="p">(</span><span class="n">threshold</span><span class="o">=</span><span class="mf">1.2e-10</span><span class="p">,</span> <span class="n">direction</span><span class="o">=</span><span class="s2">&quot;up&quot;</span><span class="p">)</span>
+<span class="n">crossed</span><span class="p">,</span> <span class="n">mag</span> <span class="o">=</span> <span class="n">proto</span><span class="o">.</span><span class="n">evaluate</span><span class="p">(</span><span class="n">alpha_power</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<hr class="docutils" />
+<section id="z-score-protocol">
+<h2><a class="toc-backref" href="#id12" role="doc-backlink">Z-Score Protocol</a><a class="headerlink" href="#z-score-protocol" title="Link to this heading">#</a></h2>
+<div style="background:#f0fdf4; border-left:4px solid #22c55e; padding:10px 16px; margin-bottom:16px; border-radius:0 8px 8px 0; font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif; font-size:13px;">
+<strong>Reward rule:</strong> &nbsp;
+z &nbsp;=&nbsp; (x &minus; μ) / σ &nbsp;&nbsp;→&nbsp;&nbsp; reward if z &gt; z<sub>thr</sub>
+</div><p>During a short warmup phase (typically 20 windows) the protocol collects
+enough values to seed its running mean <span class="math notranslate nohighlight">\(\hat\mu\)</span> and standard
+deviation <span class="math notranslate nohighlight">\(\hat\sigma\)</span> using Welford’s online algorithm.  From then
+on, each new value is z-scored against the participant’s own distribution:</p>
+<div class="math notranslate nohighlight">
+\[z_t = \frac{x_t - \hat\mu_t}{\hat\sigma_t}, \qquad
+\text{crossed} = z_t &gt; z_\text{thr}\]</div>
+<p>Because the statistics adapt to each individual, the same threshold
+<span class="math notranslate nohighlight">\(z_\text{thr}\)</span> (e.g. 0.5) produces approximately the same success
+rate regardless of signal amplitude differences between participants or
+sessions.</p>
+<p><strong>Typical trajectory</strong></p>
+<pre style="background:#1e293b; color:#e2e8f0; padding:12px 16px; border-radius:8px; font-size:12px; line-height:1.6; overflow-x:auto;">
+window:  1  2  3  4  5 … 20 | 21  22  23  24  25
+value:   1  2  1  3  2 … 2  |  3   1   5   2   4
+z-score: —  —  —  —  — … —  |0.2  -0.8 2.1 0.0 1.3
+reward:  ·  ·  ·  ·  · … ·  |  ·   ·   ✓   ·   ✓     (z_thr = 0.5)
+warmup phase ───────────────┘ live phase ──────────
+</pre><p><strong>When to use:</strong>  When signal amplitude varies across sessions or
+participants and you want consistent difficulty without manually
+re-setting thresholds.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">mne_rt.protocols</span><span class="w"> </span><span class="kn">import</span> <span class="n">ZScoreProtocol</span>
+
+<span class="n">proto</span> <span class="o">=</span> <span class="n">ZScoreProtocol</span><span class="p">(</span><span class="n">direction</span><span class="o">=</span><span class="s2">&quot;up&quot;</span><span class="p">,</span> <span class="n">zscore_threshold</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">warmup_windows</span><span class="o">=</span><span class="mi">20</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">nf_stream</span><span class="p">:</span>
+    <span class="n">crossed</span><span class="p">,</span> <span class="n">mag</span> <span class="o">=</span> <span class="n">proto</span><span class="o">.</span><span class="n">evaluate</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<hr class="docutils" />
+<section id="percentile-protocol">
+<h2><a class="toc-backref" href="#id13" role="doc-backlink">Percentile Protocol</a><a class="headerlink" href="#percentile-protocol" title="Link to this heading">#</a></h2>
+<div style="background:#fefce8; border-left:4px solid #eab308; padding:10px 16px; margin-bottom:16px; border-radius:0 8px 8px 0; font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif; font-size:13px;">
+<strong>Reward rule:</strong> &nbsp;
+reward if x &gt; P<sub>n</sub>(history) &nbsp;&nbsp;|&nbsp;&nbsp; typically n = 75
+</div><p>A rolling buffer of the last <code class="docutils literal notranslate"><span class="pre">history_len</span></code> values is maintained.  The
+N-th percentile of this buffer acts as the current threshold:</p>
+<div class="math notranslate nohighlight">
+\[\theta_t = \operatorname{Percentile}_n\!\bigl(\{x_{t-W}, \ldots, x_{t-1}\}\bigr)\]</div>
+<p>Because the threshold tracks the participant’s own recent distribution,
+difficulty automatically scales up during peak performance and relaxes
+during fatigue — producing a self-calibrating reward rate of
+approximately <span class="math notranslate nohighlight">\((100 - n)\%\)</span>.</p>
+<p><strong>When to use:</strong>  Training paradigms where the goal is <em>relative
+improvement</em> over recent performance rather than crossing an absolute
+target.  The 75th-percentile default rewards the best ~25 % of windows.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">mne_rt.protocols</span><span class="w"> </span><span class="kn">import</span> <span class="n">PercentileProtocol</span>
+
+<span class="n">proto</span> <span class="o">=</span> <span class="n">PercentileProtocol</span><span class="p">(</span><span class="n">percentile</span><span class="o">=</span><span class="mf">75.0</span><span class="p">,</span> <span class="n">direction</span><span class="o">=</span><span class="s2">&quot;up&quot;</span><span class="p">,</span> <span class="n">history_len</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span>
+<span class="n">crossed</span><span class="p">,</span> <span class="n">mag</span> <span class="o">=</span> <span class="n">proto</span><span class="o">.</span><span class="n">evaluate</span><span class="p">(</span><span class="n">alpha_power</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<hr class="docutils" />
+<section id="linear-trend-protocol">
+<h2><a class="toc-backref" href="#id14" role="doc-backlink">Linear-Trend Protocol</a><a class="headerlink" href="#linear-trend-protocol" title="Link to this heading">#</a></h2>
+<div style="background:#fdf4ff; border-left:4px solid #a855f7; padding:10px 16px; margin-bottom:16px; border-radius:0 8px 8px 0; font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif; font-size:13px;">
+<strong>Reward rule:</strong> &nbsp;
+OLS slope &gt; slope<sub>thr</sub> &nbsp;<em>and</em>&nbsp; R² &ge; min_r2
+</div><p>Rather than comparing the <em>current value</em> to a threshold, this protocol
+fits an ordinary-least-squares regression over the last <code class="docutils literal notranslate"><span class="pre">window</span></code> values
+and rewards when the slope is in the target direction with sufficient
+goodness-of-fit:</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}[a,\, b] &amp;= \operatorname{OLS} \!\bigl(\{1, \ldots, W\},\, \{x_{t-W+1}, \ldots, x_t\}\bigr) \\
+\text{crossed} &amp;= a &gt; a_\text{thr} \;\land\; R^2 \geq R^2_\text{min}\end{split}\]</div>
+<p>This avoids rewarding transient spikes and instead encourages <em>sustained
+directional change</em> — a more meaningful signal for genuine learning.</p>
+<p><strong>Typical trajectory</strong></p>
+<pre style="background:#1e293b; color:#e2e8f0; padding:12px 16px; border-radius:8px; font-size:12px; line-height:1.6; overflow-x:auto;">
+values over 5-window regression:
+
+spike (not rewarded)     sustained rise (rewarded)
+▲  ·                      ▲          ·
+│ ╭╮                      │        ╭─╯
+│╭╯╰╮                     │      ╭─╯
+│╯  ╰──                   │    ╭─╯
+└──────────               └──────────
+slope ≈ 0, R² low         slope > 0, R² high
+</pre><p><strong>When to use:</strong>  Slow-learning paradigms (e.g. tinnitus suppression,
+chronic pain, depression) where the target is gradual signal
+reorganisation over minutes rather than fast-reacting moment-to-moment
+control.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">mne_rt.protocols</span><span class="w"> </span><span class="kn">import</span> <span class="n">LinearTrendProtocol</span>
+
+<span class="n">proto</span> <span class="o">=</span> <span class="n">LinearTrendProtocol</span><span class="p">(</span><span class="n">direction</span><span class="o">=</span><span class="s2">&quot;up&quot;</span><span class="p">,</span> <span class="n">window</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span> <span class="n">slope_threshold</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">min_r2</span><span class="o">=</span><span class="mf">0.3</span><span class="p">)</span>
+<span class="n">crossed</span><span class="p">,</span> <span class="n">mag</span> <span class="o">=</span> <span class="n">proto</span><span class="o">.</span><span class="n">evaluate</span><span class="p">(</span><span class="n">alpha_power</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<hr class="docutils" />
+<section id="sham-protocol">
+<h2><a class="toc-backref" href="#id15" role="doc-backlink">Sham Protocol</a><a class="headerlink" href="#sham-protocol" title="Link to this heading">#</a></h2>
+<div style="background:#fff1f2; border-left:4px solid #f43f5e; padding:10px 16px; margin-bottom:16px; border-radius:0 8px 8px 0; font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif; font-size:13px;">
+<strong>Design:</strong> &nbsp; wraps any inner protocol — on <em>sham_rate</em> fraction of windows,
+returns a randomly-drawn historical value instead of the real one.
+</div><p>In a double-blind NF design the participant should not be able to tell
+when feedback is real and when it is sham.  <a class="reference internal" href="generated/mne_rt.protocols.ShamProtocol.html#mne_rt.protocols.ShamProtocol" title="mne_rt.protocols.ShamProtocol"><code class="xref py py-class docutils literal notranslate"><span class="pre">ShamProtocol</span></code></a>
+intercepts the inner protocol’s output on a configurable fraction of
+windows and substitutes a randomly-drawn historical reward value:</p>
+<pre style="background:#1e293b; color:#e2e8f0; padding:12px 16px; border-radius:8px; font-size:12px; line-height:1.6; overflow-x:auto;">
+window:    1     2     3     4     5     6     7     8  …
+real:    (T,1) (F,0) (T,2) (F,0) (T,3) (F,0) (T,1) (F,0)
+output:  (T,1) (F,0) (T,1) (F,0) (T,3) (T,2) (T,1) (F,0)
+sham?:     no    no   yes    no    no   yes    yes    no
+</pre><p>The inner protocol’s state always advances correctly — only the
+<em>delivered</em> feedback is sometimes replaced.  The <code class="docutils literal notranslate"><span class="pre">sham_log</span></code> attribute
+records which windows were sham for post-session unblinding.</p>
+<p><strong>Important:</strong> the inner protocol must be configured separately; the
+<a class="reference internal" href="generated/mne_rt.protocols.ShamProtocol.html#mne_rt.protocols.ShamProtocol" title="mne_rt.protocols.ShamProtocol"><code class="xref py py-class docutils literal notranslate"><span class="pre">ShamProtocol</span></code></a> wrapper is agnostic to the inner
+protocol type.</p>
+<p><strong>When to use:</strong>  Any experiment that requires a within-session sham
+control condition.  Set <code class="docutils literal notranslate"><span class="pre">sham_rate=0.5</span></code> for a 50/50 real/sham split,
+or use <code class="docutils literal notranslate"><span class="pre">rng_seed</span></code> for exact reproducibility.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">mne_rt.protocols</span><span class="w"> </span><span class="kn">import</span> <span class="n">ZScoreProtocol</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">mne_rt.protocols.sham</span><span class="w"> </span><span class="kn">import</span> <span class="n">ShamProtocol</span>
+
+<span class="n">inner</span> <span class="o">=</span> <span class="n">ZScoreProtocol</span><span class="p">(</span><span class="n">direction</span><span class="o">=</span><span class="s2">&quot;up&quot;</span><span class="p">)</span>
+<span class="n">proto</span> <span class="o">=</span> <span class="n">ShamProtocol</span><span class="p">(</span><span class="n">inner</span><span class="p">,</span> <span class="n">sham_rate</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">rng_seed</span><span class="o">=</span><span class="mi">42</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">nf_stream</span><span class="p">:</span>
+    <span class="n">crossed</span><span class="p">,</span> <span class="n">magnitude</span> <span class="o">=</span> <span class="n">proto</span><span class="o">.</span><span class="n">evaluate</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+
+<span class="c1"># After session:</span>
+<span class="n">sham_indices</span> <span class="o">=</span> <span class="p">[</span><span class="n">i</span> <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">s</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">proto</span><span class="o">.</span><span class="n">sham_log</span><span class="p">)</span> <span class="k">if</span> <span class="n">s</span><span class="p">]</span>
+</pre></div>
+</div>
+</section>
+<hr class="docutils" />
+<section id="up-down-staircase-protocol">
+<h2><a class="toc-backref" href="#id16" role="doc-backlink">Up-Down Staircase Protocol</a><a class="headerlink" href="#up-down-staircase-protocol" title="Link to this heading">#</a></h2>
+<div style="background:#ecfdf5; border-left:4px solid #10b981; padding:10px 16px; margin-bottom:16px; border-radius:0 8px 8px 0; font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif; font-size:13px;">
+<strong>Design:</strong> &nbsp;
+threshold rises after n<sub>up</sub> successes, falls after n<sub>down</sub> failures
+— converges to a target success rate.
+</div><p>The classic psychophysics staircase of Levitt<a class="footnote-reference brackets" href="#footcite-levitt1971transformed" id="id1" role="doc-noteref"><span class="fn-bracket">[</span>1<span class="fn-bracket">]</span></a>.
+The threshold <span class="math notranslate nohighlight">\(\theta\)</span> is adjusted after each window based on the
+participant’s recent success/failure run:</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}\theta_{t+1} = \begin{cases}
+  \theta_t + \Delta &amp; \text{after } n_\text{up} \text{ consecutive successes}\\
+  \theta_t - \Delta &amp; \text{after } n_\text{down} \text{ consecutive failures}
+\end{cases}\end{split}\]</div>
+<p>The step size <span class="math notranslate nohighlight">\(\Delta\)</span> is halved after every
+<code class="docutils literal notranslate"><span class="pre">n_reversals_before_halving</span></code> direction reversals (a <em>reversal</em> is when
+the staircase changes direction), zooming in progressively on the
+participant’s current threshold.</p>
+<p><strong>Convergence levels</strong> for common rules:</p>
+<div style="overflow-x:auto; margin:8px 0 16px 0;">
+<table style="border-collapse:collapse; font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif; font-size:13px;">
+<thead>
+  <tr>
+    <th style="background:#064e3b;color:white;padding:6px 14px;">Rule</th>
+    <th style="background:#064e3b;color:white;padding:6px 14px;">Success rate</th>
+    <th style="background:#064e3b;color:white;padding:6px 14px;">Use case</th>
+  </tr>
+</thead>
+<tbody>
+  <tr style="background:#ecfdf5;"><td style="padding:5px 14px;border:1px solid #d1fae5;">1-up / 1-down</td><td style="padding:5px 14px;border:1px solid #d1fae5;">50 %</td><td style="padding:5px 14px;border:1px solid #d1fae5;">Equal success/fail balance</td></tr>
+  <tr style="background:#f0fdf4;"><td style="padding:5px 14px;border:1px solid #d1fae5;">1-up / 2-down</td><td style="padding:5px 14px;border:1px solid #d1fae5;">70.7 %</td><td style="padding:5px 14px;border:1px solid #d1fae5;">Standard; motivating default</td></tr>
+  <tr style="background:#ecfdf5;"><td style="padding:5px 14px;border:1px solid #d1fae5;">1-up / 3-down</td><td style="padding:5px 14px;border:1px solid #d1fae5;">79.4 %</td><td style="padding:5px 14px;border:1px solid #d1fae5;">Easier start, more rewards early</td></tr>
+</tbody>
+</table>
+</div><p><strong>Typical staircase trajectory</strong></p>
+<pre style="background:#1e293b; color:#e2e8f0; padding:12px 16px; border-radius:8px; font-size:12px; line-height:1.6; overflow-x:auto;">
+threshold
+0.70  ·         ·─·
+0.65  ·─·     ·─╯ ╰─·
+0.60    ╰─·─·─╯     ╰─·
+0.55                  ╰─·─·
+0.50  initial             ╰──    (converging)
+      1  2  3  4  5  6  7  8  9  window
+      S  S  F  F  S  S  F  S  F   (S=success, F=fail, 1-up/2-down)
+reversal points ↑ stored in reversal_thresholds
+</pre><p><strong>When to use:</strong>  When you need an objective, data-driven estimate of
+the participant’s NF threshold — analogous to threshold tracking in
+audiometry or psychophysics.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">mne_rt.protocols.staircase</span><span class="w"> </span><span class="kn">import</span> <span class="n">UpDownStaircaseProtocol</span>
+
+<span class="n">proto</span> <span class="o">=</span> <span class="n">UpDownStaircaseProtocol</span><span class="p">(</span>
+    <span class="n">initial_threshold</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">direction</span><span class="o">=</span><span class="s2">&quot;up&quot;</span><span class="p">,</span>
+    <span class="n">n_up</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">n_down</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">step_size</span><span class="o">=</span><span class="mf">0.05</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="k">for</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">nf_stream</span><span class="p">:</span>
+    <span class="n">crossed</span><span class="p">,</span> <span class="n">mag</span> <span class="o">=</span> <span class="n">proto</span><span class="o">.</span><span class="n">evaluate</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+
+<span class="c1"># After session — estimate perceptual threshold:</span>
+<span class="n">threshold_estimate</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">proto</span><span class="o">.</span><span class="n">reversal_thresholds</span><span class="p">[</span><span class="o">-</span><span class="mi">6</span><span class="p">:]))</span>
+</pre></div>
+</div>
+<p>References: Levitt<a class="footnote-reference brackets" href="#footcite-levitt1971transformed" id="id2" role="doc-noteref"><span class="fn-bracket">[</span>1<span class="fn-bracket">]</span></a>, Garcıa-Pérez<a class="footnote-reference brackets" href="#footcite-garcia1998forced" id="id3" role="doc-noteref"><span class="fn-bracket">[</span>2<span class="fn-bracket">]</span></a></p>
+</section>
+<hr class="docutils" />
+<section id="multi-band-protocol">
+<h2><a class="toc-backref" href="#id17" role="doc-backlink">Multi-Band Protocol</a><a class="headerlink" href="#multi-band-protocol" title="Link to this heading">#</a></h2>
+<div style="background:#f0f9ff; border-left:4px solid #0ea5e9; padding:10px 16px; margin-bottom:16px; border-radius:0 8px 8px 0; font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif; font-size:13px;">
+<strong>Design:</strong> &nbsp;
+reward = (alpha ↑ AND theta ↓) &nbsp;|&nbsp; combined magnitude = √(mag<sub>up</sub> × mag<sub>down</sub>)
+</div><p>Many clinical NF protocols target two frequency bands simultaneously —
+reward alpha <em>up-regulation</em> while penalising theta <em>up-regulation</em>
+(focus training), or reward SMR while suppressing theta (ADHD protocol
+<a class="footnote-reference brackets" href="#footcite-sterman2006foundation" id="id4" role="doc-noteref"><span class="fn-bracket">[</span>3<span class="fn-bracket">]</span></a>).</p>
+<p><a class="reference internal" href="generated/mne_rt.protocols.MultiBandProtocol.html#mne_rt.protocols.MultiBandProtocol" title="mne_rt.protocols.MultiBandProtocol"><code class="xref py py-class docutils literal notranslate"><span class="pre">MultiBandProtocol</span></code></a> wraps two independent inner
+protocols and combines their outputs:</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}\text{crossed} &amp;= \text{crossed}_\text{up} \;\land\; \text{crossed}_\text{down}
+\quad \text{(AND, require\_both=True)} \\
+\text{magnitude} &amp;= \sqrt{\text{mag}_\text{up} \times \text{mag}_\text{down}}
+\quad \text{(geometric mean)}\end{split}\]</div>
+<p>The <strong>geometric mean</strong> ensures both bands contribute equally: a very
+large alpha reward cannot compensate for zero theta suppression —
+both must be non-zero to produce a non-zero combined magnitude.</p>
+<p><strong>AND vs OR logic</strong></p>
+<pre style="background:#1e293b; color:#e2e8f0; padding:12px 16px; border-radius:8px; font-size:12px; line-height:1.6; overflow-x:auto;">
+window:     1     2     3     4
+alpha↑:   (T,2) (T,1) (F,0) (T,2)
+theta↓:   (F,0) (T,1) (T,1) (T,0.5)
+
+AND logic:  ✗     ✓     ✗     ✓     (both must cross)
+magnitude:  0   √1×1=1  0   √2×0.5≈1.0
+
+OR logic:   ✓     ✓     ✓     ✓     (either crosses)
+</pre><p><strong>When to use:</strong>  Any protocol that targets two brain rhythms
+simultaneously.  The two inner protocols are independent and can be of
+different types — e.g. a <a class="reference internal" href="generated/mne_rt.protocols.ThresholdProtocol.html#mne_rt.protocols.ThresholdProtocol" title="mne_rt.protocols.ThresholdProtocol"><code class="xref py py-class docutils literal notranslate"><span class="pre">ThresholdProtocol</span></code></a> for
+alpha and a <a class="reference internal" href="generated/mne_rt.protocols.ZScoreProtocol.html#mne_rt.protocols.ZScoreProtocol" title="mne_rt.protocols.ZScoreProtocol"><code class="xref py py-class docutils literal notranslate"><span class="pre">ZScoreProtocol</span></code></a> for theta.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">mne_rt.protocols</span><span class="w"> </span><span class="kn">import</span> <span class="n">ZScoreProtocol</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">mne_rt.protocols.multiband</span><span class="w"> </span><span class="kn">import</span> <span class="n">MultiBandProtocol</span>
+
+<span class="n">alpha_proto</span> <span class="o">=</span> <span class="n">ZScoreProtocol</span><span class="p">(</span><span class="n">direction</span><span class="o">=</span><span class="s2">&quot;up&quot;</span><span class="p">,</span>   <span class="n">warmup_windows</span><span class="o">=</span><span class="mi">20</span><span class="p">)</span>
+<span class="n">theta_proto</span> <span class="o">=</span> <span class="n">ZScoreProtocol</span><span class="p">(</span><span class="n">direction</span><span class="o">=</span><span class="s2">&quot;down&quot;</span><span class="p">,</span>  <span class="n">warmup_windows</span><span class="o">=</span><span class="mi">20</span><span class="p">)</span>
+
+<span class="n">proto</span> <span class="o">=</span> <span class="n">MultiBandProtocol</span><span class="p">(</span>
+    <span class="n">protocol_up</span><span class="o">=</span><span class="n">alpha_proto</span><span class="p">,</span>
+    <span class="n">protocol_down</span><span class="o">=</span><span class="n">theta_proto</span><span class="p">,</span>
+    <span class="n">require_both</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="n">up_label</span><span class="o">=</span><span class="s2">&quot;alpha&quot;</span><span class="p">,</span>
+    <span class="n">down_label</span><span class="o">=</span><span class="s2">&quot;theta&quot;</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="k">for</span> <span class="n">alpha_val</span><span class="p">,</span> <span class="n">theta_val</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">alpha_stream</span><span class="p">,</span> <span class="n">theta_stream</span><span class="p">):</span>
+    <span class="n">crossed</span><span class="p">,</span> <span class="n">magnitude</span> <span class="o">=</span> <span class="n">proto</span><span class="o">.</span><span class="n">evaluate</span><span class="p">(</span><span class="n">alpha_val</span><span class="p">,</span> <span class="n">theta_val</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>References: Sterman and Egner<a class="footnote-reference brackets" href="#footcite-sterman2006foundation" id="id5" role="doc-noteref"><span class="fn-bracket">[</span>3<span class="fn-bracket">]</span></a></p>
+</section>
+<hr class="docutils" />
+<section id="rl-protocol">
+<h2><a class="toc-backref" href="#id18" role="doc-backlink">RL Protocol</a><a class="headerlink" href="#rl-protocol" title="Link to this heading">#</a></h2>
+<div style="background:#fdf4ff; border-left:4px solid #a855f7; padding:10px 16px; margin-bottom:16px; border-radius:0 8px 8px 0; font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif; font-size:13px;">
+<strong>Reward rule:</strong> &nbsp;
+threshold adapts via hit-rate error &nbsp;|&nbsp; ε-greedy exploration prevents early convergence
+</div><p>A lightweight reinforcement-learning protocol that finds the right reward
+threshold automatically, without requiring any manual calibration.  During a
+short warmup phase no rewards are issued while the protocol collects
+statistics.  Afterwards, the threshold <span class="math notranslate nohighlight">\(\theta\)</span> is adjusted after each
+window to keep the rolling hit rate close to the target:</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}\delta_t &amp;= \hat{h}_t - h^* \qquad
+(\hat{h}_t = \text{rolling hit rate},\; h^* = \text{target hit rate}) \\[4pt]
+\theta_{t+1} &amp;= \theta_t + \eta \cdot \delta_t
+\quad (\text{direction = &quot;up&quot;})\end{split}\]</div>
+<p>With probability <span class="math notranslate nohighlight">\(\varepsilon\)</span> (the <code class="docutils literal notranslate"><span class="pre">epsilon</span></code> parameter) the current
+value is treated as a <em>forced hit</em> (exploration step), preventing the threshold
+from drifting so high that the participant never succeeds.</p>
+<p><strong>When to use:</strong>  When there is no prior calibration data and you want
+the protocol to self-tune from scratch.  Works particularly well in
+conjunction with <a class="reference internal" href="generated/mne_rt.protocols.ShamProtocol.html#mne_rt.protocols.ShamProtocol" title="mne_rt.protocols.ShamProtocol"><code class="xref py py-class docutils literal notranslate"><span class="pre">ShamProtocol</span></code></a> for within-session
+sham control.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">mne_rt.protocols</span><span class="w"> </span><span class="kn">import</span> <span class="n">RLProtocol</span>
+
+<span class="n">proto</span> <span class="o">=</span> <span class="n">RLProtocol</span><span class="p">(</span>
+    <span class="n">direction</span><span class="o">=</span><span class="s2">&quot;up&quot;</span><span class="p">,</span>
+    <span class="n">target_hit_rate</span><span class="o">=</span><span class="mf">0.70</span><span class="p">,</span>
+    <span class="n">lr</span><span class="o">=</span><span class="mf">0.01</span><span class="p">,</span>
+    <span class="n">epsilon</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span>
+    <span class="n">warmup_windows</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span>
+    <span class="n">history_len</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="k">for</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">nf_stream</span><span class="p">:</span>
+    <span class="n">crossed</span><span class="p">,</span> <span class="n">mag</span> <span class="o">=</span> <span class="n">proto</span><span class="o">.</span><span class="n">evaluate</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<hr class="docutils" />
+<section id="operant-protocol">
+<h2><a class="toc-backref" href="#id19" role="doc-backlink">Operant Protocol</a><a class="headerlink" href="#operant-protocol" title="Link to this heading">#</a></h2>
+<div style="background:#fff7ed; border-left:4px solid #f97316; padding:10px 16px; margin-bottom:16px; border-radius:0 8px 8px 0; font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif; font-size:13px;">
+<strong>Design:</strong> &nbsp; wraps any inner protocol — gates the reward output through a
+classical operant conditioning schedule (FR / VR / FI / VI).
+</div><p>Partial reinforcement schedules are more resistant to extinction than
+continuous reinforcement Ferster and Skinner<a class="footnote-reference brackets" href="#footcite-ferster1957schedules" id="id6" role="doc-noteref"><span class="fn-bracket">[</span>4<span class="fn-bracket">]</span></a>.
+<a class="reference internal" href="generated/mne_rt.protocols.OperantProtocol.html#mne_rt.protocols.OperantProtocol" title="mne_rt.protocols.OperantProtocol"><code class="xref py py-class docutils literal notranslate"><span class="pre">OperantProtocol</span></code></a> wraps any existing NF protocol and
+filters its reward output through one of four classical schedules:</p>
+<div style="overflow-x:auto; margin:8px 0 16px 0;">
+<table style="border-collapse:collapse; font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif; font-size:13px;">
+<thead>
+  <tr>
+    <th style="background:#431407;color:white;padding:6px 14px;">Schedule</th>
+    <th style="background:#431407;color:white;padding:6px 14px;">Abbreviation</th>
+    <th style="background:#431407;color:white;padding:6px 14px;">Rule</th>
+  </tr>
+</thead>
+<tbody>
+  <tr style="background:#fff7ed;"><td style="padding:5px 14px;border:1px solid #fed7aa;">Fixed Ratio</td><td style="padding:5px 14px;border:1px solid #fed7aa;">FR</td><td style="padding:5px 14px;border:1px solid #fed7aa;">Reward on every <em>N</em>-th hit</td></tr>
+  <tr style="background:#fffbeb;"><td style="padding:5px 14px;border:1px solid #fed7aa;">Variable Ratio</td><td style="padding:5px 14px;border:1px solid #fed7aa;">VR</td><td style="padding:5px 14px;border:1px solid #fed7aa;">Each hit rewarded with probability 1/<em>N</em></td></tr>
+  <tr style="background:#fff7ed;"><td style="padding:5px 14px;border:1px solid #fed7aa;">Fixed Interval</td><td style="padding:5px 14px;border:1px solid #fed7aa;">FI</td><td style="padding:5px 14px;border:1px solid #fed7aa;">First hit after exactly <em>T</em> seconds is rewarded</td></tr>
+  <tr style="background:#fffbeb;"><td style="padding:5px 14px;border:1px solid #fed7aa;">Variable Interval</td><td style="padding:5px 14px;border:1px solid #fed7aa;">VI</td><td style="padding:5px 14px;border:1px solid #fed7aa;">First hit after a random interval (mean <em>T</em>) is rewarded</td></tr>
+</tbody>
+</table>
+</div><p>The inner protocol’s state always advances regardless of whether the schedule
+releases a reward — so running statistics (z-score, staircase threshold, etc.)
+continue to update correctly.</p>
+<p><strong>When to use:</strong>  Whenever reduced reward density is experimentally desirable
+(e.g. to study partial reinforcement extinction effects in NF, or to maintain
+engagement over long sessions by preventing saturation).</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">mne_rt.protocols</span><span class="w"> </span><span class="kn">import</span> <span class="n">ZScoreProtocol</span><span class="p">,</span> <span class="n">OperantProtocol</span>
+
+<span class="n">inner</span> <span class="o">=</span> <span class="n">ZScoreProtocol</span><span class="p">(</span><span class="n">direction</span><span class="o">=</span><span class="s2">&quot;up&quot;</span><span class="p">,</span> <span class="n">warmup_windows</span><span class="o">=</span><span class="mi">20</span><span class="p">)</span>
+<span class="n">proto</span> <span class="o">=</span> <span class="n">OperantProtocol</span><span class="p">(</span><span class="n">inner</span><span class="p">,</span> <span class="n">schedule</span><span class="o">=</span><span class="s2">&quot;VR&quot;</span><span class="p">,</span> <span class="n">ratio</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">rng_seed</span><span class="o">=</span><span class="mi">42</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">nf_stream</span><span class="p">:</span>
+    <span class="n">crossed</span><span class="p">,</span> <span class="n">mag</span> <span class="o">=</span> <span class="n">proto</span><span class="o">.</span><span class="n">evaluate</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>References: Ferster and Skinner<a class="footnote-reference brackets" href="#footcite-ferster1957schedules" id="id7" role="doc-noteref"><span class="fn-bracket">[</span>4<span class="fn-bracket">]</span></a></p>
+</section>
+<hr class="docutils" />
+<section id="transfer-protocol">
+<h2><a class="toc-backref" href="#id20" role="doc-backlink">Transfer Protocol</a><a class="headerlink" href="#transfer-protocol" title="Link to this heading">#</a></h2>
+<div style="background:#f0f9ff; border-left:4px solid #0ea5e9; padding:10px 16px; margin-bottom:16px; border-radius:0 8px 8px 0; font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif; font-size:13px;">
+<strong>Design:</strong> &nbsp; seeds running z-score statistics from a prior session file —
+rewards from the very first window of the new session.
+</div><p>The standard <a class="reference internal" href="generated/mne_rt.protocols.ZScoreProtocol.html#mne_rt.protocols.ZScoreProtocol" title="mne_rt.protocols.ZScoreProtocol"><code class="xref py py-class docutils literal notranslate"><span class="pre">ZScoreProtocol</span></code></a> needs a warmup phase to
+estimate <span class="math notranslate nohighlight">\(\hat\mu\)</span> and <span class="math notranslate nohighlight">\(\hat\sigma\)</span> before rewards can be issued.
+<a class="reference internal" href="generated/mne_rt.protocols.TransferProtocol.html#mne_rt.protocols.TransferProtocol" title="mne_rt.protocols.TransferProtocol"><code class="xref py py-class docutils literal notranslate"><span class="pre">TransferProtocol</span></code></a> eliminates warmup by loading the
+population statistics from a previous session’s <code class="docutils literal notranslate"><span class="pre">beh.json</span></code> file and seeding
+the Welford accumulators directly:</p>
+<div class="math notranslate nohighlight">
+\[\hat\mu_0 = \bar{x}_\mathrm{prior},
+\qquad
+\hat\sigma_0 = \sigma_\mathrm{prior},
+\qquad
+n_0 = N_\mathrm{prior}\]</div>
+<p>From the first window onward, each new value is z-scored against this
+informed prior and updates the statistics via Welford’s algorithm, gradually
+replacing the prior with session-specific data.</p>
+<p><strong>Session file format</strong> (BIDS-compatible <code class="docutils literal notranslate"><span class="pre">beh.json</span></code>):</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>{
+  &quot;meta&quot;: {&quot;modalities&quot;: [&quot;sensor_power&quot;]},
+  &quot;data&quot;: {&quot;sensor_power&quot;: [0.12, 0.14, 0.11, …]}
+}
+</pre></div>
+</div>
+<p>Such files are written automatically by <a class="reference internal" href="generated/mne_rt.RTStream.html#mne_rt.RTStream.save" title="mne_rt.RTStream.save"><code class="xref py py-meth docutils literal notranslate"><span class="pre">save()</span></code></a>.</p>
+<p><strong>When to use:</strong>  Multi-session training programmes where consistent reward
+rates across sessions improve participant motivation.  Also useful in studies
+where the first session’s statistics serve as the participant’s personalised
+baseline.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">mne_rt.protocols</span><span class="w"> </span><span class="kn">import</span> <span class="n">TransferProtocol</span>
+
+<span class="n">proto</span> <span class="o">=</span> <span class="n">TransferProtocol</span><span class="p">(</span>
+    <span class="n">fname</span><span class="o">=</span><span class="s2">&quot;sub-01_ses-01_task-nf_beh.json&quot;</span><span class="p">,</span>
+    <span class="n">modality</span><span class="o">=</span><span class="s2">&quot;sensor_power&quot;</span><span class="p">,</span>
+    <span class="n">direction</span><span class="o">=</span><span class="s2">&quot;up&quot;</span><span class="p">,</span>
+    <span class="n">zscore_threshold</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="k">for</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">nf_stream</span><span class="p">:</span>
+    <span class="n">crossed</span><span class="p">,</span> <span class="n">mag</span> <span class="o">=</span> <span class="n">proto</span><span class="o">.</span><span class="n">evaluate</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<hr class="docutils" />
+<section id="references">
+<h2><a class="toc-backref" href="#id21" role="doc-backlink">References</a><a class="headerlink" href="#references" title="Link to this heading">#</a></h2>
+<div class="docutils container" id="id8">
+<aside class="footnote-list brackets">
+<aside class="footnote brackets" id="footcite-levitt1971transformed" role="doc-footnote">
+<span class="label"><span class="fn-bracket">[</span>1<span class="fn-bracket">]</span></span>
+<span class="backrefs">(<a role="doc-backlink" href="#id1">1</a>,<a role="doc-backlink" href="#id2">2</a>)</span>
+<p>HCCH Levitt. Transformed up-down methods in psychoacoustics. <em>The Journal of the Acoustical society of America</em>, 49(2B):467–477, 1971.</p>
+</aside>
+<aside class="footnote brackets" id="footcite-garcia1998forced" role="doc-footnote">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id3">2</a><span class="fn-bracket">]</span></span>
+<p>Miguel A Garcıa-Pérez. Forced-choice staircases with fixed step sizes: asymptotic and small-sample properties. <em>Vision research</em>, 38(12):1861–1881, 1998.</p>
+</aside>
+<aside class="footnote brackets" id="footcite-sterman2006foundation" role="doc-footnote">
+<span class="label"><span class="fn-bracket">[</span>3<span class="fn-bracket">]</span></span>
+<span class="backrefs">(<a role="doc-backlink" href="#id4">1</a>,<a role="doc-backlink" href="#id5">2</a>)</span>
+<p>M Barry Sterman and Tobias Egner. Foundation and practice of neurofeedback for the treatment of epilepsy. <em>Applied psychophysiology and biofeedback</em>, 31(1):21, 2006.</p>
+</aside>
+<aside class="footnote brackets" id="footcite-ferster1957schedules" role="doc-footnote">
+<span class="label"><span class="fn-bracket">[</span>4<span class="fn-bracket">]</span></span>
+<span class="backrefs">(<a role="doc-backlink" href="#id6">1</a>,<a role="doc-backlink" href="#id7">2</a>)</span>
+<p>Charles B Ferster and Burrhus Frederic Skinner. <em>Schedules of reinforcement</em>. Appleton-Century-Crofts, 1957.</p>
+</aside>
+</aside>
+</div>
+</section>
+</section>
+
+
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="modalities.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">Real-time Feature Modalities</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="whats_new.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">What’s new</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <dialog id="pst-secondary-sidebar-modal"></dialog>
+                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+<div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav id="pst-page-toc-nav" class="page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="pst-show_toc_level nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#live-threshold-display">Live Threshold Display</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#choosing-a-protocol">Choosing a Protocol</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#threshold-protocol">Threshold Protocol</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#z-score-protocol">Z-Score Protocol</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#percentile-protocol">Percentile Protocol</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#linear-trend-protocol">Linear-Trend Protocol</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#sham-protocol">Sham Protocol</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#up-down-staircase-protocol">Up-Down Staircase Protocol</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#multi-band-protocol">Multi-Band Protocol</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#rl-protocol">RL Protocol</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#operant-protocol">Operant Protocol</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#transfer-protocol">Transfer Protocol</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#references">References</a></li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="_static/scripts/bootstrap.js?digest=90905a2f556bf617f1a9"></script>
+<script defer src="_static/scripts/pydata-sphinx-theme.js?digest=90905a2f556bf617f1a9"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright 2025, Payam S. Shabestari.
+      <br/>
+    
+  </p>
+</div>
+      
+        <div class="footer-item">
+
+  <p class="sphinx-version">
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 9.0.4.
+    <br/>
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
+<p class="theme-version">
+  <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.20.0.
+</p></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>

@@ -1,0 +1,999 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>mne_rt.combiners &#8212; MNE-RT</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../_static/styles/theme.css?digest=90905a2f556bf617f1a9" rel="stylesheet" />
+<link href="../../_static/styles/pydata-sphinx-theme.css?digest=90905a2f556bf617f1a9" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery.css?v=fd6457a4" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery-binder.css?v=f4aeca0c" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery-dataframe.css?v=2082cf3c" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery-rendered-html.css?v=1277b6f3" />
+    <link rel="stylesheet" type="text/css" href="../../_static/custom.css?v=5bf657dd" />
+  
+  <!-- So that users can add custom icons -->
+  <script defer src="../../_static/scripts/fontawesome.js?digest=90905a2f556bf617f1a9"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=90905a2f556bf617f1a9" />
+<link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=90905a2f556bf617f1a9" />
+
+    <script src="../../_static/documentation_options.js?v=8d563738"></script>
+    <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="../../_static/sg-tags.js?v=d80f6fa4"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = '_modules/mne_rt/combiners';</script>
+    <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="" />
+  
+    
+    <script src="../../_static/searchtools.js"></script>
+    <script src="../../_static/language_data.js"></script>
+    <script src="../../searchindex.js"></script>
+  
+  </head>
+  <body data-default-mode="">
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+  
+  
+  
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header id="pst-header" class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../../index.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../../_static/mne_rt_logo.svg" class="logo__image only-light" alt="MNE-RT - Home"/>
+    <img src="../../_static/mne_rt_logo.svg" class="logo__image only-dark pst-js-only" alt="MNE-RT - Home"/>
+  
+  
+</a></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../install.html">
+    Installation
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../tutorial.html">
+    User Guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../api.html">
+    API Reference
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../visualization.html">
+    Visualisation
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../cli.html">
+    CLI
+  </a>
+</li>
+
+            <li class="nav-item dropdown">
+                <button class="btn dropdown-toggle nav-item" type="button"
+                data-bs-toggle="dropdown" aria-expanded="false"
+                aria-controls="pst-nav-more-links">
+                    More
+                </button>
+                <ul id="pst-nav-more-links" class="dropdown-menu">
+                    
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../../denoising.html">
+    Artifact Correction
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../../modalities.html">
+    Real-time Feature Modalities
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../../protocols.html">
+    NF Protocols
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../../whats_new.html">
+    What’s new
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../../auto_examples/index.html">
+    Examples Gallery
+  </a>
+</li>
+
+                </ul>
+            </li>
+            
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+        </div>
+      
+      
+        <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/payamsash/mne-rt" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-square-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
+        </li>
+</ul></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+    </div>
+  
+
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+        
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar hide-on-wide">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../install.html">
+    Installation
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../tutorial.html">
+    User Guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../api.html">
+    API Reference
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../visualization.html">
+    Visualisation
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../cli.html">
+    CLI
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../denoising.html">
+    Artifact Correction
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../modalities.html">
+    Real-time Feature Modalities
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../protocols.html">
+    NF Protocols
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../whats_new.html">
+    What’s new
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../auto_examples/index.html">
+    Examples Gallery
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/payamsash/mne-rt" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-square-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
+        </li>
+</ul></div>
+        
+      </div>
+    
+  </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    
+    <li class="breadcrumb-item"><a href="../index.html" class="nav-link">Module code</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">mne_rt.combiners</span></li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <h1>Source code for mne_rt.combiners</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;Feature combiners for multi-modality real-time M/EEG processing.</span>
+
+<span class="sd">When MNE-RT extracts several feature values in parallel (e.g. ``sensor_power``,</span>
+<span class="sd">``laterality``, ``connectivity_ratio``), each produces its own numeric value</span>
+<span class="sd">per window.  A :class:`FeatureCombiner` reduces those N values to a single</span>
+<span class="sd">*mixed* output score that can be passed to a protocol or displayed as one trace.</span>
+
+<span class="sd">Pipeline position::</span>
+
+<span class="sd">    feature extraction  →  FeatureCombiner.combine()  →  Protocol  →  display</span>
+
+<span class="sd">Quick examples::</span>
+
+<span class="sd">    from mne_rt.combiners import WeightedSumCombiner, ZScoredNormCombiner</span>
+
+<span class="sd">    # Weighted blend: 60 % alpha power, 40 % laterality</span>
+<span class="sd">    combiner = WeightedSumCombiner(</span>
+<span class="sd">        weights={&quot;sensor_power&quot;: 0.6, &quot;laterality&quot;: 0.4}</span>
+<span class="sd">    )</span>
+<span class="sd">    mixed = combiner.combine({&quot;sensor_power&quot;: 1.5, &quot;laterality&quot;: 0.3})</span>
+
+<span class="sd">    # Unit-free deviation score: how far are we from baseline across all features?</span>
+<span class="sd">    combiner = ZScoredNormCombiner(</span>
+<span class="sd">        features=[&quot;sensor_power&quot;, &quot;laterality&quot;, &quot;connectivity_ratio&quot;],</span>
+<span class="sd">        warmup=30,</span>
+<span class="sd">    )</span>
+<span class="sd">    mixed = combiner.combine({&quot;sensor_power&quot;: 1.5, &quot;laterality&quot;: 0.3,</span>
+<span class="sd">                               &quot;connectivity_ratio&quot;: 0.7})</span>
+
+<span class="sd">Classes</span>
+<span class="sd">-------</span>
+<span class="sd">FeatureCombiner</span>
+<span class="sd">    Abstract base class.  All combiners implement :meth:`combine`.</span>
+<span class="sd">WeightedSumCombiner</span>
+<span class="sd">    Weighted linear combination of feature values.</span>
+<span class="sd">GeometricMeanCombiner</span>
+<span class="sd">    Geometric mean (suitable when features are positive ratios or powers).</span>
+<span class="sd">ZScoredNormCombiner</span>
+<span class="sd">    Per-feature z-score normalisation followed by Euclidean norm.</span>
+<span class="sd">LearnedCombiner</span>
+<span class="sd">    Data-driven combination via a fitted sklearn-compatible estimator.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">math</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">warnings</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Optional</span>
+
+<span class="c1"># ---------------------------------------------------------------------------</span>
+<span class="c1"># Base class</span>
+<span class="c1"># ---------------------------------------------------------------------------</span>
+
+
+<div class="viewcode-block" id="FeatureCombiner">
+<a class="viewcode-back" href="../../generated/mne_rt.combiners.FeatureCombiner.html#mne_rt.combiners.FeatureCombiner">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">FeatureCombiner</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Abstract base class for multi-feature NF combiners.</span>
+
+<span class="sd">    Subclass this and implement :meth:`combine` to define a custom mixing</span>
+<span class="sd">    strategy.  All combiners share the same one-method interface so they can</span>
+<span class="sd">    be swapped in without changing the surrounding pipeline code.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    features : list of str | None, default None</span>
+<span class="sd">        Ordered list of modality names this combiner expects.  If ``None``</span>
+<span class="sd">        the combiner accepts any keys present in the dict passed to</span>
+<span class="sd">        :meth:`combine`.  Subclasses may require this to be set at</span>
+<span class="sd">        construction time (e.g. :class:`WeightedSumCombiner`).</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    The combiner receives a snapshot dict ``{modality_name: float}`` once per</span>
+<span class="sd">    analysis window, immediately after the EMA smoothing step inside</span>
+<span class="sd">    :meth:`~mne_rt.RTStream.record_main`.  The returned scalar replaces the</span>
+<span class="sd">    per-modality values for protocol evaluation and display when a combiner is</span>
+<span class="sd">    active.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="FeatureCombiner.__init__">
+<a class="viewcode-back" href="../../generated/mne_rt.combiners.FeatureCombiner.html#mne_rt.combiners.FeatureCombiner.__init__">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">features</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">features</span> <span class="o">=</span> <span class="n">features</span></div>
+
+
+<div class="viewcode-block" id="FeatureCombiner.combine">
+<a class="viewcode-back" href="../../generated/mne_rt.combiners.FeatureCombiner.html#mne_rt.combiners.FeatureCombiner.combine">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">combine</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">values</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">float</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Reduce a dict of per-modality NF values to one scalar.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        values : dict[str, float]</span>
+<span class="sd">            Mapping of ``{modality_name: current_value}`` for all active</span>
+<span class="sd">            modalities in the current window.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        mixed : float</span>
+<span class="sd">            Single combined NF value passed downstream to the protocol and</span>
+<span class="sd">            display.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2"> must implement combine().&quot;</span><span class="p">)</span></div>
+
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="n">feat</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">features</span> <span class="ow">or</span> <span class="s2">&quot;any&quot;</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">(features=</span><span class="si">{</span><span class="n">feat</span><span class="si">}</span><span class="s2">)&quot;</span></div>
+
+
+
+<span class="c1"># ---------------------------------------------------------------------------</span>
+<span class="c1"># Concrete combiners</span>
+<span class="c1"># ---------------------------------------------------------------------------</span>
+
+
+<div class="viewcode-block" id="WeightedSumCombiner">
+<a class="viewcode-back" href="../../generated/mne_rt.combiners.WeightedSumCombiner.html#mne_rt.combiners.WeightedSumCombiner">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">WeightedSumCombiner</span><span class="p">(</span><span class="n">FeatureCombiner</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Weighted linear combination of feature values.</span>
+
+<span class="sd">    Computes the weight-normalised linear blend::</span>
+
+<span class="sd">        mixed = Σ(wᵢ · xᵢ) / Σ(wᵢ)</span>
+
+<span class="sd">    where the sum runs only over features present in *values*.  Normalising by</span>
+<span class="sd">    the sum of active weights means the result is unaffected by how many</span>
+<span class="sd">    features are missing in a given window.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    weights : dict[str, float]</span>
+<span class="sd">        Mapping of ``{modality_name: weight}``.  Weights do not need to sum</span>
+<span class="sd">        to 1 — they are normalised internally.  Negative weights are allowed</span>
+<span class="sd">        (e.g. to subtract one feature from another).  Features absent from</span>
+<span class="sd">        *values* at call time are silently skipped.</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    Returns ``0.0`` if none of the specified features are present in *values*,</span>
+<span class="sd">    with a :mod:`warnings` message.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    Alpha-power minus frontal asymmetry::</span>
+
+<span class="sd">        from mne_rt.combiners import WeightedSumCombiner</span>
+
+<span class="sd">        combiner = WeightedSumCombiner(</span>
+<span class="sd">            weights={&quot;sensor_power&quot;: 0.6, &quot;laterality&quot;: 0.4}</span>
+<span class="sd">        )</span>
+<span class="sd">        mixed = combiner.combine({&quot;sensor_power&quot;: 1.5, &quot;laterality&quot;: 0.3})</span>
+<span class="sd">        # mixed ≈ 0.6*1.5/1.0 + 0.4*0.3/1.0 = 1.02</span>
+
+<span class="sd">    Suppressing one feature (negative weight)::</span>
+
+<span class="sd">        combiner = WeightedSumCombiner(</span>
+<span class="sd">            weights={&quot;sensor_power&quot;: 1.0, &quot;entropy&quot;: -0.5}</span>
+<span class="sd">        )</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="WeightedSumCombiner.__init__">
+<a class="viewcode-back" href="../../generated/mne_rt.combiners.WeightedSumCombiner.html#mne_rt.combiners.WeightedSumCombiner.__init__">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">weights</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">float</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">features</span><span class="o">=</span><span class="nb">list</span><span class="p">(</span><span class="n">weights</span><span class="o">.</span><span class="n">keys</span><span class="p">()))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">weights</span> <span class="o">=</span> <span class="n">weights</span></div>
+
+
+<div class="viewcode-block" id="WeightedSumCombiner.combine">
+<a class="viewcode-back" href="../../generated/mne_rt.combiners.WeightedSumCombiner.html#mne_rt.combiners.WeightedSumCombiner.combine">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">combine</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">values</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">float</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return the normalised weighted sum of available feature values.&quot;&quot;&quot;</span>
+        <span class="n">total_weight</span> <span class="o">=</span> <span class="mf">0.0</span>
+        <span class="n">weighted_sum</span> <span class="o">=</span> <span class="mf">0.0</span>
+        <span class="k">for</span> <span class="n">feat</span><span class="p">,</span> <span class="n">w</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">weights</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">if</span> <span class="n">feat</span> <span class="ow">in</span> <span class="n">values</span><span class="p">:</span>
+                <span class="n">weighted_sum</span> <span class="o">+=</span> <span class="n">w</span> <span class="o">*</span> <span class="n">values</span><span class="p">[</span><span class="n">feat</span><span class="p">]</span>
+                <span class="n">total_weight</span> <span class="o">+=</span> <span class="n">w</span>
+
+        <span class="k">if</span> <span class="n">total_weight</span> <span class="o">==</span> <span class="mf">0.0</span><span class="p">:</span>
+            <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">: none of the specified features &quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;(</span><span class="si">{</span><span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">weights</span><span class="p">)</span><span class="si">}</span><span class="s2">) were present in values — returning 0.0.&quot;</span><span class="p">,</span>
+                <span class="ne">RuntimeWarning</span><span class="p">,</span>
+                <span class="n">stacklevel</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+            <span class="p">)</span>
+            <span class="k">return</span> <span class="mf">0.0</span>
+
+        <span class="k">return</span> <span class="n">weighted_sum</span> <span class="o">/</span> <span class="n">total_weight</span></div>
+</div>
+
+
+
+<div class="viewcode-block" id="GeometricMeanCombiner">
+<a class="viewcode-back" href="../../generated/mne_rt.combiners.GeometricMeanCombiner.html#mne_rt.combiners.GeometricMeanCombiner">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">GeometricMeanCombiner</span><span class="p">(</span><span class="n">FeatureCombiner</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Geometric mean of (positive) feature values.</span>
+
+<span class="sd">    Computes the weighted geometric mean::</span>
+
+<span class="sd">        mixed = exp( Σ(wᵢ · log(max(xᵢ, floor))) / Σ(wᵢ) )</span>
+
+<span class="sd">    with uniform weights ``wᵢ = 1`` when *weights* is ``None``.  Input values</span>
+<span class="sd">    are clipped to *floor* before the log transform so that zero or negative</span>
+<span class="sd">    inputs do not cause ``NaN`` or ``−inf``.</span>
+
+<span class="sd">    Best suited for features that are inherently positive and multiplicative,</span>
+<span class="sd">    such as band-power ratios, coherence values, or connectivity measures.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    features : list of str</span>
+<span class="sd">        Ordered modality names to include.</span>
+<span class="sd">    weights : dict[str, float] | None, default None</span>
+<span class="sd">        Optional per-feature exponents in the weighted geometric mean.</span>
+<span class="sd">        ``None`` applies equal weighting (all exponents = 1).</span>
+<span class="sd">    floor : float, default 1e-9</span>
+<span class="sd">        Minimum value each input is clipped to before ``log``.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    Equal-weight geometric mean of three power features::</span>
+
+<span class="sd">        from mne_rt.combiners import GeometricMeanCombiner</span>
+
+<span class="sd">        combiner = GeometricMeanCombiner(</span>
+<span class="sd">            features=[&quot;sensor_power&quot;, &quot;band_ratio&quot;, &quot;individual_peak_power&quot;]</span>
+<span class="sd">        )</span>
+<span class="sd">        mixed = combiner.combine({</span>
+<span class="sd">            &quot;sensor_power&quot;: 2.0,</span>
+<span class="sd">            &quot;band_ratio&quot;: 0.5,</span>
+<span class="sd">            &quot;individual_peak_power&quot;: 1.0,</span>
+<span class="sd">        })</span>
+<span class="sd">        # mixed = (2.0 * 0.5 * 1.0) ** (1/3) ≈ 1.0</span>
+
+<span class="sd">    Weighted exponents (emphasise sensor_power)::</span>
+
+<span class="sd">        combiner = GeometricMeanCombiner(</span>
+<span class="sd">            features=[&quot;sensor_power&quot;, &quot;band_ratio&quot;],</span>
+<span class="sd">            weights={&quot;sensor_power&quot;: 2.0, &quot;band_ratio&quot;: 1.0},</span>
+<span class="sd">        )</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="GeometricMeanCombiner.__init__">
+<a class="viewcode-back" href="../../generated/mne_rt.combiners.GeometricMeanCombiner.html#mne_rt.combiners.GeometricMeanCombiner.__init__">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">features</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
+        <span class="n">weights</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">float</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">floor</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1e-9</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">features</span><span class="o">=</span><span class="n">features</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">weights</span> <span class="o">=</span> <span class="n">weights</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">floor</span> <span class="o">=</span> <span class="n">floor</span></div>
+
+
+<div class="viewcode-block" id="GeometricMeanCombiner.combine">
+<a class="viewcode-back" href="../../generated/mne_rt.combiners.GeometricMeanCombiner.html#mne_rt.combiners.GeometricMeanCombiner.combine">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">combine</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">values</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">float</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return the weighted geometric mean of available feature values.&quot;&quot;&quot;</span>
+        <span class="n">log_sum</span> <span class="o">=</span> <span class="mf">0.0</span>
+        <span class="n">weight_sum</span> <span class="o">=</span> <span class="mf">0.0</span>
+
+        <span class="k">for</span> <span class="n">feat</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">features</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">feat</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">values</span><span class="p">:</span>
+                <span class="k">continue</span>
+            <span class="n">w</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">weights</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">feat</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">)</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">weights</span> <span class="k">else</span> <span class="mf">1.0</span>
+            <span class="n">x</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">values</span><span class="p">[</span><span class="n">feat</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">floor</span><span class="p">)</span>
+            <span class="n">log_sum</span> <span class="o">+=</span> <span class="n">w</span> <span class="o">*</span> <span class="n">math</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+            <span class="n">weight_sum</span> <span class="o">+=</span> <span class="n">w</span>
+
+        <span class="k">if</span> <span class="n">weight_sum</span> <span class="o">==</span> <span class="mf">0.0</span><span class="p">:</span>
+            <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">: none of the specified features &quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;(</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">features</span><span class="si">}</span><span class="s2">) were present in values — returning 0.0.&quot;</span><span class="p">,</span>
+                <span class="ne">RuntimeWarning</span><span class="p">,</span>
+                <span class="n">stacklevel</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+            <span class="p">)</span>
+            <span class="k">return</span> <span class="mf">0.0</span>
+
+        <span class="k">return</span> <span class="n">math</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">log_sum</span> <span class="o">/</span> <span class="n">weight_sum</span><span class="p">)</span></div>
+</div>
+
+
+
+<div class="viewcode-block" id="ZScoredNormCombiner">
+<a class="viewcode-back" href="../../generated/mne_rt.combiners.ZScoredNormCombiner.html#mne_rt.combiners.ZScoredNormCombiner">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">ZScoredNormCombiner</span><span class="p">(</span><span class="n">FeatureCombiner</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Euclidean norm after online z-score normalisation of each feature.</span>
+
+<span class="sd">    Each feature stream is independently normalised using the mean and standard</span>
+<span class="sd">    deviation estimated from the first *warmup* windows::</span>
+
+<span class="sd">        zᵢ = (xᵢ − μᵢ) / σᵢ</span>
+<span class="sd">        mixed = ‖z‖ / √n  =  sqrt(Σ zᵢ²) / sqrt(n)</span>
+
+<span class="sd">    Dividing by ``√n`` keeps the output near **1** when all features hover at</span>
+<span class="sd">    their baseline mean, and it grows when *any* feature deviates — making it</span>
+<span class="sd">    a natural &quot;how different from baseline are we?&quot; score.</span>
+
+<span class="sd">    Statistics are **frozen** after warmup (no drift tracking).  To re-fit</span>
+<span class="sd">    (e.g. between blocks), call :meth:`reset`.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    features : list of str</span>
+<span class="sd">        Modality names to include.</span>
+<span class="sd">    warmup : int, default 30</span>
+<span class="sd">        Number of windows collected before statistics are fixed and the</span>
+<span class="sd">        combiner starts producing non-zero output.  Returns ``0.0`` during</span>
+<span class="sd">        the warmup phase.</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    If a feature&#39;s standard deviation is effectively zero (constant signal),</span>
+<span class="sd">    it is floored at ``1e-9`` to prevent division-by-zero.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    ::</span>
+
+<span class="sd">        from mne_rt.combiners import ZScoredNormCombiner</span>
+
+<span class="sd">        combiner = ZScoredNormCombiner(</span>
+<span class="sd">            features=[&quot;sensor_power&quot;, &quot;laterality&quot;, &quot;connectivity_ratio&quot;],</span>
+<span class="sd">            warmup=30,</span>
+<span class="sd">        )</span>
+<span class="sd">        for window_vals in session_data:         # first 30 calls return 0.0</span>
+<span class="sd">            mixed = combiner.combine(window_vals)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="ZScoredNormCombiner.__init__">
+<a class="viewcode-back" href="../../generated/mne_rt.combiners.ZScoredNormCombiner.html#mne_rt.combiners.ZScoredNormCombiner.__init__">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">features</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">warmup</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">30</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">features</span><span class="o">=</span><span class="n">features</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">warmup</span> <span class="o">=</span> <span class="n">warmup</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_buf</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">list</span><span class="p">[</span><span class="nb">float</span><span class="p">]]</span> <span class="o">=</span> <span class="p">{</span><span class="n">f</span><span class="p">:</span> <span class="p">[]</span> <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">features</span><span class="p">}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_mean</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_std</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_warmed_up</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span></div>
+
+
+<div class="viewcode-block" id="ZScoredNormCombiner.reset">
+<a class="viewcode-back" href="../../generated/mne_rt.combiners.ZScoredNormCombiner.html#mne_rt.combiners.ZScoredNormCombiner.reset">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">reset</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Clear collected statistics and restart the warmup phase.</span>
+
+<span class="sd">        Useful when called between NF blocks so the combiner re-fits its</span>
+<span class="sd">        baseline to the new block&#39;s distribution.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_buf</span> <span class="o">=</span> <span class="p">{</span><span class="n">f</span><span class="p">:</span> <span class="p">[]</span> <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">features</span><span class="p">}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_mean</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_std</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_warmed_up</span> <span class="o">=</span> <span class="kc">False</span></div>
+
+
+<div class="viewcode-block" id="ZScoredNormCombiner.combine">
+<a class="viewcode-back" href="../../generated/mne_rt.combiners.ZScoredNormCombiner.html#mne_rt.combiners.ZScoredNormCombiner.combine">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">combine</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">values</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">float</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return the z-scored Euclidean norm, or ``0.0`` during warmup.&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_warmed_up</span><span class="p">:</span>
+            <span class="c1"># Accumulate warmup buffer</span>
+            <span class="k">for</span> <span class="n">feat</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">features</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">feat</span> <span class="ow">in</span> <span class="n">values</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_buf</span><span class="p">[</span><span class="n">feat</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">values</span><span class="p">[</span><span class="n">feat</span><span class="p">])</span>
+
+            <span class="c1"># Check whether all features have enough samples</span>
+            <span class="n">ready</span> <span class="o">=</span> <span class="nb">all</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_buf</span><span class="p">[</span><span class="n">f</span><span class="p">])</span> <span class="o">&gt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">warmup</span> <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">features</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">ready</span><span class="p">:</span>
+                <span class="k">for</span> <span class="n">feat</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">features</span><span class="p">:</span>
+                    <span class="n">buf</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_buf</span><span class="p">[</span><span class="n">feat</span><span class="p">]</span>
+                    <span class="n">mu</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="n">buf</span><span class="p">)</span> <span class="o">/</span> <span class="nb">len</span><span class="p">(</span><span class="n">buf</span><span class="p">)</span>
+                    <span class="n">variance</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">((</span><span class="n">x</span> <span class="o">-</span> <span class="n">mu</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">buf</span><span class="p">)</span> <span class="o">/</span> <span class="nb">len</span><span class="p">(</span><span class="n">buf</span><span class="p">)</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_mean</span><span class="p">[</span><span class="n">feat</span><span class="p">]</span> <span class="o">=</span> <span class="n">mu</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_std</span><span class="p">[</span><span class="n">feat</span><span class="p">]</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">math</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">variance</span><span class="p">),</span> <span class="mf">1e-9</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_buf</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_warmed_up</span> <span class="o">=</span> <span class="kc">True</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">return</span> <span class="mf">0.0</span>
+
+        <span class="c1"># Post-warmup: z-score each present feature then return normalised norm</span>
+        <span class="n">z_scores</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="p">(</span><span class="n">values</span><span class="p">[</span><span class="n">f</span><span class="p">]</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">_mean</span><span class="p">[</span><span class="n">f</span><span class="p">])</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">_std</span><span class="p">[</span><span class="n">f</span><span class="p">]</span>
+            <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">features</span>
+            <span class="k">if</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">values</span> <span class="ow">and</span> <span class="n">f</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_mean</span>
+        <span class="p">]</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">z_scores</span><span class="p">:</span>
+            <span class="k">return</span> <span class="mf">0.0</span>
+
+        <span class="n">norm</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="nb">sum</span><span class="p">(</span><span class="n">z</span><span class="o">**</span><span class="mi">2</span> <span class="k">for</span> <span class="n">z</span> <span class="ow">in</span> <span class="n">z_scores</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">norm</span> <span class="o">/</span> <span class="n">math</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">z_scores</span><span class="p">))</span></div>
+</div>
+
+
+
+<div class="viewcode-block" id="LearnedCombiner">
+<a class="viewcode-back" href="../../generated/mne_rt.combiners.LearnedCombiner.html#mne_rt.combiners.LearnedCombiner">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">LearnedCombiner</span><span class="p">(</span><span class="n">FeatureCombiner</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Data-driven combination via a fitted sklearn-compatible estimator.</span>
+
+<span class="sd">    Assembles the feature vector ``[x₁, x₂, …, xₙ]`` (in *features* order),</span>
+<span class="sd">    calls ``estimator.predict([[x₁, …, xₙ]])``, and returns the scalar result.</span>
+<span class="sd">    Any ``sklearn``-style regressor works out of the box.  For classifiers,</span>
+<span class="sd">    wrap ``predict_proba`` in a small adapter so the interface matches.</span>
+
+<span class="sd">    The model must be fitted **offline** — on resting-state recordings, prior</span>
+<span class="sd">    session data, or a dedicated calibration block — before passing it here.</span>
+
+<span class="sd">    Typical estimator choices:</span>
+
+<span class="sd">    * ``sklearn.linear_model.Ridge`` — regularised linear projection; low</span>
+<span class="sd">      variance, directly interpretable weights.</span>
+<span class="sd">    * ``sklearn.cross_decomposition.PLSRegression`` — finds the latent</span>
+<span class="sd">      direction in feature space most correlated with a target (e.g. tinnitus</span>
+<span class="sd">      severity).</span>
+<span class="sd">    * ``sklearn.svm.SVR`` — non-linear kernel regression; higher capacity but</span>
+<span class="sd">      needs more calibration data and may overfit.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    features : list of str</span>
+<span class="sd">        Ordered modality names.  The feature vector fed to *estimator* is</span>
+<span class="sd">        built in this exact order; missing features are filled with ``0.0``.</span>
+<span class="sd">    estimator : fitted sklearn-compatible estimator</span>
+<span class="sd">        Must expose a ``predict(X)`` method where ``X`` has shape ``(1, n)``.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    Offline fit, then real-time use::</span>
+
+<span class="sd">        from sklearn.linear_model import Ridge</span>
+<span class="sd">        from mne_rt.combiners import LearnedCombiner</span>
+
+<span class="sd">        # --- offline (calibration session) ---</span>
+<span class="sd">        X_cal = ...  # shape (n_windows, n_features)</span>
+<span class="sd">        y_cal = ...  # target scores, shape (n_windows,)</span>
+<span class="sd">        model = Ridge(alpha=1.0).fit(X_cal, y_cal)</span>
+
+<span class="sd">        # --- real-time session ---</span>
+<span class="sd">        combiner = LearnedCombiner(</span>
+<span class="sd">            features=[&quot;sensor_power&quot;, &quot;laterality&quot;, &quot;connectivity_ratio&quot;],</span>
+<span class="sd">            estimator=model,</span>
+<span class="sd">        )</span>
+<span class="sd">        mixed = combiner.combine({</span>
+<span class="sd">            &quot;sensor_power&quot;: 1.2,</span>
+<span class="sd">            &quot;laterality&quot;: 0.4,</span>
+<span class="sd">            &quot;connectivity_ratio&quot;: 0.7,</span>
+<span class="sd">        })</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="LearnedCombiner.__init__">
+<a class="viewcode-back" href="../../generated/mne_rt.combiners.LearnedCombiner.html#mne_rt.combiners.LearnedCombiner.__init__">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">features</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">estimator</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">features</span><span class="o">=</span><span class="n">features</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">estimator</span> <span class="o">=</span> <span class="n">estimator</span></div>
+
+
+<div class="viewcode-block" id="LearnedCombiner.combine">
+<a class="viewcode-back" href="../../generated/mne_rt.combiners.LearnedCombiner.html#mne_rt.combiners.LearnedCombiner.combine">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">combine</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">values</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">float</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return the estimator&#39;s prediction for the current feature vector.&quot;&quot;&quot;</span>
+        <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+
+        <span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span>
+            <span class="p">[[</span><span class="n">values</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">)</span> <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">features</span><span class="p">]],</span>
+            <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">estimator</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+        <span class="k">return</span> <span class="nb">float</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">ravel</span><span class="p">(</span><span class="n">result</span><span class="p">)[</span><span class="mi">0</span><span class="p">])</span></div>
+</div>
+
+</pre></div>
+
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../../_static/scripts/bootstrap.js?digest=90905a2f556bf617f1a9"></script>
+<script defer src="../../_static/scripts/pydata-sphinx-theme.js?digest=90905a2f556bf617f1a9"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright 2025, Payam S. Shabestari.
+      <br/>
+    
+  </p>
+</div>
+      
+        <div class="footer-item">
+
+  <p class="sphinx-version">
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 9.0.4.
+    <br/>
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
+<p class="theme-version">
+  <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.20.0.
+</p></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>

@@ -1,0 +1,784 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>mne_rt.viz.TopomapPlot &#8212; MNE-RT</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=90905a2f556bf617f1a9" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=90905a2f556bf617f1a9" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery.css?v=fd6457a4" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-binder.css?v=f4aeca0c" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-dataframe.css?v=2082cf3c" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-rendered-html.css?v=1277b6f3" />
+    <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=5bf657dd" />
+  
+  <!-- So that users can add custom icons -->
+  <script defer src="../_static/scripts/fontawesome.js?digest=90905a2f556bf617f1a9"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=90905a2f556bf617f1a9" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=90905a2f556bf617f1a9" />
+
+    <script src="../_static/documentation_options.js?v=8d563738"></script>
+    <script src="../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="../_static/sg-tags.js?v=d80f6fa4"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'generated/mne_rt.viz.TopomapPlot';</script>
+    <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="mne_rt.viz.TopoPlot" href="mne_rt.viz.TopoPlot.html" />
+    <link rel="prev" title="mne_rt.viz.BrainPlot" href="mne_rt.viz.BrainPlot.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="" />
+  
+    
+    <script src="../_static/searchtools.js"></script>
+    <script src="../_static/language_data.js"></script>
+    <script src="../searchindex.js"></script>
+  
+  </head>
+  <body data-default-mode="">
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+  
+  
+  
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header id="pst-header" class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../index.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../_static/mne_rt_logo.svg" class="logo__image only-light" alt="MNE-RT - Home"/>
+    <img src="../_static/mne_rt_logo.svg" class="logo__image only-dark pst-js-only" alt="MNE-RT - Home"/>
+  
+  
+</a></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../install.html">
+    Installation
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../tutorial.html">
+    User Guide
+  </a>
+</li>
+
+
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="../api.html">
+    API Reference
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../visualization.html">
+    Visualisation
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../cli.html">
+    CLI
+  </a>
+</li>
+
+            <li class="nav-item dropdown">
+                <button class="btn dropdown-toggle nav-item" type="button"
+                data-bs-toggle="dropdown" aria-expanded="false"
+                aria-controls="pst-nav-more-links">
+                    More
+                </button>
+                <ul id="pst-nav-more-links" class="dropdown-menu">
+                    
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../denoising.html">
+    Artifact Correction
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../modalities.html">
+    Real-time Feature Modalities
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../protocols.html">
+    NF Protocols
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../whats_new.html">
+    What’s new
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../auto_examples/index.html">
+    Examples Gallery
+  </a>
+</li>
+
+                </ul>
+            </li>
+            
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+        </div>
+      
+      
+        <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/payamsash/mne-rt" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-square-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
+        </li>
+</ul></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+    </div>
+  
+
+  
+    <button class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="On this page">
+      <span class="fa-solid fa-outdent"></span>
+    </button>
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../install.html">
+    Installation
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../tutorial.html">
+    User Guide
+  </a>
+</li>
+
+
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="../api.html">
+    API Reference
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../visualization.html">
+    Visualisation
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../cli.html">
+    CLI
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../denoising.html">
+    Artifact Correction
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../modalities.html">
+    Real-time Feature Modalities
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../protocols.html">
+    NF Protocols
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../whats_new.html">
+    What’s new
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../auto_examples/index.html">
+    Examples Gallery
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/payamsash/mne-rt" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-square-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
+        </li>
+</ul></div>
+        
+      </div>
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+
+<nav class="bd-docs-nav bd-links"
+     aria-label="Section Navigation">
+  <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
+  <div class="bd-toc-item navbar-nav"><ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="mne_rt.RTStream.html">mne_rt.RTStream</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mne_rt.RTEpochs.html">mne_rt.RTEpochs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mne_rt.ArrayStream.html">mne_rt.ArrayStream</a></li>
+</ul>
+<ul class="current nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="mne_rt.viz.NFPlot.html">mne_rt.viz.NFPlot</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mne_rt.viz.RawPlot.html">mne_rt.viz.RawPlot</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mne_rt.viz.EpochPlot.html">mne_rt.viz.EpochPlot</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mne_rt.viz.BrainPlot.html">mne_rt.viz.BrainPlot</a></li>
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">mne_rt.viz.TopomapPlot</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mne_rt.viz.TopoPlot.html">mne_rt.viz.TopoPlot</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mne_rt.viz.ButterflyPlot.html">mne_rt.viz.ButterflyPlot</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mne_rt.viz.TFRPlot.html">mne_rt.viz.TFRPlot</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mne_rt.viz.CompareEvoked.html">mne_rt.viz.CompareEvoked</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="mne_rt.tools.AdaptiveLMSFilter.html">mne_rt.tools.AdaptiveLMSFilter</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mne_rt.tools.ORICA.html">mne_rt.tools.ORICA</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mne_rt.tools.GEDAIDenoiser.html">mne_rt.tools.GEDAIDenoiser</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mne_rt.tools.ASRDenoiser.html">mne_rt.tools.ASRDenoiser</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mne_rt.tools.RTMaxwellFilter.html">mne_rt.tools.RTMaxwellFilter</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="mne_rt.tools.BadChannelDetector.html">mne_rt.tools.BadChannelDetector</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mne_rt.tools.RiemannianPotatoDetector.html">mne_rt.tools.RiemannianPotatoDetector</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="mne_rt.protocols.ThresholdProtocol.html">mne_rt.protocols.ThresholdProtocol</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mne_rt.protocols.ZScoreProtocol.html">mne_rt.protocols.ZScoreProtocol</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mne_rt.protocols.PercentileProtocol.html">mne_rt.protocols.PercentileProtocol</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mne_rt.protocols.LinearTrendProtocol.html">mne_rt.protocols.LinearTrendProtocol</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mne_rt.protocols.ShamProtocol.html">mne_rt.protocols.ShamProtocol</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mne_rt.protocols.UpDownStaircaseProtocol.html">mne_rt.protocols.UpDownStaircaseProtocol</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mne_rt.protocols.MultiBandProtocol.html">mne_rt.protocols.MultiBandProtocol</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mne_rt.protocols.RLProtocol.html">mne_rt.protocols.RLProtocol</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mne_rt.protocols.OperantProtocol.html">mne_rt.protocols.OperantProtocol</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mne_rt.protocols.TransferProtocol.html">mne_rt.protocols.TransferProtocol</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="mne_rt.combiners.FeatureCombiner.html">mne_rt.combiners.FeatureCombiner</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mne_rt.combiners.WeightedSumCombiner.html">mne_rt.combiners.WeightedSumCombiner</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mne_rt.combiners.GeometricMeanCombiner.html">mne_rt.combiners.GeometricMeanCombiner</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mne_rt.combiners.ZScoredNormCombiner.html">mne_rt.combiners.ZScoredNormCombiner</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mne_rt.combiners.LearnedCombiner.html">mne_rt.combiners.LearnedCombiner</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="mne_rt.OSCSender.html">mne_rt.OSCSender</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mne_rt.LSLSender.html">mne_rt.LSLSender</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="mne_rt.tools.simulate_raw.html">mne_rt.tools.simulate_raw</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mne_rt.tools.simulate_nf_session.html">mne_rt.tools.simulate_nf_session</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mne_rt.modalities.ModalityMixin.html">mne_rt.modalities.ModalityMixin</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="mne_rt.tools.save_as_bids.html">mne_rt.tools.save_as_bids</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="mne_rt.set_log_level.html">mne_rt.set_log_level</a></li>
+</ul>
+</div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    
+    <li class="breadcrumb-item"><a href="../api.html" class="nav-link">API Reference</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">mne_rt.viz.TopomapPlot</span></li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section id="mne-rt-viz-topomapplot">
+<h1>mne_rt.viz.TopomapPlot<a class="headerlink" href="#mne-rt-viz-topomapplot" title="Link to this heading">#</a></h1>
+<dl class="py class">
+<dt class="sig sig-object py" id="mne_rt.viz.TopomapPlot">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">mne_rt.viz.</span></span><span class="sig-name descname"><span class="pre">TopomapPlot</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">info</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://mne.tools/stable/generated/mne.Info.html#mne.Info" title="(in MNE v1.12)"><span class="pre">Info</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">sfreq</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">bands</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.14)"><span class="pre">dict</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.14)"><span class="pre">tuple</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cmap</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'RdBu_r'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sensors</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><span class="pre">bool</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">contours</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">6</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">display_smoothing</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mne_rt/viz/topomap_plot.html#TopomapPlot"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mne_rt.viz.TopomapPlot" title="Link to this definition">#</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">_MockQMainWindow</span></code></p>
+<p>Real-time scalp topomap showing per-band power distribution.</p>
+<p>Displays one colour-mapped topomap per selected frequency band,
+updated in real-time by <a class="reference internal" href="#mne_rt.viz.TopomapPlot.push" title="mne_rt.viz.TopomapPlot.push"><code class="xref py py-meth docutils literal notranslate"><span class="pre">push()</span></code></a>.  Built on Qt (via qtpy) with a
+matplotlib figure embedded via
+<code class="xref py py-class docutils literal notranslate"><span class="pre">FigureCanvasQTAgg</span></code>.</p>
+<dl class="field-list">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl>
+<dt><strong>info</strong><span class="classifier"><a class="reference external" href="https://mne.tools/stable/generated/mne.Info.html#mne.Info" title="(in MNE v1.12)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mne.Info</span></code></a></span></dt><dd><p>Channel info containing electrode positions (montage must be set).</p>
+</dd>
+<dt><strong>sfreq</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">float</span></code></a></span></dt><dd><p>Sampling frequency of the incoming data in Hz.</p>
+</dd>
+<dt><strong>bands</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">dict</span></code></a>[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a>, <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">tuple</span></code></a>[<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">float</span></code></a>, <a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">float</span></code></a>]] | <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">None</span></code></a>, default <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">None</span></code></a></span></dt><dd><p>Frequency bands to display as <code class="docutils literal notranslate"><span class="pre">{label:</span> <span class="pre">(f_low,</span> <span class="pre">f_high)}</span></code>.
+Defaults to δ/θ/α/β/γ standard bands.</p>
+</dd>
+<dt><strong>cmap</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a>, default “RdBu_r”</span></dt><dd><p>Initial colourmap.  Must be one of
+<code class="docutils literal notranslate"><span class="pre">[&quot;RdBu_r&quot;,</span> <span class="pre">&quot;hot&quot;,</span> <span class="pre">&quot;plasma&quot;,</span> <span class="pre">&quot;viridis&quot;,</span> <span class="pre">&quot;Reds&quot;,</span> <span class="pre">&quot;RdYlBu_r&quot;]</span></code>.</p>
+</dd>
+<dt><strong>sensors</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bltin-boolean-values" title="(in Python v3.14)"><span class="xref std std-ref">bool</span></a>, default <a class="reference external" href="https://docs.python.org/3/library/constants.html#True" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">True</span></code></a></span></dt><dd><p>Whether to draw sensor markers on the topomap.</p>
+</dd>
+<dt><strong>contours</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">int</span></code></a>, default 6</span></dt><dd><p>Number of contour lines.  Set to <code class="docutils literal notranslate"><span class="pre">0</span></code> to disable.</p>
+</dd>
+<dt><strong>display_smoothing</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">float</span></code></a>, default 1.0</span></dt><dd><p>EMA factor applied to the per-channel band-power maps before
+rendering.  <code class="docutils literal notranslate"><span class="pre">1.0</span></code> disables smoothing (raw per-window estimate
+shown directly — good for artifact monitoring); lower values
+progressively smooth the spatial maps across consecutive windows.</p>
+</dd>
+<dt><strong>verbose</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bltin-boolean-values" title="(in Python v3.14)"><span class="xref std std-ref">bool</span></a> | <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">None</span></code></a>, default <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">None</span></code></a></span></dt><dd><p>Verbosity level.  See <code class="xref py py-func docutils literal notranslate"><span class="pre">set_log_level()</span></code>.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<dl class="simple">
+<dt><a class="reference internal" href="mne_rt.viz.NFPlot.html#mne_rt.viz.NFPlot" title="mne_rt.viz.NFPlot"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mne_rt.viz.NFPlot</span></code></a></dt><dd><p>Scrolling NF signal display.</p>
+</dd>
+<dt><a class="reference internal" href="mne_rt.viz.BrainPlot.html#mne_rt.viz.BrainPlot" title="mne_rt.viz.BrainPlot"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mne_rt.viz.BrainPlot</span></code></a></dt><dd><p>3D brain activation display.</p>
+</dd>
+<dt><a class="reference internal" href="mne_rt.RTStream.html#mne_rt.RTStream.record_main" title="mne_rt.RTStream.record_main"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mne_rt.RTStream.record_main</span></code></a></dt><dd><p>Main NF loop that drives all plots.</p>
+</dd>
+</dl>
+</div>
+<p class="rubric">Notes</p>
+<p>The control panel (right sidebar) provides:</p>
+<ul class="simple">
+<li><p><strong>Playback</strong> — pause/resume, screenshot.</p></li>
+<li><p><strong>Display</strong> — colormap selector, contours, sensor toggle, colorbar mode.</p></li>
+<li><p><strong>Bands</strong> — per-band visibility checkboxes.  Toggling rebuilds the
+figure layout automatically.</p></li>
+</ul>
+<p>Band power is estimated via FFT on each incoming window (Hanning window
+applied to reduce spectral leakage).</p>
+<p class="rubric">Examples</p>
+<p>Minimal offline usage:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">mne</span><span class="w"> </span><span class="kn">import</span> <span class="n">create_info</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">app</span> <span class="o">=</span> <span class="n">QApplication</span><span class="p">([])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">info</span> <span class="o">=</span> <span class="n">create_info</span><span class="p">([</span><span class="s2">&quot;Fp1&quot;</span><span class="p">,</span> <span class="s2">&quot;Fz&quot;</span><span class="p">,</span> <span class="s2">&quot;Cz&quot;</span><span class="p">,</span> <span class="s2">&quot;Oz&quot;</span><span class="p">],</span> <span class="n">sfreq</span><span class="o">=</span><span class="mi">256</span><span class="p">,</span> <span class="n">ch_types</span><span class="o">=</span><span class="s2">&quot;eeg&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">plot</span> <span class="o">=</span> <span class="n">TopomapPlot</span><span class="p">(</span><span class="n">info</span><span class="p">,</span> <span class="n">sfreq</span><span class="o">=</span><span class="mi">256</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">plot</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="mi">256</span><span class="p">)</span>   <span class="c1"># 1 s window</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">plot</span><span class="o">.</span><span class="n">push</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">app</span><span class="o">.</span><span class="n">exec</span><span class="p">()</span>
+</pre></div>
+</div>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.0.0.</span></p>
+</div>
+<dl class="py method">
+<dt class="sig sig-object py" id="mne_rt.viz.TopomapPlot.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">info</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://mne.tools/stable/generated/mne.Info.html#mne.Info" title="(in MNE v1.12)"><span class="pre">Info</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">sfreq</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">bands</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.14)"><span class="pre">dict</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.14)"><span class="pre">tuple</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cmap</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'RdBu_r'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sensors</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><span class="pre">bool</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">contours</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">6</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">display_smoothing</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span></span><a class="reference internal" href="../_modules/mne_rt/viz/topomap_plot.html#TopomapPlot.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mne_rt.viz.TopomapPlot.__init__" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<p class="rubric">Methods</p>
+<div class="pst-scrollable-table-container"><table class="autosummary longtable table">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#mne_rt.viz.TopomapPlot.__init__" title="mne_rt.viz.TopomapPlot.__init__"><code class="xref py py-obj docutils literal notranslate"><span class="pre">__init__</span></code></a>(info, sfreq[, bands, cmap, ...])</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#mne_rt.viz.TopomapPlot.closeEvent" title="mne_rt.viz.TopomapPlot.closeEvent"><code class="xref py py-obj docutils literal notranslate"><span class="pre">closeEvent</span></code></a>(event)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#mne_rt.viz.TopomapPlot.push" title="mne_rt.viz.TopomapPlot.push"><code class="xref py py-obj docutils literal notranslate"><span class="pre">push</span></code></a>(data)</p></td>
+<td><p>Update all visible topomaps from a new raw data window.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p class="rubric">Attributes</p>
+<div class="pst-scrollable-table-container"><table class="autosummary longtable table">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#mne_rt.viz.TopomapPlot.closed" title="mne_rt.viz.TopomapPlot.closed"><code class="xref py py-obj docutils literal notranslate"><span class="pre">closed</span></code></a></p></td>
+<td><p>Emitted when the window is closed, <em>before</em> Qt tears down the widget.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mne_rt.viz.TopomapPlot.closed">
+<span class="sig-name descname"><span class="pre">closed</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;MagicMock</span> <span class="pre">name='mock.Signal()'</span> <span class="pre">id='139657955537808'&gt;</span></span><a class="headerlink" href="#mne_rt.viz.TopomapPlot.closed" title="Link to this definition">#</a></dt>
+<dd><p>Emitted when the window is closed, <em>before</em> Qt tears down the widget.
+<a class="reference internal" href="mne_rt.RTStream.html#mne_rt.RTStream.record_main" title="mne_rt.RTStream.record_main"><code class="xref py py-meth docutils literal notranslate"><span class="pre">record_main()</span></code></a> connects this to stop pumping
+new data into a closed window while other plot windows stay open.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mne_rt.viz.TopomapPlot.push">
+<span class="sig-name descname"><span class="pre">push</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.5)"><span class="pre">ndarray</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span></span><a class="reference internal" href="../_modules/mne_rt/viz/topomap_plot.html#TopomapPlot.push"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mne_rt.viz.TopomapPlot.push" title="Link to this definition">#</a></dt>
+<dd><p>Update all visible topomaps from a new raw data window.</p>
+<p>Called at ~5 fps by the Qt pump timer inside
+<a class="reference internal" href="mne_rt.RTStream.html#mne_rt.RTStream.record_main" title="mne_rt.RTStream.record_main"><code class="xref py py-meth docutils literal notranslate"><span class="pre">record_main()</span></code></a>.</p>
+<dl class="field-list">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl>
+<dt><strong>data</strong><span class="classifier"><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.5)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ndarray</span></code></a> <code class="xref py py-obj docutils literal notranslate"><span class="pre">of</span></code> <code class="xref py py-obj docutils literal notranslate"><span class="pre">shape</span></code> (<code class="xref py py-obj docutils literal notranslate"><span class="pre">n_channels</span></code>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">n_times</span></code>)</span></dt><dd><p>Raw EEG/MEG data for the current analysis window.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>The call is a no-op when paused (⏸ button pressed).  Band power
+is estimated via FFT and the topomaps are redrawn via
+<a class="reference external" href="https://mne.tools/stable/generated/mne.viz.plot_topomap.html#mne.viz.plot_topomap" title="(in MNE v1.12)"><code class="xref py py-func docutils literal notranslate"><span class="pre">mne.viz.plot_topomap()</span></code></a>.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mne_rt.viz.TopomapPlot.closeEvent">
+<span class="sig-name descname"><span class="pre">closeEvent</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">event</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span></span><a class="reference internal" href="../_modules/mne_rt/viz/topomap_plot.html#TopomapPlot.closeEvent"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mne_rt.viz.TopomapPlot.closeEvent" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</section>
+
+
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="mne_rt.viz.BrainPlot.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">mne_rt.viz.BrainPlot</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="mne_rt.viz.TopoPlot.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">mne_rt.viz.TopoPlot</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <dialog id="pst-secondary-sidebar-modal"></dialog>
+                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+<div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav id="pst-page-toc-nav" class="page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="pst-show_toc_level nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#mne_rt.viz.TopomapPlot"><code class="docutils literal notranslate"><span class="pre">TopomapPlot</span></code></a><ul class="pst-show_toc_level nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#mne_rt.viz.TopomapPlot.__init__"><code class="docutils literal notranslate"><span class="pre">TopomapPlot.__init__()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#mne_rt.viz.TopomapPlot.closed"><code class="docutils literal notranslate"><span class="pre">TopomapPlot.closed</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#mne_rt.viz.TopomapPlot.push"><code class="docutils literal notranslate"><span class="pre">TopomapPlot.push()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#mne_rt.viz.TopomapPlot.closeEvent"><code class="docutils literal notranslate"><span class="pre">TopomapPlot.closeEvent()</span></code></a></li>
+</ul>
+</li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../_static/scripts/bootstrap.js?digest=90905a2f556bf617f1a9"></script>
+<script defer src="../_static/scripts/pydata-sphinx-theme.js?digest=90905a2f556bf617f1a9"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright 2025, Payam S. Shabestari.
+      <br/>
+    
+  </p>
+</div>
+      
+        <div class="footer-item">
+
+  <p class="sphinx-version">
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 9.0.4.
+    <br/>
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
+<p class="theme-version">
+  <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.20.0.
+</p></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>

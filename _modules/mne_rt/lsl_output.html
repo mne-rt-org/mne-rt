@@ -1,0 +1,783 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>mne_rt.lsl_output &#8212; MNE-RT</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../_static/styles/theme.css?digest=90905a2f556bf617f1a9" rel="stylesheet" />
+<link href="../../_static/styles/pydata-sphinx-theme.css?digest=90905a2f556bf617f1a9" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery.css?v=fd6457a4" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery-binder.css?v=f4aeca0c" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery-dataframe.css?v=2082cf3c" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery-rendered-html.css?v=1277b6f3" />
+    <link rel="stylesheet" type="text/css" href="../../_static/custom.css?v=5bf657dd" />
+  
+  <!-- So that users can add custom icons -->
+  <script defer src="../../_static/scripts/fontawesome.js?digest=90905a2f556bf617f1a9"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=90905a2f556bf617f1a9" />
+<link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=90905a2f556bf617f1a9" />
+
+    <script src="../../_static/documentation_options.js?v=8d563738"></script>
+    <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="../../_static/sg-tags.js?v=d80f6fa4"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = '_modules/mne_rt/lsl_output';</script>
+    <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="" />
+  
+    
+    <script src="../../_static/searchtools.js"></script>
+    <script src="../../_static/language_data.js"></script>
+    <script src="../../searchindex.js"></script>
+  
+  </head>
+  <body data-default-mode="">
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+  
+  
+  
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header id="pst-header" class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../../index.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../../_static/mne_rt_logo.svg" class="logo__image only-light" alt="MNE-RT - Home"/>
+    <img src="../../_static/mne_rt_logo.svg" class="logo__image only-dark pst-js-only" alt="MNE-RT - Home"/>
+  
+  
+</a></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../install.html">
+    Installation
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../tutorial.html">
+    User Guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../api.html">
+    API Reference
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../visualization.html">
+    Visualisation
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../cli.html">
+    CLI
+  </a>
+</li>
+
+            <li class="nav-item dropdown">
+                <button class="btn dropdown-toggle nav-item" type="button"
+                data-bs-toggle="dropdown" aria-expanded="false"
+                aria-controls="pst-nav-more-links">
+                    More
+                </button>
+                <ul id="pst-nav-more-links" class="dropdown-menu">
+                    
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../../denoising.html">
+    Artifact Correction
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../../modalities.html">
+    Real-time Feature Modalities
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../../protocols.html">
+    NF Protocols
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../../whats_new.html">
+    What’s new
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../../auto_examples/index.html">
+    Examples Gallery
+  </a>
+</li>
+
+                </ul>
+            </li>
+            
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+        </div>
+      
+      
+        <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/payamsash/mne-rt" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-square-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
+        </li>
+</ul></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+    </div>
+  
+
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+        
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar hide-on-wide">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../install.html">
+    Installation
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../tutorial.html">
+    User Guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../api.html">
+    API Reference
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../visualization.html">
+    Visualisation
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../cli.html">
+    CLI
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../denoising.html">
+    Artifact Correction
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../modalities.html">
+    Real-time Feature Modalities
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../protocols.html">
+    NF Protocols
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../whats_new.html">
+    What’s new
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../auto_examples/index.html">
+    Examples Gallery
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/payamsash/mne-rt" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-square-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
+        </li>
+</ul></div>
+        
+      </div>
+    
+  </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    
+    <li class="breadcrumb-item"><a href="../index.html" class="nav-link">Module code</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">mne_rt.lsl_output</span></li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <h1>Source code for mne_rt.lsl_output</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;LSL stream outlet for broadcasting real-time feature values.</span>
+
+<span class="sd">:class:`LSLSender` creates a Lab Streaming Layer (LSL) outlet that pushes</span>
+<span class="sd">computed feature values as a float-channel stream.  Any LSL-aware application</span>
+<span class="sd">(Psychtoolbox, PsychoPy, OpenViBE, BCI2000, another MNE-RT instance, …) can</span>
+<span class="sd">subscribe to this stream and use the values for stimulus control or</span>
+<span class="sd">further analysis.</span>
+
+<span class="sd">This is faster and more reliable than OSC for same-machine communication</span>
+<span class="sd">because it uses shared memory / localhost TCP rather than UDP, and LSL</span>
+<span class="sd">handles timestamping, buffering, and clock synchronisation automatically.</span>
+
+<span class="sd">Use :class:`~mne_rt.osc.OSCSender` instead when the feedback application runs</span>
+<span class="sd">on a *different machine* and supports OSC but not LSL.</span>
+
+<span class="sd">Classes</span>
+<span class="sd">-------</span>
+<span class="sd">LSLSender</span>
+<span class="sd">    Thread-safe LSL outlet that pushes NF values to downstream subscribers.</span>
+
+<span class="sd">Examples</span>
+<span class="sd">--------</span>
+<span class="sd">Send alpha power into an LSL stream named ``&quot;ANT_NF&quot;``::</span>
+
+<span class="sd">    sender = LSLSender(stream_name=&quot;ANT_NF&quot;, n_channels=1)</span>
+<span class="sd">    sender.push([&quot;sensor_power&quot;], [0.42])</span>
+<span class="sd">    sender.close()</span>
+
+<span class="sd">Pass to :meth:`~mne_rt.RTStream.record_main` alongside (or instead of) OSC::</span>
+
+<span class="sd">    nf.record_main(duration=300, modality=&quot;sensor_power&quot;,</span>
+<span class="sd">                   lsl_sender=LSLSender())</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">threading</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Sequence</span>
+
+
+<div class="viewcode-block" id="LSLSender">
+<a class="viewcode-back" href="../../generated/mne_rt.LSLSender.html#mne_rt.LSLSender">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">LSLSender</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Thread-safe LSL outlet that broadcasts NF feature values.</span>
+
+<span class="sd">    Creates a single-source LSL stream with ``n_channels`` float32 channels</span>
+<span class="sd">    (one per active NF modality).  Channel labels are set from the modality</span>
+<span class="sd">    names on the first :meth:`push` call.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    stream_name : str, default &quot;ANT_NF&quot;</span>
+<span class="sd">        LSL stream name visible to subscribers.</span>
+<span class="sd">    stream_type : str, default &quot;NF&quot;</span>
+<span class="sd">        LSL content type (arbitrary string; &quot;NF&quot; is ANT convention).</span>
+<span class="sd">    n_channels : int, default 8</span>
+<span class="sd">        Maximum number of channels in the outlet.  If fewer modalities are</span>
+<span class="sd">        active, unused channels are filled with ``0.0``.  You can leave</span>
+<span class="sd">        this at the default and the outlet will resize automatically on</span>
+<span class="sd">        first push if needed.</span>
+<span class="sd">    srate : float, default 0.0</span>
+<span class="sd">        Nominal sample rate in Hz.  ``0.0`` marks the stream as irregular</span>
+<span class="sd">        (i.e. one sample per NF window, not a fixed rate).</span>
+<span class="sd">    source_id : str, default &quot;ant_nf_outlet&quot;</span>
+<span class="sd">        Unique source identifier embedded in the stream info.</span>
+
+<span class="sd">    Raises</span>
+<span class="sd">    ------</span>
+<span class="sd">    ImportError</span>
+<span class="sd">        If neither ``mne_lsl`` nor ``pylsl`` is installed.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    Basic usage::</span>
+
+<span class="sd">        sender = LSLSender(stream_name=&quot;ANT_NF&quot;)</span>
+<span class="sd">        sender.push([&quot;sensor_power&quot;, &quot;erd_ers&quot;], [0.42, -1.2])</span>
+<span class="sd">        sender.close()</span>
+
+<span class="sd">    Context-manager usage::</span>
+
+<span class="sd">        with LSLSender() as sender:</span>
+<span class="sd">            for value in nf_stream:</span>
+<span class="sd">                sender.push([&quot;sensor_power&quot;], [value])</span>
+
+<span class="sd">    .. versionadded:: 1.0.0</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="LSLSender.__init__">
+<a class="viewcode-back" href="../../generated/mne_rt.LSLSender.html#mne_rt.LSLSender.__init__">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">stream_name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;ANT_NF&quot;</span><span class="p">,</span>
+        <span class="n">stream_type</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;NF&quot;</span><span class="p">,</span>
+        <span class="n">n_channels</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">8</span><span class="p">,</span>
+        <span class="n">srate</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.0</span><span class="p">,</span>
+        <span class="n">source_id</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;ant_nf_outlet&quot;</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_StreamInfo</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_StreamOutlet</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_import_lsl</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">stream_name</span> <span class="o">=</span> <span class="n">stream_name</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">stream_type</span> <span class="o">=</span> <span class="n">stream_type</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">srate</span> <span class="o">=</span> <span class="n">srate</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">source_id</span> <span class="o">=</span> <span class="n">source_id</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_n_channels</span> <span class="o">=</span> <span class="n">n_channels</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_outlet</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_channel_labels</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_lock</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">Lock</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_outlet</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_make_outlet</span><span class="p">(</span><span class="n">n_channels</span><span class="p">)</span></div>
+
+
+    <span class="c1"># ------------------------------------------------------------------</span>
+    <span class="c1"># Internal helpers</span>
+    <span class="c1"># ------------------------------------------------------------------</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_import_lsl</span><span class="p">():</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return (StreamInfo, StreamOutlet) from whichever LSL binding is available.&quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="kn">from</span><span class="w"> </span><span class="nn">mne_lsl.lsl</span><span class="w"> </span><span class="kn">import</span> <span class="n">StreamInfo</span><span class="p">,</span> <span class="n">StreamOutlet</span>
+
+            <span class="k">return</span> <span class="n">StreamInfo</span><span class="p">,</span> <span class="n">StreamOutlet</span>
+        <span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
+            <span class="k">pass</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="kn">from</span><span class="w"> </span><span class="nn">pylsl</span><span class="w"> </span><span class="kn">import</span> <span class="n">StreamInfo</span><span class="p">,</span> <span class="n">StreamOutlet</span>  <span class="c1"># type: ignore[no-redef]</span>
+
+            <span class="k">return</span> <span class="n">StreamInfo</span><span class="p">,</span> <span class="n">StreamOutlet</span>
+        <span class="k">except</span> <span class="ne">ImportError</span> <span class="k">as</span> <span class="n">exc</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ImportError</span><span class="p">(</span>
+                <span class="s2">&quot;LSLSender requires mne_lsl or pylsl.</span><span class="se">\n</span><span class="s2">&quot;</span>
+                <span class="s2">&quot;Install ANT with its standard dependencies:  pip install ANT</span><span class="se">\n</span><span class="s2">&quot;</span>
+                <span class="s2">&quot;mne_lsl is a core dependency and should already be present.&quot;</span>
+            <span class="p">)</span> <span class="kn">from</span><span class="w"> </span><span class="nn">exc</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_make_outlet</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">n_channels</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
+        <span class="n">info</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_StreamInfo</span><span class="p">(</span>
+            <span class="n">name</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">stream_name</span><span class="p">,</span>
+            <span class="n">stype</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">stream_type</span><span class="p">,</span>
+            <span class="n">n_channels</span><span class="o">=</span><span class="n">n_channels</span><span class="p">,</span>
+            <span class="n">sfreq</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">srate</span><span class="p">,</span>
+            <span class="n">dtype</span><span class="o">=</span><span class="s2">&quot;float32&quot;</span><span class="p">,</span>
+            <span class="n">source_id</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">source_id</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_StreamOutlet</span><span class="p">(</span><span class="n">info</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_ensure_channels</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">n</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Recreate the outlet if the channel count needs to grow.&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">n</span> <span class="o">&lt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_n_channels</span><span class="p">:</span>
+            <span class="k">return</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_outlet</span><span class="o">.</span><span class="n">close</span><span class="p">()</span> <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_outlet</span><span class="p">,</span> <span class="s2">&quot;close&quot;</span><span class="p">)</span> <span class="k">else</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_n_channels</span> <span class="o">=</span> <span class="n">n</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_outlet</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_make_outlet</span><span class="p">(</span><span class="n">n</span><span class="p">)</span>
+
+    <span class="c1"># ------------------------------------------------------------------</span>
+    <span class="c1"># Public interface</span>
+    <span class="c1"># ------------------------------------------------------------------</span>
+
+<div class="viewcode-block" id="LSLSender.push">
+<a class="viewcode-back" href="../../generated/mne_rt.LSLSender.html#mne_rt.LSLSender.push">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">push</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">modalities</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
+        <span class="n">values</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">float</span><span class="p">],</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Push one NF sample into the LSL outlet.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        modalities : sequence of str</span>
+<span class="sd">            Active modality names (used to set channel labels on first call).</span>
+<span class="sd">        values : sequence of float</span>
+<span class="sd">            Corresponding NF feature values, same length as *modalities*.</span>
+
+<span class="sd">        Raises</span>
+<span class="sd">        ------</span>
+<span class="sd">        ValueError</span>
+<span class="sd">            If ``modalities`` and ``values`` have different lengths.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">modalities</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="n">values</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;modalities and values must have the same length; &quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;got </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">modalities</span><span class="p">)</span><span class="si">}</span><span class="s2"> and </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">values</span><span class="p">)</span><span class="si">}</span><span class="s2">.&quot;</span>
+            <span class="p">)</span>
+
+        <span class="n">n</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">values</span><span class="p">)</span>
+        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">_lock</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_ensure_channels</span><span class="p">(</span><span class="n">n</span><span class="p">)</span>
+            <span class="c1"># Pad with zeros if outlet has more channels than active modalities</span>
+            <span class="n">sample</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">values</span><span class="p">)</span> <span class="o">+</span> <span class="p">[</span><span class="mf">0.0</span><span class="p">]</span> <span class="o">*</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_n_channels</span> <span class="o">-</span> <span class="n">n</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_outlet</span><span class="o">.</span><span class="n">push_sample</span><span class="p">(</span><span class="n">sample</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_channel_labels</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">modalities</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="LSLSender.push_value">
+<a class="viewcode-back" href="../../generated/mne_rt.LSLSender.html#mne_rt.LSLSender.push_value">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">push_value</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">modality</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Push a single-channel NF value.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        modality : str</span>
+<span class="sd">            Modality name.</span>
+<span class="sd">        value : float</span>
+<span class="sd">            NF feature value.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">push</span><span class="p">([</span><span class="n">modality</span><span class="p">],</span> <span class="p">[</span><span class="n">value</span><span class="p">])</span></div>
+
+
+<div class="viewcode-block" id="LSLSender.close">
+<a class="viewcode-back" href="../../generated/mne_rt.LSLSender.html#mne_rt.LSLSender.close">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">close</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Destroy the LSL outlet and release resources.</span>
+
+<span class="sd">        After calling this the sender should not be used again.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">_lock</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_outlet</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_outlet</span><span class="p">,</span> <span class="s2">&quot;close&quot;</span><span class="p">):</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">_outlet</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+                    <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">_outlet</span>
+                <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+                    <span class="k">pass</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_outlet</span> <span class="o">=</span> <span class="kc">None</span></div>
+
+
+    <span class="c1"># ------------------------------------------------------------------</span>
+    <span class="c1"># Properties</span>
+    <span class="c1"># ------------------------------------------------------------------</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">n_channels</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Current number of channels in the LSL outlet.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_n_channels</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">channel_labels</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Modality names from the most recent :meth:`push` call.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_channel_labels</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="k">return</span> <span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;LSLSender(stream_name=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">stream_name</span><span class="si">!r}</span><span class="s2">, &quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;n_channels=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_n_channels</span><span class="si">}</span><span class="s2">, &quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;active=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_outlet</span><span class="w"> </span><span class="ow">is</span><span class="w"> </span><span class="ow">not</span><span class="w"> </span><span class="kc">None</span><span class="si">}</span><span class="s2">)&quot;</span>
+        <span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__enter__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;LSLSender&quot;</span><span class="p">:</span>
+        <span class="k">return</span> <span class="bp">self</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__exit__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">_</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">close</span><span class="p">()</span></div>
+
+</pre></div>
+
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../../_static/scripts/bootstrap.js?digest=90905a2f556bf617f1a9"></script>
+<script defer src="../../_static/scripts/pydata-sphinx-theme.js?digest=90905a2f556bf617f1a9"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright 2025, Payam S. Shabestari.
+      <br/>
+    
+  </p>
+</div>
+      
+        <div class="footer-item">
+
+  <p class="sphinx-version">
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 9.0.4.
+    <br/>
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
+<p class="theme-version">
+  <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.20.0.
+</p></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>

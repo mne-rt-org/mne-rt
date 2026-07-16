@@ -1,0 +1,1049 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="./" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>User Guide &#8212; MNE-RT</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="_static/styles/theme.css?digest=90905a2f556bf617f1a9" rel="stylesheet" />
+<link href="_static/styles/pydata-sphinx-theme.css?digest=90905a2f556bf617f1a9" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="_static/sg_gallery.css?v=fd6457a4" />
+    <link rel="stylesheet" type="text/css" href="_static/sg_gallery-binder.css?v=f4aeca0c" />
+    <link rel="stylesheet" type="text/css" href="_static/sg_gallery-dataframe.css?v=2082cf3c" />
+    <link rel="stylesheet" type="text/css" href="_static/sg_gallery-rendered-html.css?v=1277b6f3" />
+    <link rel="stylesheet" type="text/css" href="_static/custom.css?v=5bf657dd" />
+  
+  <!-- So that users can add custom icons -->
+  <script defer src="_static/scripts/fontawesome.js?digest=90905a2f556bf617f1a9"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="_static/scripts/bootstrap.js?digest=90905a2f556bf617f1a9" />
+<link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=90905a2f556bf617f1a9" />
+
+    <script src="_static/documentation_options.js?v=8d563738"></script>
+    <script src="_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="_static/sg-tags.js?v=d80f6fa4"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'tutorial';</script>
+    <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="API Reference" href="api.html" />
+    <link rel="prev" title="Installation" href="install.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="" />
+  
+    
+    <script src="_static/searchtools.js"></script>
+    <script src="_static/language_data.js"></script>
+    <script src="searchindex.js"></script>
+  
+  </head>
+  <body data-default-mode="">
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+  
+  
+  
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header id="pst-header" class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="index.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="_static/mne_rt_logo.svg" class="logo__image only-light" alt="MNE-RT - Home"/>
+    <img src="_static/mne_rt_logo.svg" class="logo__image only-dark pst-js-only" alt="MNE-RT - Home"/>
+  
+  
+</a></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="install.html">
+    Installation
+  </a>
+</li>
+
+
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="#">
+    User Guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="api.html">
+    API Reference
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="visualization.html">
+    Visualisation
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="cli.html">
+    CLI
+  </a>
+</li>
+
+            <li class="nav-item dropdown">
+                <button class="btn dropdown-toggle nav-item" type="button"
+                data-bs-toggle="dropdown" aria-expanded="false"
+                aria-controls="pst-nav-more-links">
+                    More
+                </button>
+                <ul id="pst-nav-more-links" class="dropdown-menu">
+                    
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="denoising.html">
+    Artifact Correction
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="modalities.html">
+    Real-time Feature Modalities
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="protocols.html">
+    NF Protocols
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="whats_new.html">
+    What’s new
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="auto_examples/index.html">
+    Examples Gallery
+  </a>
+</li>
+
+                </ul>
+            </li>
+            
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+        </div>
+      
+      
+        <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/payamsash/mne-rt" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-square-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
+        </li>
+</ul></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+    </div>
+  
+
+  
+    <button class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="On this page">
+      <span class="fa-solid fa-outdent"></span>
+    </button>
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="install.html">
+    Installation
+  </a>
+</li>
+
+
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="#">
+    User Guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="api.html">
+    API Reference
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="visualization.html">
+    Visualisation
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="cli.html">
+    CLI
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="denoising.html">
+    Artifact Correction
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="modalities.html">
+    Real-time Feature Modalities
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="protocols.html">
+    NF Protocols
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="whats_new.html">
+    What’s new
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="auto_examples/index.html">
+    Examples Gallery
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/payamsash/mne-rt" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-square-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
+        </li>
+</ul></div>
+        
+      </div>
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+
+<nav class="bd-docs-nav bd-links"
+     aria-label="Section Navigation">
+  <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
+  <div class="bd-toc-item navbar-nav"></div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">User Guide</span></li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section id="user-guide">
+<span id="tutorial"></span><h1>User Guide<a class="headerlink" href="#user-guide" title="Link to this heading">#</a></h1>
+<p>This page introduces the core concepts behind real-time M/EEG processing
+and explains how MNE-RT maps those concepts onto a concrete session workflow.
+No prior BCI or neurofeedback experience is required.</p>
+<nav class="contents local" id="contents">
+<ul class="simple">
+<li><p><a class="reference internal" href="#real-time-m-eeg-processing" id="id1">Real-time M/EEG processing</a></p></li>
+<li><p><a class="reference internal" href="#mne-rt-session-workflow" id="id2">MNE-RT Session Workflow</a></p></li>
+<li><p><a class="reference internal" href="#closed-loop-architecture" id="id3">Closed-Loop Architecture</a></p></li>
+<li><p><a class="reference internal" href="#key-concepts" id="id4">Key Concepts</a></p>
+<ul>
+<li><p><a class="reference internal" href="#feature-modality" id="id5">Feature Modality</a></p></li>
+<li><p><a class="reference internal" href="#feedback-protocol" id="id6">Feedback Protocol</a></p></li>
+<li><p><a class="reference internal" href="#feature-combiner" id="id7">Feature Combiner</a></p></li>
+<li><p><a class="reference internal" href="#analysis-window" id="id8">Analysis Window</a></p></li>
+</ul>
+</li>
+<li><p><a class="reference internal" href="#step-by-step-first-session" id="id9">Step-by-Step: First Session</a></p></li>
+<li><p><a class="reference internal" href="#multi-session-protocols" id="id10">Multi-Session Protocols</a></p></li>
+<li><p><a class="reference internal" href="#choosing-a-modality-and-protocol" id="id11">Choosing a Modality and Protocol</a></p></li>
+<li><p><a class="reference internal" href="#quality-monitoring" id="id12">Quality Monitoring</a></p></li>
+<li><p><a class="reference internal" href="#further-reading" id="id13">Further Reading</a></p></li>
+</ul>
+</nav>
+<hr class="docutils" />
+<section id="real-time-m-eeg-processing">
+<h2><a class="toc-backref" href="#id1" role="doc-backlink">Real-time M/EEG processing</a><a class="headerlink" href="#real-time-m-eeg-processing" title="Link to this heading">#</a></h2>
+<p>Real-time M/EEG processing refers to any pipeline that acquires brain signals,
+extracts features <em>as fast as the data arrives</em>, and delivers results — feedback,
+monitoring outputs, or triggers — within a latency budget of milliseconds to
+seconds.  MNE-RT covers the full range: continuous neurofeedback, event-related
+ERP/TFR analysis, BCI decoding, and passive brain monitoring.</p>
+<div style="overflow-x:auto; margin:20px 0;">
+<table style="border-collapse:separate; border-spacing:0; width:100%;
+       font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+       font-size:13px; background:#f8fafc; border-radius:12px;
+       box-shadow:0 1px 4px rgba(0,0,0,.08);">
+<tr>
+  <td style="padding:20px 24px; border-right:1px solid #e2e8f0; width:33%;">
+    <div style="font-weight:700; color:#1e40af; margin-bottom:6px;">① Brain signal</div>
+    <div style="color:#475569;">EEG or MEG electrodes pick up cortical oscillations
+    from the scalp surface in real time.</div>
+  </td>
+  <td style="padding:20px 24px; border-right:1px solid #e2e8f0; width:33%;">
+    <div style="font-weight:700; color:#059669; margin-bottom:6px;">② Feature extraction</div>
+    <div style="color:#475569;">A signal processing pipeline distils the raw signal into
+    one number per window — e.g., alpha power, laterality, or source connectivity.</div>
+  </td>
+  <td style="padding:20px 24px; width:33%;">
+    <div style="font-weight:700; color:#d97706; margin-bottom:6px;">③ Feedback</div>
+    <div style="color:#475569;">The feature value drives a visual, auditory, or
+    haptic output signal — or is streamed for offline analysis or BCI control.</div>
+  </td>
+</tr>
+</table>
+</div>
+
+<div style="text-align:center; font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+     font-size:13px; color:#64748b; margin:8px 0 24px 0;">
+↑ The loop closes when the participant's self-regulation attempt changes the brain
+signal, which in turn changes the feedback — enabling operant conditioning of cortical activity.
+</div><p><strong>Clinical applications</strong> include ADHD (theta/beta training), chronic tinnitus
+(auditory cortex and thalamo-cortical desynchronisation), post-stroke motor
+rehabilitation (sensorimotor rhythm training), and depression (frontal alpha
+asymmetry training).</p>
+</section>
+<hr class="docutils" />
+<section id="mne-rt-session-workflow">
+<h2><a class="toc-backref" href="#id2" role="doc-backlink">MNE-RT Session Workflow</a><a class="headerlink" href="#mne-rt-session-workflow" title="Link to this heading">#</a></h2>
+<p>Every session follows the same three-phase structure:</p>
+<div style="margin:24px 0;">
+<div style="display:flex; flex-direction:column; gap:0;
+     font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif; font-size:13px; box-sizing: border-box;">
+
+<div style="display:flex; align-items:stretch; gap:0; box-sizing: border-box;">
+  <div style="background:#1e40af; color:white; font-weight:700; padding:14px 18px;
+       border-radius:10px 0 0 0; display:flex; align-items:center; width:150px; flex-shrink: 0;
+       white-space:nowrap; box-sizing: border-box;">① Acquisition</div>
+  <div style="background:#eff6ff; border:1px solid #bfdbfe; border-left:none;
+       padding:14px 18px; border-radius:0 10px 0 0; flex:1; color:#1e3a8a; box-sizing: border-box;">
+    Connect to an EEG/MEG amplifier (or mock replay) via LSL.
+    <code style="background:#dbeafe; padding:1px 5px; border-radius:4px;">RTStream.connect_to_lsl()</code>
+  </div>
+</div>
+
+<div style="display:flex; align-items:stretch; gap:0; box-sizing: border-box;">
+  <div style="background:#065f46; color:white; font-weight:700; padding:14px 18px;
+       display:flex; align-items:center; width:150px; flex-shrink: 0; white-space:nowrap; box-sizing: border-box;">② Baseline</div>
+  <div style="background:#f0fdf4; border:1px solid #bbf7d0; border-left:none;
+       border-top:none; padding:14px 18px; flex:1; color:#14532d; box-sizing: border-box;">
+    Record 2–5 min of resting-state data, automatically detects bad
+    channels, computes noise covariance, and builds the inverse operator.
+    <code style="background:#dcfce7; padding:1px 5px; border-radius:4px;">RTStream.record_baseline()</code>
+  </div>
+</div>
+
+<div style="display:flex; align-items:stretch; gap:0; box-sizing: border-box;">
+  <div style="background:#92400e; color:white; font-weight:700; padding:14px 18px;
+       border-radius:0 0 0 10px; display:flex; align-items:center; width:150px; flex-shrink: 0;
+       white-space:nowrap; box-sizing: border-box;">③ Real-time</div>
+  <div style="background:#fffbeb; border:1px solid #fde68a; border-left:none;
+       border-top:none; padding:14px 18px; border-radius:0 0 10px 0; flex:1; color:#78350f; box-sizing: border-box;">
+    Run the closed-loop feedback loop for the prescribed duration.
+    Feature values, reward signals, and quality metrics are streamed live and saved to BIDS.
+    <code style="background:#fef3c7; padding:1px 5px; border-radius:4px;">RTStream.record_main()</code>
+  </div>
+</div>
+
+</div>
+</div><p>Phase 2 (baseline) is <strong>optional for sensor-space modalities</strong> but required
+for source-space modalities (it provides the noise covariance used to build
+the inverse operator) and for ERD/ERS-based modalities (it provides the
+reference power).</p>
+</section>
+<hr class="docutils" />
+<section id="closed-loop-architecture">
+<h2><a class="toc-backref" href="#id3" role="doc-backlink">Closed-Loop Architecture</a><a class="headerlink" href="#closed-loop-architecture" title="Link to this heading">#</a></h2>
+<p>The diagram below shows how data flows inside MNE-RT during a processing window:</p>
+<a class="reference internal image-reference" href="_images/code_design.svg"><img alt="MNE-RT closed-loop architecture diagram" class="align-center" src="_images/code_design.svg" style="width: 75%;" />
+</a>
+<div class="line-block">
+<div class="line"><br /></div>
+</div>
+<p>All modality computations run in a
+<a class="reference external" href="https://docs.python.org/3/library/concurrent.futures.html#concurrent.futures.ThreadPoolExecutor" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">concurrent.futures.ThreadPoolExecutor</span></code></a>, so slow operations (e.g.
+source-space inverse) never block the feedback display.</p>
+</section>
+<hr class="docutils" />
+<section id="key-concepts">
+<h2><a class="toc-backref" href="#id4" role="doc-backlink">Key Concepts</a><a class="headerlink" href="#key-concepts" title="Link to this heading">#</a></h2>
+<section id="feature-modality">
+<h3><a class="toc-backref" href="#id5" role="doc-backlink">Feature Modality</a><a class="headerlink" href="#feature-modality" title="Link to this heading">#</a></h3>
+<p>A <strong>modality</strong> is the brain feature that is being fed back to the participant.
+MNE-RT implements 20 modalities across sensor space, connectivity, and source
+space.  You select one or more per session:</p>
+<div style="overflow-x:auto; margin:12px 0 20px 0;">
+<table style="border-collapse:collapse; width:100%;
+       font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif; font-size:13px;">
+<thead>
+  <tr>
+    <th style="background:#334155;color:white;padding:7px 14px;border-radius:8px 0 0 0;">Category</th>
+    <th style="background:#334155;color:white;padding:7px 14px;">Modalities</th>
+    <th style="background:#334155;color:white;padding:7px 14px;border-radius:0 8px 0 0;">Typical use case</th>
+  </tr>
+</thead>
+<tbody>
+  <tr style="background:#f8fafc;">
+    <td style="padding:6px 14px;border:1px solid #e2e8f0;font-weight:600;">Sensor power</td>
+    <td style="padding:6px 14px;border:1px solid #e2e8f0;font-family:monospace;font-size:12px;">sensor_power · band_ratio · erd_ers · laterality · laterality_erd_ers</td>
+    <td style="padding:6px 14px;border:1px solid #e2e8f0;">Alpha, SMR, or theta training; motor imagery</td>
+  </tr>
+  <tr style="background:#f1f5f9;">
+    <td style="padding:6px 14px;border:1px solid #e2e8f0;font-weight:600;">Time-domain</td>
+    <td style="padding:6px 14px;border:1px solid #e2e8f0;font-family:monospace;font-size:12px;">hjorth · entropy · scp · instantaneous_phase</td>
+    <td style="padding:6px 14px;border:1px solid #e2e8f0;">SCP biofeedback; phase-triggered stimulation</td>
+  </tr>
+  <tr style="background:#f8fafc;">
+    <td style="padding:6px 14px;border:1px solid #e2e8f0;font-weight:600;">Spectral peak</td>
+    <td style="padding:6px 14px;border:1px solid #e2e8f0;font-family:monospace;font-size:12px;">spectral_centroid · argmax_freq · peak_alpha_freq</td>
+    <td style="padding:6px 14px;border:1px solid #e2e8f0;">Individual alpha frequency tracking</td>
+  </tr>
+  <tr style="background:#f1f5f9;">
+    <td style="padding:6px 14px;border:1px solid #e2e8f0;font-weight:600;">Connectivity</td>
+    <td style="padding:6px 14px;border:1px solid #e2e8f0;font-family:monospace;font-size:12px;">sensor_connectivity · connectivity_ratio · cfc_sensor · sensor_graph</td>
+    <td style="padding:6px 14px;border:1px solid #e2e8f0;">Inter-hemispheric or thalamocortical coupling</td>
+  </tr>
+  <tr style="background:#f8fafc;">
+    <td style="padding:6px 14px;border:1px solid #e2e8f0;font-weight:600;">Source space</td>
+    <td style="padding:6px 14px;border:1px solid #e2e8f0;font-family:monospace;font-size:12px;">source_power · source_connectivity · source_graph</td>
+    <td style="padding:6px 14px;border:1px solid #e2e8f0;">Region-specific analysis; tinnitus, depression</td>
+  </tr>
+</tbody>
+</table>
+</div><p>See <a class="reference internal" href="modalities.html"><span class="doc">Real-time Feature Modalities</span></a> for the mathematical definition of each.</p>
+</section>
+<section id="feedback-protocol">
+<h3><a class="toc-backref" href="#id6" role="doc-backlink">Feedback Protocol</a><a class="headerlink" href="#feedback-protocol" title="Link to this heading">#</a></h3>
+<p>A <strong>protocol</strong> decides <em>when</em> to deliver a reward and <em>how much</em>.  It sits
+between the raw modality value and the feedback display.  MNE-RT ships ten
+protocols:</p>
+<pre style="background:#1e293b; color:#e2e8f0; padding:16px 20px;
+     border-radius:10px; font-size:12px; line-height:1.8; overflow-x:auto;
+     font-family:'JetBrains Mono','Fira Code','Courier New',monospace;">
+feature value  ──▶  Protocol  ──▶  (crossed: bool, magnitude: float)
+                 │
+                 ├── ThresholdProtocol   fixed or slowly-adapting threshold
+                 ├── ZScoreProtocol      running z-score; self-calibrating
+                 ├── PercentileProtocol  tracks own rolling distribution
+                 ├── LinearTrendProtocol rewards sustained directional change
+                 ├── RLProtocol          ε-greedy; finds threshold automatically
+                 ├── TransferProtocol    seeded from a prior session file
+                 ├── OperantProtocol     FR / VR / FI / VI reward schedules
+                 ├── ShamProtocol        double-blind sham wrapper
+                 ├── UpDownStaircaseProtocol  converges to target success rate
+                 └── MultiBandProtocol   two-band AND / OR logic
+</pre><p>See <a class="reference internal" href="protocols.html"><span class="doc">NF Protocols</span></a> for formulas and selection guidance.</p>
+</section>
+<section id="feature-combiner">
+<h3><a class="toc-backref" href="#id7" role="doc-backlink">Feature Combiner</a><a class="headerlink" href="#feature-combiner" title="Link to this heading">#</a></h3>
+<p>A <strong>feature combiner</strong> reduces N parallel feature values to a single mixed
+score.  This is useful when several modalities capture complementary aspects of
+the brain state and you want one unified number for the protocol and display.
+MNE-RT provides four combiners in <code class="xref py py-mod docutils literal notranslate"><span class="pre">mne_rt.combiners</span></code>:</p>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 30.0%" />
+<col style="width: 70.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Class</p></th>
+<th class="head"><p>Strategy</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/mne_rt.combiners.WeightedSumCombiner.html#mne_rt.combiners.WeightedSumCombiner" title="mne_rt.combiners.WeightedSumCombiner"><code class="xref py py-class docutils literal notranslate"><span class="pre">WeightedSumCombiner</span></code></a></p></td>
+<td><p>Normalised weighted sum <code class="docutils literal notranslate"><span class="pre">Σ(wᵢ·xᵢ)/Σ(wᵢ)</span></code>.  Intuitive, interpretable.
+Negative weights allowed (e.g. subtract theta from alpha).</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/mne_rt.combiners.GeometricMeanCombiner.html#mne_rt.combiners.GeometricMeanCombiner" title="mne_rt.combiners.GeometricMeanCombiner"><code class="xref py py-class docutils literal notranslate"><span class="pre">GeometricMeanCombiner</span></code></a></p></td>
+<td><p>Weighted geometric mean <code class="docutils literal notranslate"><span class="pre">exp(Σ</span> <span class="pre">wᵢ·log(xᵢ)/Σwᵢ)</span></code>.  Best for positive
+ratio or power features whose effects are multiplicative.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/mne_rt.combiners.ZScoredNormCombiner.html#mne_rt.combiners.ZScoredNormCombiner" title="mne_rt.combiners.ZScoredNormCombiner"><code class="xref py py-class docutils literal notranslate"><span class="pre">ZScoredNormCombiner</span></code></a></p></td>
+<td><p>Z-score each feature against a warmup baseline, then take the Euclidean
+norm divided by <code class="docutils literal notranslate"><span class="pre">√n</span></code>.  Returns a unit-free “deviation from baseline”
+score regardless of feature units or dynamic range.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/mne_rt.combiners.LearnedCombiner.html#mne_rt.combiners.LearnedCombiner" title="mne_rt.combiners.LearnedCombiner"><code class="xref py py-class docutils literal notranslate"><span class="pre">LearnedCombiner</span></code></a></p></td>
+<td><p>Pass the feature vector to any fitted <code class="docutils literal notranslate"><span class="pre">sklearn</span></code>-compatible estimator
+(e.g. <code class="docutils literal notranslate"><span class="pre">Ridge</span></code>, <code class="docutils literal notranslate"><span class="pre">PLSRegression</span></code>).  Requires an offline calibration
+step but can capture non-linear feature interactions.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>Example — blend alpha power and interhemispheric laterality:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">mne_rt.combiners</span><span class="w"> </span><span class="kn">import</span> <span class="n">WeightedSumCombiner</span>
+
+<span class="n">combiner</span> <span class="o">=</span> <span class="n">WeightedSumCombiner</span><span class="p">(</span>
+    <span class="n">weights</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;sensor_power&quot;</span><span class="p">:</span> <span class="mf">0.6</span><span class="p">,</span> <span class="s2">&quot;laterality&quot;</span><span class="p">:</span> <span class="mf">0.4</span><span class="p">}</span>
+<span class="p">)</span>
+<span class="c1"># Call once per window inside your analysis loop:</span>
+<span class="n">mixed</span> <span class="o">=</span> <span class="n">combiner</span><span class="o">.</span><span class="n">combine</span><span class="p">({</span><span class="s2">&quot;sensor_power&quot;</span><span class="p">:</span> <span class="mf">1.5</span><span class="p">,</span> <span class="s2">&quot;laterality&quot;</span><span class="p">:</span> <span class="mf">0.3</span><span class="p">})</span>
+</pre></div>
+</div>
+</section>
+<section id="analysis-window">
+<h3><a class="toc-backref" href="#id8" role="doc-backlink">Analysis Window</a><a class="headerlink" href="#analysis-window" title="Link to this heading">#</a></h3>
+<p>The <strong>analysis window</strong> (<code class="docutils literal notranslate"><span class="pre">winsize</span></code>) is the length of the EEG/MEG segment
+used to compute each feature value.  Shorter windows give more frequent updates
+(lower latency) but noisier estimates; longer windows give more stable estimates
+at the cost of update frequency.</p>
+<div style="overflow-x:auto; margin:12px 0 20px 0;">
+<table style="border-collapse:collapse; font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif; font-size:13px;">
+<thead>
+  <tr>
+    <th style="background:#334155;color:white;padding:6px 14px;">Window size</th>
+    <th style="background:#334155;color:white;padding:6px 14px;">Update rate</th>
+    <th style="background:#334155;color:white;padding:6px 14px;">Best for</th>
+  </tr>
+</thead>
+<tbody>
+  <tr style="background:#f8fafc;"><td style="padding:5px 14px;border:1px solid #e2e8f0;">0.5 s</td><td style="padding:5px 14px;border:1px solid #e2e8f0;">2 Hz</td><td style="padding:5px 14px;border:1px solid #e2e8f0;">Fast motor-imagery, SCP, instantaneous phase</td></tr>
+  <tr style="background:#f1f5f9;"><td style="padding:5px 14px;border:1px solid #e2e8f0;">1.0 s</td><td style="padding:5px 14px;border:1px solid #e2e8f0;">1 Hz</td><td style="padding:5px 14px;border:1px solid #e2e8f0;">Standard alpha / SMR training <em>(recommended default)</em></td></tr>
+  <tr style="background:#f8fafc;"><td style="padding:5px 14px;border:1px solid #e2e8f0;">2.0 s</td><td style="padding:5px 14px;border:1px solid #e2e8f0;">0.5 Hz</td><td style="padding:5px 14px;border:1px solid #e2e8f0;">Source space, connectivity (needs longer segment for stable PSD)</td></tr>
+  <tr style="background:#f1f5f9;"><td style="padding:5px 14px;border:1px solid #e2e8f0;">4.0 s</td><td style="padding:5px 14px;border:1px solid #e2e8f0;">0.25 Hz</td><td style="padding:5px 14px;border:1px solid #e2e8f0;">Low-frequency bands (delta, theta); graph learning</td></tr>
+</tbody>
+</table>
+</div></section>
+</section>
+<hr class="docutils" />
+<section id="step-by-step-first-session">
+<h2><a class="toc-backref" href="#id9" role="doc-backlink">Step-by-Step: First Session</a><a class="headerlink" href="#step-by-step-first-session" title="Link to this heading">#</a></h2>
+<p><strong>Step 1 — Install MNE-RT</strong></p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip<span class="w"> </span>install<span class="w"> </span><span class="s2">&quot;mne-rt[full]&quot;</span>
+</pre></div>
+</div>
+<p><strong>Step 2 — Run the demo (no hardware needed)</strong></p>
+<p>The demo streams simulated EEG internally and runs a full real-time session with
+live topo display:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>mne-rt<span class="w"> </span>demo<span class="w"> </span>--duration<span class="w"> </span><span class="m">60</span><span class="w"> </span>--modality<span class="w"> </span>sensor_power<span class="w"> </span>erd_ers
+</pre></div>
+</div>
+<p><strong>Step 3 — Record a baseline</strong></p>
+<p>Connect your amplifier, then record a 2-minute resting-state baseline.
+MNE-RT detects bad channels, computes ICA, and saves a noise covariance file:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>mne-rt<span class="w"> </span>baseline<span class="w"> </span>--subject<span class="w"> </span>sub01<span class="w"> </span>--subjects-dir<span class="w"> </span>/data/subjects
+</pre></div>
+</div>
+<p>Or in Python:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">mne_rt</span><span class="w"> </span><span class="kn">import</span> <span class="n">RTStream</span>
+
+<span class="n">nf</span> <span class="o">=</span> <span class="n">RTStream</span><span class="p">(</span>
+    <span class="n">subject_id</span><span class="o">=</span><span class="s2">&quot;sub01&quot;</span><span class="p">,</span>
+    <span class="n">session</span><span class="o">=</span><span class="s2">&quot;01&quot;</span><span class="p">,</span>
+    <span class="n">subjects_dir</span><span class="o">=</span><span class="s2">&quot;/data/subjects&quot;</span><span class="p">,</span>
+    <span class="n">montage</span><span class="o">=</span><span class="s2">&quot;easycap-M1&quot;</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="n">nf</span><span class="o">.</span><span class="n">connect_to_lsl</span><span class="p">()</span>          <span class="c1"># connects to live amplifier</span>
+<span class="n">nf</span><span class="o">.</span><span class="n">record_baseline</span><span class="p">(</span><span class="n">duration</span><span class="o">=</span><span class="mi">120</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><strong>Step 4 — Run the real-time session</strong></p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">mne_rt.protocols</span><span class="w"> </span><span class="kn">import</span> <span class="n">ZScoreProtocol</span>
+
+<span class="n">proto</span> <span class="o">=</span> <span class="n">ZScoreProtocol</span><span class="p">(</span><span class="n">direction</span><span class="o">=</span><span class="s2">&quot;up&quot;</span><span class="p">,</span> <span class="n">zscore_threshold</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">warmup_windows</span><span class="o">=</span><span class="mi">20</span><span class="p">)</span>
+
+<span class="n">nf</span><span class="o">.</span><span class="n">record_main</span><span class="p">(</span>
+    <span class="n">duration</span><span class="o">=</span><span class="mi">600</span><span class="p">,</span>                       <span class="c1"># 10 minutes</span>
+    <span class="n">modality</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;sensor_power&quot;</span><span class="p">],</span>          <span class="c1"># alpha power</span>
+    <span class="n">protocol</span><span class="o">=</span><span class="n">proto</span><span class="p">,</span>
+    <span class="n">show_nf_signal</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="n">show_topo</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="n">track_artifact_rate</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>           <span class="c1"># flag windows with artefacts</span>
+    <span class="n">track_snr</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>                     <span class="c1"># per-window SNR log</span>
+<span class="p">)</span>
+<span class="n">nf</span><span class="o">.</span><span class="n">save</span><span class="p">()</span>                               <span class="c1"># writes BIDS-compatible output</span>
+</pre></div>
+</div>
+<p>With <code class="docutils literal notranslate"><span class="pre">show_nf_signal=True</span></code>, the protocol’s current threshold — fixed for
+<a class="reference internal" href="generated/mne_rt.protocols.ThresholdProtocol.html#mne_rt.protocols.ThresholdProtocol" title="mne_rt.protocols.ThresholdProtocol"><code class="xref py py-class docutils literal notranslate"><span class="pre">ThresholdProtocol</span></code></a>, or converted from the z-score
+boundary here since <code class="docutils literal notranslate"><span class="pre">proto</span></code> is a <a class="reference internal" href="generated/mne_rt.protocols.ZScoreProtocol.html#mne_rt.protocols.ZScoreProtocol" title="mne_rt.protocols.ZScoreProtocol"><code class="xref py py-class docutils literal notranslate"><span class="pre">ZScoreProtocol</span></code></a>
+— is drawn live as a dashed line on the NFPlot trace, so the participant
+(or operator) can see exactly where the reward boundary sits at every moment.</p>
+<p><strong>Step 5 — Inspect results</strong></p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">json</span>
+<span class="n">data</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="nb">open</span><span class="p">(</span><span class="s2">&quot;sub-sub01_ses-01_task-nf_beh.json&quot;</span><span class="p">))</span>
+<span class="n">nf_values</span>  <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;data&quot;</span><span class="p">][</span><span class="s2">&quot;sensor_power&quot;</span><span class="p">]</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Mean alpha power : </span><span class="si">{</span><span class="nb">sum</span><span class="p">(</span><span class="n">nf_values</span><span class="p">)</span><span class="o">/</span><span class="nb">len</span><span class="p">(</span><span class="n">nf_values</span><span class="p">)</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Artifact rate    : </span><span class="si">{</span><span class="n">nf</span><span class="o">.</span><span class="n">artifact_rate</span><span class="si">:</span><span class="s2">.1%</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<hr class="docutils" />
+<section id="multi-session-protocols">
+<h2><a class="toc-backref" href="#id10" role="doc-backlink">Multi-Session Protocols</a><a class="headerlink" href="#multi-session-protocols" title="Link to this heading">#</a></h2>
+<p>For longitudinal training studies, MNE-RT provides two patterns:</p>
+<p><strong>Multi-block session</strong> — run several recording blocks with rest periods in between,
+all within one Python call:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">nf</span><span class="o">.</span><span class="n">run_blocks</span><span class="p">(</span>
+    <span class="n">blocks</span><span class="o">=</span><span class="p">[</span>
+        <span class="p">{</span><span class="s2">&quot;duration&quot;</span><span class="p">:</span> <span class="mi">300</span><span class="p">,</span> <span class="s2">&quot;modality&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;sensor_power&quot;</span><span class="p">]},</span>
+        <span class="p">{</span><span class="s2">&quot;duration&quot;</span><span class="p">:</span> <span class="mi">300</span><span class="p">,</span> <span class="s2">&quot;modality&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;sensor_power&quot;</span><span class="p">]},</span>
+    <span class="p">],</span>
+    <span class="n">rest_duration</span><span class="o">=</span><span class="mi">60</span><span class="p">,</span>           <span class="c1"># 60 s rest between blocks</span>
+<span class="p">)</span>
+<span class="c1"># Results per block: nf.block_nf_data, nf.block_artifact_rates</span>
+</pre></div>
+</div>
+<p><strong>Cross-session transfer</strong> — seed the protocol’s running statistics from the
+previous session’s file so rewards start immediately (no warmup phase):</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">mne_rt.protocols</span><span class="w"> </span><span class="kn">import</span> <span class="n">TransferProtocol</span>
+
+<span class="n">proto</span> <span class="o">=</span> <span class="n">TransferProtocol</span><span class="p">(</span>
+    <span class="n">fname</span><span class="o">=</span><span class="s2">&quot;sub-sub01_ses-01_task-nf_beh.json&quot;</span><span class="p">,</span>
+    <span class="n">modality</span><span class="o">=</span><span class="s2">&quot;sensor_power&quot;</span><span class="p">,</span>
+    <span class="n">direction</span><span class="o">=</span><span class="s2">&quot;up&quot;</span><span class="p">,</span>
+    <span class="n">zscore_threshold</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="n">nf</span><span class="o">.</span><span class="n">record_main</span><span class="p">(</span><span class="n">duration</span><span class="o">=</span><span class="mi">600</span><span class="p">,</span> <span class="n">modality</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;sensor_power&quot;</span><span class="p">],</span> <span class="n">protocol</span><span class="o">=</span><span class="n">proto</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><strong>Offline replay</strong> — re-run the exact same signal-processing pipeline on a
+previously recorded file, useful for parameter tuning without a participant:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">nf</span><span class="o">.</span><span class="n">replay</span><span class="p">(</span>
+    <span class="n">fname</span><span class="o">=</span><span class="s2">&quot;sub-sub01_ses-01_task-nf_raw.fif&quot;</span><span class="p">,</span>
+    <span class="n">duration</span><span class="o">=</span><span class="mi">600</span><span class="p">,</span>
+    <span class="n">modality</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;erd_ers&quot;</span><span class="p">],</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<hr class="docutils" />
+<section id="choosing-a-modality-and-protocol">
+<h2><a class="toc-backref" href="#id11" role="doc-backlink">Choosing a Modality and Protocol</a><a class="headerlink" href="#choosing-a-modality-and-protocol" title="Link to this heading">#</a></h2>
+<div style="overflow-x:auto; margin:12px 0 20px 0;">
+<table style="border-collapse:collapse; width:100%;
+       font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif; font-size:13px;">
+<thead>
+  <tr>
+    <th style="background:#1e40af;color:white;padding:7px 14px;border-radius:8px 0 0 0;">Clinical goal</th>
+    <th style="background:#1e40af;color:white;padding:7px 14px;">Modality</th>
+    <th style="background:#1e40af;color:white;padding:7px 14px;">Protocol</th>
+    <th style="background:#1e40af;color:white;padding:7px 14px;border-radius:0 8px 0 0;">Notes</th>
+  </tr>
+</thead>
+<tbody>
+  <tr style="background:#eff6ff;">
+    <td style="padding:6px 14px;border:1px solid #dbeafe;font-weight:600;">Alpha up-training</td>
+    <td style="padding:6px 14px;border:1px solid #dbeafe;font-family:monospace;font-size:12px;">sensor_power</td>
+    <td style="padding:6px 14px;border:1px solid #dbeafe;font-family:monospace;font-size:12px;">ZScoreProtocol</td>
+    <td style="padding:6px 14px;border:1px solid #dbeafe;">Classic relaxation / pain / tinnitus protocol</td>
+  </tr>
+  <tr style="background:#f0fdf4;">
+    <td style="padding:6px 14px;border:1px solid #dcfce7;font-weight:600;">Motor imagery (BCI)</td>
+    <td style="padding:6px 14px;border:1px solid #dcfce7;font-family:monospace;font-size:12px;">laterality / erd_ers</td>
+    <td style="padding:6px 14px;border:1px solid #dcfce7;font-family:monospace;font-size:12px;">ThresholdProtocol</td>
+    <td style="padding:6px 14px;border:1px solid #dcfce7;">C3 vs C4 ERD for left/right hand imagery</td>
+  </tr>
+  <tr style="background:#eff6ff;">
+    <td style="padding:6px 14px;border:1px solid #dbeafe;font-weight:600;">ADHD (theta/beta)</td>
+    <td style="padding:6px 14px;border:1px solid #dbeafe;font-family:monospace;font-size:12px;">band_ratio</td>
+    <td style="padding:6px 14px;border:1px solid #dbeafe;font-family:monospace;font-size:12px;">PercentileProtocol</td>
+    <td style="padding:6px 14px;border:1px solid #dbeafe;">Reward when theta/beta ratio drops below 75th percentile</td>
+  </tr>
+  <tr style="background:#f0fdf4;">
+    <td style="padding:6px 14px;border:1px solid #dcfce7;font-weight:600;">Tinnitus (source)</td>
+    <td style="padding:6px 14px;border:1px solid #dcfce7;font-family:monospace;font-size:12px;">source_power / source_connectivity</td>
+    <td style="padding:6px 14px;border:1px solid #dcfce7;font-family:monospace;font-size:12px;">ZScoreProtocol</td>
+    <td style="padding:6px 14px;border:1px solid #dcfce7;">Requires MRI and baseline inverse operator</td>
+  </tr>
+  <tr style="background:#eff6ff;">
+    <td style="padding:6px 14px;border:1px solid #dbeafe;font-weight:600;">SCP biofeedback</td>
+    <td style="padding:6px 14px;border:1px solid #dbeafe;font-family:monospace;font-size:12px;">scp</td>
+    <td style="padding:6px 14px;border:1px solid #dbeafe;font-family:monospace;font-size:12px;">ThresholdProtocol</td>
+    <td style="padding:6px 14px;border:1px solid #dbeafe;">Requires DC-coupled amplifier; epilepsy, attention</td>
+  </tr>
+  <tr style="background:#f0fdf4;">
+    <td style="padding:6px 14px;border:1px solid #dcfce7;font-weight:600;">No calibration data</td>
+    <td style="padding:6px 14px;border:1px solid #dcfce7;font-family:monospace;font-size:12px;"><em>any</em></td>
+    <td style="padding:6px 14px;border:1px solid #dcfce7;font-family:monospace;font-size:12px;">RLProtocol</td>
+    <td style="padding:6px 14px;border:1px solid #dcfce7;">Self-calibrating — no baseline or warmup needed</td>
+  </tr>
+</tbody>
+</table>
+</div></section>
+<hr class="docutils" />
+<section id="quality-monitoring">
+<h2><a class="toc-backref" href="#id12" role="doc-backlink">Quality Monitoring</a><a class="headerlink" href="#quality-monitoring" title="Link to this heading">#</a></h2>
+<p>MNE-RT tracks two session-level quality metrics automatically when requested:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">nf</span><span class="o">.</span><span class="n">record_main</span><span class="p">(</span>
+    <span class="o">...</span><span class="p">,</span>
+    <span class="n">track_artifact_rate</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>    <span class="c1"># default threshold: 100 µV</span>
+    <span class="n">track_snr</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="c1"># After session:</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Artifact rate : </span><span class="si">{</span><span class="n">nf</span><span class="o">.</span><span class="n">artifact_rate</span><span class="si">:</span><span class="s2">.1%</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>   <span class="c1"># fraction of windows with any channel &gt; 100 µV</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Mean SNR      : </span><span class="si">{</span><span class="nb">sum</span><span class="p">(</span><span class="n">nf</span><span class="o">.</span><span class="n">snr_data</span><span class="p">)</span><span class="o">/</span><span class="nb">len</span><span class="p">(</span><span class="n">nf</span><span class="o">.</span><span class="n">snr_data</span><span class="p">)</span><span class="si">:</span><span class="s2">.1f</span><span class="si">}</span><span class="s2"> dB&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>A session with artifact rate &gt; 20 % should be reviewed for electrode impedance
+issues or movement artefacts before proceeding.</p>
+<p>For detailed real-time quality control, see the
+<a class="reference internal" href="generated/mne_rt.tools.BadChannelDetector.html#mne_rt.tools.BadChannelDetector" title="mne_rt.tools.BadChannelDetector"><code class="xref py py-class docutils literal notranslate"><span class="pre">BadChannelDetector</span></code></a> and
+<a class="reference internal" href="generated/mne_rt.tools.RiemannianPotatoDetector.html#mne_rt.tools.RiemannianPotatoDetector" title="mne_rt.tools.RiemannianPotatoDetector"><code class="xref py py-class docutils literal notranslate"><span class="pre">RiemannianPotatoDetector</span></code></a> classes documented in
+<a class="reference internal" href="denoising.html"><span class="doc">Artifact Correction</span></a>.</p>
+</section>
+<hr class="docutils" />
+<section id="further-reading">
+<h2><a class="toc-backref" href="#id13" role="doc-backlink">Further Reading</a><a class="headerlink" href="#further-reading" title="Link to this heading">#</a></h2>
+<ul class="simple">
+<li><p><a class="reference internal" href="modalities.html"><span class="doc">Real-time Feature Modalities</span></a> — mathematical definitions of all 20 feature modalities</p></li>
+<li><p><a class="reference internal" href="protocols.html"><span class="doc">NF Protocols</span></a> — reward protocol formulas, selection table, and examples</p></li>
+<li><p><a class="reference internal" href="denoising.html"><span class="doc">Artifact Correction</span></a> — artifact correction algorithms and benchmarks</p></li>
+<li><p><a class="reference internal" href="api.html"><span class="doc">API Reference</span></a> — complete class and function reference</p></li>
+<li><p><a class="reference internal" href="cli.html"><span class="doc">CLI</span></a> — full CLI reference (<code class="docutils literal notranslate"><span class="pre">mne-rt</span> <span class="pre">run</span></code>, <code class="docutils literal notranslate"><span class="pre">mne-rt</span> <span class="pre">baseline</span></code>, <code class="docutils literal notranslate"><span class="pre">mne-rt</span> <span class="pre">demo</span></code>)</p></li>
+</ul>
+</section>
+</section>
+
+
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="install.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">Installation</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="api.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">API Reference</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <dialog id="pst-secondary-sidebar-modal"></dialog>
+                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+<div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav id="pst-page-toc-nav" class="page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="pst-show_toc_level nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#real-time-m-eeg-processing">Real-time M/EEG processing</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#mne-rt-session-workflow">MNE-RT Session Workflow</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#closed-loop-architecture">Closed-Loop Architecture</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#key-concepts">Key Concepts</a><ul class="pst-show_toc_level nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#feature-modality">Feature Modality</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#feedback-protocol">Feedback Protocol</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#feature-combiner">Feature Combiner</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#analysis-window">Analysis Window</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#step-by-step-first-session">Step-by-Step: First Session</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#multi-session-protocols">Multi-Session Protocols</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#choosing-a-modality-and-protocol">Choosing a Modality and Protocol</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#quality-monitoring">Quality Monitoring</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#further-reading">Further Reading</a></li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="_static/scripts/bootstrap.js?digest=90905a2f556bf617f1a9"></script>
+<script defer src="_static/scripts/pydata-sphinx-theme.js?digest=90905a2f556bf617f1a9"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright 2025, Payam S. Shabestari.
+      <br/>
+    
+  </p>
+</div>
+      
+        <div class="footer-item">
+
+  <p class="sphinx-version">
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 9.0.4.
+    <br/>
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
+<p class="theme-version">
+  <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.20.0.
+</p></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>

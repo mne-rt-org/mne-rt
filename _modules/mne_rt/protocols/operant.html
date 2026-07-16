@@ -1,0 +1,837 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../../../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>mne_rt.protocols.operant &#8212; MNE-RT</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../../_static/styles/theme.css?digest=90905a2f556bf617f1a9" rel="stylesheet" />
+<link href="../../../_static/styles/pydata-sphinx-theme.css?digest=90905a2f556bf617f1a9" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/sg_gallery.css?v=fd6457a4" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/sg_gallery-binder.css?v=f4aeca0c" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/sg_gallery-dataframe.css?v=2082cf3c" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/sg_gallery-rendered-html.css?v=1277b6f3" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/custom.css?v=5bf657dd" />
+  
+  <!-- So that users can add custom icons -->
+  <script defer src="../../../_static/scripts/fontawesome.js?digest=90905a2f556bf617f1a9"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../../_static/scripts/bootstrap.js?digest=90905a2f556bf617f1a9" />
+<link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=90905a2f556bf617f1a9" />
+
+    <script src="../../../_static/documentation_options.js?v=8d563738"></script>
+    <script src="../../../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="../../../_static/sg-tags.js?v=d80f6fa4"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = '_modules/mne_rt/protocols/operant';</script>
+    <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="" />
+  
+    
+    <script src="../../../_static/searchtools.js"></script>
+    <script src="../../../_static/language_data.js"></script>
+    <script src="../../../searchindex.js"></script>
+  
+  </head>
+  <body data-default-mode="">
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+  
+  
+  
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../../../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header id="pst-header" class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../../../index.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../../../_static/mne_rt_logo.svg" class="logo__image only-light" alt="MNE-RT - Home"/>
+    <img src="../../../_static/mne_rt_logo.svg" class="logo__image only-dark pst-js-only" alt="MNE-RT - Home"/>
+  
+  
+</a></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../install.html">
+    Installation
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../tutorial.html">
+    User Guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../api.html">
+    API Reference
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../visualization.html">
+    Visualisation
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../cli.html">
+    CLI
+  </a>
+</li>
+
+            <li class="nav-item dropdown">
+                <button class="btn dropdown-toggle nav-item" type="button"
+                data-bs-toggle="dropdown" aria-expanded="false"
+                aria-controls="pst-nav-more-links">
+                    More
+                </button>
+                <ul id="pst-nav-more-links" class="dropdown-menu">
+                    
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../../../denoising.html">
+    Artifact Correction
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../../../modalities.html">
+    Real-time Feature Modalities
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../../../protocols.html">
+    NF Protocols
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../../../whats_new.html">
+    What’s new
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../../../auto_examples/index.html">
+    Examples Gallery
+  </a>
+</li>
+
+                </ul>
+            </li>
+            
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+        </div>
+      
+      
+        <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/payamsash/mne-rt" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-square-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
+        </li>
+</ul></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+    </div>
+  
+
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+        
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar hide-on-wide">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../install.html">
+    Installation
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../tutorial.html">
+    User Guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../api.html">
+    API Reference
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../visualization.html">
+    Visualisation
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../cli.html">
+    CLI
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../denoising.html">
+    Artifact Correction
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../modalities.html">
+    Real-time Feature Modalities
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../protocols.html">
+    NF Protocols
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../whats_new.html">
+    What’s new
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../auto_examples/index.html">
+    Examples Gallery
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/payamsash/mne-rt" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-square-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
+        </li>
+</ul></div>
+        
+      </div>
+    
+  </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../../../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    
+    <li class="breadcrumb-item"><a href="../../index.html" class="nav-link">Module code</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">mne_rt.protocols.operant</span></li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <h1>Source code for mne_rt.protocols.operant</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;Operant conditioning reinforcement-schedule wrapper for MNE-RT.</span>
+
+<span class="sd">This module provides :class:`OperantProtocol`, which wraps any inner</span>
+<span class="sd">protocol and gates its reward output through a classical operant conditioning</span>
+<span class="sd">schedule (fixed ratio, variable ratio, fixed interval, or variable interval).</span>
+
+<span class="sd">Classes</span>
+<span class="sd">-------</span>
+<span class="sd">OperantProtocol</span>
+<span class="sd">    Operant conditioning schedule wrapper for any NF protocol.</span>
+
+<span class="sd">References</span>
+<span class="sd">----------</span>
+<span class="sd">Ferster, C. B., &amp; Skinner, B. F. (1957). Schedules of reinforcement.</span>
+<span class="sd">Appleton-Century-Crofts.</span>
+
+<span class="sd">Skinner, B. F. (1938). The behavior of organisms: An experimental analysis.</span>
+<span class="sd">Appleton-Century-Crofts.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">time</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Optional</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+
+<span class="n">_VALID_SCHEDULES</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;FR&quot;</span><span class="p">,</span> <span class="s2">&quot;VR&quot;</span><span class="p">,</span> <span class="s2">&quot;FI&quot;</span><span class="p">,</span> <span class="s2">&quot;VI&quot;</span><span class="p">)</span>
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">OperantProtocol</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Operant conditioning reinforcement-schedule wrapper.</span>
+
+<span class="sd">    Wraps any inner NF protocol and applies a classical operant conditioning</span>
+<span class="sd">    schedule to determine whether a reward is actually delivered.  The inner</span>
+<span class="sd">    protocol is always evaluated so that its internal state (running statistics,</span>
+<span class="sd">    adaptive threshold, etc.) advances correctly; the schedule only decides</span>
+<span class="sd">    whether to pass the reward through to the caller.</span>
+
+<span class="sd">    .. rubric:: Supported schedules</span>
+
+<span class="sd">    ``&quot;FR&quot;`` (Fixed Ratio)</span>
+<span class="sd">        Deliver reward on every ``ratio``-th hit (hit = inner protocol</span>
+<span class="sd">        returned ``crossed=True``).</span>
+<span class="sd">    ``&quot;VR&quot;`` (Variable Ratio)</span>
+<span class="sd">        Deliver reward with probability ``1 / ratio`` on each hit (geometric</span>
+<span class="sd">        distribution; same average number of hits per reward as FR).</span>
+<span class="sd">    ``&quot;FI&quot;`` (Fixed Interval)</span>
+<span class="sd">        Deliver reward for the **first** hit that occurs after ``interval``</span>
+<span class="sd">        seconds have elapsed since the last reward.</span>
+<span class="sd">    ``&quot;VI&quot;`` (Variable Interval)</span>
+<span class="sd">        Deliver reward for the **first** hit that occurs after a random</span>
+<span class="sd">        interval sampled from an exponential distribution with mean</span>
+<span class="sd">        ``interval`` seconds.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    base_protocol : any protocol with .evaluate(value) -&gt; (bool, float)</span>
+<span class="sd">        The inner NF protocol whose output is filtered by the schedule.</span>
+<span class="sd">    schedule : {&quot;FR&quot;, &quot;VR&quot;, &quot;FI&quot;, &quot;VI&quot;}</span>
+<span class="sd">        Reinforcement schedule identifier.</span>
+<span class="sd">    ratio : int</span>
+<span class="sd">        Required for ``&quot;FR&quot;`` and ``&quot;VR&quot;`` schedules.  For FR: reward is</span>
+<span class="sd">        delivered on every ``ratio``-th hit.  For VR: reward probability per</span>
+<span class="sd">        hit is ``1 / ratio``.  Must be &gt;= 1.  Default is 5.</span>
+<span class="sd">    interval : float</span>
+<span class="sd">        Required for ``&quot;FI&quot;`` and ``&quot;VI&quot;`` schedules, in seconds.  For FI:</span>
+<span class="sd">        minimum fixed interval between rewards.  For VI: mean interval</span>
+<span class="sd">        (exponential distribution).  Must be &gt; 0.  Default is 30.0.</span>
+<span class="sd">    rng_seed : int | None</span>
+<span class="sd">        Seed for the NumPy random generator used by ``&quot;VR&quot;`` and ``&quot;VI&quot;``</span>
+<span class="sd">        schedules.  Default is None (non-deterministic).</span>
+
+<span class="sd">    Raises</span>
+<span class="sd">    ------</span>
+<span class="sd">    ValueError</span>
+<span class="sd">        If ``schedule`` is not one of the valid identifiers, ``ratio &lt; 1``,</span>
+<span class="sd">        or ``interval &lt;= 0``.</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    The internal clock is started on the **first** call to :meth:`evaluate`</span>
+<span class="sd">    using :func:`time.monotonic`, not at construction time.  This avoids</span>
+<span class="sd">    artificially burning interval time between object creation and the start</span>
+<span class="sd">    of the session.</span>
+
+<span class="sd">    ``reset()`` resets all internal counters, hit/reward tallies, and the</span>
+<span class="sd">    clock.  It also calls ``base_protocol.reset()`` if that method exists.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    Fixed-ratio schedule (reward every 5th hit)::</span>
+
+<span class="sd">        from mne_rt.protocols import ZScoreProtocol</span>
+<span class="sd">        from mne_rt.protocols.operant import OperantProtocol</span>
+
+<span class="sd">        inner = ZScoreProtocol(direction=&quot;up&quot;)</span>
+<span class="sd">        proto = OperantProtocol(inner, schedule=&quot;FR&quot;, ratio=5)</span>
+<span class="sd">        for value in nf_stream:</span>
+<span class="sd">            crossed, magnitude = proto.evaluate(value)</span>
+<span class="sd">            if crossed:</span>
+<span class="sd">                deliver_reward(magnitude)</span>
+
+<span class="sd">    Variable-interval schedule (reward at most once per ~30 s on average)::</span>
+
+<span class="sd">        proto = OperantProtocol(inner, schedule=&quot;VI&quot;, interval=30.0, rng_seed=0)</span>
+
+<span class="sd">    .. versionadded:: 1.0.0</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="OperantProtocol.__init__">
+<a class="viewcode-back" href="../../../generated/mne_rt.protocols.OperantProtocol.html#mne_rt.protocols.OperantProtocol.__init__">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">base_protocol</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>
+        <span class="n">schedule</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;FR&quot;</span><span class="p">,</span>
+        <span class="n">ratio</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">5</span><span class="p">,</span>
+        <span class="n">interval</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">30.0</span><span class="p">,</span>
+        <span class="n">rng_seed</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">schedule</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">_VALID_SCHEDULES</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;schedule must be one of </span><span class="si">{</span><span class="n">_VALID_SCHEDULES</span><span class="si">}</span><span class="s2">, got </span><span class="si">{</span><span class="n">schedule</span><span class="si">!r}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">ratio</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;ratio must be &gt;= 1, got </span><span class="si">{</span><span class="n">ratio</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">interval</span> <span class="o">&lt;=</span> <span class="mf">0.0</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;interval must be &gt; 0, got </span><span class="si">{</span><span class="n">interval</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">base_protocol</span><span class="p">:</span> <span class="n">Any</span> <span class="o">=</span> <span class="n">base_protocol</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">schedule</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">schedule</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ratio</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">ratio</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">interval</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">interval</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_rng</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">default_rng</span><span class="p">(</span><span class="n">rng_seed</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_n_hits</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_n_rewards</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span>
+
+        <span class="c1"># Counter for FR: hits since last reward</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_fr_counter</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span>
+
+        <span class="c1"># Timing state for FI / VI</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_clock_start</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_next_interval_end</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span></div>
+
+
+    <span class="c1"># ------------------------------------------------------------------</span>
+    <span class="c1"># Public interface</span>
+    <span class="c1"># ------------------------------------------------------------------</span>
+
+<div class="viewcode-block" id="OperantProtocol.evaluate">
+<a class="viewcode-back" href="../../../generated/mne_rt.protocols.OperantProtocol.html#mne_rt.protocols.OperantProtocol.evaluate">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">evaluate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">bool</span><span class="p">,</span> <span class="nb">float</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Evaluate one NF value and apply the reinforcement schedule.</span>
+
+<span class="sd">        Delegates to the inner protocol unconditionally, then applies the</span>
+<span class="sd">        schedule logic to decide whether to pass the reward through.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        value : float</span>
+<span class="sd">            Current NF feature value.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        crossed : bool</span>
+<span class="sd">            True if the schedule releases a reward on this evaluation.</span>
+<span class="sd">        magnitude : float</span>
+<span class="sd">            Reward magnitude from the inner protocol when ``crossed`` is</span>
+<span class="sd">            True; ``0.0`` otherwise.</span>
+
+<span class="sd">        Notes</span>
+<span class="sd">        -----</span>
+<span class="sd">        For interval schedules (``&quot;FI&quot;``, ``&quot;VI&quot;``) the clock is initialised</span>
+<span class="sd">        on the first call.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Start the clock on first call</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_clock_start</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_clock_start</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">monotonic</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_next_interval_end</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_clock_start</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">_draw_interval</span><span class="p">()</span>
+
+        <span class="n">base_crossed</span><span class="p">,</span> <span class="n">base_magnitude</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">base_protocol</span><span class="o">.</span><span class="n">evaluate</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">base_crossed</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">False</span><span class="p">,</span> <span class="mf">0.0</span>
+
+        <span class="c1"># Base protocol issued a hit — run schedule logic</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_n_hits</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="n">reward</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_apply_schedule</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="n">reward</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_n_rewards</span> <span class="o">+=</span> <span class="mi">1</span>
+            <span class="k">return</span> <span class="kc">True</span><span class="p">,</span> <span class="n">base_magnitude</span>
+        <span class="k">return</span> <span class="kc">False</span><span class="p">,</span> <span class="mf">0.0</span></div>
+
+
+<div class="viewcode-block" id="OperantProtocol.reset">
+<a class="viewcode-back" href="../../../generated/mne_rt.protocols.OperantProtocol.html#mne_rt.protocols.OperantProtocol.reset">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">reset</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Reset all internal state including counters and the clock.</span>
+
+<span class="sd">        Also calls ``base_protocol.reset()`` if that method exists.</span>
+<span class="sd">        All constructor parameters are preserved.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">base_protocol</span><span class="p">,</span> <span class="s2">&quot;reset&quot;</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">base_protocol</span><span class="o">.</span><span class="n">reset</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_n_hits</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_n_rewards</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_fr_counter</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_clock_start</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_next_interval_end</span> <span class="o">=</span> <span class="kc">None</span></div>
+
+
+    <span class="c1"># ------------------------------------------------------------------</span>
+    <span class="c1"># Properties</span>
+    <span class="c1"># ------------------------------------------------------------------</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">n_hits</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Total hits (crossed=True from base protocol) since init or reset.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_n_hits</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">n_rewards</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Total rewards delivered by the schedule since init or reset.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_n_rewards</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">reward_rate</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Fraction of hits that resulted in a reward (0–1).</span>
+
+<span class="sd">        Returns 0.0 before any hits are recorded.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_n_hits</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">return</span> <span class="mf">0.0</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_n_rewards</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">_n_hits</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">current_threshold</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Pass-through threshold from the base protocol, if available.</span>
+
+<span class="sd">        Every built-in protocol exposes ``current_threshold``; this checks</span>
+<span class="sd">        that first and falls back to a plain ``threshold`` attribute for</span>
+<span class="sd">        third-party base protocols that only implement the older name.</span>
+<span class="sd">        Returns ``None`` if neither is available.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">base_protocol</span><span class="p">,</span> <span class="s2">&quot;current_threshold&quot;</span><span class="p">):</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">base_protocol</span><span class="o">.</span><span class="n">current_threshold</span>
+        <span class="k">return</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">base_protocol</span><span class="p">,</span> <span class="s2">&quot;threshold&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+
+    <span class="c1"># ------------------------------------------------------------------</span>
+    <span class="c1"># Schedule implementation</span>
+    <span class="c1"># ------------------------------------------------------------------</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_apply_schedule</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Apply the active schedule and return True if a reward is released.&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">schedule</span> <span class="o">==</span> <span class="s2">&quot;FR&quot;</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_schedule_fr</span><span class="p">()</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">schedule</span> <span class="o">==</span> <span class="s2">&quot;VR&quot;</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_schedule_vr</span><span class="p">()</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">schedule</span> <span class="o">==</span> <span class="s2">&quot;FI&quot;</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_schedule_fi</span><span class="p">()</span>
+        <span class="k">else</span><span class="p">:</span>  <span class="c1"># &quot;VI&quot;</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_schedule_vi</span><span class="p">()</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_schedule_fr</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Fixed Ratio: reward every ratio-th hit.&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_fr_counter</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_fr_counter</span> <span class="o">&gt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ratio</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_fr_counter</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="k">return</span> <span class="kc">True</span>
+        <span class="k">return</span> <span class="kc">False</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_schedule_vr</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Variable Ratio: each hit rewarded with probability 1/ratio.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="nb">bool</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_rng</span><span class="o">.</span><span class="n">random</span><span class="p">()</span> <span class="o">&lt;</span> <span class="p">(</span><span class="mf">1.0</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">ratio</span><span class="p">))</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_schedule_fi</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Fixed Interval: reward first hit after the fixed interval expires.&quot;&quot;&quot;</span>
+        <span class="n">now</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">monotonic</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">now</span> <span class="o">&gt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_next_interval_end</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_next_interval_end</span> <span class="o">=</span> <span class="n">now</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">interval</span>
+            <span class="k">return</span> <span class="kc">True</span>
+        <span class="k">return</span> <span class="kc">False</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_schedule_vi</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Variable Interval: reward first hit after a random interval expires.&quot;&quot;&quot;</span>
+        <span class="n">now</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">monotonic</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">now</span> <span class="o">&gt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_next_interval_end</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_next_interval_end</span> <span class="o">=</span> <span class="n">now</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">_draw_interval</span><span class="p">()</span>
+            <span class="k">return</span> <span class="kc">True</span>
+        <span class="k">return</span> <span class="kc">False</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_draw_interval</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Draw a random interval for VI schedule (exponential with mean=interval).&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">schedule</span> <span class="o">==</span> <span class="s2">&quot;VI&quot;</span><span class="p">:</span>
+            <span class="k">return</span> <span class="nb">float</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_rng</span><span class="o">.</span><span class="n">exponential</span><span class="p">(</span><span class="n">scale</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">interval</span><span class="p">))</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">interval</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="k">return</span> <span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;OperantProtocol(&quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;schedule=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">schedule</span><span class="si">!r}</span><span class="s2">, &quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;ratio=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">ratio</span><span class="si">}</span><span class="s2">, &quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;interval=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">interval</span><span class="si">}</span><span class="s2">, &quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;n_hits=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_n_hits</span><span class="si">}</span><span class="s2">, &quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;n_rewards=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_n_rewards</span><span class="si">}</span><span class="s2">, &quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;reward_rate=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">reward_rate</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">, &quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;base_protocol=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">base_protocol</span><span class="si">!r}</span><span class="s2">)&quot;</span>
+        <span class="p">)</span>
+</pre></div>
+
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../../../_static/scripts/bootstrap.js?digest=90905a2f556bf617f1a9"></script>
+<script defer src="../../../_static/scripts/pydata-sphinx-theme.js?digest=90905a2f556bf617f1a9"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright 2025, Payam S. Shabestari.
+      <br/>
+    
+  </p>
+</div>
+      
+        <div class="footer-item">
+
+  <p class="sphinx-version">
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 9.0.4.
+    <br/>
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
+<p class="theme-version">
+  <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.20.0.
+</p></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>

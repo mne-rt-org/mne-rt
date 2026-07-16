@@ -1,0 +1,1460 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../../../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>mne_rt.viz.epoch_plot &#8212; MNE-RT</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../../_static/styles/theme.css?digest=90905a2f556bf617f1a9" rel="stylesheet" />
+<link href="../../../_static/styles/pydata-sphinx-theme.css?digest=90905a2f556bf617f1a9" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/sg_gallery.css?v=fd6457a4" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/sg_gallery-binder.css?v=f4aeca0c" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/sg_gallery-dataframe.css?v=2082cf3c" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/sg_gallery-rendered-html.css?v=1277b6f3" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/custom.css?v=5bf657dd" />
+  
+  <!-- So that users can add custom icons -->
+  <script defer src="../../../_static/scripts/fontawesome.js?digest=90905a2f556bf617f1a9"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../../_static/scripts/bootstrap.js?digest=90905a2f556bf617f1a9" />
+<link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=90905a2f556bf617f1a9" />
+
+    <script src="../../../_static/documentation_options.js?v=8d563738"></script>
+    <script src="../../../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="../../../_static/sg-tags.js?v=d80f6fa4"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = '_modules/mne_rt/viz/epoch_plot';</script>
+    <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="" />
+  
+    
+    <script src="../../../_static/searchtools.js"></script>
+    <script src="../../../_static/language_data.js"></script>
+    <script src="../../../searchindex.js"></script>
+  
+  </head>
+  <body data-default-mode="">
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+  
+  
+  
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../../../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header id="pst-header" class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../../../index.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../../../_static/mne_rt_logo.svg" class="logo__image only-light" alt="MNE-RT - Home"/>
+    <img src="../../../_static/mne_rt_logo.svg" class="logo__image only-dark pst-js-only" alt="MNE-RT - Home"/>
+  
+  
+</a></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../install.html">
+    Installation
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../tutorial.html">
+    User Guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../api.html">
+    API Reference
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../visualization.html">
+    Visualisation
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../cli.html">
+    CLI
+  </a>
+</li>
+
+            <li class="nav-item dropdown">
+                <button class="btn dropdown-toggle nav-item" type="button"
+                data-bs-toggle="dropdown" aria-expanded="false"
+                aria-controls="pst-nav-more-links">
+                    More
+                </button>
+                <ul id="pst-nav-more-links" class="dropdown-menu">
+                    
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../../../denoising.html">
+    Artifact Correction
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../../../modalities.html">
+    Real-time Feature Modalities
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../../../protocols.html">
+    NF Protocols
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../../../whats_new.html">
+    What’s new
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../../../auto_examples/index.html">
+    Examples Gallery
+  </a>
+</li>
+
+                </ul>
+            </li>
+            
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+        </div>
+      
+      
+        <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/payamsash/mne-rt" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-square-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
+        </li>
+</ul></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+    </div>
+  
+
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+        
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar hide-on-wide">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../install.html">
+    Installation
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../tutorial.html">
+    User Guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../api.html">
+    API Reference
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../visualization.html">
+    Visualisation
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../cli.html">
+    CLI
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../denoising.html">
+    Artifact Correction
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../modalities.html">
+    Real-time Feature Modalities
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../protocols.html">
+    NF Protocols
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../whats_new.html">
+    What’s new
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../auto_examples/index.html">
+    Examples Gallery
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/payamsash/mne-rt" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-square-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
+        </li>
+</ul></div>
+        
+      </div>
+    
+  </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../../../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    
+    <li class="breadcrumb-item"><a href="../../index.html" class="nav-link">Module code</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">mne_rt.viz.epoch_plot</span></li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <h1>Source code for mne_rt.viz.epoch_plot</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;Real-time continuous M/EEG display with epoch/trigger markers.</span>
+
+<span class="sd">Shows a scrolling multi-channel raw signal overlaid with event markers:</span>
+
+<span class="sd">* Solid vertical line at each trigger (t = 0 of the epoch)</span>
+<span class="sd">* Semi-transparent shaded region spanning [tmin, tmax] around each trigger</span>
+<span class="sd">* Dashed boundary lines at the epoch edges (tmin, tmax)</span>
+
+<span class="sd">tmin / tmax are adjustable live in the sidebar.  Different event codes</span>
+<span class="sd">are assigned distinct colours via the ``event_id`` mapping.  Left-click a</span>
+<span class="sd">shaded epoch span to interactively mark it bad (drawn in red); see</span>
+<span class="sd">:attr:`EpochPlot.bad_epoch_ids`.</span>
+
+<span class="sd">Classes</span>
+<span class="sd">-------</span>
+<span class="sd">EpochPlot</span>
+<span class="sd">    Scrolling raw viewer with epoch / trigger overlays.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">datetime</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">collections</span><span class="w"> </span><span class="kn">import</span> <span class="n">deque</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pyqtgraph</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pg</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pyqtgraph.exporters</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">qtpy.QtCore</span><span class="w"> </span><span class="kn">import</span> <span class="n">QEvent</span><span class="p">,</span> <span class="n">QObject</span><span class="p">,</span> <span class="n">Qt</span><span class="p">,</span> <span class="n">QTimer</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">qtpy.QtWidgets</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">QCheckBox</span><span class="p">,</span>
+    <span class="n">QDoubleSpinBox</span><span class="p">,</span>
+    <span class="n">QGroupBox</span><span class="p">,</span>
+    <span class="n">QHBoxLayout</span><span class="p">,</span>
+    <span class="n">QLabel</span><span class="p">,</span>
+    <span class="n">QMainWindow</span><span class="p">,</span>
+    <span class="n">QPushButton</span><span class="p">,</span>
+    <span class="n">QScrollArea</span><span class="p">,</span>
+    <span class="n">QScrollBar</span><span class="p">,</span>
+    <span class="n">QVBoxLayout</span><span class="p">,</span>
+    <span class="n">QWidget</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="c1"># ---------------------------------------------------------------------------</span>
+<span class="c1"># Colour palettes</span>
+<span class="c1"># ---------------------------------------------------------------------------</span>
+
+<span class="n">_TRACE_COLORS</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="s2">&quot;#4fc3f7&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;#ef9a9a&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;#a5d6a7&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;#fff176&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;#ffab91&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;#ce93d8&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;#80cbc4&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;#ffcc80&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;#80deea&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;#b39ddb&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;#f48fb1&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;#c5e1a5&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;#ffd54f&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;#81d4fa&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;#dce775&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;#ff8a65&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;#90caf9&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;#e6ee9c&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;#bcaaa4&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;#ffe082&quot;</span><span class="p">,</span>
+<span class="p">]</span>
+
+<span class="c1"># Trigger colours: red, green, cyan, yellow, magenta, orange</span>
+<span class="n">_EVENT_COLORS</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="s2">&quot;#69f0ae&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;#40c4ff&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;#ffff00&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;#ff9e80&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;#ea80fc&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;#80cbc4&quot;</span><span class="p">,</span>
+<span class="p">]</span>
+
+<span class="n">_TIME_WINDOW_OPTIONS</span> <span class="o">=</span> <span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">20</span><span class="p">]</span>
+
+<span class="n">_QSS</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">QMainWindow, QWidget {</span>
+<span class="s2">    background-color: #1a1a2e;</span>
+<span class="s2">    color: #e0e0e0;</span>
+<span class="s2">    font-family: &quot;Segoe UI&quot;, sans-serif;</span>
+<span class="s2">}</span>
+<span class="s2">QPushButton {</span>
+<span class="s2">    background-color: #16213e;</span>
+<span class="s2">    color: #d0d0e8;</span>
+<span class="s2">    border: 1px solid #0f3460;</span>
+<span class="s2">    border-radius: 5px;</span>
+<span class="s2">    padding: 5px 10px;</span>
+<span class="s2">    font-size: 12px;</span>
+<span class="s2">}</span>
+<span class="s2">QPushButton:hover  { background-color: #0f3460; }</span>
+<span class="s2">QPushButton:pressed { background-color: #533483; }</span>
+<span class="s2">QPushButton:checked {</span>
+<span class="s2">    background-color: #533483;</span>
+<span class="s2">    border-color: #a882dd;</span>
+<span class="s2">    color: #ffffff;</span>
+<span class="s2">}</span>
+<span class="s2">QComboBox {</span>
+<span class="s2">    background-color: #16213e;</span>
+<span class="s2">    color: #d0d0e8;</span>
+<span class="s2">    border: 1px solid #0f3460;</span>
+<span class="s2">    border-radius: 4px;</span>
+<span class="s2">    padding: 3px 6px;</span>
+<span class="s2">}</span>
+<span class="s2">QDoubleSpinBox, QSpinBox {</span>
+<span class="s2">    background-color: #16213e;</span>
+<span class="s2">    color: #d0d0e8;</span>
+<span class="s2">    border: 1px solid #0f3460;</span>
+<span class="s2">    border-radius: 4px;</span>
+<span class="s2">    padding: 2px 4px;</span>
+<span class="s2">}</span>
+<span class="s2">QGroupBox {</span>
+<span class="s2">    border: 1px solid #2a2a4a;</span>
+<span class="s2">    border-radius: 6px;</span>
+<span class="s2">    margin-top: 10px;</span>
+<span class="s2">    padding-top: 6px;</span>
+<span class="s2">    font-weight: bold;</span>
+<span class="s2">    font-size: 11px;</span>
+<span class="s2">    color: #8888aa;</span>
+<span class="s2">}</span>
+<span class="s2">QGroupBox::title {</span>
+<span class="s2">    subcontrol-origin: margin;</span>
+<span class="s2">    left: 8px;</span>
+<span class="s2">    padding: 0 4px;</span>
+<span class="s2">}</span>
+<span class="s2">QLabel  { color: #b0b0c8; font-size: 11px; }</span>
+<span class="s2">QCheckBox { color: #b0b0c8; font-size: 11px; }</span>
+<span class="s2">QScrollArea { border: none; }</span>
+<span class="s2">QStatusBar { background-color: #0d0d1a; color: #606080; font-size: 10px; }</span>
+<span class="s2">QScrollBar:vertical {</span>
+<span class="s2">    background-color: #0d0d1a;</span>
+<span class="s2">    width: 14px;</span>
+<span class="s2">    border: none;</span>
+<span class="s2">    margin: 0px;</span>
+<span class="s2">}</span>
+<span class="s2">QScrollBar::handle:vertical {</span>
+<span class="s2">    background-color: #2a2a4a;</span>
+<span class="s2">    border-radius: 4px;</span>
+<span class="s2">    min-height: 24px;</span>
+<span class="s2">}</span>
+<span class="s2">QScrollBar::handle:vertical:hover { background-color: #404060; }</span>
+<span class="s2">QScrollBar::add-line:vertical, QScrollBar::sub-line:vertical { height: 0px; }</span>
+<span class="s2">QScrollBar::add-page:vertical, QScrollBar::sub-page:vertical {</span>
+<span class="s2">    background-color: #0d0d1a;</span>
+<span class="s2">}</span>
+<span class="s2">&quot;&quot;&quot;</span>
+
+
+<span class="c1"># ---------------------------------------------------------------------------</span>
+<span class="c1"># Wheel-event filter (same as RawPlot)</span>
+<span class="c1"># ---------------------------------------------------------------------------</span>
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">_WheelFilter</span><span class="p">(</span><span class="n">QObject</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">callback</span><span class="p">,</span> <span class="n">parent</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">parent</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_cb</span> <span class="o">=</span> <span class="n">callback</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">eventFilter</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="n">event</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">event</span><span class="o">.</span><span class="n">type</span><span class="p">()</span> <span class="o">==</span> <span class="n">QEvent</span><span class="o">.</span><span class="n">Type</span><span class="o">.</span><span class="n">Wheel</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_cb</span><span class="p">(</span><span class="mi">1</span> <span class="k">if</span> <span class="n">event</span><span class="o">.</span><span class="n">angleDelta</span><span class="p">()</span><span class="o">.</span><span class="n">y</span><span class="p">()</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="k">else</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+            <span class="k">return</span> <span class="kc">True</span>
+        <span class="k">return</span> <span class="kc">False</span>
+
+
+<span class="c1"># ---------------------------------------------------------------------------</span>
+<span class="c1"># EpochPlot</span>
+<span class="c1"># ---------------------------------------------------------------------------</span>
+
+
+<div class="viewcode-block" id="EpochPlot">
+<a class="viewcode-back" href="../../../generated/mne_rt.viz.EpochPlot.html#mne_rt.viz.EpochPlot">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">EpochPlot</span><span class="p">(</span><span class="n">QMainWindow</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Real-time scrolling M/EEG viewer with epoch / trigger overlays.</span>
+
+<span class="sd">    Displays all channels stacked vertically (identical layout to</span>
+<span class="sd">    :class:`~mne_rt.viz.RawPlot`) with coloured event markers overlaid on</span>
+<span class="sd">    the signal.  For each trigger event a solid vertical line marks t = 0,</span>
+<span class="sd">    a semi-transparent shaded band spans the epoch window [tmin, tmax], and</span>
+<span class="sd">    dashed boundary lines sit at the epoch edges.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    ch_names : list of str</span>
+<span class="sd">        Channel names.  One row per channel.</span>
+<span class="sd">    sfreq : float</span>
+<span class="sd">        Sampling frequency in Hz.</span>
+<span class="sd">    tmin : float, default -0.1</span>
+<span class="sd">        Epoch start in seconds relative to each trigger.</span>
+<span class="sd">    tmax : float, default 0.5</span>
+<span class="sd">        Epoch end in seconds relative to each trigger.</span>
+<span class="sd">    n_shown : int, default 20</span>
+<span class="sd">        Number of channels visible simultaneously.</span>
+<span class="sd">    time_window : float, default 10.0</span>
+<span class="sd">        Visible time range in seconds at startup.</span>
+<span class="sd">    scale_uv : float, default 100.0</span>
+<span class="sd">        Amplitude scale in µV (half of per-channel row height).</span>
+<span class="sd">    event_id : dict[str, int] | None, default None</span>
+<span class="sd">        Maps condition names to integer trigger codes.  Each code gets a</span>
+<span class="sd">        distinct colour; unmapped codes use the first colour.</span>
+<span class="sd">    info : mne.Info | None, default None</span>
+<span class="sd">        If provided, used for channel-type detection and right-click sensor</span>
+<span class="sd">        position.</span>
+<span class="sd">    verbose : bool | str | None, default None</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    mne_rt.viz.RawPlot : Continuous raw viewer without epoch overlays.</span>
+<span class="sd">    mne_rt.RTEpochs : Event-triggered epoch accumulator.</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    Feed data with :meth:`push` (shape ``(n_ch, n_times)``) and trigger</span>
+<span class="sd">    events with :meth:`push_trigger`.  Both calls are safe to make from</span>
+<span class="sd">    an acquisition thread.</span>
+
+<span class="sd">    Left-click a shaded epoch span to mark it bad (rendered in red); click</span>
+<span class="sd">    again to unmark it.  Marked epochs are tracked by :attr:`bad_epoch_ids`</span>
+<span class="sd">    for use downstream (e.g. excluding them when building an</span>
+<span class="sd">    :class:`mne.Epochs` object from the corresponding trigger stream).</span>
+<span class="sd">    The &quot;Clear bad-epoch marks&quot; sidebar button resets all marks without</span>
+<span class="sd">    discarding the triggers themselves.</span>
+
+<span class="sd">    .. versionadded:: 1.1.0</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="EpochPlot.__init__">
+<a class="viewcode-back" href="../../../generated/mne_rt.viz.EpochPlot.html#mne_rt.viz.EpochPlot.__init__">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">ch_names</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
+        <span class="n">sfreq</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+        <span class="n">tmin</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="o">-</span><span class="mf">0.1</span><span class="p">,</span>
+        <span class="n">tmax</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.5</span><span class="p">,</span>
+        <span class="n">n_shown</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">20</span><span class="p">,</span>
+        <span class="n">time_window</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">10.0</span><span class="p">,</span>
+        <span class="n">scale_uv</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">100.0</span><span class="p">,</span>
+        <span class="n">event_id</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">info</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">verbose</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">mne_rt._logging</span><span class="w"> </span><span class="kn">import</span> <span class="n">set_log_level</span>
+
+        <span class="n">set_log_level</span><span class="p">(</span><span class="n">verbose</span><span class="p">)</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_ch_names</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">ch_names</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_n_ch</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">ch_names</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_sfreq</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">sfreq</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_tmin</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">tmin</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_tmax</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">tmax</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_n_shown</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">n_shown</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">_n_ch</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_time_window</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">time_window</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_scale</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">scale_uv</span><span class="p">)</span> <span class="o">*</span> <span class="mf">1e-6</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_event_id</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">event_id</span><span class="p">)</span> <span class="k">if</span> <span class="n">event_id</span> <span class="k">else</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_info</span> <span class="o">=</span> <span class="n">info</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_page_start</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_paused</span> <span class="o">=</span> <span class="kc">False</span>
+
+        <span class="c1"># Stream state</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_total_pushed</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">n_pts</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">sfreq</span> <span class="o">*</span> <span class="n">time_window</span><span class="p">),</span> <span class="mi">30</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_time_axis</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">time_window</span><span class="p">,</span> <span class="n">n_pts</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_buf</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">_n_ch</span><span class="p">,</span> <span class="n">n_pts</span><span class="p">))</span>
+
+        <span class="c1"># Trigger history: (abs_sample_idx, event_code, epoch_id)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_triggers</span><span class="p">:</span> <span class="n">deque</span><span class="p">[</span><span class="nb">tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">]]</span> <span class="o">=</span> <span class="n">deque</span><span class="p">(</span><span class="n">maxlen</span><span class="o">=</span><span class="mi">500</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_next_epoch_id</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="c1"># Overlay items currently on the plot (cleared each redraw)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_epoch_overlay_items</span><span class="p">:</span> <span class="nb">list</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="c1"># Epoch ids marked bad by left-clicking their shaded span</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_bad_epoch_ids</span><span class="p">:</span> <span class="nb">set</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+        <span class="c1"># (epoch_id, x_lo, x_hi) for epochs drawn in the current redraw —</span>
+        <span class="c1"># used to hit-test left-clicks against the visible epoch spans.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_visible_epoch_spans</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="c1"># Thread-safe pending queue: (&#39;data&#39;, ndarray) | (&#39;trigger&#39;, int)</span>
+        <span class="c1"># push()/push_trigger() enqueue here (any thread); _process_pending()</span>
+        <span class="c1"># drains it in the main Qt thread at 30 Hz via a QTimer.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_pending</span><span class="p">:</span> <span class="n">deque</span> <span class="o">=</span> <span class="n">deque</span><span class="p">()</span>
+
+        <span class="c1"># Build colour map: event_code → colour string</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_code_colors</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">code</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_event_id</span><span class="o">.</span><span class="n">items</span><span class="p">()):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_code_colors</span><span class="p">[</span><span class="n">code</span><span class="p">]</span> <span class="o">=</span> <span class="n">_EVENT_COLORS</span><span class="p">[</span><span class="n">i</span> <span class="o">%</span> <span class="nb">len</span><span class="p">(</span><span class="n">_EVENT_COLORS</span><span class="p">)]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_default_color</span> <span class="o">=</span> <span class="n">_EVENT_COLORS</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+        <span class="c1"># Per-channel colours</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_ch_colors</span> <span class="o">=</span> <span class="p">[</span><span class="n">_TRACE_COLORS</span><span class="p">[</span><span class="n">i</span> <span class="o">%</span> <span class="nb">len</span><span class="p">(</span><span class="n">_TRACE_COLORS</span><span class="p">)]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_n_ch</span><span class="p">)]</span>
+
+        <span class="n">pg</span><span class="o">.</span><span class="n">setConfigOptions</span><span class="p">(</span><span class="n">antialias</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">foreground</span><span class="o">=</span><span class="s2">&quot;#c0c0d8&quot;</span><span class="p">,</span> <span class="n">background</span><span class="o">=</span><span class="s2">&quot;#0d0d1a&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_build_ui</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">setWindowTitle</span><span class="p">(</span><span class="s2">&quot;MNE-RT — Epoch Viewer&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">resize</span><span class="p">(</span><span class="mi">1500</span><span class="p">,</span> <span class="mi">720</span><span class="p">)</span>
+
+        <span class="c1"># 30 Hz render timer — processes queued data in the main Qt thread.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_render_timer</span> <span class="o">=</span> <span class="n">QTimer</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_render_timer</span><span class="o">.</span><span class="n">setInterval</span><span class="p">(</span><span class="mi">33</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_render_timer</span><span class="o">.</span><span class="n">timeout</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_process_pending</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_render_timer</span><span class="o">.</span><span class="n">start</span><span class="p">()</span></div>
+
+
+    <span class="c1"># ------------------------------------------------------------------</span>
+    <span class="c1"># UI construction</span>
+    <span class="c1"># ------------------------------------------------------------------</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_build_ui</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">setStyleSheet</span><span class="p">(</span><span class="n">_QSS</span><span class="p">)</span>
+        <span class="n">central</span> <span class="o">=</span> <span class="n">QWidget</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">setCentralWidget</span><span class="p">(</span><span class="n">central</span><span class="p">)</span>
+        <span class="n">root</span> <span class="o">=</span> <span class="n">QHBoxLayout</span><span class="p">(</span><span class="n">central</span><span class="p">)</span>
+        <span class="n">root</span><span class="o">.</span><span class="n">setContentsMargins</span><span class="p">(</span><span class="mi">8</span><span class="p">,</span> <span class="mi">8</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">8</span><span class="p">)</span>
+        <span class="n">root</span><span class="o">.</span><span class="n">setSpacing</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+
+        <span class="n">root</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_build_plot_widget</span><span class="p">(),</span> <span class="n">stretch</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_ch_scroll</span> <span class="o">=</span> <span class="n">QScrollBar</span><span class="p">(</span><span class="n">Qt</span><span class="o">.</span><span class="n">Orientation</span><span class="o">.</span><span class="n">Vertical</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_ch_scroll</span><span class="o">.</span><span class="n">setRange</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">max</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_n_ch</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">_n_shown</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_ch_scroll</span><span class="o">.</span><span class="n">setPageStep</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_n_shown</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_ch_scroll</span><span class="o">.</span><span class="n">setSingleStep</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_ch_scroll</span><span class="o">.</span><span class="n">setFixedWidth</span><span class="p">(</span><span class="mi">14</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_ch_scroll</span><span class="o">.</span><span class="n">valueChanged</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="k">lambda</span> <span class="n">v</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_set_page_start</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">source</span><span class="o">=</span><span class="s2">&quot;scrollbar&quot;</span><span class="p">))</span>
+        <span class="n">root</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_ch_scroll</span><span class="p">)</span>
+
+        <span class="n">root</span><span class="o">.</span><span class="n">addSpacing</span><span class="p">(</span><span class="mi">4</span><span class="p">)</span>
+        <span class="n">root</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_build_control_panel</span><span class="p">(),</span> <span class="n">stretch</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_status</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">statusBar</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_status</span><span class="o">.</span><span class="n">showMessage</span><span class="p">(</span><span class="s2">&quot;Waiting for data …&quot;</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_build_plot_widget</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pg</span><span class="o">.</span><span class="n">GraphicsLayoutWidget</span><span class="p">:</span>
+        <span class="n">glw</span> <span class="o">=</span> <span class="n">pg</span><span class="o">.</span><span class="n">GraphicsLayoutWidget</span><span class="p">()</span>
+        <span class="n">glw</span><span class="o">.</span><span class="n">setBackground</span><span class="p">(</span><span class="s2">&quot;#0d0d1a&quot;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_pi</span> <span class="o">=</span> <span class="n">glw</span><span class="o">.</span><span class="n">addPlot</span><span class="p">(</span><span class="n">row</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">col</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_pi</span><span class="o">.</span><span class="n">setMouseEnabled</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="n">vb</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pi</span><span class="o">.</span><span class="n">getViewBox</span><span class="p">()</span>
+        <span class="n">vb</span><span class="o">.</span><span class="n">setMouseEnabled</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="n">vb</span><span class="o">.</span><span class="n">setMenuEnabled</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_pi</span><span class="o">.</span><span class="n">showGrid</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.25</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">ax_name</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;left&quot;</span><span class="p">,</span> <span class="s2">&quot;bottom&quot;</span><span class="p">):</span>
+            <span class="n">ax</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pi</span><span class="o">.</span><span class="n">getAxis</span><span class="p">(</span><span class="n">ax_name</span><span class="p">)</span>
+            <span class="n">ax</span><span class="o">.</span><span class="n">setPen</span><span class="p">(</span><span class="n">pg</span><span class="o">.</span><span class="n">mkPen</span><span class="p">(</span><span class="s2">&quot;#303050&quot;</span><span class="p">))</span>
+            <span class="n">ax</span><span class="o">.</span><span class="n">setTextPen</span><span class="p">(</span><span class="n">pg</span><span class="o">.</span><span class="n">mkPen</span><span class="p">(</span><span class="s2">&quot;#9090aa&quot;</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_pi</span><span class="o">.</span><span class="n">getAxis</span><span class="p">(</span><span class="s2">&quot;left&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">setWidth</span><span class="p">(</span><span class="mi">80</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_pi</span><span class="o">.</span><span class="n">setLabel</span><span class="p">(</span><span class="s2">&quot;bottom&quot;</span><span class="p">,</span> <span class="s2">&quot;Time&quot;</span><span class="p">,</span> <span class="n">units</span><span class="o">=</span><span class="s2">&quot;s&quot;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;#9090aa&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_pi</span><span class="o">.</span><span class="n">setXRange</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_time_window</span><span class="p">,</span> <span class="n">padding</span><span class="o">=</span><span class="mf">0.01</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_pi</span><span class="o">.</span><span class="n">setYRange</span><span class="p">(</span><span class="o">-</span><span class="mf">0.5</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_n_shown</span> <span class="o">-</span> <span class="mf">0.5</span><span class="p">,</span> <span class="n">padding</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_curves</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">pg</span><span class="o">.</span><span class="n">PlotCurveItem</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="n">pg</span><span class="o">.</span><span class="n">PlotCurveItem</span><span class="p">(</span><span class="n">pen</span><span class="o">=</span><span class="n">pg</span><span class="o">.</span><span class="n">mkPen</span><span class="p">(</span><span class="n">color</span><span class="o">=</span><span class="n">_TRACE_COLORS</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">width</span><span class="o">=</span><span class="mi">1</span><span class="p">))</span>
+            <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_n_shown</span><span class="p">)</span>
+        <span class="p">]</span>
+        <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_curves</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_pi</span><span class="o">.</span><span class="n">addItem</span><span class="p">(</span><span class="n">c</span><span class="p">)</span>
+
+        <span class="n">sep_pen</span> <span class="o">=</span> <span class="n">pg</span><span class="o">.</span><span class="n">mkPen</span><span class="p">(</span><span class="n">color</span><span class="o">=</span><span class="p">(</span><span class="mi">70</span><span class="p">,</span> <span class="mi">70</span><span class="p">,</span> <span class="mi">110</span><span class="p">,</span> <span class="mi">55</span><span class="p">),</span> <span class="n">width</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">style</span><span class="o">=</span><span class="n">Qt</span><span class="o">.</span><span class="n">PenStyle</span><span class="o">.</span><span class="n">DotLine</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_n_shown</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_pi</span><span class="o">.</span><span class="n">addItem</span><span class="p">(</span><span class="n">pg</span><span class="o">.</span><span class="n">InfiniteLine</span><span class="p">(</span><span class="n">pos</span><span class="o">=</span><span class="n">i</span><span class="p">,</span> <span class="n">angle</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">pen</span><span class="o">=</span><span class="n">sep_pen</span><span class="p">))</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_update_tick_labels</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_wheel_filter</span> <span class="o">=</span> <span class="n">_WheelFilter</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_on_plot_wheel</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span>
+        <span class="n">glw</span><span class="o">.</span><span class="n">viewport</span><span class="p">()</span><span class="o">.</span><span class="n">installEventFilter</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_wheel_filter</span><span class="p">)</span>
+
+        <span class="n">glw</span><span class="o">.</span><span class="n">scene</span><span class="p">()</span><span class="o">.</span><span class="n">sigMouseClicked</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_on_scene_clicked</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_glw</span> <span class="o">=</span> <span class="n">glw</span>
+        <span class="k">return</span> <span class="n">glw</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_build_control_panel</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">QScrollArea</span><span class="p">:</span>
+        <span class="n">scroll</span> <span class="o">=</span> <span class="n">QScrollArea</span><span class="p">()</span>
+        <span class="n">scroll</span><span class="o">.</span><span class="n">setWidgetResizable</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">scroll</span><span class="o">.</span><span class="n">setFixedWidth</span><span class="p">(</span><span class="mi">230</span><span class="p">)</span>
+        <span class="n">scroll</span><span class="o">.</span><span class="n">setHorizontalScrollBarPolicy</span><span class="p">(</span><span class="n">Qt</span><span class="o">.</span><span class="n">ScrollBarPolicy</span><span class="o">.</span><span class="n">ScrollBarAlwaysOff</span><span class="p">)</span>
+
+        <span class="n">panel</span> <span class="o">=</span> <span class="n">QWidget</span><span class="p">()</span>
+        <span class="n">layout</span> <span class="o">=</span> <span class="n">QVBoxLayout</span><span class="p">(</span><span class="n">panel</span><span class="p">)</span>
+        <span class="n">layout</span><span class="o">.</span><span class="n">setSpacing</span><span class="p">(</span><span class="mi">8</span><span class="p">)</span>
+        <span class="n">layout</span><span class="o">.</span><span class="n">setContentsMargins</span><span class="p">(</span><span class="mi">6</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">6</span><span class="p">)</span>
+
+        <span class="n">layout</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_grp_playback</span><span class="p">())</span>
+        <span class="n">layout</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_grp_amplitude</span><span class="p">())</span>
+        <span class="n">layout</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_grp_display</span><span class="p">())</span>
+        <span class="n">layout</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_grp_epoch</span><span class="p">())</span>
+        <span class="n">layout</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_grp_events</span><span class="p">())</span>
+        <span class="n">layout</span><span class="o">.</span><span class="n">addStretch</span><span class="p">()</span>
+
+        <span class="n">scroll</span><span class="o">.</span><span class="n">setWidget</span><span class="p">(</span><span class="n">panel</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">scroll</span>
+
+    <span class="c1"># ── sidebar groups ─────────────────────────────────────────────────</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_grp_playback</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">QGroupBox</span><span class="p">:</span>
+        <span class="n">grp</span> <span class="o">=</span> <span class="n">QGroupBox</span><span class="p">(</span><span class="s2">&quot;Playback&quot;</span><span class="p">)</span>
+        <span class="n">lay</span> <span class="o">=</span> <span class="n">QVBoxLayout</span><span class="p">(</span><span class="n">grp</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_btn_pause</span> <span class="o">=</span> <span class="n">QPushButton</span><span class="p">(</span><span class="s2">&quot;⏸  Pause&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_btn_pause</span><span class="o">.</span><span class="n">setCheckable</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_btn_pause</span><span class="o">.</span><span class="n">clicked</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_toggle_pause</span><span class="p">)</span>
+        <span class="n">btn_clear</span> <span class="o">=</span> <span class="n">QPushButton</span><span class="p">(</span><span class="s2">&quot;⟳  Clear&quot;</span><span class="p">)</span>
+        <span class="n">btn_clear</span><span class="o">.</span><span class="n">clicked</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_clear</span><span class="p">)</span>
+        <span class="n">btn_shot</span> <span class="o">=</span> <span class="n">QPushButton</span><span class="p">(</span><span class="s2">&quot;📷  Screenshot&quot;</span><span class="p">)</span>
+        <span class="n">btn_shot</span><span class="o">.</span><span class="n">clicked</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_screenshot</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">w</span> <span class="ow">in</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_btn_pause</span><span class="p">,</span> <span class="n">btn_clear</span><span class="p">,</span> <span class="n">btn_shot</span><span class="p">):</span>
+            <span class="n">lay</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="n">w</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">grp</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_grp_amplitude</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">QGroupBox</span><span class="p">:</span>
+        <span class="n">grp</span> <span class="o">=</span> <span class="n">QGroupBox</span><span class="p">(</span><span class="s2">&quot;Amplitude&quot;</span><span class="p">)</span>
+        <span class="n">lay</span> <span class="o">=</span> <span class="n">QVBoxLayout</span><span class="p">(</span><span class="n">grp</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_scale_lbl</span> <span class="o">=</span> <span class="n">QLabel</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_fmt_scale</span><span class="p">())</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_scale_lbl</span><span class="o">.</span><span class="n">setAlignment</span><span class="p">(</span><span class="n">Qt</span><span class="o">.</span><span class="n">AlignmentFlag</span><span class="o">.</span><span class="n">AlignCenter</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_scale_lbl</span><span class="o">.</span><span class="n">setStyleSheet</span><span class="p">(</span><span class="s2">&quot;color:#7ec8e3; font-size:12px; font-weight:bold;&quot;</span><span class="p">)</span>
+        <span class="n">row</span> <span class="o">=</span> <span class="n">QHBoxLayout</span><span class="p">()</span>
+        <span class="n">btn_dn</span> <span class="o">=</span> <span class="n">QPushButton</span><span class="p">(</span><span class="s2">&quot;÷2&quot;</span><span class="p">)</span>
+        <span class="n">btn_up</span> <span class="o">=</span> <span class="n">QPushButton</span><span class="p">(</span><span class="s2">&quot;×2&quot;</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">b</span> <span class="ow">in</span> <span class="p">(</span><span class="n">btn_dn</span><span class="p">,</span> <span class="n">btn_up</span><span class="p">):</span>
+            <span class="n">b</span><span class="o">.</span><span class="n">setFixedSize</span><span class="p">(</span><span class="mi">42</span><span class="p">,</span> <span class="mi">26</span><span class="p">)</span>
+        <span class="n">btn_dn</span><span class="o">.</span><span class="n">clicked</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_scale_down</span><span class="p">)</span>
+        <span class="n">btn_up</span><span class="o">.</span><span class="n">clicked</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_scale_up</span><span class="p">)</span>
+        <span class="n">row</span><span class="o">.</span><span class="n">addStretch</span><span class="p">()</span>
+        <span class="n">row</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="n">btn_dn</span><span class="p">)</span>
+        <span class="n">row</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="n">btn_up</span><span class="p">)</span>
+        <span class="n">row</span><span class="o">.</span><span class="n">addStretch</span><span class="p">()</span>
+        <span class="n">lay</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_scale_lbl</span><span class="p">)</span>
+        <span class="n">lay</span><span class="o">.</span><span class="n">addLayout</span><span class="p">(</span><span class="n">row</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">grp</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_grp_display</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">QGroupBox</span><span class="p">:</span>
+        <span class="n">grp</span> <span class="o">=</span> <span class="n">QGroupBox</span><span class="p">(</span><span class="s2">&quot;Display&quot;</span><span class="p">)</span>
+        <span class="n">lay</span> <span class="o">=</span> <span class="n">QVBoxLayout</span><span class="p">(</span><span class="n">grp</span><span class="p">)</span>
+        <span class="n">row</span> <span class="o">=</span> <span class="n">QHBoxLayout</span><span class="p">()</span>
+        <span class="n">row</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="n">QLabel</span><span class="p">(</span><span class="s2">&quot;Time window:&quot;</span><span class="p">))</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">qtpy.QtWidgets</span><span class="w"> </span><span class="kn">import</span> <span class="n">QComboBox</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_cmb_tw</span> <span class="o">=</span> <span class="n">QComboBox</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">secs</span> <span class="ow">in</span> <span class="n">_TIME_WINDOW_OPTIONS</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_cmb_tw</span><span class="o">.</span><span class="n">addItem</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">secs</span><span class="si">}</span><span class="s2"> s&quot;</span><span class="p">,</span> <span class="n">secs</span><span class="p">)</span>
+        <span class="n">best</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">_TIME_WINDOW_OPTIONS</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">s</span><span class="p">:</span> <span class="nb">abs</span><span class="p">(</span><span class="n">s</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">_time_window</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_cmb_tw</span><span class="o">.</span><span class="n">setCurrentIndex</span><span class="p">(</span><span class="n">_TIME_WINDOW_OPTIONS</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">best</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_cmb_tw</span><span class="o">.</span><span class="n">currentIndexChanged</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_change_time_window</span><span class="p">)</span>
+        <span class="n">row</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_cmb_tw</span><span class="p">)</span>
+        <span class="n">lay</span><span class="o">.</span><span class="n">addLayout</span><span class="p">(</span><span class="n">row</span><span class="p">)</span>
+        <span class="n">chk_grid</span> <span class="o">=</span> <span class="n">QCheckBox</span><span class="p">(</span><span class="s2">&quot;Show grid&quot;</span><span class="p">)</span>
+        <span class="n">chk_grid</span><span class="o">.</span><span class="n">setChecked</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">chk_grid</span><span class="o">.</span><span class="n">toggled</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span>
+            <span class="k">lambda</span> <span class="n">on</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pi</span><span class="o">.</span><span class="n">showGrid</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="n">on</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.25</span> <span class="k">if</span> <span class="n">on</span> <span class="k">else</span> <span class="mf">0.0</span><span class="p">)</span>
+        <span class="p">)</span>
+        <span class="n">lay</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="n">chk_grid</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">grp</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_grp_epoch</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">QGroupBox</span><span class="p">:</span>
+        <span class="n">grp</span> <span class="o">=</span> <span class="n">QGroupBox</span><span class="p">(</span><span class="s2">&quot;Epoch Window&quot;</span><span class="p">)</span>
+        <span class="n">lay</span> <span class="o">=</span> <span class="n">QVBoxLayout</span><span class="p">(</span><span class="n">grp</span><span class="p">)</span>
+        <span class="n">lay</span><span class="o">.</span><span class="n">setSpacing</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span>
+
+        <span class="n">tmin_row</span> <span class="o">=</span> <span class="n">QHBoxLayout</span><span class="p">()</span>
+        <span class="n">tmin_row</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="n">QLabel</span><span class="p">(</span><span class="s2">&quot;tmin:&quot;</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_tmin_spin</span> <span class="o">=</span> <span class="n">QDoubleSpinBox</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_tmin_spin</span><span class="o">.</span><span class="n">setRange</span><span class="p">(</span><span class="o">-</span><span class="mf">5.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_tmin_spin</span><span class="o">.</span><span class="n">setValue</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_tmin</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_tmin_spin</span><span class="o">.</span><span class="n">setSuffix</span><span class="p">(</span><span class="s2">&quot; s&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_tmin_spin</span><span class="o">.</span><span class="n">setDecimals</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_tmin_spin</span><span class="o">.</span><span class="n">setSingleStep</span><span class="p">(</span><span class="mf">0.05</span><span class="p">)</span>
+        <span class="n">tmin_row</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_tmin_spin</span><span class="p">)</span>
+        <span class="n">lay</span><span class="o">.</span><span class="n">addLayout</span><span class="p">(</span><span class="n">tmin_row</span><span class="p">)</span>
+
+        <span class="n">tmax_row</span> <span class="o">=</span> <span class="n">QHBoxLayout</span><span class="p">()</span>
+        <span class="n">tmax_row</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="n">QLabel</span><span class="p">(</span><span class="s2">&quot;tmax:&quot;</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_tmax_spin</span> <span class="o">=</span> <span class="n">QDoubleSpinBox</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_tmax_spin</span><span class="o">.</span><span class="n">setRange</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">5.0</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_tmax_spin</span><span class="o">.</span><span class="n">setValue</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_tmax</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_tmax_spin</span><span class="o">.</span><span class="n">setSuffix</span><span class="p">(</span><span class="s2">&quot; s&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_tmax_spin</span><span class="o">.</span><span class="n">setDecimals</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_tmax_spin</span><span class="o">.</span><span class="n">setSingleStep</span><span class="p">(</span><span class="mf">0.05</span><span class="p">)</span>
+        <span class="n">tmax_row</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_tmax_spin</span><span class="p">)</span>
+        <span class="n">lay</span><span class="o">.</span><span class="n">addLayout</span><span class="p">(</span><span class="n">tmax_row</span><span class="p">)</span>
+
+        <span class="n">btn_apply</span> <span class="o">=</span> <span class="n">QPushButton</span><span class="p">(</span><span class="s2">&quot;Apply&quot;</span><span class="p">)</span>
+        <span class="n">btn_apply</span><span class="o">.</span><span class="n">setStyleSheet</span><span class="p">(</span>
+            <span class="s2">&quot;background:#132744; color:#80d8ff; border:1px solid #2a6090;&quot;</span>
+            <span class="s2">&quot;border-radius:4px; padding:4px; font-size:11px;&quot;</span>
+        <span class="p">)</span>
+        <span class="n">btn_apply</span><span class="o">.</span><span class="n">clicked</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_apply_epoch_window</span><span class="p">)</span>
+        <span class="n">lay</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="n">btn_apply</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_epoch_lbl</span> <span class="o">=</span> <span class="n">QLabel</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Window: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_tmin</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2"> → </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_tmax</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2"> s&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_epoch_lbl</span><span class="o">.</span><span class="n">setStyleSheet</span><span class="p">(</span><span class="s2">&quot;color:#80d8ff; font-size:10px;&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_epoch_lbl</span><span class="o">.</span><span class="n">setAlignment</span><span class="p">(</span><span class="n">Qt</span><span class="o">.</span><span class="n">AlignmentFlag</span><span class="o">.</span><span class="n">AlignCenter</span><span class="p">)</span>
+        <span class="n">lay</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_epoch_lbl</span><span class="p">)</span>
+
+        <span class="n">chk_region</span> <span class="o">=</span> <span class="n">QCheckBox</span><span class="p">(</span><span class="s2">&quot;Show epoch region&quot;</span><span class="p">)</span>
+        <span class="n">chk_region</span><span class="o">.</span><span class="n">setChecked</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">chk_region</span><span class="o">.</span><span class="n">toggled</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_set_show_epoch_region</span><span class="p">)</span>
+        <span class="n">lay</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="n">chk_region</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_show_epoch_region</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span>
+
+        <span class="n">chk_bounds</span> <span class="o">=</span> <span class="n">QCheckBox</span><span class="p">(</span><span class="s2">&quot;Show tmin/tmax lines&quot;</span><span class="p">)</span>
+        <span class="n">chk_bounds</span><span class="o">.</span><span class="n">setChecked</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">chk_bounds</span><span class="o">.</span><span class="n">toggled</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_set_show_epoch_bounds</span><span class="p">)</span>
+        <span class="n">lay</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="n">chk_bounds</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_show_epoch_bounds</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span>
+
+        <span class="k">return</span> <span class="n">grp</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_grp_events</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">QGroupBox</span><span class="p">:</span>
+        <span class="n">grp</span> <span class="o">=</span> <span class="n">QGroupBox</span><span class="p">(</span><span class="s2">&quot;Events&quot;</span><span class="p">)</span>
+        <span class="n">lay</span> <span class="o">=</span> <span class="n">QVBoxLayout</span><span class="p">(</span><span class="n">grp</span><span class="p">)</span>
+        <span class="n">lay</span><span class="o">.</span><span class="n">setSpacing</span><span class="p">(</span><span class="mi">4</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_event_count_lbl</span> <span class="o">=</span> <span class="n">QLabel</span><span class="p">(</span><span class="s2">&quot;No triggers received&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_event_count_lbl</span><span class="o">.</span><span class="n">setStyleSheet</span><span class="p">(</span><span class="s2">&quot;color:#505070; font-size:10px;&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_event_count_lbl</span><span class="o">.</span><span class="n">setAlignment</span><span class="p">(</span><span class="n">Qt</span><span class="o">.</span><span class="n">AlignmentFlag</span><span class="o">.</span><span class="n">AlignCenter</span><span class="p">)</span>
+        <span class="n">lay</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_event_count_lbl</span><span class="p">)</span>
+
+        <span class="n">btn_clear_trigs</span> <span class="o">=</span> <span class="n">QPushButton</span><span class="p">(</span><span class="s2">&quot;Clear triggers&quot;</span><span class="p">)</span>
+        <span class="n">btn_clear_trigs</span><span class="o">.</span><span class="n">clicked</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_clear_triggers</span><span class="p">)</span>
+        <span class="n">lay</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="n">btn_clear_trigs</span><span class="p">)</span>
+
+        <span class="n">bad_hint</span> <span class="o">=</span> <span class="n">QLabel</span><span class="p">(</span><span class="s2">&quot;Click an epoch&#39;s shaded</span><span class="se">\n</span><span class="s2">span to mark it bad (red)&quot;</span><span class="p">)</span>
+        <span class="n">bad_hint</span><span class="o">.</span><span class="n">setWordWrap</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">bad_hint</span><span class="o">.</span><span class="n">setStyleSheet</span><span class="p">(</span><span class="s2">&quot;color:#7a7a9a; font-size:9px;&quot;</span><span class="p">)</span>
+        <span class="n">lay</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="n">bad_hint</span><span class="p">)</span>
+
+        <span class="n">btn_clear_bad</span> <span class="o">=</span> <span class="n">QPushButton</span><span class="p">(</span><span class="s2">&quot;Clear bad-epoch marks&quot;</span><span class="p">)</span>
+        <span class="n">btn_clear_bad</span><span class="o">.</span><span class="n">clicked</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_clear_bad_epochs</span><span class="p">)</span>
+        <span class="n">lay</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="n">btn_clear_bad</span><span class="p">)</span>
+
+        <span class="c1"># Legend: one colour swatch per event code</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_event_id</span><span class="p">:</span>
+            <span class="n">lay</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="n">QLabel</span><span class="p">(</span><span class="s2">&quot;─── Legend ───&quot;</span><span class="p">))</span>
+            <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">code</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_event_id</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                <span class="n">color</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_code_colors</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">code</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_default_color</span><span class="p">)</span>
+                <span class="n">legend_row</span> <span class="o">=</span> <span class="n">QHBoxLayout</span><span class="p">()</span>
+                <span class="n">swatch</span> <span class="o">=</span> <span class="n">QLabel</span><span class="p">(</span><span class="s2">&quot;■&quot;</span><span class="p">)</span>
+                <span class="n">swatch</span><span class="o">.</span><span class="n">setStyleSheet</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;color:</span><span class="si">{</span><span class="n">color</span><span class="si">}</span><span class="s2">; font-size:14px;&quot;</span><span class="p">)</span>
+                <span class="n">legend_row</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="n">swatch</span><span class="p">)</span>
+                <span class="n">legend_row</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="n">QLabel</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2"> (code </span><span class="si">{</span><span class="n">code</span><span class="si">}</span><span class="s2">)&quot;</span><span class="p">))</span>
+                <span class="n">legend_row</span><span class="o">.</span><span class="n">addStretch</span><span class="p">()</span>
+                <span class="n">lay</span><span class="o">.</span><span class="n">addLayout</span><span class="p">(</span><span class="n">legend_row</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">grp</span>
+
+    <span class="c1"># ------------------------------------------------------------------</span>
+    <span class="c1"># Helpers</span>
+    <span class="c1"># ------------------------------------------------------------------</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_fmt_scale</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="n">uv</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_scale</span> <span class="o">*</span> <span class="mf">1e6</span>
+        <span class="k">if</span> <span class="n">uv</span> <span class="o">&gt;=</span> <span class="mi">1000</span><span class="p">:</span>
+            <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">uv</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="mi">1000</span><span class="si">:</span><span class="s2">.4g</span><span class="si">}</span><span class="s2"> mV / row&quot;</span>
+        <span class="k">if</span> <span class="n">uv</span> <span class="o">&gt;=</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">uv</span><span class="si">:</span><span class="s2">.4g</span><span class="si">}</span><span class="s2"> µV / row&quot;</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">uv</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="mi">1000</span><span class="si">:</span><span class="s2">.4g</span><span class="si">}</span><span class="s2"> nV / row&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_update_tick_labels</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">end</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_page_start</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">_n_shown</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_n_ch</span><span class="p">)</span>
+        <span class="n">n_actual</span> <span class="o">=</span> <span class="n">end</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">_page_start</span>
+        <span class="n">ticks</span> <span class="o">=</span> <span class="p">[(</span><span class="n">n_actual</span> <span class="o">-</span> <span class="mi">1</span> <span class="o">-</span> <span class="n">i</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ch_names</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_page_start</span> <span class="o">+</span> <span class="n">i</span><span class="p">])</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_actual</span><span class="p">)]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_pi</span><span class="o">.</span><span class="n">getAxis</span><span class="p">(</span><span class="s2">&quot;left&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">setTicks</span><span class="p">([</span><span class="n">ticks</span><span class="p">,</span> <span class="p">[]])</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_set_page_start</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">new_start</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">source</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;other&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">new_start</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">min</span><span class="p">(</span><span class="n">new_start</span><span class="p">,</span> <span class="nb">max</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_n_ch</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">_n_shown</span><span class="p">)))</span>
+        <span class="k">if</span> <span class="n">new_start</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">_page_start</span><span class="p">:</span>
+            <span class="k">return</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_page_start</span> <span class="o">=</span> <span class="n">new_start</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_update_tick_labels</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">source</span> <span class="o">!=</span> <span class="s2">&quot;scrollbar&quot;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_ch_scroll</span><span class="o">.</span><span class="n">blockSignals</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_ch_scroll</span><span class="o">.</span><span class="n">setValue</span><span class="p">(</span><span class="n">new_start</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_ch_scroll</span><span class="o">.</span><span class="n">blockSignals</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_redraw</span><span class="p">()</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_trigger_color</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">code</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_code_colors</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">code</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_default_color</span><span class="p">)</span>
+
+    <span class="c1"># ------------------------------------------------------------------</span>
+    <span class="c1"># Callbacks — scroll / wheel / click</span>
+    <span class="c1"># ------------------------------------------------------------------</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_on_plot_wheel</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">direction</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">step</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_n_shown</span> <span class="o">//</span> <span class="mi">4</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_set_page_start</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_page_start</span> <span class="o">-</span> <span class="n">direction</span> <span class="o">*</span> <span class="n">step</span><span class="p">,</span> <span class="n">source</span><span class="o">=</span><span class="s2">&quot;wheel&quot;</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_on_scene_clicked</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">pos</span> <span class="o">=</span> <span class="n">event</span><span class="o">.</span><span class="n">scenePos</span><span class="p">()</span>
+        <span class="n">btn</span> <span class="o">=</span> <span class="n">event</span><span class="o">.</span><span class="n">button</span><span class="p">()</span>
+        <span class="n">vb</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pi</span><span class="o">.</span><span class="n">getViewBox</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="n">btn</span> <span class="o">==</span> <span class="n">Qt</span><span class="o">.</span><span class="n">MouseButton</span><span class="o">.</span><span class="n">RightButton</span><span class="p">:</span>
+            <span class="n">axis</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pi</span><span class="o">.</span><span class="n">getAxis</span><span class="p">(</span><span class="s2">&quot;left&quot;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">axis</span><span class="o">.</span><span class="n">sceneBoundingRect</span><span class="p">()</span><span class="o">.</span><span class="n">contains</span><span class="p">(</span><span class="n">pos</span><span class="p">):</span>
+                <span class="k">return</span>
+            <span class="n">y_val</span> <span class="o">=</span> <span class="n">vb</span><span class="o">.</span><span class="n">mapSceneToView</span><span class="p">(</span><span class="n">pos</span><span class="p">)</span><span class="o">.</span><span class="n">y</span><span class="p">()</span>
+            <span class="n">end</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_page_start</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">_n_shown</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_n_ch</span><span class="p">)</span>
+            <span class="n">n_actual</span> <span class="o">=</span> <span class="n">end</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">_page_start</span>
+            <span class="n">vis_idx</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="nb">round</span><span class="p">(</span><span class="n">n_actual</span> <span class="o">-</span> <span class="mi">1</span> <span class="o">-</span> <span class="n">y_val</span><span class="p">))</span>
+            <span class="k">if</span> <span class="mi">0</span> <span class="o">&lt;=</span> <span class="n">vis_idx</span> <span class="o">&lt;</span> <span class="n">n_actual</span><span class="p">:</span>
+                <span class="n">ch_idx</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_page_start</span> <span class="o">+</span> <span class="n">vis_idx</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_show_channel_location</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_ch_names</span><span class="p">[</span><span class="n">ch_idx</span><span class="p">])</span>
+            <span class="k">return</span>
+
+        <span class="k">if</span> <span class="n">btn</span> <span class="o">==</span> <span class="n">Qt</span><span class="o">.</span><span class="n">MouseButton</span><span class="o">.</span><span class="n">LeftButton</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">event</span><span class="o">.</span><span class="n">double</span><span class="p">():</span>
+            <span class="k">if</span> <span class="n">vb</span><span class="o">.</span><span class="n">sceneBoundingRect</span><span class="p">()</span><span class="o">.</span><span class="n">contains</span><span class="p">(</span><span class="n">pos</span><span class="p">):</span>
+                <span class="n">x_val</span> <span class="o">=</span> <span class="n">vb</span><span class="o">.</span><span class="n">mapSceneToView</span><span class="p">(</span><span class="n">pos</span><span class="p">)</span><span class="o">.</span><span class="n">x</span><span class="p">()</span>
+                <span class="n">epoch_id</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_epoch_id_at</span><span class="p">(</span><span class="n">x_val</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">epoch_id</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="c1"># Defer to keep Qt widget calls in the main thread, same</span>
+                    <span class="c1"># pattern as RawPlot._toggle_bad_channel.</span>
+                    <span class="n">QTimer</span><span class="o">.</span><span class="n">singleShot</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="k">lambda</span> <span class="n">eid</span><span class="o">=</span><span class="n">epoch_id</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_toggle_bad_epoch</span><span class="p">(</span><span class="n">eid</span><span class="p">))</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_epoch_id_at</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x_val</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return the epoch id whose span contains ``x_val``, if any.&quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">epoch_id</span><span class="p">,</span> <span class="n">x_lo</span><span class="p">,</span> <span class="n">x_hi</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_visible_epoch_spans</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">x_lo</span> <span class="o">&lt;=</span> <span class="n">x_val</span> <span class="o">&lt;=</span> <span class="n">x_hi</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">epoch_id</span>
+        <span class="k">return</span> <span class="kc">None</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_toggle_bad_epoch</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">epoch_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">epoch_id</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_bad_epoch_ids</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_bad_epoch_ids</span><span class="o">.</span><span class="n">discard</span><span class="p">(</span><span class="n">epoch_id</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_bad_epoch_ids</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">epoch_id</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_update_event_count_label</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_redraw</span><span class="p">()</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_show_channel_location</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ch_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_info</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_status</span><span class="o">.</span><span class="n">showMessage</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;No Info — cannot show position for </span><span class="si">{</span><span class="n">ch_name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">return</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
+            <span class="kn">import</span><span class="w"> </span><span class="nn">mne</span>
+
+            <span class="n">fig</span> <span class="o">=</span> <span class="n">mne</span><span class="o">.</span><span class="n">viz</span><span class="o">.</span><span class="n">plot_sensors</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_info</span><span class="p">,</span>
+                <span class="n">show_names</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                <span class="n">title</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;Sensor position — </span><span class="si">{</span><span class="n">ch_name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+                <span class="n">show</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+            <span class="p">)</span>
+            <span class="k">for</span> <span class="n">ax</span> <span class="ow">in</span> <span class="n">fig</span><span class="o">.</span><span class="n">axes</span><span class="p">:</span>
+                <span class="k">for</span> <span class="n">txt</span> <span class="ow">in</span> <span class="n">ax</span><span class="o">.</span><span class="n">texts</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="n">txt</span><span class="o">.</span><span class="n">get_text</span><span class="p">()</span> <span class="o">==</span> <span class="n">ch_name</span><span class="p">:</span>
+                        <span class="n">txt</span><span class="o">.</span><span class="n">set_color</span><span class="p">(</span><span class="s2">&quot;#cc0000&quot;</span><span class="p">)</span>
+                        <span class="n">txt</span><span class="o">.</span><span class="n">set_fontsize</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>
+                        <span class="n">txt</span><span class="o">.</span><span class="n">set_fontweight</span><span class="p">(</span><span class="s2">&quot;bold&quot;</span><span class="p">)</span>
+            <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">(</span><span class="n">block</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">exc</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_status</span><span class="o">.</span><span class="n">showMessage</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Could not show sensor position: </span><span class="si">{</span><span class="n">exc</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="c1"># ------------------------------------------------------------------</span>
+    <span class="c1"># Callbacks — playback / display</span>
+    <span class="c1"># ------------------------------------------------------------------</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_toggle_pause</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">checked</span><span class="p">:</span> <span class="nb">bool</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_paused</span> <span class="o">=</span> <span class="n">checked</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_btn_pause</span><span class="o">.</span><span class="n">setText</span><span class="p">(</span><span class="s2">&quot;▶  Resume&quot;</span> <span class="k">if</span> <span class="n">checked</span> <span class="k">else</span> <span class="s2">&quot;⏸  Pause&quot;</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_clear</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_pending</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_buf</span><span class="p">[:]</span> <span class="o">=</span> <span class="mf">0.0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_triggers</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_epoch_overlay_items</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_bad_epoch_ids</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_visible_epoch_spans</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_next_epoch_id</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_total_pushed</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_redraw</span><span class="p">()</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_screenshot</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">qtpy.QtWidgets</span><span class="w"> </span><span class="kn">import</span> <span class="n">QFileDialog</span>
+
+        <span class="n">ts</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s2">&quot;%Y%m</span><span class="si">%d</span><span class="s2">_%H%M%S&quot;</span><span class="p">)</span>
+        <span class="n">default</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">Path</span><span class="o">.</span><span class="n">home</span><span class="p">()</span> <span class="o">/</span> <span class="sa">f</span><span class="s2">&quot;epoch_plot_</span><span class="si">{</span><span class="n">ts</span><span class="si">}</span><span class="s2">.png&quot;</span><span class="p">)</span>
+        <span class="n">path</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">QFileDialog</span><span class="o">.</span><span class="n">getSaveFileName</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;Save Screenshot&quot;</span><span class="p">,</span> <span class="n">default</span><span class="p">,</span> <span class="s2">&quot;PNG Image (*.png)&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">path</span><span class="p">:</span>
+            <span class="k">return</span>
+        <span class="n">exp</span> <span class="o">=</span> <span class="n">pg</span><span class="o">.</span><span class="n">exporters</span><span class="o">.</span><span class="n">ImageExporter</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_glw</span><span class="o">.</span><span class="n">scene</span><span class="p">())</span>
+        <span class="n">exp</span><span class="o">.</span><span class="n">parameters</span><span class="p">()[</span><span class="s2">&quot;width&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1920</span>
+        <span class="n">exp</span><span class="o">.</span><span class="n">export</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_scale_up</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_scale</span> <span class="o">*=</span> <span class="mf">2.0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_scale_lbl</span><span class="o">.</span><span class="n">setText</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_fmt_scale</span><span class="p">())</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_redraw</span><span class="p">()</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_scale_down</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_scale</span> <span class="o">/=</span> <span class="mf">2.0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_scale_lbl</span><span class="o">.</span><span class="n">setText</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_fmt_scale</span><span class="p">())</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_redraw</span><span class="p">()</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_change_time_window</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">idx</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">secs</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_cmb_tw</span><span class="o">.</span><span class="n">itemData</span><span class="p">(</span><span class="n">idx</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_time_window</span> <span class="o">=</span> <span class="n">secs</span>
+        <span class="n">n_pts</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_sfreq</span> <span class="o">*</span> <span class="n">secs</span><span class="p">),</span> <span class="mi">30</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_time_axis</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">secs</span><span class="p">,</span> <span class="n">n_pts</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_buf</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">_n_ch</span><span class="p">,</span> <span class="n">n_pts</span><span class="p">))</span>
+        <span class="c1"># _total_pushed intentionally kept — triggers remain valid relative to stream</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_pi</span><span class="o">.</span><span class="n">setXRange</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">secs</span><span class="p">,</span> <span class="n">padding</span><span class="o">=</span><span class="mf">0.01</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_apply_epoch_window</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_tmin</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tmin_spin</span><span class="o">.</span><span class="n">value</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_tmax</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tmax_spin</span><span class="o">.</span><span class="n">value</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_epoch_lbl</span><span class="o">.</span><span class="n">setText</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Window: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_tmin</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2"> → </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_tmax</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2"> s&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_redraw</span><span class="p">()</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_set_show_epoch_region</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">on</span><span class="p">:</span> <span class="nb">bool</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_show_epoch_region</span> <span class="o">=</span> <span class="n">on</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_redraw</span><span class="p">()</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_set_show_epoch_bounds</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">on</span><span class="p">:</span> <span class="nb">bool</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_show_epoch_bounds</span> <span class="o">=</span> <span class="n">on</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_redraw</span><span class="p">()</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_clear_triggers</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_triggers</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_bad_epoch_ids</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_event_count_lbl</span><span class="o">.</span><span class="n">setText</span><span class="p">(</span><span class="s2">&quot;No triggers received&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_event_count_lbl</span><span class="o">.</span><span class="n">setStyleSheet</span><span class="p">(</span><span class="s2">&quot;color:#505070; font-size:10px;&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_redraw</span><span class="p">()</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_clear_bad_epochs</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_bad_epoch_ids</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_update_event_count_label</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_redraw</span><span class="p">()</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_update_event_count_label</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">n_t</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_triggers</span><span class="p">)</span>
+        <span class="n">n_bad</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_bad_epoch_ids</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">n_t</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_event_count_lbl</span><span class="o">.</span><span class="n">setText</span><span class="p">(</span><span class="s2">&quot;No triggers received&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_event_count_lbl</span><span class="o">.</span><span class="n">setStyleSheet</span><span class="p">(</span><span class="s2">&quot;color:#505070; font-size:10px;&quot;</span><span class="p">)</span>
+            <span class="k">return</span>
+        <span class="n">text</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">n_t</span><span class="si">}</span><span class="s2"> trigger</span><span class="si">{</span><span class="s1">&#39;s&#39;</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="n">n_t</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="s1">&#39;&#39;</span><span class="si">}</span><span class="s2"> received&quot;</span>
+        <span class="k">if</span> <span class="n">n_bad</span><span class="p">:</span>
+            <span class="n">text</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;  ✕ </span><span class="si">{</span><span class="n">n_bad</span><span class="si">}</span><span class="s2"> bad&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_event_count_lbl</span><span class="o">.</span><span class="n">setText</span><span class="p">(</span><span class="n">text</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_event_count_lbl</span><span class="o">.</span><span class="n">setStyleSheet</span><span class="p">(</span><span class="s2">&quot;color:#80d8ff; font-size:10px;&quot;</span><span class="p">)</span>
+
+    <span class="c1"># ------------------------------------------------------------------</span>
+    <span class="c1"># Epoch overlay rendering</span>
+    <span class="c1"># ------------------------------------------------------------------</span>
+
+    <span class="c1">#: Bad-epoch overlay colour (red) — overrides the per-code colour so a</span>
+    <span class="c1">#: rejected epoch is unmistakable regardless of its event code.</span>
+    <span class="n">_BAD_EPOCH_COLOR</span> <span class="o">=</span> <span class="s2">&quot;#ff5252&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_redraw_epoch_overlays</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_epoch_overlay_items</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_pi</span><span class="o">.</span><span class="n">removeItem</span><span class="p">(</span><span class="n">item</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_epoch_overlay_items</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_visible_epoch_spans</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_triggers</span><span class="p">:</span>
+            <span class="k">return</span>
+
+        <span class="n">buf_size</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_buf</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+        <span class="n">buf_start</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_total_pushed</span> <span class="o">-</span> <span class="n">buf_size</span>  <span class="c1"># absolute sample of leftmost buf column</span>
+        <span class="n">dash_style</span> <span class="o">=</span> <span class="n">Qt</span><span class="o">.</span><span class="n">PenStyle</span><span class="o">.</span><span class="n">DashLine</span>
+
+        <span class="k">for</span> <span class="n">trig_abs</span><span class="p">,</span> <span class="n">code</span><span class="p">,</span> <span class="n">epoch_id</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_triggers</span><span class="p">:</span>
+            <span class="c1"># x coordinate of the trigger (t=0) in the current view</span>
+            <span class="n">x0</span> <span class="o">=</span> <span class="p">(</span><span class="n">trig_abs</span> <span class="o">-</span> <span class="n">buf_start</span><span class="p">)</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sfreq</span>
+            <span class="c1"># Accept if the epoch window overlaps the visible range</span>
+            <span class="n">x_lo</span> <span class="o">=</span> <span class="n">x0</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tmin</span>
+            <span class="n">x_hi</span> <span class="o">=</span> <span class="n">x0</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tmax</span>
+            <span class="k">if</span> <span class="n">x_hi</span> <span class="o">&lt;</span> <span class="mi">0</span> <span class="ow">or</span> <span class="n">x_lo</span> <span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">_time_window</span><span class="p">:</span>
+                <span class="k">continue</span>
+
+            <span class="n">is_bad</span> <span class="o">=</span> <span class="n">epoch_id</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_bad_epoch_ids</span>
+            <span class="n">color</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_BAD_EPOCH_COLOR</span> <span class="k">if</span> <span class="n">is_bad</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">_trigger_color</span><span class="p">(</span><span class="n">code</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_visible_epoch_spans</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">epoch_id</span><span class="p">,</span> <span class="n">x_lo</span><span class="p">,</span> <span class="n">x_hi</span><span class="p">))</span>
+
+            <span class="c1"># ── solid trigger line at t=0 ──────────────────────────────</span>
+            <span class="n">trig_line</span> <span class="o">=</span> <span class="n">pg</span><span class="o">.</span><span class="n">InfiniteLine</span><span class="p">(</span>
+                <span class="n">pos</span><span class="o">=</span><span class="n">x0</span><span class="p">,</span>
+                <span class="n">angle</span><span class="o">=</span><span class="mi">90</span><span class="p">,</span>
+                <span class="n">pen</span><span class="o">=</span><span class="n">pg</span><span class="o">.</span><span class="n">mkPen</span><span class="p">(</span><span class="n">color</span><span class="o">=</span><span class="n">color</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="mi">3</span> <span class="k">if</span> <span class="n">is_bad</span> <span class="k">else</span> <span class="mi">2</span><span class="p">),</span>
+            <span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_pi</span><span class="o">.</span><span class="n">addItem</span><span class="p">(</span><span class="n">trig_line</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_epoch_overlay_items</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">trig_line</span><span class="p">)</span>
+
+            <span class="c1"># ── shaded epoch region ────────────────────────────────────</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_show_epoch_region</span><span class="p">:</span>
+                <span class="n">r</span><span class="p">,</span> <span class="n">g</span><span class="p">,</span> <span class="n">b</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_hex_to_rgb</span><span class="p">(</span><span class="n">color</span><span class="p">)</span>
+                <span class="n">region</span> <span class="o">=</span> <span class="n">pg</span><span class="o">.</span><span class="n">LinearRegionItem</span><span class="p">(</span>
+                    <span class="n">values</span><span class="o">=</span><span class="p">(</span><span class="n">x_lo</span><span class="p">,</span> <span class="n">x_hi</span><span class="p">),</span>
+                    <span class="n">brush</span><span class="o">=</span><span class="n">pg</span><span class="o">.</span><span class="n">mkBrush</span><span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="n">g</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="mi">70</span> <span class="k">if</span> <span class="n">is_bad</span> <span class="k">else</span> <span class="mi">30</span><span class="p">),</span>
+                    <span class="n">movable</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+                    <span class="n">pen</span><span class="o">=</span><span class="n">pg</span><span class="o">.</span><span class="n">mkPen</span><span class="p">(</span><span class="n">color</span><span class="o">=</span><span class="n">color</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span> <span class="k">if</span> <span class="n">is_bad</span> <span class="k">else</span> <span class="n">pg</span><span class="o">.</span><span class="n">mkPen</span><span class="p">(</span><span class="kc">None</span><span class="p">),</span>
+                <span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_pi</span><span class="o">.</span><span class="n">addItem</span><span class="p">(</span><span class="n">region</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_epoch_overlay_items</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">region</span><span class="p">)</span>
+
+            <span class="c1"># ── dashed epoch boundary lines ────────────────────────────</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_show_epoch_bounds</span><span class="p">:</span>
+                <span class="k">for</span> <span class="n">x_bnd</span> <span class="ow">in</span> <span class="p">(</span><span class="n">x_lo</span><span class="p">,</span> <span class="n">x_hi</span><span class="p">):</span>
+                    <span class="k">if</span> <span class="mi">0</span> <span class="o">&lt;=</span> <span class="n">x_bnd</span> <span class="o">&lt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_time_window</span><span class="p">:</span>
+                        <span class="n">bnd_line</span> <span class="o">=</span> <span class="n">pg</span><span class="o">.</span><span class="n">InfiniteLine</span><span class="p">(</span>
+                            <span class="n">pos</span><span class="o">=</span><span class="n">x_bnd</span><span class="p">,</span>
+                            <span class="n">angle</span><span class="o">=</span><span class="mi">90</span><span class="p">,</span>
+                            <span class="n">pen</span><span class="o">=</span><span class="n">pg</span><span class="o">.</span><span class="n">mkPen</span><span class="p">(</span><span class="n">color</span><span class="o">=</span><span class="n">color</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">style</span><span class="o">=</span><span class="n">dash_style</span><span class="p">),</span>
+                        <span class="p">)</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">_pi</span><span class="o">.</span><span class="n">addItem</span><span class="p">(</span><span class="n">bnd_line</span><span class="p">)</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">_epoch_overlay_items</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">bnd_line</span><span class="p">)</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_hex_to_rgb</span><span class="p">(</span><span class="n">hex_color</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">]:</span>
+        <span class="n">h</span> <span class="o">=</span> <span class="n">hex_color</span><span class="o">.</span><span class="n">lstrip</span><span class="p">(</span><span class="s2">&quot;#&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="nb">int</span><span class="p">(</span><span class="n">h</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="mi">2</span><span class="p">],</span> <span class="mi">16</span><span class="p">),</span> <span class="nb">int</span><span class="p">(</span><span class="n">h</span><span class="p">[</span><span class="mi">2</span><span class="p">:</span><span class="mi">4</span><span class="p">],</span> <span class="mi">16</span><span class="p">),</span> <span class="nb">int</span><span class="p">(</span><span class="n">h</span><span class="p">[</span><span class="mi">4</span><span class="p">:</span><span class="mi">6</span><span class="p">],</span> <span class="mi">16</span><span class="p">)</span>
+
+    <span class="c1"># ------------------------------------------------------------------</span>
+    <span class="c1"># Redraw</span>
+    <span class="c1"># ------------------------------------------------------------------</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_redraw</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">end</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_page_start</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">_n_shown</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_n_ch</span><span class="p">)</span>
+        <span class="n">visible</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_page_start</span><span class="p">,</span> <span class="n">end</span><span class="p">))</span>
+        <span class="n">n_actual</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">visible</span><span class="p">)</span>
+        <span class="n">gain</span> <span class="o">=</span> <span class="mf">1.0</span> <span class="o">/</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_scale</span> <span class="o">+</span> <span class="mf">1e-300</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">vis_idx</span><span class="p">,</span> <span class="n">ch_idx</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">visible</span><span class="p">):</span>
+            <span class="n">raw</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_buf</span><span class="p">[</span><span class="n">ch_idx</span><span class="p">]</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+            <span class="n">color</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ch_colors</span><span class="p">[</span><span class="n">ch_idx</span><span class="p">]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_curves</span><span class="p">[</span><span class="n">vis_idx</span><span class="p">]</span><span class="o">.</span><span class="n">setPen</span><span class="p">(</span><span class="n">pg</span><span class="o">.</span><span class="n">mkPen</span><span class="p">(</span><span class="n">color</span><span class="o">=</span><span class="n">color</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="mi">1</span><span class="p">))</span>
+            <span class="n">offset</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">n_actual</span> <span class="o">-</span> <span class="mi">1</span> <span class="o">-</span> <span class="n">vis_idx</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_curves</span><span class="p">[</span><span class="n">vis_idx</span><span class="p">]</span><span class="o">.</span><span class="n">setData</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_time_axis</span><span class="p">,</span> <span class="n">offset</span> <span class="o">+</span> <span class="n">raw</span> <span class="o">*</span> <span class="n">gain</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">vis_idx</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_actual</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_n_shown</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_curves</span><span class="p">[</span><span class="n">vis_idx</span><span class="p">]</span><span class="o">.</span><span class="n">setData</span><span class="p">([],</span> <span class="p">[])</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_redraw_epoch_overlays</span><span class="p">()</span>
+
+    <span class="c1"># ------------------------------------------------------------------</span>
+    <span class="c1"># Public interface</span>
+    <span class="c1"># ------------------------------------------------------------------</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">bad_epoch_ids</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">int</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Sorted list of epoch ids marked bad by clicking their span.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="nb">sorted</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_bad_epoch_ids</span><span class="p">)</span>
+
+<div class="viewcode-block" id="EpochPlot.is_epoch_bad">
+<a class="viewcode-back" href="../../../generated/mne_rt.viz.EpochPlot.html#mne_rt.viz.EpochPlot.is_epoch_bad">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">is_epoch_bad</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">epoch_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Whether ``epoch_id`` has been marked bad.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        epoch_id : int</span>
+<span class="sd">            Epoch id, as assigned in push order starting at 0 (the id of</span>
+<span class="sd">            the ``n``-th call to :meth:`push_trigger` is ``n``, ignoring</span>
+<span class="sd">            any epochs since dropped from the trigger history).</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">epoch_id</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_bad_epoch_ids</span></div>
+
+
+<div class="viewcode-block" id="EpochPlot.push">
+<a class="viewcode-back" href="../../../generated/mne_rt.viz.EpochPlot.html#mne_rt.viz.EpochPlot.push">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">push</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Enqueue a raw data chunk for display.</span>
+
+<span class="sd">        Thread-safe: may be called from any thread.  The data is written into</span>
+<span class="sd">        the circular buffer and rendered by the main-thread timer at ~30 Hz.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        data : ndarray, shape (n_channels, n_samples)</span>
+<span class="sd">            New raw data chunk.  No-op when paused.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_paused</span><span class="p">:</span>
+            <span class="k">return</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_pending</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="s2">&quot;data&quot;</span><span class="p">,</span> <span class="n">data</span><span class="o">.</span><span class="n">copy</span><span class="p">()))</span></div>
+
+
+<div class="viewcode-block" id="EpochPlot.push_trigger">
+<a class="viewcode-back" href="../../../generated/mne_rt.viz.EpochPlot.html#mne_rt.viz.EpochPlot.push_trigger">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">push_trigger</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">code</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Enqueue a trigger event at the current stream position.</span>
+
+<span class="sd">        Thread-safe: may be called from any thread.  The trigger is placed</span>
+<span class="sd">        after all data chunks already in the queue, so the sample index is</span>
+<span class="sd">        computed correctly in the main thread.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        code : int, default 1</span>
+<span class="sd">            Integer event code matched against :attr:`event_id`.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_pending</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="s2">&quot;trigger&quot;</span><span class="p">,</span> <span class="n">code</span><span class="p">))</span></div>
+
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_process_pending</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Drain the pending queue and redraw — called in the main thread at 30 Hz.&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pending</span><span class="p">:</span>
+            <span class="k">return</span>
+        <span class="n">changed</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="k">while</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pending</span><span class="p">:</span>
+            <span class="n">kind</span><span class="p">,</span> <span class="n">payload</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pending</span><span class="o">.</span><span class="n">popleft</span><span class="p">()</span>
+            <span class="k">if</span> <span class="n">kind</span> <span class="o">==</span> <span class="s2">&quot;data&quot;</span><span class="p">:</span>
+                <span class="n">n</span> <span class="o">=</span> <span class="n">payload</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_buf</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">roll</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_buf</span><span class="p">,</span> <span class="o">-</span><span class="n">n</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_buf</span><span class="p">[:,</span> <span class="o">-</span><span class="n">n</span><span class="p">:]</span> <span class="o">=</span> <span class="n">payload</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_total_pushed</span> <span class="o">+=</span> <span class="n">n</span>
+                <span class="n">changed</span> <span class="o">=</span> <span class="kc">True</span>
+            <span class="k">else</span><span class="p">:</span>  <span class="c1"># trigger</span>
+                <span class="n">epoch_id</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_next_epoch_id</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_next_epoch_id</span> <span class="o">+=</span> <span class="mi">1</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_triggers</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">_total_pushed</span><span class="p">,</span> <span class="n">payload</span><span class="p">,</span> <span class="n">epoch_id</span><span class="p">))</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_update_event_count_label</span><span class="p">()</span>
+                <span class="n">changed</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="k">if</span> <span class="n">changed</span><span class="p">:</span>
+            <span class="n">end</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_page_start</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">_n_shown</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_n_ch</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_status</span><span class="o">.</span><span class="n">showMessage</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;Streaming  —  ch </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_page_start</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="si">}</span><span class="s2">–</span><span class="si">{</span><span class="n">end</span><span class="si">}</span><span class="s2"> of </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_n_ch</span><span class="si">}</span><span class="s2">&quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;  |  triggers: </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_triggers</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_redraw</span><span class="p">()</span>
+
+<div class="viewcode-block" id="EpochPlot.closeEvent">
+<a class="viewcode-back" href="../../../generated/mne_rt.viz.EpochPlot.html#mne_rt.viz.EpochPlot.closeEvent">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">closeEvent</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_render_timer</span><span class="o">.</span><span class="n">stop</span><span class="p">()</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">closeEvent</span><span class="p">(</span><span class="n">event</span><span class="p">)</span></div>
+</div>
+
+</pre></div>
+
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../../../_static/scripts/bootstrap.js?digest=90905a2f556bf617f1a9"></script>
+<script defer src="../../../_static/scripts/pydata-sphinx-theme.js?digest=90905a2f556bf617f1a9"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright 2025, Payam S. Shabestari.
+      <br/>
+    
+  </p>
+</div>
+      
+        <div class="footer-item">
+
+  <p class="sphinx-version">
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 9.0.4.
+    <br/>
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
+<p class="theme-version">
+  <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.20.0.
+</p></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>

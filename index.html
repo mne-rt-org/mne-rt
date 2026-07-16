@@ -1,0 +1,783 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="./" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Key capabilities &#8212; MNE-RT</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="_static/styles/theme.css?digest=90905a2f556bf617f1a9" rel="stylesheet" />
+<link href="_static/styles/pydata-sphinx-theme.css?digest=90905a2f556bf617f1a9" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="_static/sg_gallery.css?v=fd6457a4" />
+    <link rel="stylesheet" type="text/css" href="_static/sg_gallery-binder.css?v=f4aeca0c" />
+    <link rel="stylesheet" type="text/css" href="_static/sg_gallery-dataframe.css?v=2082cf3c" />
+    <link rel="stylesheet" type="text/css" href="_static/sg_gallery-rendered-html.css?v=1277b6f3" />
+    <link rel="stylesheet" type="text/css" href="_static/tabs.css?v=a5c4661c" />
+    <link rel="stylesheet" type="text/css" href="_static/custom.css?v=5bf657dd" />
+  
+  <!-- So that users can add custom icons -->
+  <script defer src="_static/scripts/fontawesome.js?digest=90905a2f556bf617f1a9"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="_static/scripts/bootstrap.js?digest=90905a2f556bf617f1a9" />
+<link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=90905a2f556bf617f1a9" />
+
+    <script src="_static/documentation_options.js?v=8d563738"></script>
+    <script src="_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="_static/sg-tags.js?v=d80f6fa4"></script>
+    <script src="_static/tabs.js?v=3030b3cb"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'index';</script>
+    <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Installation" href="install.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="" />
+  
+    
+    <script src="_static/searchtools.js"></script>
+    <script src="_static/language_data.js"></script>
+    <script src="searchindex.js"></script>
+  
+  </head>
+  <body data-default-mode="">
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+  
+  
+  
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header id="pst-header" class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="#">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="_static/mne_rt_logo.svg" class="logo__image only-light" alt="MNE-RT - Home"/>
+    <img src="_static/mne_rt_logo.svg" class="logo__image only-dark pst-js-only" alt="MNE-RT - Home"/>
+  
+  
+</a></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="install.html">
+    Installation
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="tutorial.html">
+    User Guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="api.html">
+    API Reference
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="visualization.html">
+    Visualisation
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="cli.html">
+    CLI
+  </a>
+</li>
+
+            <li class="nav-item dropdown">
+                <button class="btn dropdown-toggle nav-item" type="button"
+                data-bs-toggle="dropdown" aria-expanded="false"
+                aria-controls="pst-nav-more-links">
+                    More
+                </button>
+                <ul id="pst-nav-more-links" class="dropdown-menu">
+                    
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="denoising.html">
+    Artifact Correction
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="modalities.html">
+    Real-time Feature Modalities
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="protocols.html">
+    NF Protocols
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="whats_new.html">
+    What’s new
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="auto_examples/index.html">
+    Examples Gallery
+  </a>
+</li>
+
+                </ul>
+            </li>
+            
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+        </div>
+      
+      
+        <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/payamsash/mne-rt" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-square-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
+        </li>
+</ul></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+    </div>
+  
+
+  
+    <button class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="On this page">
+      <span class="fa-solid fa-outdent"></span>
+    </button>
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+        
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar hide-on-wide">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="install.html">
+    Installation
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="tutorial.html">
+    User Guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="api.html">
+    API Reference
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="visualization.html">
+    Visualisation
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="cli.html">
+    CLI
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="denoising.html">
+    Artifact Correction
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="modalities.html">
+    Real-time Feature Modalities
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="protocols.html">
+    NF Protocols
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="whats_new.html">
+    What’s new
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="auto_examples/index.html">
+    Examples Gallery
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/payamsash/mne-rt" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-square-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
+        </li>
+</ul></div>
+        
+      </div>
+    
+  </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none"></div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <div style="text-align:center; margin-bottom:20px;">
+    <img src="_static/mne_rt_logo.svg" alt="MNE-RT Logo" width="500"/>
+</div><p><strong>MNE-RT</strong> is an open-source Python library for
+<strong>real-time M/EEG signal processing and analysis</strong>, built on
+<a class="reference external" href="https://mne.tools">MNE-Python</a> and
+<a class="reference external" href="https://mne.tools/mne-lsl">MNE-LSL</a>.
+It covers the full real-time pipeline — from amplifier to 3-D brain display,
+in a single, researcher-friendly API designed for neurofeedback, BCI,
+and clinical or basic-science monitoring applications.</p>
+<div style="height:16px;"></div><section id="key-capabilities">
+<h1>Key capabilities<a class="headerlink" href="#key-capabilities" title="Link to this heading">#</a></h1>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 2.2%" />
+<col style="width: 97.8%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p>✔</p></td>
+<td><p><strong>Multiple real-time feature modalities</strong> — sensor power, ERD/ERS, Hjorth parameters,
+spectral centroid and peak, band ratio, cross-frequency coupling (CFC),
+connectivity, instantaneous phase (Hilbert analytic signal),
+graph-theory metrics, and more.
+See <a class="reference internal" href="modalities.html"><span class="doc">Real-time Feature Modalities</span></a> for the full list.</p></td>
+</tr>
+<tr class="row-even"><td><p>✔</p></td>
+<td><p><strong>Sensor and source-space</strong> processing using
+<a class="reference external" href="https://mne.tools">MNE</a> inverse operators (eLORETA, MNE, dSPM).
+Compute and stream cortical-source activity.</p></td>
+</tr>
+<tr class="row-odd"><td><p>✔</p></td>
+<td><p><strong>Live artifact correction</strong> —
+<a class="reference internal" href="generated/mne_rt.tools.ORICA.html#mne_rt.tools.ORICA" title="mne_rt.tools.ORICA"><code class="xref py py-class docutils literal notranslate"><span class="pre">ORICA</span></code></a> (online ICA),
+<a class="reference internal" href="generated/mne_rt.tools.AdaptiveLMSFilter.html#mne_rt.tools.AdaptiveLMSFilter" title="mne_rt.tools.AdaptiveLMSFilter"><code class="xref py py-class docutils literal notranslate"><span class="pre">AdaptiveLMSFilter</span></code></a> (adaptive least-mean-squares),
+<a class="reference internal" href="generated/mne_rt.tools.GEDAIDenoiser.html#mne_rt.tools.GEDAIDenoiser" title="mne_rt.tools.GEDAIDenoiser"><code class="xref py py-class docutils literal notranslate"><span class="pre">GEDAIDenoiser</span></code></a> (generalised eigendecomposition),
+<a class="reference internal" href="generated/mne_rt.tools.ASRDenoiser.html#mne_rt.tools.ASRDenoiser" title="mne_rt.tools.ASRDenoiser"><code class="xref py py-class docutils literal notranslate"><span class="pre">ASRDenoiser</span></code></a> (artifact subspace reconstruction), and
+<a class="reference internal" href="generated/mne_rt.tools.RTMaxwellFilter.html#mne_rt.tools.RTMaxwellFilter" title="mne_rt.tools.RTMaxwellFilter"><code class="xref py py-class docutils literal notranslate"><span class="pre">RTMaxwellFilter</span></code></a> (real-time Maxwell/SSS filtering for MEG).
+See <a class="reference internal" href="denoising.html"><span class="doc">Artifact Correction</span></a> for algorithm details and benchmarks.</p></td>
+</tr>
+<tr class="row-even"><td><p>✔</p></td>
+<td><p><strong>Real-time quality control</strong> — <a class="reference internal" href="generated/mne_rt.tools.BadChannelDetector.html#mne_rt.tools.BadChannelDetector" title="mne_rt.tools.BadChannelDetector"><code class="xref py py-class docutils literal notranslate"><span class="pre">BadChannelDetector</span></code></a>
+flags flat, noisy, or de-correlated channels every window using a
+robust rolling-vote mechanism.  <a class="reference internal" href="generated/mne_rt.tools.RiemannianPotatoDetector.html#mne_rt.tools.RiemannianPotatoDetector" title="mne_rt.tools.RiemannianPotatoDetector"><code class="xref py py-class docutils literal notranslate"><span class="pre">RiemannianPotatoDetector</span></code></a>
+detects artifactual epochs by measuring Riemannian distance from a
+clean-data geometric mean on the SPD manifold.</p></td>
+</tr>
+<tr class="row-odd"><td><p>✔</p></td>
+<td><p><strong>Adaptive feedback protocols</strong> — <a class="reference internal" href="generated/mne_rt.protocols.ThresholdProtocol.html#mne_rt.protocols.ThresholdProtocol" title="mne_rt.protocols.ThresholdProtocol"><code class="xref py py-class docutils literal notranslate"><span class="pre">ThresholdProtocol</span></code></a>,
+<a class="reference internal" href="generated/mne_rt.protocols.ZScoreProtocol.html#mne_rt.protocols.ZScoreProtocol" title="mne_rt.protocols.ZScoreProtocol"><code class="xref py py-class docutils literal notranslate"><span class="pre">ZScoreProtocol</span></code></a>,
+<a class="reference internal" href="generated/mne_rt.protocols.PercentileProtocol.html#mne_rt.protocols.PercentileProtocol" title="mne_rt.protocols.PercentileProtocol"><code class="xref py py-class docutils literal notranslate"><span class="pre">PercentileProtocol</span></code></a>,
+<a class="reference internal" href="generated/mne_rt.protocols.LinearTrendProtocol.html#mne_rt.protocols.LinearTrendProtocol" title="mne_rt.protocols.LinearTrendProtocol"><code class="xref py py-class docutils literal notranslate"><span class="pre">LinearTrendProtocol</span></code></a>
+(OLS-based trend reward — encourages sustained directional change rather
+than single-window threshold crossings),
+<a class="reference internal" href="generated/mne_rt.protocols.ShamProtocol.html#mne_rt.protocols.ShamProtocol" title="mne_rt.protocols.ShamProtocol"><code class="xref py py-class docutils literal notranslate"><span class="pre">ShamProtocol</span></code></a>
+(double-blind sham wrapper for within-session RCTs),
+<a class="reference internal" href="generated/mne_rt.protocols.UpDownStaircaseProtocol.html#mne_rt.protocols.UpDownStaircaseProtocol" title="mne_rt.protocols.UpDownStaircaseProtocol"><code class="xref py py-class docutils literal notranslate"><span class="pre">UpDownStaircaseProtocol</span></code></a>
+(adaptive psychophysics staircase converging to a target success rate),
+<a class="reference internal" href="generated/mne_rt.protocols.MultiBandProtocol.html#mne_rt.protocols.MultiBandProtocol" title="mne_rt.protocols.MultiBandProtocol"><code class="xref py py-class docutils literal notranslate"><span class="pre">MultiBandProtocol</span></code></a>
+(simultaneous two-band reward — e.g., alpha↑ + theta↓),
+<a class="reference internal" href="generated/mne_rt.protocols.RLProtocol.html#mne_rt.protocols.RLProtocol" title="mne_rt.protocols.RLProtocol"><code class="xref py py-class docutils literal notranslate"><span class="pre">RLProtocol</span></code></a>
+(ε-greedy reinforcement-learning threshold search — fully self-calibrating),
+<a class="reference internal" href="generated/mne_rt.protocols.OperantProtocol.html#mne_rt.protocols.OperantProtocol" title="mne_rt.protocols.OperantProtocol"><code class="xref py py-class docutils literal notranslate"><span class="pre">OperantProtocol</span></code></a>
+(partial reinforcement schedules: FR, VR, FI, VI — wraps any inner protocol), and
+<a class="reference internal" href="generated/mne_rt.protocols.TransferProtocol.html#mne_rt.protocols.TransferProtocol" title="mne_rt.protocols.TransferProtocol"><code class="xref py py-class docutils literal notranslate"><span class="pre">TransferProtocol</span></code></a>
+(cross-session z-score seeded from a prior session file — zero warmup)
+give fine-grained control over when to issue a reward.
+See <a class="reference internal" href="protocols.html"><span class="doc">NF Protocols</span></a> for formulas, selection guide, and examples.</p></td>
+</tr>
+<tr class="row-even"><td><p>✔</p></td>
+<td><p><strong>Feature combiners</strong> — blend N parallel feature values into a single feedback score.
+<a class="reference internal" href="generated/mne_rt.combiners.WeightedSumCombiner.html#mne_rt.combiners.WeightedSumCombiner" title="mne_rt.combiners.WeightedSumCombiner"><code class="xref py py-class docutils literal notranslate"><span class="pre">WeightedSumCombiner</span></code></a> (normalised weighted sum),
+<a class="reference internal" href="generated/mne_rt.combiners.GeometricMeanCombiner.html#mne_rt.combiners.GeometricMeanCombiner" title="mne_rt.combiners.GeometricMeanCombiner"><code class="xref py py-class docutils literal notranslate"><span class="pre">GeometricMeanCombiner</span></code></a> (weighted geometric mean — best for
+multiplicative power features), <a class="reference internal" href="generated/mne_rt.combiners.ZScoredNormCombiner.html#mne_rt.combiners.ZScoredNormCombiner" title="mne_rt.combiners.ZScoredNormCombiner"><code class="xref py py-class docutils literal notranslate"><span class="pre">ZScoredNormCombiner</span></code></a>
+(unit-free deviation-from-baseline Euclidean norm), and
+<a class="reference internal" href="generated/mne_rt.combiners.LearnedCombiner.html#mne_rt.combiners.LearnedCombiner" title="mne_rt.combiners.LearnedCombiner"><code class="xref py py-class docutils literal notranslate"><span class="pre">LearnedCombiner</span></code></a> (any fitted <code class="docutils literal notranslate"><span class="pre">sklearn</span></code>-compatible
+estimator).  See <a class="reference internal" href="tutorial.html"><span class="doc">User Guide</span></a> for usage examples.</p></td>
+</tr>
+<tr class="row-odd"><td><p>✔</p></td>
+<td><p><strong>Nine real-time visualisation windows</strong> — a scrolling NF
+<a class="reference internal" href="generated/mne_rt.viz.NFPlot.html#mne_rt.viz.NFPlot" title="mne_rt.viz.NFPlot"><code class="xref py py-class docutils literal notranslate"><span class="pre">NFPlot</span></code></a>, a scrolling raw <a class="reference internal" href="generated/mne_rt.viz.RawPlot.html#mne_rt.viz.RawPlot" title="mne_rt.viz.RawPlot"><code class="xref py py-class docutils literal notranslate"><span class="pre">RawPlot</span></code></a>
+(with bad-channel marking and bad-segment annotation),
+a continuous <a class="reference internal" href="generated/mne_rt.viz.EpochPlot.html#mne_rt.viz.EpochPlot" title="mne_rt.viz.EpochPlot"><code class="xref py py-class docutils literal notranslate"><span class="pre">EpochPlot</span></code></a> with trigger/epoch overlays,
+a live scalp <a class="reference internal" href="generated/mne_rt.viz.TopomapPlot.html#mne_rt.viz.TopomapPlot" title="mne_rt.viz.TopomapPlot"><code class="xref py py-class docutils literal notranslate"><span class="pre">TopomapPlot</span></code></a>,
+an interactive <a class="reference internal" href="generated/mne_rt.viz.BrainPlot.html#mne_rt.viz.BrainPlot" title="mne_rt.viz.BrainPlot"><code class="xref py py-class docutils literal notranslate"><span class="pre">BrainPlot</span></code></a> (3-D cortical surface),
+a scalp-layout <a class="reference internal" href="generated/mne_rt.viz.TopoPlot.html#mne_rt.viz.TopoPlot" title="mne_rt.viz.TopoPlot"><code class="xref py py-class docutils literal notranslate"><span class="pre">TopoPlot</span></code></a> ERP display with ±SEM shading and
+re-referencing, an all-channel <a class="reference internal" href="generated/mne_rt.viz.ButterflyPlot.html#mne_rt.viz.ButterflyPlot" title="mne_rt.viz.ButterflyPlot"><code class="xref py py-class docutils literal notranslate"><span class="pre">ButterflyPlot</span></code></a> with
+region-colour coding, a per-channel <a class="reference internal" href="generated/mne_rt.viz.CompareEvoked.html#mne_rt.viz.CompareEvoked" title="mne_rt.viz.CompareEvoked"><code class="xref py py-class docutils literal notranslate"><span class="pre">CompareEvoked</span></code></a>
+with peak markers, and a Morlet-wavelet <a class="reference internal" href="generated/mne_rt.viz.TFRPlot.html#mne_rt.viz.TFRPlot" title="mne_rt.viz.TFRPlot"><code class="xref py py-class docutils literal notranslate"><span class="pre">TFRPlot</span></code></a>
+(time-frequency heatmaps, induced or evoked mode).  All plots
+update live and support EEG and MEG data.</p></td>
+</tr>
+<tr class="row-even"><td><p>✔</p></td>
+<td><p><strong>Dual feedback output</strong> — broadcast values via OSC (Max/MSP,
+SuperCollider, TouchDesigner) with <a class="reference internal" href="generated/mne_rt.OSCSender.html#mne_rt.OSCSender" title="mne_rt.osc.OSCSender"><code class="xref py py-class docutils literal notranslate"><span class="pre">OSCSender</span></code></a>, or over
+<a class="reference external" href="https://labstreaminglayer.org">LSL</a> with <a class="reference internal" href="generated/mne_rt.LSLSender.html#mne_rt.LSLSender" title="mne_rt.lsl_output.LSLSender"><code class="xref py py-class docutils literal notranslate"><span class="pre">LSLSender</span></code></a>
+for low-latency same-machine integration with PsychoPy, OpenViBE, BCI2000,
+and other LSL-aware apps.</p></td>
+</tr>
+<tr class="row-odd"><td><p>✔</p></td>
+<td><p><strong>CLI</strong> — launch full real-time M/EEG sessions with a single
+<code class="docutils literal notranslate"><span class="pre">mne-rt</span> <span class="pre">run</span></code> command, driven by a YAML config file. See <a class="reference internal" href="cli.html"><span class="doc">CLI</span></a>.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="toctree-wrapper compound">
+</div>
+<div class="toctree-wrapper compound">
+</div>
+<div class="toctree-wrapper compound">
+</div>
+<div style="height:24px;"></div></section>
+<section id="quick-install">
+<h1>Quick install<a class="headerlink" href="#quick-install" title="Link to this heading">#</a></h1>
+<div class="sphinx-tabs docutils container">
+<div aria-label="Tabbed content" class="closeable" role="tablist"><button aria-controls="panel-0-0-0" aria-selected="true" class="sphinx-tabs-tab" id="tab-0-0-0" name="0-0" role="tab" tabindex="0">pip</button><button aria-controls="panel-0-0-1" aria-selected="false" class="sphinx-tabs-tab" id="tab-0-0-1" name="0-1" role="tab" tabindex="-1">uv</button><button aria-controls="panel-0-0-2" aria-selected="false" class="sphinx-tabs-tab" id="tab-0-0-2" name="0-2" role="tab" tabindex="-1">conda / mamba</button></div><div aria-labelledby="tab-0-0-0" class="sphinx-tabs-panel" id="panel-0-0-0" name="0-0" role="tabpanel" tabindex="0"><div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip<span class="w"> </span>install<span class="w"> </span>mne-rt<span class="w">                 </span><span class="c1"># core  (MNE, LSL, OSC included)</span>
+pip<span class="w"> </span>install<span class="w"> </span><span class="s2">&quot;mne-rt[full]&quot;</span><span class="w">         </span><span class="c1"># + 3-D viz, dev tools, docs</span>
+</pre></div>
+</div>
+</div><div aria-labelledby="tab-0-0-1" class="sphinx-tabs-panel" hidden="true" id="panel-0-0-1" name="0-1" role="tabpanel" tabindex="0"><div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Install uv once</span>
+curl<span class="w"> </span>-LsSf<span class="w"> </span>https://astral.sh/uv/install.sh<span class="w"> </span><span class="p">|</span><span class="w"> </span>sh
+
+uv<span class="w"> </span>pip<span class="w"> </span>install<span class="w"> </span>mne-rt
+uv<span class="w"> </span>pip<span class="w"> </span>install<span class="w"> </span><span class="s2">&quot;mne-rt[full]&quot;</span><span class="w">      </span><span class="c1"># + 3-D viz, dev tools, docs</span>
+
+<span class="c1"># Editable install from source</span>
+git<span class="w"> </span>clone<span class="w"> </span>https://github.com/payamsash/mne-rt.git
+<span class="nb">cd</span><span class="w"> </span>mne-rt<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span>uv<span class="w"> </span>pip<span class="w"> </span>install<span class="w"> </span>-e<span class="w"> </span><span class="s2">&quot;.[dev]&quot;</span>
+</pre></div>
+</div>
+</div><div aria-labelledby="tab-0-0-2" class="sphinx-tabs-panel" hidden="true" id="panel-0-0-2" name="0-2" role="tabpanel" tabindex="0"><div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>mamba<span class="w"> </span>install<span class="w"> </span>-c<span class="w"> </span>conda-forge<span class="w"> </span>mne-rt
+</pre></div>
+</div>
+</div></div>
+<p>See <a class="reference internal" href="install.html"><span class="doc">Installation</span></a> for full instructions.</p>
+</section>
+<section id="quick-start">
+<h1>Quick start<a class="headerlink" href="#quick-start" title="Link to this heading">#</a></h1>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">mne_rt</span><span class="w"> </span><span class="kn">import</span> <span class="n">RTStream</span>
+
+<span class="n">nf</span> <span class="o">=</span> <span class="n">RTStream</span><span class="p">(</span>
+    <span class="s2">&quot;sub01&quot;</span><span class="p">,</span>
+    <span class="n">session</span><span class="o">=</span><span class="s2">&quot;01&quot;</span><span class="p">,</span>
+    <span class="n">subjects_dir</span><span class="o">=</span><span class="s2">&quot;/data/subjects&quot;</span><span class="p">,</span>
+    <span class="n">montage</span><span class="o">=</span><span class="s2">&quot;easycap-M1&quot;</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="n">nf</span><span class="o">.</span><span class="n">connect_to_lsl</span><span class="p">(</span><span class="n">mock_lsl</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>          <span class="c1"># or connect to a real amplifier</span>
+<span class="n">nf</span><span class="o">.</span><span class="n">record_main</span><span class="p">(</span>
+    <span class="n">duration</span><span class="o">=</span><span class="mi">300</span><span class="p">,</span>
+    <span class="n">modality</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;sensor_power&quot;</span><span class="p">,</span> <span class="s2">&quot;erd_ers&quot;</span><span class="p">],</span>
+    <span class="n">show_nf_signal</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="pipeline-overview">
+<h1>Pipeline overview<a class="headerlink" href="#pipeline-overview" title="Link to this heading">#</a></h1>
+<div style="overflow-x:auto; margin:16px 0;">
+<table style="border-collapse:separate; border-spacing:0; width:100%; font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif; font-size:13px;">
+<thead>
+  <tr>
+    <th style="background:#1e40af;color:white;padding:8px 14px;border-radius:8px 0 0 0;white-space:nowrap;">Stage</th>
+    <th style="background:#1e40af;color:white;padding:8px 14px;">Class / Function</th>
+    <th style="background:#1e40af;color:white;padding:8px 14px;border-radius:0 8px 0 0;">Notes</th>
+  </tr>
+</thead>
+<tbody>
+  <tr style="background:#eff6ff;">
+    <td style="padding:7px 14px;border-bottom:1px solid #dbeafe;font-weight:600;white-space:nowrap;">① Acquisition</td>
+    <td style="padding:7px 14px;border-bottom:1px solid #dbeafe;"><code>RTStream.connect_to_lsl()</code></td>
+    <td style="padding:7px 14px;border-bottom:1px solid #dbeafe;">Hardware amplifier or mock replay via mne-lsl <code>StreamInlet</code></td>
+  </tr>
+  <tr style="background:#f0fdf4;">
+    <td style="padding:7px 14px;border-bottom:1px solid #dcfce7;font-weight:600;white-space:nowrap;">② Baseline</td>
+    <td style="padding:7px 14px;border-bottom:1px solid #dcfce7;"><code>RTStream.record_baseline()</code></td>
+    <td style="padding:7px 14px;border-bottom:1px solid #dcfce7;">Bad-channel detection · ICA · noise covariance · inverse operator</td>
+  </tr>
+  <tr style="background:#eff6ff;">
+    <td style="padding:7px 14px;border-bottom:1px solid #dbeafe;font-weight:600;white-space:nowrap;">③ Quality control</td>
+    <td style="padding:7px 14px;border-bottom:1px solid #dbeafe;"><code>BadChannelDetector</code> · <code>RiemannianPotatoDetector</code></td>
+    <td style="padding:7px 14px;border-bottom:1px solid #dbeafe;">Flags flat / noisy channels and artifactual covariance windows every epoch</td>
+  </tr>
+  <tr style="background:#fffbeb;">
+    <td style="padding:7px 14px;border-bottom:1px solid #fef3c7;font-weight:600;white-space:nowrap;">④ Artifact correction</td>
+    <td style="padding:7px 14px;border-bottom:1px solid #fef3c7;"><code>ORICA</code> · <code>AdaptiveLMS</code> · <code>GEDAIDenoiser</code> · <code>ASRDenoiser</code> · <code>RTMaxwellFilter</code></td>
+    <td style="padding:7px 14px;border-bottom:1px solid #fef3c7;">One or more methods selected per session; all operate sample-by-sample</td>
+  </tr>
+  <tr style="background:#f5f3ff;">
+    <td style="padding:7px 14px;border-bottom:1px solid #ede9fe;font-weight:600;white-space:nowrap;">⑤ Feature extraction</td>
+    <td style="padding:7px 14px;border-bottom:1px solid #ede9fe;"><code>record_main(modality=[…])</code></td>
+    <td style="padding:7px 14px;border-bottom:1px solid #ede9fe;">20 feature modalities in sensor or source space; parallel thread-pool per window</td>
+  </tr>
+  <tr style="background:#ecfdf5;">
+    <td style="padding:7px 14px;border-bottom:1px solid #d1fae5;font-weight:600;white-space:nowrap;">⑥ Feedback protocol</td>
+    <td style="padding:7px 14px;border-bottom:1px solid #d1fae5;"><code>ThresholdProtocol</code> · <code>ZScoreProtocol</code> · <code>PercentileProtocol</code> · <code>LinearTrendProtocol</code> · <code>ShamProtocol</code> · <code>UpDownStaircaseProtocol</code> · <code>MultiBandProtocol</code> · <code>RLProtocol</code> · <code>OperantProtocol</code> · <code>TransferProtocol</code></td>
+    <td style="padding:7px 14px;border-bottom:1px solid #d1fae5;">Maps feature value → output signal; all are stateful and adaptive</td>
+  </tr>
+  <tr style="background:#eff6ff;">
+    <td style="padding:7px 14px;border-bottom:1px solid #dbeafe;font-weight:600;white-space:nowrap;">⑦ Visualisation</td>
+    <td style="padding:7px 14px;border-bottom:1px solid #dbeafe;"><code>NFPlot</code> · <code>RawPlot</code> · <code>EpochPlot</code> · <code>TopomapPlot</code> · <code>BrainPlot</code> · <code>TopoPlot</code> · <code>ButterflyPlot</code> · <code>CompareEvoked</code> · <code>TFRPlot</code></td>
+    <td style="padding:7px 14px;border-bottom:1px solid #dbeafe;">Scrolling signal · epoch overlays · scalp topo · 3-D brain · scalp-layout ERP · butterfly overlay · per-channel comparison · TFR heatmaps</td>
+  </tr>
+  <tr style="background:#f0fdf4;">
+    <td style="padding:7px 14px;font-weight:600;white-space:nowrap;">⑧ Feedback output</td>
+    <td style="padding:7px 14px;"><code>OSCSender</code> · <code>LSLSender</code></td>
+    <td style="padding:7px 14px;">UDP/OSC to Max·MSP, SuperCollider, PD · LSL for PsychoPy, OpenViBE, BCI2000</td>
+  </tr>
+</tbody>
+</table>
+</div></section>
+<section id="cite">
+<h1>Cite<a class="headerlink" href="#cite" title="Link to this heading">#</a></h1>
+<p>If you use MNE-RT, please cite <a class="footnote-reference brackets" href="#footcite-shabestari2025advances" id="id1" role="doc-noteref"><span class="fn-bracket">[</span>1<span class="fn-bracket">]</span></a>.</p>
+<div class="docutils container" id="id2">
+<aside class="footnote-list brackets">
+<aside class="footnote brackets" id="footcite-shabestari2025advances" role="doc-footnote">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id1">1</a><span class="fn-bracket">]</span></span>
+<p>Payam S Shabestari, Delphine Ribes, Lara Défayes, Danpeng Cai, Emily Groves, Harry H Behjat, Dimitri Van de Ville, Tobias Kleinjung, Adrian Naas, Nicolas Henchoz, and others. Advances on real time m/eeg neural feature extraction. In <em>2025 IEEE 38th International Symposium on Computer-Based Medical Systems (CBMS)</em>, 337–338. IEEE, 2025.</p>
+</aside>
+</aside>
+</div>
+<div class="sphinx-tabs docutils container">
+<div aria-label="Tabbed content" class="closeable" role="tablist"><button aria-controls="panel-1-1-0" aria-selected="true" class="sphinx-tabs-tab" id="tab-1-1-0" name="1-0" role="tab" tabindex="0">APA</button><button aria-controls="panel-1-1-1" aria-selected="false" class="sphinx-tabs-tab" id="tab-1-1-1" name="1-1" role="tab" tabindex="-1">BibTeX</button></div><div aria-labelledby="tab-1-1-0" class="sphinx-tabs-panel" id="panel-1-1-0" name="1-0" role="tabpanel" tabindex="0"><div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Shabestari, P. S., Ribes, D., Défayes, L., Cai, D., Groves, E.,
+Behjat, H. H., … &amp; Neff, P. (2025). Advances on Real Time M/EEG
+Neural Feature Extraction. IEEE CBMS 2025.
+</pre></div>
+</div>
+</div><div aria-labelledby="tab-1-1-1" class="sphinx-tabs-panel" hidden="true" id="panel-1-1-1" name="1-1" role="tabpanel" tabindex="0"><div class="highlight-bibtex notranslate"><div class="highlight"><pre><span></span><span class="nc">@inproceedings</span><span class="p">{</span><span class="nl">shabestari2025advances</span><span class="p">,</span>
+<span class="w">    </span><span class="na">title</span><span class="w">   </span><span class="p">=</span><span class="w"> </span><span class="s">{Advances on Real Time M/EEG Neural Feature Extraction}</span><span class="p">,</span>
+<span class="w">    </span><span class="na">author</span><span class="w">  </span><span class="p">=</span><span class="w"> </span><span class="s">{Shabestari, Payam S and others}</span><span class="p">,</span>
+<span class="w">    </span><span class="na">booktitle</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="s">{2025 IEEE 38th CBMS}</span><span class="p">,</span>
+<span class="w">    </span><span class="na">pages</span><span class="w">   </span><span class="p">=</span><span class="w"> </span><span class="s">{337--338}</span><span class="p">,</span>
+<span class="w">    </span><span class="na">year</span><span class="w">    </span><span class="p">=</span><span class="w"> </span><span class="s">{2025}</span><span class="p">,</span>
+<span class="w">    </span><span class="na">organization</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="s">{IEEE}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div></div>
+<div style="height:20px;"></div><a class="reference internal image-reference" href="_images/SNF.png"><img alt="SNSF" class="align-right" src="_images/SNF.png" width="320" />
+</a>
+<p>Development was supported by the
+<a class="reference external" href="https://www.snf.ch/en">Swiss National Science Foundation</a> (grant number — 208164).</p>
+</section>
+
+
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="right-next"
+       href="install.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">Installation</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <dialog id="pst-secondary-sidebar-modal"></dialog>
+                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+<div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav id="pst-page-toc-nav" class="page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="pst-show_toc_level nav section-nav flex-column">
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#">Key capabilities</a><ul class="pst-show_toc_level nav section-nav flex-column">
+</ul>
+</li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#quick-install">Quick install</a></li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#quick-start">Quick start</a></li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#pipeline-overview">Pipeline overview</a></li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#cite">Cite</a></li>
+</ul>
+
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="_static/scripts/bootstrap.js?digest=90905a2f556bf617f1a9"></script>
+<script defer src="_static/scripts/pydata-sphinx-theme.js?digest=90905a2f556bf617f1a9"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright 2025, Payam S. Shabestari.
+      <br/>
+    
+  </p>
+</div>
+      
+        <div class="footer-item">
+
+  <p class="sphinx-version">
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 9.0.4.
+    <br/>
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
+<p class="theme-version">
+  <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.20.0.
+</p></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>

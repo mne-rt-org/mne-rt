@@ -1,0 +1,780 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../../../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>mne_rt.protocols.zscores &#8212; MNE-RT</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../../_static/styles/theme.css?digest=90905a2f556bf617f1a9" rel="stylesheet" />
+<link href="../../../_static/styles/pydata-sphinx-theme.css?digest=90905a2f556bf617f1a9" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/sg_gallery.css?v=fd6457a4" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/sg_gallery-binder.css?v=f4aeca0c" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/sg_gallery-dataframe.css?v=2082cf3c" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/sg_gallery-rendered-html.css?v=1277b6f3" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/custom.css?v=5bf657dd" />
+  
+  <!-- So that users can add custom icons -->
+  <script defer src="../../../_static/scripts/fontawesome.js?digest=90905a2f556bf617f1a9"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../../_static/scripts/bootstrap.js?digest=90905a2f556bf617f1a9" />
+<link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=90905a2f556bf617f1a9" />
+
+    <script src="../../../_static/documentation_options.js?v=8d563738"></script>
+    <script src="../../../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="../../../_static/sg-tags.js?v=d80f6fa4"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = '_modules/mne_rt/protocols/zscores';</script>
+    <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="" />
+  
+    
+    <script src="../../../_static/searchtools.js"></script>
+    <script src="../../../_static/language_data.js"></script>
+    <script src="../../../searchindex.js"></script>
+  
+  </head>
+  <body data-default-mode="">
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+  
+  
+  
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../../../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header id="pst-header" class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../../../index.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../../../_static/mne_rt_logo.svg" class="logo__image only-light" alt="MNE-RT - Home"/>
+    <img src="../../../_static/mne_rt_logo.svg" class="logo__image only-dark pst-js-only" alt="MNE-RT - Home"/>
+  
+  
+</a></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../install.html">
+    Installation
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../tutorial.html">
+    User Guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../api.html">
+    API Reference
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../visualization.html">
+    Visualisation
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../cli.html">
+    CLI
+  </a>
+</li>
+
+            <li class="nav-item dropdown">
+                <button class="btn dropdown-toggle nav-item" type="button"
+                data-bs-toggle="dropdown" aria-expanded="false"
+                aria-controls="pst-nav-more-links">
+                    More
+                </button>
+                <ul id="pst-nav-more-links" class="dropdown-menu">
+                    
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../../../denoising.html">
+    Artifact Correction
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../../../modalities.html">
+    Real-time Feature Modalities
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../../../protocols.html">
+    NF Protocols
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../../../whats_new.html">
+    What’s new
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../../../auto_examples/index.html">
+    Examples Gallery
+  </a>
+</li>
+
+                </ul>
+            </li>
+            
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+        </div>
+      
+      
+        <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/payamsash/mne-rt" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-square-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
+        </li>
+</ul></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+    </div>
+  
+
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+        
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar hide-on-wide">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../install.html">
+    Installation
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../tutorial.html">
+    User Guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../api.html">
+    API Reference
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../visualization.html">
+    Visualisation
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../cli.html">
+    CLI
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../denoising.html">
+    Artifact Correction
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../modalities.html">
+    Real-time Feature Modalities
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../protocols.html">
+    NF Protocols
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../whats_new.html">
+    What’s new
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../auto_examples/index.html">
+    Examples Gallery
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/payamsash/mne-rt" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-square-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
+        </li>
+</ul></div>
+        
+      </div>
+    
+  </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../../../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    
+    <li class="breadcrumb-item"><a href="../../index.html" class="nav-link">Module code</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">mne_rt.protocols.zscores</span></li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <h1>Source code for mne_rt.protocols.zscores</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;Z-score-based feedback reward protocol for MNE-RT.</span>
+
+<span class="sd">This module provides :class:`ZScoreProtocol`, a stateful protocol that</span>
+<span class="sd">normalises incoming NF values against a running baseline mean and standard</span>
+<span class="sd">deviation and returns a reward proportional to the resulting z-score.</span>
+
+<span class="sd">Classes</span>
+<span class="sd">-------</span>
+<span class="sd">ZScoreProtocol</span>
+<span class="sd">    Rolling z-score normaliser with configurable direction and warmup.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">collections</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Optional</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">ZScoreProtocol</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Z-score feedback protocol with rolling baseline normalisation.</span>
+
+<span class="sd">    Normalises each incoming NF value against the running mean and standard</span>
+<span class="sd">    deviation accumulated since initialisation (or the last :meth:`reset`).</span>
+<span class="sd">    A reward is issued when the z-score magnitude exceeds</span>
+<span class="sd">    ``zscore_threshold`` in the requested ``direction``.</span>
+
+<span class="sd">    During the first ``warmup_windows`` calls to :meth:`evaluate` the</span>
+<span class="sd">    baseline statistics are accumulating; ``crossed`` is always ``False``</span>
+<span class="sd">    and ``magnitude`` is always ``0.0`` until warmup completes.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    direction : {&quot;up&quot;, &quot;down&quot;}</span>
+<span class="sd">        &quot;up&quot;  -&gt; reward when z-score &gt;  ``zscore_threshold``.</span>
+<span class="sd">        &quot;down&quot; -&gt; reward when z-score &lt; -``zscore_threshold``.</span>
+<span class="sd">    warmup_windows : int</span>
+<span class="sd">        Number of initial evaluations used solely to seed the baseline</span>
+<span class="sd">        statistics before any reward can be issued. Default is 20.</span>
+<span class="sd">    smoothing : float</span>
+<span class="sd">        EMA smoothing coefficient applied to the raw input before</span>
+<span class="sd">        z-scoring.  Must be in ``[0, 1)``.  ``0.0`` disables smoothing.</span>
+<span class="sd">        Applied as: ``smoothed = (1 - smoothing) * new + smoothing * prev``.</span>
+<span class="sd">        Default is 0.0.</span>
+<span class="sd">    min_std : float</span>
+<span class="sd">        Floor applied to the running standard deviation to prevent</span>
+<span class="sd">        division by zero or near-zero blowup. Default is 1e-6.</span>
+<span class="sd">    zscore_threshold : float</span>
+<span class="sd">        Minimum absolute z-score required to issue a reward. Default is 0.5.</span>
+
+<span class="sd">    Raises</span>
+<span class="sd">    ------</span>
+<span class="sd">    ValueError</span>
+<span class="sd">        If any parameter is outside its valid range.</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    The running mean and variance are updated with Welford&#39;s online algorithm,</span>
+<span class="sd">    which is numerically stable and requires O(1) memory per update.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    Reward upward alpha-power deviations beyond half a standard deviation::</span>
+
+<span class="sd">        proto = ZScoreProtocol(direction=&quot;up&quot;, zscore_threshold=0.5)</span>
+<span class="sd">        for value in nf_stream:</span>
+<span class="sd">            crossed, magnitude = proto.evaluate(value)</span>
+<span class="sd">            if crossed:</span>
+<span class="sd">                send_reward(magnitude)</span>
+
+<span class="sd">    .. versionadded:: 1.0.0</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="ZScoreProtocol.__init__">
+<a class="viewcode-back" href="../../../generated/mne_rt.protocols.ZScoreProtocol.html#mne_rt.protocols.ZScoreProtocol.__init__">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">direction</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;up&quot;</span><span class="p">,</span>
+        <span class="n">warmup_windows</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">20</span><span class="p">,</span>
+        <span class="n">smoothing</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.0</span><span class="p">,</span>
+        <span class="n">min_std</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1e-6</span><span class="p">,</span>
+        <span class="n">zscore_threshold</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.5</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">direction</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;up&quot;</span><span class="p">,</span> <span class="s2">&quot;down&quot;</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;direction must be &#39;up&#39; or &#39;down&#39;, got </span><span class="si">{</span><span class="n">direction</span><span class="si">!r}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">warmup_windows</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;warmup_windows must be &gt;= 1, got </span><span class="si">{</span><span class="n">warmup_windows</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="mf">0.0</span> <span class="o">&lt;=</span> <span class="n">smoothing</span> <span class="o">&lt;</span> <span class="mf">1.0</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;smoothing must be in [0, 1), got </span><span class="si">{</span><span class="n">smoothing</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">min_std</span> <span class="o">&lt;=</span> <span class="mf">0.0</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;min_std must be &gt; 0, got </span><span class="si">{</span><span class="n">min_std</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">zscore_threshold</span> <span class="o">&lt;</span> <span class="mf">0.0</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;zscore_threshold must be &gt;= 0, got </span><span class="si">{</span><span class="n">zscore_threshold</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">direction</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">direction</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">warmup_windows</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">warmup_windows</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">smoothing</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">smoothing</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">min_std</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">min_std</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">zscore_threshold</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">zscore_threshold</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_n_evaluated</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_smoothed</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_zscore</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.0</span>
+
+        <span class="c1"># Welford online mean/variance accumulators</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_welford_mean</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_welford_m2</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.0</span></div>
+
+
+<div class="viewcode-block" id="ZScoreProtocol.evaluate">
+<a class="viewcode-back" href="../../../generated/mne_rt.protocols.ZScoreProtocol.html#mne_rt.protocols.ZScoreProtocol.evaluate">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">evaluate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">bool</span><span class="p">,</span> <span class="nb">float</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Evaluate one NF value and return (crossed, magnitude).</span>
+
+<span class="sd">        Updates the running baseline with the (optionally smoothed) input,</span>
+<span class="sd">        computes the z-score, and determines whether the reward criterion</span>
+<span class="sd">        is met.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        value : float</span>
+<span class="sd">            Current NF feature value.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        crossed : bool</span>
+<span class="sd">            True if the z-score criterion is met in the target direction</span>
+<span class="sd">            and warmup has completed.</span>
+<span class="sd">        magnitude : float</span>
+<span class="sd">            Absolute value of the z-score when ``crossed`` is True;</span>
+<span class="sd">            ``0.0`` otherwise.</span>
+
+<span class="sd">        Notes</span>
+<span class="sd">        -----</span>
+<span class="sd">        During warmup (``n_evaluated &lt; warmup_windows``) this method always</span>
+<span class="sd">        returns ``(False, 0.0)`` while still accumulating baseline statistics.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">smoothing</span> <span class="o">&gt;</span> <span class="mf">0.0</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_smoothed</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_smoothed</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_smoothed</span> <span class="o">=</span> <span class="p">(</span><span class="mf">1.0</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">smoothing</span><span class="p">)</span> <span class="o">*</span> <span class="n">value</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">smoothing</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">_smoothed</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_smoothed</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+
+        <span class="n">smoothed</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_smoothed</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_n_evaluated</span> <span class="o">+=</span> <span class="mi">1</span>
+
+        <span class="c1"># Welford&#39;s online update</span>
+        <span class="n">delta</span> <span class="o">=</span> <span class="n">smoothed</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">_welford_mean</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_welford_mean</span> <span class="o">+=</span> <span class="n">delta</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">_n_evaluated</span>
+        <span class="n">delta2</span> <span class="o">=</span> <span class="n">smoothed</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">_welford_mean</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_welford_m2</span> <span class="o">+=</span> <span class="n">delta</span> <span class="o">*</span> <span class="n">delta2</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_n_evaluated</span> <span class="o">&lt;</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="n">std</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">min_std</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">std</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span>
+                <span class="nb">float</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_welford_m2</span> <span class="o">/</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_n_evaluated</span> <span class="o">-</span> <span class="mi">1</span><span class="p">))),</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">min_std</span><span class="p">,</span>
+            <span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_zscore</span> <span class="o">=</span> <span class="p">(</span><span class="n">smoothed</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">_welford_mean</span><span class="p">)</span> <span class="o">/</span> <span class="n">std</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_n_evaluated</span> <span class="o">&lt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">warmup_windows</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">False</span><span class="p">,</span> <span class="mf">0.0</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">direction</span> <span class="o">==</span> <span class="s2">&quot;up&quot;</span><span class="p">:</span>
+            <span class="n">crossed</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_zscore</span> <span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">zscore_threshold</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">crossed</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_zscore</span> <span class="o">&lt;</span> <span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">zscore_threshold</span>
+
+        <span class="n">magnitude</span> <span class="o">=</span> <span class="nb">abs</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_zscore</span><span class="p">)</span> <span class="k">if</span> <span class="n">crossed</span> <span class="k">else</span> <span class="mf">0.0</span>
+        <span class="k">return</span> <span class="n">crossed</span><span class="p">,</span> <span class="n">magnitude</span></div>
+
+
+<div class="viewcode-block" id="ZScoreProtocol.reset">
+<a class="viewcode-back" href="../../../generated/mne_rt.protocols.ZScoreProtocol.html#mne_rt.protocols.ZScoreProtocol.reset">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">reset</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Reset all state.</span>
+
+<span class="sd">        Clears the running baseline statistics, smoothed value, z-score,</span>
+<span class="sd">        and evaluation counter.  All constructor parameters are preserved.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_n_evaluated</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_smoothed</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_zscore</span> <span class="o">=</span> <span class="mf">0.0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_welford_mean</span> <span class="o">=</span> <span class="mf">0.0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_welford_m2</span> <span class="o">=</span> <span class="mf">0.0</span></div>
+
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">n_evaluated</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Total number of values evaluated since init or last reset.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_n_evaluated</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">zscore</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Z-score computed during the most recent :meth:`evaluate` call.</span>
+
+<span class="sd">        Returns ``0.0`` before any evaluation.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_zscore</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">mean_</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Current running baseline mean.</span>
+
+<span class="sd">        Returns ``0.0`` before any evaluation.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_welford_mean</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">std_</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Current running baseline standard deviation.</span>
+
+<span class="sd">        Returns ``min_std`` before at least two evaluations.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_n_evaluated</span> <span class="o">&lt;</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">min_std</span>
+        <span class="k">return</span> <span class="nb">max</span><span class="p">(</span>
+            <span class="nb">float</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_welford_m2</span> <span class="o">/</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_n_evaluated</span> <span class="o">-</span> <span class="mi">1</span><span class="p">))),</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">min_std</span><span class="p">,</span>
+        <span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">current_threshold</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Current reward boundary in raw NF-signal units, or ``None``.</span>
+
+<span class="sd">        ``ZScoreProtocol`` rewards on a *relative* criterion</span>
+<span class="sd">        (``zscore_threshold`` standard deviations from the running mean)</span>
+<span class="sd">        rather than a fixed level, so this converts that criterion back to</span>
+<span class="sd">        the signal&#39;s native units as ``mean_ ± zscore_threshold * std_``</span>
+<span class="sd">        (``+`` for ``direction=&quot;up&quot;``, ``-`` for ``&quot;down&quot;``) for display by</span>
+<span class="sd">        :class:`~mne_rt.viz.NFPlot`.  Returns ``None`` during warmup, before</span>
+<span class="sd">        the baseline mean/std are meaningful.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_n_evaluated</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">warmup_windows</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">None</span>
+        <span class="n">sign</span> <span class="o">=</span> <span class="mf">1.0</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">direction</span> <span class="o">==</span> <span class="s2">&quot;up&quot;</span> <span class="k">else</span> <span class="o">-</span><span class="mf">1.0</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">mean_</span> <span class="o">+</span> <span class="n">sign</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">zscore_threshold</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">std_</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="k">return</span> <span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;ZScoreProtocol(&quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;direction=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">direction</span><span class="si">!r}</span><span class="s2">, &quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;warmup_windows=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">warmup_windows</span><span class="si">}</span><span class="s2">, &quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;zscore=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_zscore</span><span class="si">:</span><span class="s2">.4g</span><span class="si">}</span><span class="s2">, &quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;mean=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">mean_</span><span class="si">:</span><span class="s2">.4g</span><span class="si">}</span><span class="s2">, &quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;std=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">std_</span><span class="si">:</span><span class="s2">.4g</span><span class="si">}</span><span class="s2">, &quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;n_evaluated=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_n_evaluated</span><span class="si">}</span><span class="s2">)&quot;</span>
+        <span class="p">)</span>
+</pre></div>
+
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../../../_static/scripts/bootstrap.js?digest=90905a2f556bf617f1a9"></script>
+<script defer src="../../../_static/scripts/pydata-sphinx-theme.js?digest=90905a2f556bf617f1a9"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright 2025, Payam S. Shabestari.
+      <br/>
+    
+  </p>
+</div>
+      
+        <div class="footer-item">
+
+  <p class="sphinx-version">
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 9.0.4.
+    <br/>
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
+<p class="theme-version">
+  <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.20.0.
+</p></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>

@@ -1,0 +1,1296 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../../../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>mne_rt.viz.nf_plot &#8212; MNE-RT</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../../_static/styles/theme.css?digest=90905a2f556bf617f1a9" rel="stylesheet" />
+<link href="../../../_static/styles/pydata-sphinx-theme.css?digest=90905a2f556bf617f1a9" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/sg_gallery.css?v=fd6457a4" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/sg_gallery-binder.css?v=f4aeca0c" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/sg_gallery-dataframe.css?v=2082cf3c" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/sg_gallery-rendered-html.css?v=1277b6f3" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/custom.css?v=5bf657dd" />
+  
+  <!-- So that users can add custom icons -->
+  <script defer src="../../../_static/scripts/fontawesome.js?digest=90905a2f556bf617f1a9"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../../_static/scripts/bootstrap.js?digest=90905a2f556bf617f1a9" />
+<link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=90905a2f556bf617f1a9" />
+
+    <script src="../../../_static/documentation_options.js?v=8d563738"></script>
+    <script src="../../../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="../../../_static/sg-tags.js?v=d80f6fa4"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = '_modules/mne_rt/viz/nf_plot';</script>
+    <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="" />
+  
+    
+    <script src="../../../_static/searchtools.js"></script>
+    <script src="../../../_static/language_data.js"></script>
+    <script src="../../../searchindex.js"></script>
+  
+  </head>
+  <body data-default-mode="">
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+  
+  
+  
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../../../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header id="pst-header" class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../../../index.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../../../_static/mne_rt_logo.svg" class="logo__image only-light" alt="MNE-RT - Home"/>
+    <img src="../../../_static/mne_rt_logo.svg" class="logo__image only-dark pst-js-only" alt="MNE-RT - Home"/>
+  
+  
+</a></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../install.html">
+    Installation
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../tutorial.html">
+    User Guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../api.html">
+    API Reference
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../visualization.html">
+    Visualisation
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../cli.html">
+    CLI
+  </a>
+</li>
+
+            <li class="nav-item dropdown">
+                <button class="btn dropdown-toggle nav-item" type="button"
+                data-bs-toggle="dropdown" aria-expanded="false"
+                aria-controls="pst-nav-more-links">
+                    More
+                </button>
+                <ul id="pst-nav-more-links" class="dropdown-menu">
+                    
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../../../denoising.html">
+    Artifact Correction
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../../../modalities.html">
+    Real-time Feature Modalities
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../../../protocols.html">
+    NF Protocols
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../../../whats_new.html">
+    What’s new
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../../../auto_examples/index.html">
+    Examples Gallery
+  </a>
+</li>
+
+                </ul>
+            </li>
+            
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+        </div>
+      
+      
+        <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/payamsash/mne-rt" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-square-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
+        </li>
+</ul></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+    </div>
+  
+
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+        
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar hide-on-wide">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../install.html">
+    Installation
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../tutorial.html">
+    User Guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../api.html">
+    API Reference
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../visualization.html">
+    Visualisation
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../cli.html">
+    CLI
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../denoising.html">
+    Artifact Correction
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../modalities.html">
+    Real-time Feature Modalities
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../protocols.html">
+    NF Protocols
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../whats_new.html">
+    What’s new
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../auto_examples/index.html">
+    Examples Gallery
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/payamsash/mne-rt" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-square-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
+        </li>
+</ul></div>
+        
+      </div>
+    
+  </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../../../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    
+    <li class="breadcrumb-item"><a href="../../index.html" class="nav-link">Module code</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">mne_rt.viz.nf_plot</span></li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <h1>Source code for mne_rt.viz.nf_plot</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;Real-time neurofeedback signal monitor.</span>
+
+<span class="sd">Dark-themed scrolling window built on Qt (via qtpy) + pyqtgraph.</span>
+
+<span class="sd">Classes</span>
+<span class="sd">-------</span>
+<span class="sd">NFPlot</span>
+<span class="sd">    Scrolling multi-channel real-time NF signal monitor.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">datetime</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Optional</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pyqtgraph</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pg</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pyqtgraph.exporters</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">qtpy.QtCore</span><span class="w"> </span><span class="kn">import</span> <span class="n">Qt</span><span class="p">,</span> <span class="n">Signal</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">qtpy.QtWidgets</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">QCheckBox</span><span class="p">,</span>
+    <span class="n">QComboBox</span><span class="p">,</span>
+    <span class="n">QGroupBox</span><span class="p">,</span>
+    <span class="n">QHBoxLayout</span><span class="p">,</span>
+    <span class="n">QLabel</span><span class="p">,</span>
+    <span class="n">QMainWindow</span><span class="p">,</span>
+    <span class="n">QPushButton</span><span class="p">,</span>
+    <span class="n">QScrollArea</span><span class="p">,</span>
+    <span class="n">QSizePolicy</span><span class="p">,</span>
+    <span class="n">QVBoxLayout</span><span class="p">,</span>
+    <span class="n">QWidget</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="c1"># --------------------------------------------------------------------------</span>
+<span class="c1"># Constants</span>
+<span class="c1"># --------------------------------------------------------------------------</span>
+
+<span class="n">_COLORS</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="s2">&quot;#5DA5A4&quot;</span><span class="p">,</span>  <span class="c1"># teal</span>
+    <span class="s2">&quot;#FF6B6B&quot;</span><span class="p">,</span>  <span class="c1"># coral</span>
+    <span class="s2">&quot;#FFD93D&quot;</span><span class="p">,</span>  <span class="c1"># yellow</span>
+    <span class="s2">&quot;#6BCB77&quot;</span><span class="p">,</span>  <span class="c1"># green</span>
+    <span class="s2">&quot;#4D96FF&quot;</span><span class="p">,</span>  <span class="c1"># blue</span>
+    <span class="s2">&quot;#FF922B&quot;</span><span class="p">,</span>  <span class="c1"># orange</span>
+    <span class="s2">&quot;#CC5DE8&quot;</span><span class="p">,</span>  <span class="c1"># purple</span>
+    <span class="s2">&quot;#F8BBD9&quot;</span><span class="p">,</span>  <span class="c1"># pink</span>
+<span class="p">]</span>
+
+<span class="n">_LABELS</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">&quot;sensor_power&quot;</span><span class="p">:</span> <span class="s2">&quot;Sensor Power&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;band_ratio&quot;</span><span class="p">:</span> <span class="s2">&quot;Band Ratio&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;source_power&quot;</span><span class="p">:</span> <span class="s2">&quot;Source Power&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;sensor_connectivity&quot;</span><span class="p">:</span> <span class="s2">&quot;Sensor Connectivity&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;source_connectivity&quot;</span><span class="p">:</span> <span class="s2">&quot;Source Connectivity&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;sensor_graph&quot;</span><span class="p">:</span> <span class="s2">&quot;Sensor Graph&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;source_graph&quot;</span><span class="p">:</span> <span class="s2">&quot;Source Graph&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;entropy&quot;</span><span class="p">:</span> <span class="s2">&quot;Entropy&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;argmax_freq&quot;</span><span class="p">:</span> <span class="s2">&quot;Peak Frequency&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;individual_peak_power&quot;</span><span class="p">:</span> <span class="s2">&quot;Peak Power&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;cfc_sensor&quot;</span><span class="p">:</span> <span class="s2">&quot;Sensor CFC&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;erd_ers&quot;</span><span class="p">:</span> <span class="s2">&quot;ERD/ERS&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;laterality&quot;</span><span class="p">:</span> <span class="s2">&quot;Laterality&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;hjorth&quot;</span><span class="p">:</span> <span class="s2">&quot;Hjorth&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;spectral_centroid&quot;</span><span class="p">:</span> <span class="s2">&quot;Spectral Centroid&quot;</span><span class="p">,</span>
+<span class="p">}</span>
+
+<span class="n">_UNITS</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">&quot;sensor_power&quot;</span><span class="p">:</span> <span class="s2">&quot;V²/Hz&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;band_ratio&quot;</span><span class="p">:</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;source_power&quot;</span><span class="p">:</span> <span class="s2">&quot;a.u.&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;sensor_connectivity&quot;</span><span class="p">:</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;source_connectivity&quot;</span><span class="p">:</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;sensor_graph&quot;</span><span class="p">:</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;source_graph&quot;</span><span class="p">:</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;entropy&quot;</span><span class="p">:</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;argmax_freq&quot;</span><span class="p">:</span> <span class="s2">&quot;Hz&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;individual_peak_power&quot;</span><span class="p">:</span> <span class="s2">&quot;V²/Hz&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;cfc_sensor&quot;</span><span class="p">:</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;erd_ers&quot;</span><span class="p">:</span> <span class="s2">&quot;%&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;laterality&quot;</span><span class="p">:</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;hjorth&quot;</span><span class="p">:</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;spectral_centroid&quot;</span><span class="p">:</span> <span class="s2">&quot;Hz&quot;</span><span class="p">,</span>
+<span class="p">}</span>
+
+<span class="n">_TIME_WINDOW_OPTIONS</span> <span class="o">=</span> <span class="p">[</span><span class="mi">5</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">20</span><span class="p">,</span> <span class="mi">30</span><span class="p">,</span> <span class="mi">60</span><span class="p">]</span>
+
+<span class="n">_THRESHOLD_COLOR</span> <span class="o">=</span> <span class="s2">&quot;#FFB454&quot;</span>  <span class="c1"># warm gold, distinct from the _COLORS trace palette</span>
+
+<span class="n">_REWARD_COLOR</span> <span class="o">=</span> <span class="p">(</span><span class="mi">40</span><span class="p">,</span> <span class="mi">235</span><span class="p">,</span> <span class="mi">100</span><span class="p">)</span>  <span class="c1"># vivid, high-visibility green -- unmistakable at a glance</span>
+<span class="n">_REWARD_ALPHA</span> <span class="o">=</span> <span class="mi">31</span>  <span class="c1"># 0-255 (~0.12 opacity); light wash, trace/grid read clearly through it</span>
+
+<span class="n">_QSS</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">QMainWindow, QWidget {</span>
+<span class="s2">    background-color: #1a1a2e;</span>
+<span class="s2">    color: #e0e0e0;</span>
+<span class="s2">    font-family: &quot;Segoe UI&quot;, sans-serif;</span>
+<span class="s2">}</span>
+<span class="s2">QPushButton {</span>
+<span class="s2">    background-color: #16213e;</span>
+<span class="s2">    color: #d0d0e8;</span>
+<span class="s2">    border: 1px solid #0f3460;</span>
+<span class="s2">    border-radius: 5px;</span>
+<span class="s2">    padding: 5px 10px;</span>
+<span class="s2">    font-size: 12px;</span>
+<span class="s2">}</span>
+<span class="s2">QPushButton:hover  { background-color: #0f3460; }</span>
+<span class="s2">QPushButton:pressed { background-color: #533483; }</span>
+<span class="s2">QPushButton:checked {</span>
+<span class="s2">    background-color: #533483;</span>
+<span class="s2">    border-color: #a882dd;</span>
+<span class="s2">    color: #ffffff;</span>
+<span class="s2">}</span>
+<span class="s2">QComboBox {</span>
+<span class="s2">    background-color: #16213e;</span>
+<span class="s2">    color: #d0d0e8;</span>
+<span class="s2">    border: 1px solid #0f3460;</span>
+<span class="s2">    border-radius: 4px;</span>
+<span class="s2">    padding: 3px 6px;</span>
+<span class="s2">}</span>
+<span class="s2">QComboBox QAbstractItemView {</span>
+<span class="s2">    background-color: #16213e;</span>
+<span class="s2">    color: #d0d0e8;</span>
+<span class="s2">    selection-background-color: #0f3460;</span>
+<span class="s2">}</span>
+<span class="s2">QGroupBox {</span>
+<span class="s2">    border: 1px solid #2a2a4a;</span>
+<span class="s2">    border-radius: 6px;</span>
+<span class="s2">    margin-top: 10px;</span>
+<span class="s2">    padding-top: 6px;</span>
+<span class="s2">    font-weight: bold;</span>
+<span class="s2">    font-size: 11px;</span>
+<span class="s2">    color: #8888aa;</span>
+<span class="s2">}</span>
+<span class="s2">QGroupBox::title {</span>
+<span class="s2">    subcontrol-origin: margin;</span>
+<span class="s2">    left: 8px;</span>
+<span class="s2">    padding: 0 4px;</span>
+<span class="s2">}</span>
+<span class="s2">QLabel  { color: #b0b0c8; font-size: 11px; }</span>
+<span class="s2">QCheckBox { color: #b0b0c8; font-size: 11px; }</span>
+<span class="s2">QScrollArea { border: none; }</span>
+<span class="s2">QStatusBar { background-color: #0d0d1a; color: #606080; font-size: 10px; }</span>
+<span class="s2">&quot;&quot;&quot;</span>
+
+
+<div class="viewcode-block" id="NFPlot">
+<a class="viewcode-back" href="../../../generated/mne_rt.viz.NFPlot.html#mne_rt.viz.NFPlot">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">NFPlot</span><span class="p">(</span><span class="n">QMainWindow</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Scrolling real-time neurofeedback signal monitor.</span>
+
+<span class="sd">    Displays one colour-coded trace per active NF modality in a dark-themed</span>
+<span class="sd">    :class:`pyqtgraph.PlotWidget`.  Designed to be driven by</span>
+<span class="sd">    :meth:`~mne_rt.RTStream.record_main` via :meth:`push`.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    modalities : list of str</span>
+<span class="sd">        Names of the active NF modalities.  One scrolling trace is shown</span>
+<span class="sd">        per entry.  Names must match entries in :data:`_LABELS` for a</span>
+<span class="sd">        human-readable legend, or the raw string is used as a fallback.</span>
+<span class="sd">    scales_dict : dict[str, float]</span>
+<span class="sd">        Mapping from modality name to its physical display scale.  The raw</span>
+<span class="sd">        NF value is divided by this scale before plotting so that all</span>
+<span class="sd">        traces occupy a similar vertical range.</span>
+<span class="sd">    sfreq : float</span>
+<span class="sd">        Nominal update rate in Hz.  Used to size the ring buffer.</span>
+<span class="sd">    time_window : float, default 30.0</span>
+<span class="sd">        Visible time range in seconds at startup (can be changed at runtime</span>
+<span class="sd">        from the control panel).</span>
+<span class="sd">    verbose : bool | str | None, default None</span>
+<span class="sd">        Verbosity level.  See :func:`~mne_rt._logging.set_log_level`.</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    mne_rt.viz.BrainPlot : 3D brain activation display.</span>
+<span class="sd">    mne_rt.viz.RawPlot : Scrolling raw M/EEG channel viewer.</span>
+<span class="sd">    mne_rt.RTStream.record_main : Drives both plots from the NF loop.</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    The control panel (right sidebar) provides:</span>
+
+<span class="sd">    * **Playback** — pause/resume, clear buffer, screenshot.</span>
+<span class="sd">    * **Display** — time-window selector, grid toggle, threshold-line</span>
+<span class="sd">      toggle, reward-zone toggle, auto-range.</span>
+<span class="sd">    * **Channel Scales** — per-modality amplitude scaling with ``+`` / ``−``</span>
+<span class="sd">      buttons and a live ``×N`` readout.</span>
+
+<span class="sd">    Each subplot can show a dashed horizontal **threshold line** marking the</span>
+<span class="sd">    reward boundary of the protocol driving that modality (fixed or</span>
+<span class="sd">    adaptive), passed per-update via the ``thresholds`` argument of</span>
+<span class="sd">    :meth:`push`.  A modality with no associated protocol, or one whose</span>
+<span class="sd">    protocol has no single-level threshold (e.g.</span>
+<span class="sd">    :class:`~mne_rt.protocols.LinearTrendProtocol`), simply shows no line.</span>
+
+<span class="sd">    Each subplot can also show a translucent green **reward span** behind</span>
+<span class="sd">    the trace, scrolling in lock-step with it, marking windows where the</span>
+<span class="sd">    driving protocol currently rewards the subject — passed per-update via</span>
+<span class="sd">    the ``rewards`` argument of :meth:`push`. A modality with no driving</span>
+<span class="sd">    protocol simply shows no span.</span>
+
+<span class="sd">    Status bar shows the latest value — and, when available, the current</span>
+<span class="sd">    threshold — for every active modality, prefixed with 🟢 during reward.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    Minimal offline usage:</span>
+
+<span class="sd">    &gt;&gt;&gt; app = QApplication([])</span>
+<span class="sd">    &gt;&gt;&gt; plot = NFPlot([&quot;sensor_power&quot;], {&quot;sensor_power&quot;: 1e-12}, sfreq=100)</span>
+<span class="sd">    &gt;&gt;&gt; plot.show()</span>
+<span class="sd">    &gt;&gt;&gt; plot.push([3.2e-13], thresholds=[2.0e-13], rewards=[True])</span>
+<span class="sd">    &gt;&gt;&gt; app.exec()</span>
+
+<span class="sd">    .. versionadded:: 1.0.0</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1">#: Emitted when the window is closed, *before* Qt tears down the widget.</span>
+    <span class="c1">#: :meth:`~mne_rt.RTStream.record_main` connects this to stop pumping</span>
+    <span class="c1">#: new data into a closed window while other plot windows stay open.</span>
+    <span class="n">closed</span> <span class="o">=</span> <span class="n">Signal</span><span class="p">()</span>
+
+<div class="viewcode-block" id="NFPlot.__init__">
+<a class="viewcode-back" href="../../../generated/mne_rt.viz.NFPlot.html#mne_rt.viz.NFPlot.__init__">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">modalities</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
+        <span class="n">scales_dict</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">float</span><span class="p">],</span>
+        <span class="n">sfreq</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+        <span class="n">time_window</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">30.0</span><span class="p">,</span>
+        <span class="n">display_smoothing</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.3</span><span class="p">,</span>
+        <span class="n">verbose</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">mne_rt._logging</span><span class="w"> </span><span class="kn">import</span> <span class="n">set_log_level</span>
+
+        <span class="n">set_log_level</span><span class="p">(</span><span class="n">verbose</span><span class="p">)</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_mods</span> <span class="o">=</span> <span class="n">modalities</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_scales</span> <span class="o">=</span> <span class="n">scales_dict</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_sfreq</span> <span class="o">=</span> <span class="n">sfreq</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_time_window</span> <span class="o">=</span> <span class="n">time_window</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_n</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">modalities</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_channel_scales</span> <span class="o">=</span> <span class="p">[</span><span class="mf">1.0</span><span class="p">]</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">_n</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_paused</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_display_alpha</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">clip</span><span class="p">(</span><span class="n">display_smoothing</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_ema</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_n</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_show_threshold</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_threshold_active</span> <span class="o">=</span> <span class="p">[</span><span class="kc">False</span><span class="p">]</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">_n</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_show_reward</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_reward_active</span> <span class="o">=</span> <span class="p">[</span><span class="kc">False</span><span class="p">]</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">_n</span>
+
+        <span class="c1"># Data buffers — 30 fps × time_window gives real-time resolution</span>
+        <span class="n">n_pts</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">sfreq</span> <span class="o">*</span> <span class="n">time_window</span><span class="p">),</span> <span class="mi">30</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_time_axis</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">time_window</span><span class="p">,</span> <span class="n">n_pts</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_buf</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">_n</span><span class="p">,</span> <span class="n">n_pts</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_reward_buf</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">_n</span><span class="p">,</span> <span class="n">n_pts</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">uint8</span><span class="p">)</span>
+
+        <span class="n">pg</span><span class="o">.</span><span class="n">setConfigOptions</span><span class="p">(</span><span class="n">antialias</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">foreground</span><span class="o">=</span><span class="s2">&quot;#c0c0d8&quot;</span><span class="p">,</span> <span class="n">background</span><span class="o">=</span><span class="s2">&quot;#0d0d1a&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_build_ui</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">setWindowTitle</span><span class="p">(</span><span class="s2">&quot;MNE-RT — NF Signal&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">resize</span><span class="p">(</span><span class="mi">1440</span><span class="p">,</span> <span class="nb">max</span><span class="p">(</span><span class="mi">500</span><span class="p">,</span> <span class="mi">200</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">_n</span> <span class="o">*</span> <span class="mi">150</span><span class="p">))</span></div>
+
+
+    <span class="c1"># ------------------------------------------------------------------</span>
+    <span class="c1"># UI construction</span>
+    <span class="c1"># ------------------------------------------------------------------</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_build_ui</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">setStyleSheet</span><span class="p">(</span><span class="n">_QSS</span><span class="p">)</span>
+
+        <span class="n">central</span> <span class="o">=</span> <span class="n">QWidget</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">setCentralWidget</span><span class="p">(</span><span class="n">central</span><span class="p">)</span>
+        <span class="n">root</span> <span class="o">=</span> <span class="n">QHBoxLayout</span><span class="p">(</span><span class="n">central</span><span class="p">)</span>
+        <span class="n">root</span><span class="o">.</span><span class="n">setContentsMargins</span><span class="p">(</span><span class="mi">8</span><span class="p">,</span> <span class="mi">8</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">8</span><span class="p">)</span>
+        <span class="n">root</span><span class="o">.</span><span class="n">setSpacing</span><span class="p">(</span><span class="mi">6</span><span class="p">)</span>
+
+        <span class="n">root</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_build_plot_widget</span><span class="p">(),</span> <span class="n">stretch</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
+        <span class="n">root</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_build_control_panel</span><span class="p">(),</span> <span class="n">stretch</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_status</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">statusBar</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_status</span><span class="o">.</span><span class="n">showMessage</span><span class="p">(</span><span class="s2">&quot;Waiting for data …&quot;</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_build_plot_widget</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pg</span><span class="o">.</span><span class="n">GraphicsLayoutWidget</span><span class="p">:</span>
+        <span class="n">glw</span> <span class="o">=</span> <span class="n">pg</span><span class="o">.</span><span class="n">GraphicsLayoutWidget</span><span class="p">()</span>
+        <span class="n">glw</span><span class="o">.</span><span class="n">setBackground</span><span class="p">(</span><span class="s2">&quot;#0d0d1a&quot;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_plots</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">pg</span><span class="o">.</span><span class="n">PlotItem</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_curves</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">pg</span><span class="o">.</span><span class="n">PlotDataItem</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_threshold_lines</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">pg</span><span class="o">.</span><span class="n">InfiniteLine</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="c1"># Per-modality pool of reusable reward-span regions (grown lazily</span>
+        <span class="c1"># in _update_reward_regions as concurrent on-segments require).</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_reward_regions</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="n">pg</span><span class="o">.</span><span class="n">LinearRegionItem</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">mod</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_mods</span><span class="p">):</span>
+            <span class="n">color</span> <span class="o">=</span> <span class="n">_COLORS</span><span class="p">[</span><span class="n">i</span> <span class="o">%</span> <span class="nb">len</span><span class="p">(</span><span class="n">_COLORS</span><span class="p">)]</span>
+            <span class="n">is_bottom</span> <span class="o">=</span> <span class="n">i</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">_n</span> <span class="o">-</span> <span class="mi">1</span>
+
+            <span class="n">pi</span> <span class="o">=</span> <span class="n">glw</span><span class="o">.</span><span class="n">addPlot</span><span class="p">(</span><span class="n">row</span><span class="o">=</span><span class="n">i</span><span class="p">,</span> <span class="n">col</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_apply_grid_style</span><span class="p">(</span><span class="n">pi</span><span class="p">,</span> <span class="n">visible</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+            <span class="n">pi</span><span class="o">.</span><span class="n">setMouseEnabled</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">_reward_regions</span><span class="o">.</span><span class="n">append</span><span class="p">([])</span>
+
+            <span class="c1"># Label the left axis with the modality name in its colour</span>
+            <span class="n">pi</span><span class="o">.</span><span class="n">setLabel</span><span class="p">(</span><span class="s2">&quot;left&quot;</span><span class="p">,</span> <span class="n">_LABELS</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">mod</span><span class="p">,</span> <span class="n">mod</span><span class="p">),</span> <span class="n">color</span><span class="o">=</span><span class="n">color</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="s2">&quot;10pt&quot;</span><span class="p">)</span>
+            <span class="n">pi</span><span class="o">.</span><span class="n">getAxis</span><span class="p">(</span><span class="s2">&quot;left&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">setWidth</span><span class="p">(</span><span class="mi">110</span><span class="p">)</span>
+
+            <span class="k">for</span> <span class="n">ax_name</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;left&quot;</span><span class="p">,</span> <span class="s2">&quot;bottom&quot;</span><span class="p">):</span>
+                <span class="n">ax</span> <span class="o">=</span> <span class="n">pi</span><span class="o">.</span><span class="n">getAxis</span><span class="p">(</span><span class="n">ax_name</span><span class="p">)</span>
+                <span class="n">ax</span><span class="o">.</span><span class="n">setPen</span><span class="p">(</span><span class="n">pg</span><span class="o">.</span><span class="n">mkPen</span><span class="p">(</span><span class="s2">&quot;#303050&quot;</span><span class="p">))</span>
+                <span class="n">ax</span><span class="o">.</span><span class="n">setTextPen</span><span class="p">(</span><span class="n">pg</span><span class="o">.</span><span class="n">mkPen</span><span class="p">(</span><span class="s2">&quot;#9090aa&quot;</span><span class="p">))</span>
+
+            <span class="c1"># Only the bottom plot shows the time axis label and tick values</span>
+            <span class="k">if</span> <span class="n">is_bottom</span><span class="p">:</span>
+                <span class="n">pi</span><span class="o">.</span><span class="n">setLabel</span><span class="p">(</span><span class="s2">&quot;bottom&quot;</span><span class="p">,</span> <span class="s2">&quot;Time&quot;</span><span class="p">,</span> <span class="n">units</span><span class="o">=</span><span class="s2">&quot;s&quot;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;#9090aa&quot;</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">pi</span><span class="o">.</span><span class="n">getAxis</span><span class="p">(</span><span class="s2">&quot;bottom&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">setStyle</span><span class="p">(</span><span class="n">showValues</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+                <span class="n">pi</span><span class="o">.</span><span class="n">getAxis</span><span class="p">(</span><span class="s2">&quot;bottom&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">setHeight</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+
+            <span class="c1"># Fine time-axis ticks so minor grid lines appear</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_apply_x_tick_spacing</span><span class="p">(</span><span class="n">pi</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_time_window</span><span class="p">)</span>
+
+            <span class="c1"># Zero reference line</span>
+            <span class="n">pi</span><span class="o">.</span><span class="n">addItem</span><span class="p">(</span><span class="n">pg</span><span class="o">.</span><span class="n">InfiniteLine</span><span class="p">(</span><span class="n">pos</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">angle</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">pen</span><span class="o">=</span><span class="n">pg</span><span class="o">.</span><span class="n">mkPen</span><span class="p">(</span><span class="s2">&quot;#252545&quot;</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="mi">1</span><span class="p">)))</span>
+
+            <span class="c1"># Threshold line — hidden until push() supplies a real value.</span>
+            <span class="c1"># The label text is a static placeholder here: InfiniteLine&#39;s</span>
+            <span class="c1"># &quot;{value}&quot; would auto-fill from the line&#39;s *position* (a</span>
+            <span class="c1"># normalised/rescaled plot coordinate), not the physical</span>
+            <span class="c1"># threshold, so push() overwrites it with the real value on</span>
+            <span class="c1"># every update instead of relying on the placeholder.</span>
+            <span class="n">thr_pen</span> <span class="o">=</span> <span class="n">pg</span><span class="o">.</span><span class="n">mkPen</span><span class="p">(</span><span class="n">_THRESHOLD_COLOR</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+            <span class="c1"># Coarse, explicit dash pattern (long dash / gap in pixels) so</span>
+            <span class="c1"># the line reads as unmistakably dashed at any display DPI --</span>
+            <span class="c1"># Qt.PenStyle.DashLine&#39;s default pattern is fine-grained enough</span>
+            <span class="c1"># that thin anti-aliased strokes can look almost solid.</span>
+            <span class="n">thr_pen</span><span class="o">.</span><span class="n">setDashPattern</span><span class="p">([</span><span class="mi">8</span><span class="p">,</span> <span class="mi">6</span><span class="p">])</span>
+            <span class="n">thr_line</span> <span class="o">=</span> <span class="n">pg</span><span class="o">.</span><span class="n">InfiniteLine</span><span class="p">(</span>
+                <span class="n">pos</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+                <span class="n">angle</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+                <span class="n">movable</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+                <span class="n">pen</span><span class="o">=</span><span class="n">thr_pen</span><span class="p">,</span>
+                <span class="n">label</span><span class="o">=</span><span class="s2">&quot;thr&quot;</span><span class="p">,</span>
+                <span class="n">labelOpts</span><span class="o">=</span><span class="p">{</span>
+                    <span class="s2">&quot;color&quot;</span><span class="p">:</span> <span class="n">_THRESHOLD_COLOR</span><span class="p">,</span>
+                    <span class="s2">&quot;position&quot;</span><span class="p">:</span> <span class="mf">0.97</span><span class="p">,</span>
+                    <span class="s2">&quot;fill&quot;</span><span class="p">:</span> <span class="p">(</span><span class="mi">13</span><span class="p">,</span> <span class="mi">13</span><span class="p">,</span> <span class="mi">26</span><span class="p">,</span> <span class="mi">180</span><span class="p">),</span>
+                <span class="p">},</span>
+            <span class="p">)</span>
+            <span class="n">thr_line</span><span class="o">.</span><span class="n">setVisible</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>
+            <span class="n">pi</span><span class="o">.</span><span class="n">addItem</span><span class="p">(</span><span class="n">thr_line</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_threshold_lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">thr_line</span><span class="p">)</span>
+
+            <span class="c1"># Signal curve</span>
+            <span class="n">curve</span> <span class="o">=</span> <span class="n">pi</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_time_axis</span><span class="p">,</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_buf</span><span class="p">[</span><span class="n">i</span><span class="p">],</span>
+                <span class="n">pen</span><span class="o">=</span><span class="n">pg</span><span class="o">.</span><span class="n">mkPen</span><span class="p">(</span><span class="n">color</span><span class="o">=</span><span class="n">color</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="mi">2</span><span class="p">),</span>
+            <span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_curves</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">curve</span><span class="p">)</span>
+
+            <span class="n">pi</span><span class="o">.</span><span class="n">setXRange</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_time_window</span><span class="p">,</span> <span class="n">padding</span><span class="o">=</span><span class="mf">0.01</span><span class="p">)</span>
+            <span class="n">pi</span><span class="o">.</span><span class="n">enableAutoRange</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="s2">&quot;y&quot;</span><span class="p">)</span>
+
+            <span class="c1"># Link all X axes to the first plot</span>
+            <span class="k">if</span> <span class="n">i</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">pi</span><span class="o">.</span><span class="n">setXLink</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_plots</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">_plots</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">pi</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_glw</span> <span class="o">=</span> <span class="n">glw</span>
+        <span class="k">return</span> <span class="n">glw</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_build_control_panel</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">QScrollArea</span><span class="p">:</span>
+        <span class="n">scroll</span> <span class="o">=</span> <span class="n">QScrollArea</span><span class="p">()</span>
+        <span class="n">scroll</span><span class="o">.</span><span class="n">setWidgetResizable</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">scroll</span><span class="o">.</span><span class="n">setFixedWidth</span><span class="p">(</span><span class="mi">210</span><span class="p">)</span>
+        <span class="n">scroll</span><span class="o">.</span><span class="n">setHorizontalScrollBarPolicy</span><span class="p">(</span><span class="n">Qt</span><span class="o">.</span><span class="n">ScrollBarPolicy</span><span class="o">.</span><span class="n">ScrollBarAlwaysOff</span><span class="p">)</span>
+
+        <span class="n">panel</span> <span class="o">=</span> <span class="n">QWidget</span><span class="p">()</span>
+        <span class="n">layout</span> <span class="o">=</span> <span class="n">QVBoxLayout</span><span class="p">(</span><span class="n">panel</span><span class="p">)</span>
+        <span class="n">layout</span><span class="o">.</span><span class="n">setSpacing</span><span class="p">(</span><span class="mi">8</span><span class="p">)</span>
+        <span class="n">layout</span><span class="o">.</span><span class="n">setContentsMargins</span><span class="p">(</span><span class="mi">6</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">6</span><span class="p">)</span>
+
+        <span class="n">layout</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_grp_playback</span><span class="p">())</span>
+        <span class="n">layout</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_grp_display</span><span class="p">())</span>
+        <span class="n">layout</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_grp_channels</span><span class="p">())</span>
+        <span class="n">layout</span><span class="o">.</span><span class="n">addStretch</span><span class="p">()</span>
+
+        <span class="n">scroll</span><span class="o">.</span><span class="n">setWidget</span><span class="p">(</span><span class="n">panel</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">scroll</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_grp_playback</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">QGroupBox</span><span class="p">:</span>
+        <span class="n">grp</span> <span class="o">=</span> <span class="n">QGroupBox</span><span class="p">(</span><span class="s2">&quot;Playback&quot;</span><span class="p">)</span>
+        <span class="n">lay</span> <span class="o">=</span> <span class="n">QVBoxLayout</span><span class="p">(</span><span class="n">grp</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_btn_pause</span> <span class="o">=</span> <span class="n">QPushButton</span><span class="p">(</span><span class="s2">&quot;⏸  Pause&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_btn_pause</span><span class="o">.</span><span class="n">setCheckable</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_btn_pause</span><span class="o">.</span><span class="n">clicked</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_toggle_pause</span><span class="p">)</span>
+
+        <span class="n">btn_clear</span> <span class="o">=</span> <span class="n">QPushButton</span><span class="p">(</span><span class="s2">&quot;⟳  Clear&quot;</span><span class="p">)</span>
+        <span class="n">btn_clear</span><span class="o">.</span><span class="n">clicked</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_clear</span><span class="p">)</span>
+
+        <span class="n">btn_shot</span> <span class="o">=</span> <span class="n">QPushButton</span><span class="p">(</span><span class="s2">&quot;📷  Screenshot&quot;</span><span class="p">)</span>
+        <span class="n">btn_shot</span><span class="o">.</span><span class="n">clicked</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_screenshot</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">w</span> <span class="ow">in</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_btn_pause</span><span class="p">,</span> <span class="n">btn_clear</span><span class="p">,</span> <span class="n">btn_shot</span><span class="p">):</span>
+            <span class="n">lay</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="n">w</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">grp</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_grp_display</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">QGroupBox</span><span class="p">:</span>
+        <span class="n">grp</span> <span class="o">=</span> <span class="n">QGroupBox</span><span class="p">(</span><span class="s2">&quot;Display&quot;</span><span class="p">)</span>
+        <span class="n">lay</span> <span class="o">=</span> <span class="n">QVBoxLayout</span><span class="p">(</span><span class="n">grp</span><span class="p">)</span>
+
+        <span class="c1"># Time-window selector</span>
+        <span class="n">row</span> <span class="o">=</span> <span class="n">QHBoxLayout</span><span class="p">()</span>
+        <span class="n">row</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="n">QLabel</span><span class="p">(</span><span class="s2">&quot;Time window:&quot;</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_cmb_tw</span> <span class="o">=</span> <span class="n">QComboBox</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">secs</span> <span class="ow">in</span> <span class="n">_TIME_WINDOW_OPTIONS</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_cmb_tw</span><span class="o">.</span><span class="n">addItem</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">secs</span><span class="si">}</span><span class="s2"> s&quot;</span><span class="p">,</span> <span class="n">secs</span><span class="p">)</span>
+        <span class="c1"># Select closest match</span>
+        <span class="n">best</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">_TIME_WINDOW_OPTIONS</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">s</span><span class="p">:</span> <span class="nb">abs</span><span class="p">(</span><span class="n">s</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">_time_window</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_cmb_tw</span><span class="o">.</span><span class="n">setCurrentIndex</span><span class="p">(</span><span class="n">_TIME_WINDOW_OPTIONS</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">best</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_cmb_tw</span><span class="o">.</span><span class="n">currentIndexChanged</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_change_time_window</span><span class="p">)</span>
+        <span class="n">row</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_cmb_tw</span><span class="p">)</span>
+        <span class="n">lay</span><span class="o">.</span><span class="n">addLayout</span><span class="p">(</span><span class="n">row</span><span class="p">)</span>
+
+        <span class="c1"># Grid toggle</span>
+        <span class="n">chk</span> <span class="o">=</span> <span class="n">QCheckBox</span><span class="p">(</span><span class="s2">&quot;Show grid&quot;</span><span class="p">)</span>
+        <span class="n">chk</span><span class="o">.</span><span class="n">setChecked</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">chk</span><span class="o">.</span><span class="n">toggled</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_set_grid</span><span class="p">)</span>
+        <span class="n">lay</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="n">chk</span><span class="p">)</span>
+
+        <span class="c1"># Threshold-line toggle</span>
+        <span class="n">chk_thr</span> <span class="o">=</span> <span class="n">QCheckBox</span><span class="p">(</span><span class="s2">&quot;Show threshold&quot;</span><span class="p">)</span>
+        <span class="n">chk_thr</span><span class="o">.</span><span class="n">setChecked</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">chk_thr</span><span class="o">.</span><span class="n">setToolTip</span><span class="p">(</span>
+            <span class="s2">&quot;Dashed line marking the reward threshold of the protocol</span><span class="se">\n</span><span class="s2">&quot;</span>
+            <span class="s2">&quot;driving each modality (fixed or adaptive).&quot;</span>
+        <span class="p">)</span>
+        <span class="n">chk_thr</span><span class="o">.</span><span class="n">toggled</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_set_threshold_visible</span><span class="p">)</span>
+        <span class="n">lay</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="n">chk_thr</span><span class="p">)</span>
+
+        <span class="c1"># Reward-span toggle, with a small colour-swatch legend</span>
+        <span class="n">rwd_row</span> <span class="o">=</span> <span class="n">QHBoxLayout</span><span class="p">()</span>
+        <span class="n">rwd_row</span><span class="o">.</span><span class="n">setSpacing</span><span class="p">(</span><span class="mi">4</span><span class="p">)</span>
+        <span class="n">chk_rwd</span> <span class="o">=</span> <span class="n">QCheckBox</span><span class="p">(</span><span class="s2">&quot;Show reward zones&quot;</span><span class="p">)</span>
+        <span class="n">chk_rwd</span><span class="o">.</span><span class="n">setChecked</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">chk_rwd</span><span class="o">.</span><span class="n">setToolTip</span><span class="p">(</span>
+            <span class="s2">&quot;Translucent green span marking windows where the subject</span><span class="se">\n</span><span class="s2">&quot;</span>
+            <span class="s2">&quot;is currently being rewarded by the driving protocol.&quot;</span>
+        <span class="p">)</span>
+        <span class="n">chk_rwd</span><span class="o">.</span><span class="n">toggled</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_set_reward_visible</span><span class="p">)</span>
+        <span class="n">rwd_row</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="n">chk_rwd</span><span class="p">)</span>
+        <span class="n">swatch</span> <span class="o">=</span> <span class="n">QLabel</span><span class="p">(</span><span class="s2">&quot;●&quot;</span><span class="p">)</span>
+        <span class="n">r</span><span class="p">,</span> <span class="n">g</span><span class="p">,</span> <span class="n">b</span> <span class="o">=</span> <span class="n">_REWARD_COLOR</span>
+        <span class="n">swatch</span><span class="o">.</span><span class="n">setStyleSheet</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;color: rgb(</span><span class="si">{</span><span class="n">r</span><span class="si">}</span><span class="s2">,</span><span class="si">{</span><span class="n">g</span><span class="si">}</span><span class="s2">,</span><span class="si">{</span><span class="n">b</span><span class="si">}</span><span class="s2">); font-size: 13px;&quot;</span><span class="p">)</span>
+        <span class="n">swatch</span><span class="o">.</span><span class="n">setToolTip</span><span class="p">(</span><span class="s2">&quot;Reward-on colour&quot;</span><span class="p">)</span>
+        <span class="n">rwd_row</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="n">swatch</span><span class="p">)</span>
+        <span class="n">lay</span><span class="o">.</span><span class="n">addLayout</span><span class="p">(</span><span class="n">rwd_row</span><span class="p">)</span>
+
+        <span class="c1"># Auto-range button</span>
+        <span class="n">btn_ar</span> <span class="o">=</span> <span class="n">QPushButton</span><span class="p">(</span><span class="s2">&quot;⤢  Auto-range&quot;</span><span class="p">)</span>
+        <span class="n">btn_ar</span><span class="o">.</span><span class="n">clicked</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_auto_range</span><span class="p">)</span>
+        <span class="n">lay</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="n">btn_ar</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">grp</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_grp_channels</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">QGroupBox</span><span class="p">:</span>
+        <span class="n">grp</span> <span class="o">=</span> <span class="n">QGroupBox</span><span class="p">(</span><span class="s2">&quot;Channel Scales&quot;</span><span class="p">)</span>
+        <span class="n">lay</span> <span class="o">=</span> <span class="n">QVBoxLayout</span><span class="p">(</span><span class="n">grp</span><span class="p">)</span>
+        <span class="n">lay</span><span class="o">.</span><span class="n">setSpacing</span><span class="p">(</span><span class="mi">4</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_scale_labels</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">QLabel</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">mod</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_mods</span><span class="p">):</span>
+            <span class="n">color</span> <span class="o">=</span> <span class="n">_COLORS</span><span class="p">[</span><span class="n">i</span> <span class="o">%</span> <span class="nb">len</span><span class="p">(</span><span class="n">_COLORS</span><span class="p">)]</span>
+            <span class="n">row</span> <span class="o">=</span> <span class="n">QHBoxLayout</span><span class="p">()</span>
+            <span class="n">row</span><span class="o">.</span><span class="n">setSpacing</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
+
+            <span class="n">lbl</span> <span class="o">=</span> <span class="n">QLabel</span><span class="p">(</span><span class="n">_LABELS</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">mod</span><span class="p">,</span> <span class="n">mod</span><span class="p">))</span>
+            <span class="n">lbl</span><span class="o">.</span><span class="n">setStyleSheet</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;color: </span><span class="si">{</span><span class="n">color</span><span class="si">}</span><span class="s2">; font-weight: bold;&quot;</span><span class="p">)</span>
+            <span class="n">lbl</span><span class="o">.</span><span class="n">setSizePolicy</span><span class="p">(</span><span class="n">QSizePolicy</span><span class="o">.</span><span class="n">Policy</span><span class="o">.</span><span class="n">Expanding</span><span class="p">,</span> <span class="n">QSizePolicy</span><span class="o">.</span><span class="n">Policy</span><span class="o">.</span><span class="n">Fixed</span><span class="p">)</span>
+
+            <span class="n">scale_lbl</span> <span class="o">=</span> <span class="n">QLabel</span><span class="p">(</span><span class="s2">&quot;×1.0&quot;</span><span class="p">)</span>
+            <span class="n">scale_lbl</span><span class="o">.</span><span class="n">setFixedWidth</span><span class="p">(</span><span class="mi">38</span><span class="p">)</span>
+            <span class="n">scale_lbl</span><span class="o">.</span><span class="n">setAlignment</span><span class="p">(</span><span class="n">Qt</span><span class="o">.</span><span class="n">AlignmentFlag</span><span class="o">.</span><span class="n">AlignRight</span> <span class="o">|</span> <span class="n">Qt</span><span class="o">.</span><span class="n">AlignmentFlag</span><span class="o">.</span><span class="n">AlignVCenter</span><span class="p">)</span>
+            <span class="n">scale_lbl</span><span class="o">.</span><span class="n">setStyleSheet</span><span class="p">(</span><span class="s2">&quot;color: #707090; font-size: 10px;&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_scale_labels</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">scale_lbl</span><span class="p">)</span>
+
+            <span class="n">btn_up</span> <span class="o">=</span> <span class="n">QPushButton</span><span class="p">(</span><span class="s2">&quot;+&quot;</span><span class="p">)</span>
+            <span class="n">btn_dn</span> <span class="o">=</span> <span class="n">QPushButton</span><span class="p">(</span><span class="s2">&quot;−&quot;</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">btn</span> <span class="ow">in</span> <span class="p">(</span><span class="n">btn_up</span><span class="p">,</span> <span class="n">btn_dn</span><span class="p">):</span>
+                <span class="n">btn</span><span class="o">.</span><span class="n">setFixedSize</span><span class="p">(</span><span class="mi">22</span><span class="p">,</span> <span class="mi">22</span><span class="p">)</span>
+
+            <span class="n">btn_up</span><span class="o">.</span><span class="n">clicked</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="k">lambda</span> <span class="n">_</span><span class="p">,</span> <span class="n">idx</span><span class="o">=</span><span class="n">i</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_scale_up</span><span class="p">(</span><span class="n">idx</span><span class="p">))</span>
+            <span class="n">btn_dn</span><span class="o">.</span><span class="n">clicked</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="k">lambda</span> <span class="n">_</span><span class="p">,</span> <span class="n">idx</span><span class="o">=</span><span class="n">i</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_scale_down</span><span class="p">(</span><span class="n">idx</span><span class="p">))</span>
+
+            <span class="n">row</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="n">lbl</span><span class="p">)</span>
+            <span class="n">row</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="n">scale_lbl</span><span class="p">)</span>
+            <span class="n">row</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="n">btn_up</span><span class="p">)</span>
+            <span class="n">row</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="n">btn_dn</span><span class="p">)</span>
+            <span class="n">lay</span><span class="o">.</span><span class="n">addLayout</span><span class="p">(</span><span class="n">row</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">grp</span>
+
+    <span class="c1"># ------------------------------------------------------------------</span>
+    <span class="c1"># Callbacks</span>
+    <span class="c1"># ------------------------------------------------------------------</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_apply_x_tick_spacing</span><span class="p">(</span><span class="n">pi</span><span class="p">:</span> <span class="n">pg</span><span class="o">.</span><span class="n">PlotItem</span><span class="p">,</span> <span class="n">secs</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Set major/minor X tick spacing so the grid is dense but readable.&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">secs</span> <span class="o">&lt;=</span> <span class="mi">5</span><span class="p">:</span>
+            <span class="n">major</span><span class="p">,</span> <span class="n">minor</span> <span class="o">=</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">0.25</span>
+        <span class="k">elif</span> <span class="n">secs</span> <span class="o">&lt;=</span> <span class="mi">10</span><span class="p">:</span>
+            <span class="n">major</span><span class="p">,</span> <span class="n">minor</span> <span class="o">=</span> <span class="mf">2.0</span><span class="p">,</span> <span class="mf">0.5</span>
+        <span class="k">elif</span> <span class="n">secs</span> <span class="o">&lt;=</span> <span class="mi">20</span><span class="p">:</span>
+            <span class="n">major</span><span class="p">,</span> <span class="n">minor</span> <span class="o">=</span> <span class="mf">5.0</span><span class="p">,</span> <span class="mf">1.0</span>
+        <span class="k">elif</span> <span class="n">secs</span> <span class="o">&lt;=</span> <span class="mi">30</span><span class="p">:</span>
+            <span class="n">major</span><span class="p">,</span> <span class="n">minor</span> <span class="o">=</span> <span class="mf">5.0</span><span class="p">,</span> <span class="mf">1.0</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">major</span><span class="p">,</span> <span class="n">minor</span> <span class="o">=</span> <span class="mf">10.0</span><span class="p">,</span> <span class="mf">2.0</span>
+        <span class="n">pi</span><span class="o">.</span><span class="n">getAxis</span><span class="p">(</span><span class="s2">&quot;bottom&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">setTickSpacing</span><span class="p">(</span><span class="n">major</span><span class="o">=</span><span class="n">major</span><span class="p">,</span> <span class="n">minor</span><span class="o">=</span><span class="n">minor</span><span class="p">)</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_apply_grid_style</span><span class="p">(</span><span class="n">pi</span><span class="p">:</span> <span class="n">pg</span><span class="o">.</span><span class="n">PlotItem</span><span class="p">,</span> <span class="n">visible</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Show grid with white lines and set pen directly on the GridItem.&quot;&quot;&quot;</span>
+        <span class="n">pi</span><span class="o">.</span><span class="n">showGrid</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="n">visible</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="n">visible</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.45</span> <span class="k">if</span> <span class="n">visible</span> <span class="k">else</span> <span class="mf">0.0</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">visible</span><span class="p">:</span>
+            <span class="n">grid_pen</span> <span class="o">=</span> <span class="n">pg</span><span class="o">.</span><span class="n">mkPen</span><span class="p">(</span><span class="n">color</span><span class="o">=</span><span class="p">(</span><span class="mi">220</span><span class="p">,</span> <span class="mi">220</span><span class="p">,</span> <span class="mi">255</span><span class="p">,</span> <span class="mi">110</span><span class="p">),</span> <span class="n">width</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">style</span><span class="o">=</span><span class="n">Qt</span><span class="o">.</span><span class="n">PenStyle</span><span class="o">.</span><span class="n">SolidLine</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">pi</span><span class="o">.</span><span class="n">items</span><span class="p">:</span>
+                <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">item</span><span class="p">,</span> <span class="n">pg</span><span class="o">.</span><span class="n">GridItem</span><span class="p">):</span>
+                    <span class="n">item</span><span class="o">.</span><span class="n">setPen</span><span class="p">(</span><span class="n">grid_pen</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_set_grid</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">checked</span><span class="p">:</span> <span class="nb">bool</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">pi</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_plots</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_apply_grid_style</span><span class="p">(</span><span class="n">pi</span><span class="p">,</span> <span class="n">visible</span><span class="o">=</span><span class="n">checked</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_set_threshold_visible</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">checked</span><span class="p">:</span> <span class="nb">bool</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Toggle threshold-line visibility (only shown for active modalities).&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_show_threshold</span> <span class="o">=</span> <span class="n">checked</span>
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">line</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_threshold_lines</span><span class="p">):</span>
+            <span class="n">line</span><span class="o">.</span><span class="n">setVisible</span><span class="p">(</span><span class="n">checked</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_threshold_active</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_set_reward_visible</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">checked</span><span class="p">:</span> <span class="nb">bool</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Toggle reward-span visibility (only shown for active modalities).&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_show_reward</span> <span class="o">=</span> <span class="n">checked</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_n</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_update_reward_regions</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_toggle_pause</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">checked</span><span class="p">:</span> <span class="nb">bool</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_paused</span> <span class="o">=</span> <span class="n">checked</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_btn_pause</span><span class="o">.</span><span class="n">setText</span><span class="p">(</span><span class="s2">&quot;▶  Resume&quot;</span> <span class="k">if</span> <span class="n">checked</span> <span class="k">else</span> <span class="s2">&quot;⏸  Pause&quot;</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_update_reward_regions</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">i</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Sync modality ``i``&#39;s reward-span :class:`pyqtgraph.LinearRegionItem`</span>
+<span class="sd">        pool to the contiguous &quot;on&quot; runs currently in ``self._reward_buf``.</span>
+
+<span class="sd">        Reuses existing pooled regions (repositioning them) rather than</span>
+<span class="sd">        recreating items every push, and hides any pooled regions beyond</span>
+<span class="sd">        the number of runs currently needed.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">buf</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_reward_buf</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+        <span class="n">padded</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">(([</span><span class="mi">0</span><span class="p">],</span> <span class="n">buf</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">),</span> <span class="p">[</span><span class="mi">0</span><span class="p">]))</span>
+        <span class="n">edges</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">diff</span><span class="p">(</span><span class="n">padded</span><span class="p">)</span>
+        <span class="n">starts</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">flatnonzero</span><span class="p">(</span><span class="n">edges</span> <span class="o">==</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="n">ends</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">flatnonzero</span><span class="p">(</span><span class="n">edges</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span>  <span class="c1"># exclusive end index</span>
+
+        <span class="n">pool</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_reward_regions</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+        <span class="n">show</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_show_reward</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_reward_active</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+        <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">e</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">starts</span><span class="p">,</span> <span class="n">ends</span><span class="p">)):</span>
+            <span class="n">t0</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_time_axis</span><span class="p">[</span><span class="n">s</span><span class="p">]</span>
+            <span class="n">t1</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_time_axis</span><span class="p">[</span><span class="nb">min</span><span class="p">(</span><span class="n">e</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_time_axis</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)]</span>
+            <span class="k">if</span> <span class="n">k</span> <span class="o">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="n">pool</span><span class="p">):</span>
+                <span class="n">region</span> <span class="o">=</span> <span class="n">pool</span><span class="p">[</span><span class="n">k</span><span class="p">]</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">region</span> <span class="o">=</span> <span class="n">pg</span><span class="o">.</span><span class="n">LinearRegionItem</span><span class="p">(</span>
+                    <span class="n">brush</span><span class="o">=</span><span class="n">pg</span><span class="o">.</span><span class="n">mkBrush</span><span class="p">(</span><span class="o">*</span><span class="n">_REWARD_COLOR</span><span class="p">,</span> <span class="n">_REWARD_ALPHA</span><span class="p">),</span>
+                    <span class="n">pen</span><span class="o">=</span><span class="n">pg</span><span class="o">.</span><span class="n">mkPen</span><span class="p">(</span><span class="kc">None</span><span class="p">),</span>
+                    <span class="n">movable</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+                <span class="p">)</span>
+                <span class="n">region</span><span class="o">.</span><span class="n">setZValue</span><span class="p">(</span><span class="o">-</span><span class="mi">20</span><span class="p">)</span>
+                <span class="n">region</span><span class="o">.</span><span class="n">setAcceptHoverEvents</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_plots</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">addItem</span><span class="p">(</span><span class="n">region</span><span class="p">,</span> <span class="n">ignoreBounds</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+                <span class="n">pool</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">region</span><span class="p">)</span>
+            <span class="n">region</span><span class="o">.</span><span class="n">setRegion</span><span class="p">((</span><span class="n">t0</span><span class="p">,</span> <span class="n">t1</span><span class="p">))</span>
+            <span class="n">region</span><span class="o">.</span><span class="n">setVisible</span><span class="p">(</span><span class="n">show</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">starts</span><span class="p">),</span> <span class="nb">len</span><span class="p">(</span><span class="n">pool</span><span class="p">)):</span>
+            <span class="n">pool</span><span class="p">[</span><span class="n">k</span><span class="p">]</span><span class="o">.</span><span class="n">setVisible</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_clear</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_buf</span><span class="p">[:]</span> <span class="o">=</span> <span class="mf">0.0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_reward_buf</span><span class="p">[:]</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">curve</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_curves</span><span class="p">):</span>
+            <span class="n">curve</span><span class="o">.</span><span class="n">setData</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_time_axis</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_buf</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_update_reward_regions</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_screenshot</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">qtpy.QtWidgets</span><span class="w"> </span><span class="kn">import</span> <span class="n">QFileDialog</span>
+
+        <span class="n">ts</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s2">&quot;%Y%m</span><span class="si">%d</span><span class="s2">_%H%M%S&quot;</span><span class="p">)</span>
+        <span class="n">default</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">Path</span><span class="o">.</span><span class="n">home</span><span class="p">()</span> <span class="o">/</span> <span class="sa">f</span><span class="s2">&quot;nf_plot_</span><span class="si">{</span><span class="n">ts</span><span class="si">}</span><span class="s2">.png&quot;</span><span class="p">)</span>
+        <span class="n">path</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">QFileDialog</span><span class="o">.</span><span class="n">getSaveFileName</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;Save Screenshot&quot;</span><span class="p">,</span> <span class="n">default</span><span class="p">,</span> <span class="s2">&quot;PNG Image (*.png)&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">path</span><span class="p">:</span>
+            <span class="k">return</span>
+        <span class="n">exp</span> <span class="o">=</span> <span class="n">pg</span><span class="o">.</span><span class="n">exporters</span><span class="o">.</span><span class="n">ImageExporter</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_glw</span><span class="o">.</span><span class="n">scene</span><span class="p">())</span>
+        <span class="n">exp</span><span class="o">.</span><span class="n">parameters</span><span class="p">()[</span><span class="s2">&quot;width&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1920</span>
+        <span class="n">exp</span><span class="o">.</span><span class="n">export</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_change_time_window</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">idx</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">secs</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_cmb_tw</span><span class="o">.</span><span class="n">itemData</span><span class="p">(</span><span class="n">idx</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_time_window</span> <span class="o">=</span> <span class="n">secs</span>
+        <span class="n">n_pts</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_sfreq</span> <span class="o">*</span> <span class="n">secs</span><span class="p">),</span> <span class="mi">30</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_time_axis</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">secs</span><span class="p">,</span> <span class="n">n_pts</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_buf</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">_n</span><span class="p">,</span> <span class="n">n_pts</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_reward_buf</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">_n</span><span class="p">,</span> <span class="n">n_pts</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">uint8</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">pi</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_plots</span><span class="p">):</span>
+            <span class="n">pi</span><span class="o">.</span><span class="n">setXRange</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">secs</span><span class="p">,</span> <span class="n">padding</span><span class="o">=</span><span class="mf">0.01</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_apply_x_tick_spacing</span><span class="p">(</span><span class="n">pi</span><span class="p">,</span> <span class="n">secs</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_update_reward_regions</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_auto_range</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">pi</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_plots</span><span class="p">):</span>
+            <span class="n">row</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_buf</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="bp">self</span><span class="o">.</span><span class="n">_buf</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">]</span>
+            <span class="n">vals</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">row</span><span class="p">)</span> <span class="k">if</span> <span class="n">row</span><span class="o">.</span><span class="n">size</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="k">else</span> <span class="p">[]</span>
+            <span class="c1"># Include the threshold line so auto-range doesn&#39;t scroll it</span>
+            <span class="c1"># out of view when it sits outside the trace&#39;s current span.</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_threshold_active</span><span class="p">[</span><span class="n">i</span><span class="p">]:</span>
+                <span class="n">vals</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_threshold_lines</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">value</span><span class="p">())</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">vals</span><span class="p">:</span>
+                <span class="k">continue</span>
+            <span class="n">lo</span><span class="p">,</span> <span class="n">hi</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">vals</span><span class="p">),</span> <span class="nb">max</span><span class="p">(</span><span class="n">vals</span><span class="p">)</span>
+            <span class="n">margin</span> <span class="o">=</span> <span class="p">(</span><span class="n">hi</span> <span class="o">-</span> <span class="n">lo</span><span class="p">)</span> <span class="o">*</span> <span class="mf">0.1</span> <span class="ow">or</span> <span class="mf">1.0</span>
+            <span class="n">pi</span><span class="o">.</span><span class="n">setYRange</span><span class="p">(</span><span class="n">lo</span> <span class="o">-</span> <span class="n">margin</span><span class="p">,</span> <span class="n">hi</span> <span class="o">+</span> <span class="n">margin</span><span class="p">,</span> <span class="n">padding</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_scale_up</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">idx</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_channel_scales</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span> <span class="o">*=</span> <span class="mf">2.0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_scale_labels</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span><span class="o">.</span><span class="n">setText</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;×</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_channel_scales</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span><span class="si">:</span><span class="s2">.3g</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_scale_down</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">idx</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_channel_scales</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span> <span class="o">/=</span> <span class="mf">2.0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_scale_labels</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span><span class="o">.</span><span class="n">setText</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;×</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_channel_scales</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span><span class="si">:</span><span class="s2">.3g</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="c1"># ------------------------------------------------------------------</span>
+    <span class="c1"># Public interface</span>
+    <span class="c1"># ------------------------------------------------------------------</span>
+
+<div class="viewcode-block" id="NFPlot.push">
+<a class="viewcode-back" href="../../../generated/mne_rt.viz.NFPlot.html#mne_rt.viz.NFPlot.push">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">push</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">new_vals</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">float</span><span class="p">],</span>
+        <span class="n">thresholds</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">rewards</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Append one new sample per modality and refresh all traces.</span>
+
+<span class="sd">        This is the main update entry point, called at ~30 fps by the</span>
+<span class="sd">        Qt pump timer inside :meth:`~mne_rt.RTStream.record_main`.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        new_vals : list of float</span>
+<span class="sd">            Latest NF value for each active modality, in the same order as</span>
+<span class="sd">            the ``modalities`` list passed to :meth:`__init__`.</span>
+<span class="sd">        thresholds : list of (float or None), optional</span>
+<span class="sd">            Current reward-threshold value for each modality, in the same</span>
+<span class="sd">            raw units as ``new_vals`` (i.e. **not** pre-normalised).  Omit</span>
+<span class="sd">            entirely to leave threshold lines untouched; use ``None`` or</span>
+<span class="sd">            ``nan`` for an individual entry to hide that modality&#39;s line</span>
+<span class="sd">            (e.g. a modality with no protocol, or a protocol with no</span>
+<span class="sd">            single-level threshold such as</span>
+<span class="sd">            :class:`~mne_rt.protocols.LinearTrendProtocol`).  Typically</span>
+<span class="sd">            sourced from a protocol&#39;s ``current_threshold`` property — see</span>
+<span class="sd">            :meth:`~mne_rt.RTStream.record_main`.</span>
+<span class="sd">        rewards : list of (bool or None), optional</span>
+<span class="sd">            Whether the driving protocol is currently rewarding the subject</span>
+<span class="sd">            for each modality, i.e. the ``crossed`` half of that protocol&#39;s</span>
+<span class="sd">            ``evaluate()`` return value.  Rendered as a translucent green</span>
+<span class="sd">            span behind the trace, scrolling in lock-step with it. Omit</span>
+<span class="sd">            entirely to leave reward spans untouched; use ``None`` for an</span>
+<span class="sd">            individual entry when the modality has no driving protocol.</span>
+
+<span class="sd">        Notes</span>
+<span class="sd">        -----</span>
+<span class="sd">        The call is a no-op when the plot is paused (⏸ button pressed).</span>
+<span class="sd">        Each value is normalised by its entry in ``scales_dict`` before</span>
+<span class="sd">        being written into the ring buffer, so all traces share a common</span>
+<span class="sd">        vertical scale.  Threshold values are normalised the same way so</span>
+<span class="sd">        the dashed threshold line stays aligned with its trace, including</span>
+<span class="sd">        after per-channel ``+`` / ``−`` scale adjustments.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_paused</span><span class="p">:</span>
+            <span class="k">return</span>
+
+        <span class="n">arr</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">new_vals</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
+        <span class="n">norm</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span>
+            <span class="p">[</span>
+                <span class="p">(</span><span class="n">arr</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">/</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_scales</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_mods</span><span class="p">[</span><span class="n">i</span><span class="p">]]</span> <span class="o">+</span> <span class="mf">1e-300</span><span class="p">))</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">_channel_scales</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+                <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_n</span><span class="p">)</span>
+            <span class="p">]</span>
+        <span class="p">)</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_display_alpha</span> <span class="o">&lt;</span> <span class="mf">1.0</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_ema</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_display_alpha</span> <span class="o">*</span> <span class="n">norm</span> <span class="o">+</span> <span class="p">(</span><span class="mf">1.0</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">_display_alpha</span><span class="p">)</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ema</span>
+            <span class="n">norm</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ema</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_buf</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">roll</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_buf</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_buf</span><span class="p">[:,</span> <span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">norm</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_reward_buf</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">roll</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_reward_buf</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_reward_buf</span><span class="p">[:,</span> <span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+
+        <span class="n">status_parts</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">curve</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_curves</span><span class="p">):</span>
+            <span class="n">curve</span><span class="o">.</span><span class="n">setData</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_time_axis</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_buf</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+            <span class="n">val</span> <span class="o">=</span> <span class="n">arr</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+            <span class="n">unit</span> <span class="o">=</span> <span class="n">_UNITS</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_mods</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
+            <span class="n">part</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">_LABELS</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_mods</span><span class="p">[</span><span class="n">i</span><span class="p">],</span><span class="w"> </span><span class="bp">self</span><span class="o">.</span><span class="n">_mods</span><span class="p">[</span><span class="n">i</span><span class="p">])</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">val</span><span class="si">:</span><span class="s2">.4g</span><span class="si">}</span><span class="s2">&quot;</span> <span class="o">+</span> <span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot; </span><span class="si">{</span><span class="n">unit</span><span class="si">}</span><span class="s2">&quot;</span> <span class="k">if</span> <span class="n">unit</span> <span class="k">else</span> <span class="s2">&quot;&quot;</span>
+            <span class="p">)</span>
+
+            <span class="k">if</span> <span class="n">thresholds</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">thr</span> <span class="o">=</span> <span class="n">thresholds</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+                <span class="n">thr_f</span> <span class="o">=</span> <span class="kc">None</span> <span class="k">if</span> <span class="n">thr</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="nb">float</span><span class="p">(</span><span class="n">thr</span><span class="p">)</span>
+                <span class="n">line</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_threshold_lines</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+                <span class="k">if</span> <span class="n">thr_f</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">isfinite</span><span class="p">(</span><span class="n">thr_f</span><span class="p">):</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_threshold_active</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span>
+                    <span class="n">line</span><span class="o">.</span><span class="n">setVisible</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">thr_norm</span> <span class="o">=</span> <span class="p">(</span>
+                        <span class="n">thr_f</span> <span class="o">/</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_scales</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_mods</span><span class="p">[</span><span class="n">i</span><span class="p">]]</span> <span class="o">+</span> <span class="mf">1e-300</span><span class="p">)</span>
+                    <span class="p">)</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">_channel_scales</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+                    <span class="n">line</span><span class="o">.</span><span class="n">setPos</span><span class="p">(</span><span class="n">thr_norm</span><span class="p">)</span>
+                    <span class="c1"># InfiniteLine&#39;s &quot;{value}&quot; label placeholder auto-fills</span>
+                    <span class="c1"># from the line&#39;s *position* (thr_norm, the normalised/</span>
+                    <span class="c1"># rescaled plot coordinate) on every setPos() call, not</span>
+                    <span class="c1"># the physical threshold -- so the on-plot label is</span>
+                    <span class="c1"># overridden here with the real value every push().</span>
+                    <span class="n">line</span><span class="o">.</span><span class="n">label</span><span class="o">.</span><span class="n">setText</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;thr </span><span class="si">{</span><span class="n">thr_f</span><span class="si">:</span><span class="s2">.3g</span><span class="si">}{</span><span class="sa">f</span><span class="s1">&#39; </span><span class="si">{</span><span class="n">unit</span><span class="si">}</span><span class="s1">&#39;</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="n">unit</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="s1">&#39;&#39;</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_threshold_active</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
+                    <span class="n">line</span><span class="o">.</span><span class="n">setVisible</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_show_threshold</span><span class="p">)</span>
+                    <span class="n">part</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;  (thr </span><span class="si">{</span><span class="n">thr_f</span><span class="si">:</span><span class="s2">.4g</span><span class="si">}{</span><span class="sa">f</span><span class="s1">&#39; </span><span class="si">{</span><span class="n">unit</span><span class="si">}</span><span class="s1">&#39;</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="n">unit</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="s1">&#39;&#39;</span><span class="si">}</span><span class="s2">)&quot;</span>
+
+            <span class="k">if</span> <span class="n">rewards</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">rwd</span> <span class="o">=</span> <span class="n">rewards</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+                <span class="k">if</span> <span class="n">rwd</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_reward_active</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_update_reward_regions</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_reward_buf</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span> <span class="k">if</span> <span class="n">rwd</span> <span class="k">else</span> <span class="mi">0</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_reward_active</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_update_reward_regions</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+                    <span class="k">if</span> <span class="n">rwd</span><span class="p">:</span>
+                        <span class="n">part</span> <span class="o">=</span> <span class="s2">&quot;🟢 &quot;</span> <span class="o">+</span> <span class="n">part</span>
+
+            <span class="n">status_parts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">part</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_status</span><span class="o">.</span><span class="n">showMessage</span><span class="p">(</span><span class="s2">&quot;  |  &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">status_parts</span><span class="p">))</span></div>
+
+
+<div class="viewcode-block" id="NFPlot.closeEvent">
+<a class="viewcode-back" href="../../../generated/mne_rt.viz.NFPlot.html#mne_rt.viz.NFPlot.closeEvent">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">closeEvent</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">closed</span><span class="o">.</span><span class="n">emit</span><span class="p">()</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">closeEvent</span><span class="p">(</span><span class="n">event</span><span class="p">)</span></div>
+</div>
+
+</pre></div>
+
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../../../_static/scripts/bootstrap.js?digest=90905a2f556bf617f1a9"></script>
+<script defer src="../../../_static/scripts/pydata-sphinx-theme.js?digest=90905a2f556bf617f1a9"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright 2025, Payam S. Shabestari.
+      <br/>
+    
+  </p>
+</div>
+      
+        <div class="footer-item">
+
+  <p class="sphinx-version">
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 9.0.4.
+    <br/>
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
+<p class="theme-version">
+  <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.20.0.
+</p></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>

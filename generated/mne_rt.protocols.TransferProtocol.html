@@ -1,0 +1,891 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>mne_rt.protocols.TransferProtocol &#8212; MNE-RT</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=90905a2f556bf617f1a9" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=90905a2f556bf617f1a9" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery.css?v=fd6457a4" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-binder.css?v=f4aeca0c" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-dataframe.css?v=2082cf3c" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-rendered-html.css?v=1277b6f3" />
+    <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=5bf657dd" />
+  
+  <!-- So that users can add custom icons -->
+  <script defer src="../_static/scripts/fontawesome.js?digest=90905a2f556bf617f1a9"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=90905a2f556bf617f1a9" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=90905a2f556bf617f1a9" />
+
+    <script src="../_static/documentation_options.js?v=8d563738"></script>
+    <script src="../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="../_static/sg-tags.js?v=d80f6fa4"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'generated/mne_rt.protocols.TransferProtocol';</script>
+    <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="mne_rt.combiners.FeatureCombiner" href="mne_rt.combiners.FeatureCombiner.html" />
+    <link rel="prev" title="mne_rt.protocols.OperantProtocol" href="mne_rt.protocols.OperantProtocol.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="" />
+  
+    
+    <script src="../_static/searchtools.js"></script>
+    <script src="../_static/language_data.js"></script>
+    <script src="../searchindex.js"></script>
+  
+  </head>
+  <body data-default-mode="">
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+  
+  
+  
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header id="pst-header" class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../index.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../_static/mne_rt_logo.svg" class="logo__image only-light" alt="MNE-RT - Home"/>
+    <img src="../_static/mne_rt_logo.svg" class="logo__image only-dark pst-js-only" alt="MNE-RT - Home"/>
+  
+  
+</a></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../install.html">
+    Installation
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../tutorial.html">
+    User Guide
+  </a>
+</li>
+
+
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="../api.html">
+    API Reference
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../visualization.html">
+    Visualisation
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../cli.html">
+    CLI
+  </a>
+</li>
+
+            <li class="nav-item dropdown">
+                <button class="btn dropdown-toggle nav-item" type="button"
+                data-bs-toggle="dropdown" aria-expanded="false"
+                aria-controls="pst-nav-more-links">
+                    More
+                </button>
+                <ul id="pst-nav-more-links" class="dropdown-menu">
+                    
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../denoising.html">
+    Artifact Correction
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../modalities.html">
+    Real-time Feature Modalities
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../protocols.html">
+    NF Protocols
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../whats_new.html">
+    What’s new
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../auto_examples/index.html">
+    Examples Gallery
+  </a>
+</li>
+
+                </ul>
+            </li>
+            
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+        </div>
+      
+      
+        <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/payamsash/mne-rt" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-square-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
+        </li>
+</ul></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+    </div>
+  
+
+  
+    <button class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="On this page">
+      <span class="fa-solid fa-outdent"></span>
+    </button>
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../install.html">
+    Installation
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../tutorial.html">
+    User Guide
+  </a>
+</li>
+
+
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="../api.html">
+    API Reference
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../visualization.html">
+    Visualisation
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../cli.html">
+    CLI
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../denoising.html">
+    Artifact Correction
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../modalities.html">
+    Real-time Feature Modalities
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../protocols.html">
+    NF Protocols
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../whats_new.html">
+    What’s new
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../auto_examples/index.html">
+    Examples Gallery
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/payamsash/mne-rt" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-square-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
+        </li>
+</ul></div>
+        
+      </div>
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+
+<nav class="bd-docs-nav bd-links"
+     aria-label="Section Navigation">
+  <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
+  <div class="bd-toc-item navbar-nav"><ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="mne_rt.RTStream.html">mne_rt.RTStream</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mne_rt.RTEpochs.html">mne_rt.RTEpochs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mne_rt.ArrayStream.html">mne_rt.ArrayStream</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="mne_rt.viz.NFPlot.html">mne_rt.viz.NFPlot</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mne_rt.viz.RawPlot.html">mne_rt.viz.RawPlot</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mne_rt.viz.EpochPlot.html">mne_rt.viz.EpochPlot</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mne_rt.viz.BrainPlot.html">mne_rt.viz.BrainPlot</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mne_rt.viz.TopomapPlot.html">mne_rt.viz.TopomapPlot</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mne_rt.viz.TopoPlot.html">mne_rt.viz.TopoPlot</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mne_rt.viz.ButterflyPlot.html">mne_rt.viz.ButterflyPlot</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mne_rt.viz.TFRPlot.html">mne_rt.viz.TFRPlot</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mne_rt.viz.CompareEvoked.html">mne_rt.viz.CompareEvoked</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="mne_rt.tools.AdaptiveLMSFilter.html">mne_rt.tools.AdaptiveLMSFilter</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mne_rt.tools.ORICA.html">mne_rt.tools.ORICA</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mne_rt.tools.GEDAIDenoiser.html">mne_rt.tools.GEDAIDenoiser</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mne_rt.tools.ASRDenoiser.html">mne_rt.tools.ASRDenoiser</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mne_rt.tools.RTMaxwellFilter.html">mne_rt.tools.RTMaxwellFilter</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="mne_rt.tools.BadChannelDetector.html">mne_rt.tools.BadChannelDetector</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mne_rt.tools.RiemannianPotatoDetector.html">mne_rt.tools.RiemannianPotatoDetector</a></li>
+</ul>
+<ul class="current nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="mne_rt.protocols.ThresholdProtocol.html">mne_rt.protocols.ThresholdProtocol</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mne_rt.protocols.ZScoreProtocol.html">mne_rt.protocols.ZScoreProtocol</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mne_rt.protocols.PercentileProtocol.html">mne_rt.protocols.PercentileProtocol</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mne_rt.protocols.LinearTrendProtocol.html">mne_rt.protocols.LinearTrendProtocol</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mne_rt.protocols.ShamProtocol.html">mne_rt.protocols.ShamProtocol</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mne_rt.protocols.UpDownStaircaseProtocol.html">mne_rt.protocols.UpDownStaircaseProtocol</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mne_rt.protocols.MultiBandProtocol.html">mne_rt.protocols.MultiBandProtocol</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mne_rt.protocols.RLProtocol.html">mne_rt.protocols.RLProtocol</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mne_rt.protocols.OperantProtocol.html">mne_rt.protocols.OperantProtocol</a></li>
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">mne_rt.protocols.TransferProtocol</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="mne_rt.combiners.FeatureCombiner.html">mne_rt.combiners.FeatureCombiner</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mne_rt.combiners.WeightedSumCombiner.html">mne_rt.combiners.WeightedSumCombiner</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mne_rt.combiners.GeometricMeanCombiner.html">mne_rt.combiners.GeometricMeanCombiner</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mne_rt.combiners.ZScoredNormCombiner.html">mne_rt.combiners.ZScoredNormCombiner</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mne_rt.combiners.LearnedCombiner.html">mne_rt.combiners.LearnedCombiner</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="mne_rt.OSCSender.html">mne_rt.OSCSender</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mne_rt.LSLSender.html">mne_rt.LSLSender</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="mne_rt.tools.simulate_raw.html">mne_rt.tools.simulate_raw</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mne_rt.tools.simulate_nf_session.html">mne_rt.tools.simulate_nf_session</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mne_rt.modalities.ModalityMixin.html">mne_rt.modalities.ModalityMixin</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="mne_rt.tools.save_as_bids.html">mne_rt.tools.save_as_bids</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="mne_rt.set_log_level.html">mne_rt.set_log_level</a></li>
+</ul>
+</div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    
+    <li class="breadcrumb-item"><a href="../api.html" class="nav-link">API Reference</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">mne_rt.protocols.TransferProtocol</span></li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section id="mne-rt-protocols-transferprotocol">
+<h1>mne_rt.protocols.TransferProtocol<a class="headerlink" href="#mne-rt-protocols-transferprotocol" title="Link to this heading">#</a></h1>
+<dl class="py class">
+<dt class="sig sig-object py" id="mne_rt.protocols.TransferProtocol">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">mne_rt.protocols.</span></span><span class="sig-name descname"><span class="pre">TransferProtocol</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fname</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/pathlib.html#pathlib.Path" title="(in Python v3.14)"><span class="pre">Path</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">modality</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">direction</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'up'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">zscore_threshold</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">adapt_rate</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">smoothing</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.0</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mne_rt.protocols.TransferProtocol" title="Link to this definition">#</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<p>Cross-session transfer NF protocol seeded from a prior-session file.</p>
+<p>Loads a previous session’s NF feature time-series from a BIDS
+behavioural JSON file (<code class="docutils literal notranslate"><span class="pre">beh/*.json</span></code>), computes the prior mean and
+standard deviation, and initialises Welford’s online algorithm as if
+those samples had already been observed.  Subsequent calls to
+<a class="reference internal" href="#mne_rt.protocols.TransferProtocol.evaluate" title="mne_rt.protocols.TransferProtocol.evaluate"><code class="xref py py-meth docutils literal notranslate"><span class="pre">evaluate()</span></code></a> continue updating the running statistics, but because
+the prior already contributes, no warmup period is needed.</p>
+<p>The JSON file must follow MNE-RT’s BIDS behavioural format:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="s2">&quot;meta&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;modalities&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;sensor_power&quot;</span><span class="p">],</span> <span class="o">...</span><span class="p">},</span>
+    <span class="s2">&quot;data&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;sensor_power&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mf">0.1</span><span class="p">,</span> <span class="mf">0.2</span><span class="p">,</span> <span class="o">...</span><span class="p">]}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<dl class="field-list">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl>
+<dt><strong>fname</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a> | <code class="xref py py-obj docutils literal notranslate"><span class="pre">Path</span></code></span></dt><dd><p>Path to a prior-session BIDS behavioural JSON file.</p>
+</dd>
+<dt><strong>modality</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a></span></dt><dd><p>Key inside <code class="docutils literal notranslate"><span class="pre">data</span></code> from which to read the prior time-series
+(e.g., <code class="docutils literal notranslate"><span class="pre">&quot;sensor_power&quot;</span></code>).</p>
+</dd>
+<dt><strong>direction</strong><span class="classifier">{“up”, “down”}, default “up”</span></dt><dd><p>“up”  -&gt; reward when z-score &gt;  <code class="docutils literal notranslate"><span class="pre">zscore_threshold</span></code>.
+“down” -&gt; reward when z-score &lt; -<code class="docutils literal notranslate"><span class="pre">zscore_threshold</span></code>.</p>
+</dd>
+<dt><strong>zscore_threshold</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">float</span></code></a>, default 0.5</span></dt><dd><p>Minimum absolute z-score required to issue a reward.  Must be &gt;= 0.</p>
+</dd>
+<dt><strong>adapt_rate</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">float</span></code></a>, default 0.0</span></dt><dd><p>Controls how quickly the running statistics adapt to the new session.
+Set to <code class="docutils literal notranslate"><span class="pre">0.0</span></code> to freeze the prior statistics (pure transfer);
+higher values let the statistics drift toward the current session.
+Implemented as an EMA blend between the Welford update and the
+frozen prior: the effective weight of each new sample is
+<code class="docutils literal notranslate"><span class="pre">adapt_rate</span></code> (must be in <code class="docutils literal notranslate"><span class="pre">[0,</span> <span class="pre">1)</span></code>).</p>
+</dd>
+<dt><strong>smoothing</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">float</span></code></a>, default 0.0</span></dt><dd><p>EMA smoothing coefficient applied to the raw input before z-scoring.
+Must be in <code class="docutils literal notranslate"><span class="pre">[0,</span> <span class="pre">1)</span></code>.  <code class="docutils literal notranslate"><span class="pre">0.0</span></code> disables smoothing.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#FileNotFoundError" title="(in Python v3.14)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">FileNotFoundError</span></code></a></dt><dd><p>If <code class="docutils literal notranslate"><span class="pre">fname</span></code> does not point to an existing file.</p>
+</dd>
+<dt><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#KeyError" title="(in Python v3.14)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">KeyError</span></code></a></dt><dd><p>If the <code class="docutils literal notranslate"><span class="pre">&quot;data&quot;</span></code> key is absent from the JSON or <code class="docutils literal notranslate"><span class="pre">modality</span></code> is not
+found inside <code class="docutils literal notranslate"><span class="pre">data</span></code>.</p>
+</dd>
+<dt><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#ValueError" title="(in Python v3.14)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ValueError</span></code></a></dt><dd><p>If any numerical parameter is outside its valid range, or if the
+prior data array has fewer than 2 elements (insufficient for std).</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>The Welford accumulator is initialised with:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">n</span>    <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">prior_data</span><span class="p">)</span>
+<span class="n">mean</span> <span class="o">=</span> <span class="n">mean</span><span class="p">(</span><span class="n">prior_data</span><span class="p">)</span>
+<span class="n">M2</span>   <span class="o">=</span> <span class="n">var</span><span class="p">(</span><span class="n">prior_data</span><span class="p">,</span> <span class="n">ddof</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="n">n</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>so the running <code class="docutils literal notranslate"><span class="pre">std_</span></code> on the first call to <a class="reference internal" href="#mne_rt.protocols.TransferProtocol.evaluate" title="mne_rt.protocols.TransferProtocol.evaluate"><code class="xref py py-meth docutils literal notranslate"><span class="pre">evaluate()</span></code></a> equals the
+prior standard deviation.  When <code class="docutils literal notranslate"><span class="pre">adapt_rate</span> <span class="pre">&gt;</span> <span class="pre">0</span></code> each new sample
+contributes weight <code class="docutils literal notranslate"><span class="pre">adapt_rate</span></code> to the mean and M2, while the existing
+accumulator retains weight <code class="docutils literal notranslate"><span class="pre">1</span> <span class="pre">-</span> <span class="pre">adapt_rate</span></code>.</p>
+<p class="rubric">Examples</p>
+<p>Seed today’s session from yesterday’s baseline:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">mne_rt.protocols.transfer</span><span class="w"> </span><span class="kn">import</span> <span class="n">TransferProtocol</span>
+
+<span class="n">proto</span> <span class="o">=</span> <span class="n">TransferProtocol</span><span class="p">(</span>
+    <span class="n">fname</span><span class="o">=</span><span class="s2">&quot;sub-01/ses-01/beh/sub-01_ses-01_task-nf_beh.json&quot;</span><span class="p">,</span>
+    <span class="n">modality</span><span class="o">=</span><span class="s2">&quot;sensor_power&quot;</span><span class="p">,</span>
+    <span class="n">direction</span><span class="o">=</span><span class="s2">&quot;up&quot;</span><span class="p">,</span>
+    <span class="n">zscore_threshold</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="k">for</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">nf_stream</span><span class="p">:</span>
+    <span class="n">crossed</span><span class="p">,</span> <span class="n">magnitude</span> <span class="o">=</span> <span class="n">proto</span><span class="o">.</span><span class="n">evaluate</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">crossed</span><span class="p">:</span>
+        <span class="n">send_reward</span><span class="p">(</span><span class="n">magnitude</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.0.0.</span></p>
+</div>
+<dl class="py method">
+<dt class="sig sig-object py" id="mne_rt.protocols.TransferProtocol.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fname</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/pathlib.html#pathlib.Path" title="(in Python v3.14)"><span class="pre">Path</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">modality</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">direction</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'up'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">zscore_threshold</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">adapt_rate</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">smoothing</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.0</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span></span><a class="reference internal" href="../_modules/mne_rt/protocols/transfer.html#TransferProtocol.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mne_rt.protocols.TransferProtocol.__init__" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<p class="rubric">Methods</p>
+<div class="pst-scrollable-table-container"><table class="autosummary longtable table">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#mne_rt.protocols.TransferProtocol.__init__" title="mne_rt.protocols.TransferProtocol.__init__"><code class="xref py py-obj docutils literal notranslate"><span class="pre">__init__</span></code></a>(fname, modality[, direction, ...])</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#mne_rt.protocols.TransferProtocol.evaluate" title="mne_rt.protocols.TransferProtocol.evaluate"><code class="xref py py-obj docutils literal notranslate"><span class="pre">evaluate</span></code></a>(value)</p></td>
+<td><p>Evaluate one NF value and return (crossed, magnitude).</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#mne_rt.protocols.TransferProtocol.reset" title="mne_rt.protocols.TransferProtocol.reset"><code class="xref py py-obj docutils literal notranslate"><span class="pre">reset</span></code></a>()</p></td>
+<td><p>Reset to the prior statistics without re-reading the file.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p class="rubric">Attributes</p>
+<div class="pst-scrollable-table-container"><table class="autosummary longtable table">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#mne_rt.protocols.TransferProtocol.current_threshold" title="mne_rt.protocols.TransferProtocol.current_threshold"><code class="xref py py-obj docutils literal notranslate"><span class="pre">current_threshold</span></code></a></p></td>
+<td><p>Current reward boundary in raw NF-signal units.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#mne_rt.protocols.TransferProtocol.mean_" title="mne_rt.protocols.TransferProtocol.mean_"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mean_</span></code></a></p></td>
+<td><p>Current running mean (prior-seeded).</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#mne_rt.protocols.TransferProtocol.n_evaluated" title="mne_rt.protocols.TransferProtocol.n_evaluated"><code class="xref py py-obj docutils literal notranslate"><span class="pre">n_evaluated</span></code></a></p></td>
+<td><p>Number of values evaluated since init or last <a class="reference internal" href="#mne_rt.protocols.TransferProtocol.reset" title="mne_rt.protocols.TransferProtocol.reset"><code class="xref py py-meth docutils literal notranslate"><span class="pre">reset()</span></code></a>.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#mne_rt.protocols.TransferProtocol.n_prior" title="mne_rt.protocols.TransferProtocol.n_prior"><code class="xref py py-obj docutils literal notranslate"><span class="pre">n_prior</span></code></a></p></td>
+<td><p>Number of samples in the prior session data (read-only).</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#mne_rt.protocols.TransferProtocol.prior_mean" title="mne_rt.protocols.TransferProtocol.prior_mean"><code class="xref py py-obj docutils literal notranslate"><span class="pre">prior_mean</span></code></a></p></td>
+<td><p>Mean of the prior session data (read-only).</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#mne_rt.protocols.TransferProtocol.prior_std" title="mne_rt.protocols.TransferProtocol.prior_std"><code class="xref py py-obj docutils literal notranslate"><span class="pre">prior_std</span></code></a></p></td>
+<td><p>Standard deviation of the prior session data (read-only).</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#mne_rt.protocols.TransferProtocol.std_" title="mne_rt.protocols.TransferProtocol.std_"><code class="xref py py-obj docutils literal notranslate"><span class="pre">std_</span></code></a></p></td>
+<td><p>Current running standard deviation (prior-seeded).</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#mne_rt.protocols.TransferProtocol.zscore" title="mne_rt.protocols.TransferProtocol.zscore"><code class="xref py py-obj docutils literal notranslate"><span class="pre">zscore</span></code></a></p></td>
+<td><p>Z-score computed during the most recent <a class="reference internal" href="#mne_rt.protocols.TransferProtocol.evaluate" title="mne_rt.protocols.TransferProtocol.evaluate"><code class="xref py py-meth docutils literal notranslate"><span class="pre">evaluate()</span></code></a> call.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<dl class="py property">
+<dt class="sig sig-object py" id="mne_rt.protocols.TransferProtocol.current_threshold">
+<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">current_threshold</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a></span><a class="headerlink" href="#mne_rt.protocols.TransferProtocol.current_threshold" title="Link to this definition">#</a></dt>
+<dd><p>Current reward boundary in raw NF-signal units.</p>
+<p>Converts the relative z-score criterion back to the signal’s native
+units as <code class="docutils literal notranslate"><span class="pre">mean_</span> <span class="pre">±</span> <span class="pre">zscore_threshold</span> <span class="pre">*</span> <span class="pre">std_</span></code> (<code class="docutils literal notranslate"><span class="pre">+</span></code> for
+<code class="docutils literal notranslate"><span class="pre">direction=&quot;up&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">-</span></code> for <code class="docutils literal notranslate"><span class="pre">&quot;down&quot;</span></code>), for display by
+<a class="reference internal" href="mne_rt.viz.NFPlot.html#mne_rt.viz.NFPlot" title="mne_rt.viz.NFPlot"><code class="xref py py-class docutils literal notranslate"><span class="pre">NFPlot</span></code></a>.  Unlike <a class="reference internal" href="mne_rt.protocols.ZScoreProtocol.html#mne_rt.protocols.ZScoreProtocol" title="mne_rt.protocols.ZScoreProtocol"><code class="xref py py-class docutils literal notranslate"><span class="pre">ZScoreProtocol</span></code></a>
+this is always defined (never <code class="docutils literal notranslate"><span class="pre">None</span></code>) since the prior-seeded
+statistics are meaningful from the first evaluation.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mne_rt.protocols.TransferProtocol.evaluate">
+<span class="sig-name descname"><span class="pre">evaluate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.14)"><span class="pre">tuple</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><span class="pre">bool</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/mne_rt/protocols/transfer.html#TransferProtocol.evaluate"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mne_rt.protocols.TransferProtocol.evaluate" title="Link to this definition">#</a></dt>
+<dd><p>Evaluate one NF value and return (crossed, magnitude).</p>
+<p>Updates the running baseline statistics (seeded from the prior) with
+the (optionally smoothed) input, computes the z-score against the
+running mean and standard deviation, and determines whether the
+reward criterion is met.</p>
+<dl class="field-list">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl>
+<dt><strong>value</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">float</span></code></a></span></dt><dd><p>Current NF feature value.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl>
+<dt><strong>crossed</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bltin-boolean-values" title="(in Python v3.14)"><span class="xref std std-ref">bool</span></a></span></dt><dd><p>True if the z-score criterion is met in the target direction.</p>
+</dd>
+<dt><strong>magnitude</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">float</span></code></a></span></dt><dd><p>Absolute value of the z-score when <code class="docutils literal notranslate"><span class="pre">crossed</span></code> is True;
+<code class="docutils literal notranslate"><span class="pre">0.0</span></code> otherwise.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>When <code class="docutils literal notranslate"><span class="pre">adapt_rate</span> <span class="pre">=</span> <span class="pre">0.0</span></code> the running statistics are frozen at the
+prior values: every evaluation is z-scored against the prior
+mean/std.  When <code class="docutils literal notranslate"><span class="pre">adapt_rate</span> <span class="pre">&gt;</span> <span class="pre">0</span></code> new samples gradually shift the
+running statistics toward the current session distribution.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="mne_rt.protocols.TransferProtocol.mean_">
+<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">mean_</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a></span><a class="headerlink" href="#mne_rt.protocols.TransferProtocol.mean_" title="Link to this definition">#</a></dt>
+<dd><p>Current running mean (prior-seeded).</p>
+<p>Before any adaptations this equals <a class="reference internal" href="#mne_rt.protocols.TransferProtocol.prior_mean" title="mne_rt.protocols.TransferProtocol.prior_mean"><code class="xref py py-attr docutils literal notranslate"><span class="pre">prior_mean</span></code></a>.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="mne_rt.protocols.TransferProtocol.n_evaluated">
+<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">n_evaluated</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a></span><a class="headerlink" href="#mne_rt.protocols.TransferProtocol.n_evaluated" title="Link to this definition">#</a></dt>
+<dd><p>Number of values evaluated since init or last <a class="reference internal" href="#mne_rt.protocols.TransferProtocol.reset" title="mne_rt.protocols.TransferProtocol.reset"><code class="xref py py-meth docutils literal notranslate"><span class="pre">reset()</span></code></a>.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="mne_rt.protocols.TransferProtocol.n_prior">
+<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">n_prior</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a></span><a class="headerlink" href="#mne_rt.protocols.TransferProtocol.n_prior" title="Link to this definition">#</a></dt>
+<dd><p>Number of samples in the prior session data (read-only).</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="mne_rt.protocols.TransferProtocol.prior_mean">
+<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">prior_mean</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a></span><a class="headerlink" href="#mne_rt.protocols.TransferProtocol.prior_mean" title="Link to this definition">#</a></dt>
+<dd><p>Mean of the prior session data (read-only).</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="mne_rt.protocols.TransferProtocol.prior_std">
+<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">prior_std</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a></span><a class="headerlink" href="#mne_rt.protocols.TransferProtocol.prior_std" title="Link to this definition">#</a></dt>
+<dd><p>Standard deviation of the prior session data (read-only).</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mne_rt.protocols.TransferProtocol.reset">
+<span class="sig-name descname"><span class="pre">reset</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span></span><a class="reference internal" href="../_modules/mne_rt/protocols/transfer.html#TransferProtocol.reset"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mne_rt.protocols.TransferProtocol.reset" title="Link to this definition">#</a></dt>
+<dd><p>Reset to the prior statistics without re-reading the file.</p>
+<p>Restores the Welford accumulators to the values computed from the
+prior data during <code class="docutils literal notranslate"><span class="pre">__init__</span></code>, clears the smoothed state, and
+resets the evaluation counter.  All constructor parameters are
+preserved.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="mne_rt.protocols.TransferProtocol.std_">
+<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">std_</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a></span><a class="headerlink" href="#mne_rt.protocols.TransferProtocol.std_" title="Link to this definition">#</a></dt>
+<dd><p>Current running standard deviation (prior-seeded).</p>
+<p>Before any adaptations this equals <a class="reference internal" href="#mne_rt.protocols.TransferProtocol.prior_std" title="mne_rt.protocols.TransferProtocol.prior_std"><code class="xref py py-attr docutils literal notranslate"><span class="pre">prior_std</span></code></a>.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="mne_rt.protocols.TransferProtocol.zscore">
+<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">zscore</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a></span><a class="headerlink" href="#mne_rt.protocols.TransferProtocol.zscore" title="Link to this definition">#</a></dt>
+<dd><p>Z-score computed during the most recent <a class="reference internal" href="#mne_rt.protocols.TransferProtocol.evaluate" title="mne_rt.protocols.TransferProtocol.evaluate"><code class="xref py py-meth docutils literal notranslate"><span class="pre">evaluate()</span></code></a> call.</p>
+<p>Returns <code class="docutils literal notranslate"><span class="pre">0.0</span></code> before any evaluation.</p>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+
+
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="mne_rt.protocols.OperantProtocol.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">mne_rt.protocols.OperantProtocol</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="mne_rt.combiners.FeatureCombiner.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">mne_rt.combiners.FeatureCombiner</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <dialog id="pst-secondary-sidebar-modal"></dialog>
+                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+<div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav id="pst-page-toc-nav" class="page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="pst-show_toc_level nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#mne_rt.protocols.TransferProtocol"><code class="docutils literal notranslate"><span class="pre">TransferProtocol</span></code></a><ul class="pst-show_toc_level nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#mne_rt.protocols.TransferProtocol.__init__"><code class="docutils literal notranslate"><span class="pre">TransferProtocol.__init__()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#mne_rt.protocols.TransferProtocol.current_threshold"><code class="docutils literal notranslate"><span class="pre">TransferProtocol.current_threshold</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#mne_rt.protocols.TransferProtocol.evaluate"><code class="docutils literal notranslate"><span class="pre">TransferProtocol.evaluate()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#mne_rt.protocols.TransferProtocol.mean_"><code class="docutils literal notranslate"><span class="pre">TransferProtocol.mean_</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#mne_rt.protocols.TransferProtocol.n_evaluated"><code class="docutils literal notranslate"><span class="pre">TransferProtocol.n_evaluated</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#mne_rt.protocols.TransferProtocol.n_prior"><code class="docutils literal notranslate"><span class="pre">TransferProtocol.n_prior</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#mne_rt.protocols.TransferProtocol.prior_mean"><code class="docutils literal notranslate"><span class="pre">TransferProtocol.prior_mean</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#mne_rt.protocols.TransferProtocol.prior_std"><code class="docutils literal notranslate"><span class="pre">TransferProtocol.prior_std</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#mne_rt.protocols.TransferProtocol.reset"><code class="docutils literal notranslate"><span class="pre">TransferProtocol.reset()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#mne_rt.protocols.TransferProtocol.std_"><code class="docutils literal notranslate"><span class="pre">TransferProtocol.std_</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#mne_rt.protocols.TransferProtocol.zscore"><code class="docutils literal notranslate"><span class="pre">TransferProtocol.zscore</span></code></a></li>
+</ul>
+</li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../_static/scripts/bootstrap.js?digest=90905a2f556bf617f1a9"></script>
+<script defer src="../_static/scripts/pydata-sphinx-theme.js?digest=90905a2f556bf617f1a9"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright 2025, Payam S. Shabestari.
+      <br/>
+    
+  </p>
+</div>
+      
+        <div class="footer-item">
+
+  <p class="sphinx-version">
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 9.0.4.
+    <br/>
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
+<p class="theme-version">
+  <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.20.0.
+</p></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>

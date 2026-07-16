@@ -1,0 +1,997 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../../../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>mne_rt.tools.maxwell &#8212; MNE-RT</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../../_static/styles/theme.css?digest=90905a2f556bf617f1a9" rel="stylesheet" />
+<link href="../../../_static/styles/pydata-sphinx-theme.css?digest=90905a2f556bf617f1a9" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/sg_gallery.css?v=fd6457a4" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/sg_gallery-binder.css?v=f4aeca0c" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/sg_gallery-dataframe.css?v=2082cf3c" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/sg_gallery-rendered-html.css?v=1277b6f3" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/custom.css?v=5bf657dd" />
+  
+  <!-- So that users can add custom icons -->
+  <script defer src="../../../_static/scripts/fontawesome.js?digest=90905a2f556bf617f1a9"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../../_static/scripts/bootstrap.js?digest=90905a2f556bf617f1a9" />
+<link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=90905a2f556bf617f1a9" />
+
+    <script src="../../../_static/documentation_options.js?v=8d563738"></script>
+    <script src="../../../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="../../../_static/sg-tags.js?v=d80f6fa4"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = '_modules/mne_rt/tools/maxwell';</script>
+    <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="" />
+  
+    
+    <script src="../../../_static/searchtools.js"></script>
+    <script src="../../../_static/language_data.js"></script>
+    <script src="../../../searchindex.js"></script>
+  
+  </head>
+  <body data-default-mode="">
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+  
+  
+  
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../../../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header id="pst-header" class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../../../index.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../../../_static/mne_rt_logo.svg" class="logo__image only-light" alt="MNE-RT - Home"/>
+    <img src="../../../_static/mne_rt_logo.svg" class="logo__image only-dark pst-js-only" alt="MNE-RT - Home"/>
+  
+  
+</a></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../install.html">
+    Installation
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../tutorial.html">
+    User Guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../api.html">
+    API Reference
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../visualization.html">
+    Visualisation
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../cli.html">
+    CLI
+  </a>
+</li>
+
+            <li class="nav-item dropdown">
+                <button class="btn dropdown-toggle nav-item" type="button"
+                data-bs-toggle="dropdown" aria-expanded="false"
+                aria-controls="pst-nav-more-links">
+                    More
+                </button>
+                <ul id="pst-nav-more-links" class="dropdown-menu">
+                    
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../../../denoising.html">
+    Artifact Correction
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../../../modalities.html">
+    Real-time Feature Modalities
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../../../protocols.html">
+    NF Protocols
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../../../whats_new.html">
+    What’s new
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../../../auto_examples/index.html">
+    Examples Gallery
+  </a>
+</li>
+
+                </ul>
+            </li>
+            
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+        </div>
+      
+      
+        <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/payamsash/mne-rt" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-square-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
+        </li>
+</ul></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+    </div>
+  
+
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+        
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar hide-on-wide">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../install.html">
+    Installation
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../tutorial.html">
+    User Guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../api.html">
+    API Reference
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../visualization.html">
+    Visualisation
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../cli.html">
+    CLI
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../denoising.html">
+    Artifact Correction
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../modalities.html">
+    Real-time Feature Modalities
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../protocols.html">
+    NF Protocols
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../whats_new.html">
+    What’s new
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../auto_examples/index.html">
+    Examples Gallery
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/payamsash/mne-rt" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-square-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
+        </li>
+</ul></div>
+        
+      </div>
+    
+  </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../../../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    
+    <li class="breadcrumb-item"><a href="../../index.html" class="nav-link">Module code</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">mne_rt.tools.maxwell</span></li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <h1>Source code for mne_rt.tools.maxwell</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;Real-time Maxwell filtering (SSS / tSSS) for streaming MEG data.</span>
+
+<span class="sd">Classes</span>
+<span class="sd">-------</span>
+<span class="sd">RTMaxwellFilter</span>
+<span class="sd">    Pre-computed SSS operator for zero-latency real-time MEG cleaning.</span>
+
+<span class="sd">References</span>
+<span class="sd">----------</span>
+<span class="sd">Taulu, S., Kajola, M., &amp; Simola, J. (2004). Suppression of interference and</span>
+<span class="sd">artifacts by the Signal Space Separation Method. *Brain Topogr.*, 16(4),</span>
+<span class="sd">269–275. https://doi.org/10.1023/B:BRAT.0000032864.93890.f9</span>
+
+<span class="sd">Taulu, S., &amp; Simola, J. (2006). Spatiotemporal signal space separation method</span>
+<span class="sd">for rejecting nearby interference in MEG measurements. *Phys. Med. Biol.*,</span>
+<span class="sd">51(7), 1759–1768. https://doi.org/10.1088/0031-9155/51/7/008</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Union</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">mne_rt._logging</span><span class="w"> </span><span class="kn">import</span> <span class="n">logger</span>
+
+
+<div class="viewcode-block" id="RTMaxwellFilter">
+<a class="viewcode-back" href="../../../generated/mne_rt.tools.RTMaxwellFilter.html#mne_rt.tools.RTMaxwellFilter">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">RTMaxwellFilter</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Real-time Maxwell filtering (SSS / tSSS) for streaming MEG data.</span>
+
+<span class="sd">    Pre-computes the Signal Space Separation (SSS) projection matrix</span>
+<span class="sd">    :footcite:p:`taulu2004suppression` **once** from sensor geometry, then applies it as</span>
+<span class="sd">    a single matrix multiply per incoming chunk — zero added latency, numerically</span>
+<span class="sd">    equivalent to offline MNE.  Temporal SSS (tSSS) :footcite:p:`taulu2006spatiotemporal` can</span>
+<span class="sd">    optionally run on a rolling buffer to remove interference that leaks into</span>
+<span class="sd">    the internal subspace.</span>
+
+<span class="sd">    See :ref:`denoising-maxwell` for the full mathematical background.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    int_order : int, default 8</span>
+<span class="sd">        Internal spherical-harmonic expansion order.</span>
+<span class="sd">        :math:`L_{\\mathrm{in}} = 8` → :math:`(L+1)^2-1 = 80` moments</span>
+<span class="sd">        (MNE default, adequate for all standard MEG systems).</span>
+<span class="sd">    ext_order : int, default 3</span>
+<span class="sd">        External expansion order (``3`` → 16 external moments).</span>
+<span class="sd">    origin : array-like of shape (3,) | &quot;auto&quot;, default &quot;auto&quot;</span>
+<span class="sd">        SSS expansion origin in metres (head frame).  ``&quot;auto&quot;`` fits a</span>
+<span class="sd">        sphere to the head digitisation; falls back to ``(0, 0, 0.04) m``</span>
+<span class="sd">        when digitisation is absent.</span>
+<span class="sd">    st_duration : float | None, default None</span>
+<span class="sd">        tSSS temporal buffer in seconds.  ``None`` → spatial SSS only.</span>
+<span class="sd">        Typical values: 10 s for persistent shielding leakage; 1–4 s for</span>
+<span class="sd">        moving subjects.</span>
+<span class="sd">    st_correlation : float, default 0.98</span>
+<span class="sd">        Minimum inside–outside correlation for tSSS suppression.  Lower</span>
+<span class="sd">        values are more aggressive.</span>
+<span class="sd">    st_update_interval : int, default 1</span>
+<span class="sd">        Apply tSSS every *N* incoming chunks.  Increase to reduce CPU load</span>
+<span class="sd">        when ``winsize`` is small; SSS is used between updates.</span>
+<span class="sd">    calibration : str | None, default None</span>
+<span class="sd">        Fine-calibration ``.dat`` file (Elekta/MEGIN).  Corrects sensor</span>
+<span class="sd">        position and orientation errors; typically improves noise floor</span>
+<span class="sd">        by 10–20 %.</span>
+<span class="sd">    cross_talk : str | None, default None</span>
+<span class="sd">        Cross-talk compensation ``.fif`` file.  Compensates flux leakage</span>
+<span class="sd">        between adjacent sensors.</span>
+<span class="sd">    coord_frame : {&quot;head&quot;, &quot;meg&quot;}, default &quot;head&quot;</span>
+<span class="sd">        Coordinate frame for the spherical-harmonic expansion.</span>
+<span class="sd">    regularize : {&quot;in&quot;, None}, default &quot;in&quot;</span>
+<span class="sd">        Internal-moment Tikhonov regularisation passed to MNE.</span>
+<span class="sd">    mag_scale : float, default 100.0</span>
+<span class="sd">        Magnetometer/gradiometer balance factor.</span>
+
+<span class="sd">    Raises</span>
+<span class="sd">    ------</span>
+<span class="sd">    ImportError</span>
+<span class="sd">        If MNE-Python is not installed.</span>
+<span class="sd">    ValueError</span>
+<span class="sd">        If no MEG channels are found in the supplied info.</span>
+<span class="sd">    RuntimeError</span>
+<span class="sd">        If :meth:`transform` is called before :meth:`fit`.</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    mne.preprocessing.compute_maxwell_basis : Underlying SSS basis function.</span>
+<span class="sd">    mne.preprocessing.maxwell_filter : Full offline Maxwell filtering.</span>
+<span class="sd">    mne_rt.RTStream.fit_maxwell : Fit from a connected MEG session.</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    **No baseline recording is required.**  The SSS operator depends only on</span>
+<span class="sd">    sensor geometry, not on brain signal statistics.  Simply call</span>
+<span class="sd">    :meth:`~mne_rt.RTStream.connect_to_lsl` then :meth:`~mne_rt.RTStream.fit_maxwell`.</span>
+
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
+<span class="sd">    .. footbibliography::</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    SSS-only (fastest, no latency):</span>
+
+<span class="sd">    &gt;&gt;&gt; rt_mf = RTMaxwellFilter()</span>
+<span class="sd">    &gt;&gt;&gt; rt_mf.fit(raw.info)</span>
+<span class="sd">    &gt;&gt;&gt; clean = rt_mf.transform(meg_chunk)</span>
+
+<span class="sd">    tSSS with fine calibration and empty room:</span>
+
+<span class="sd">    &gt;&gt;&gt; rt_mf = RTMaxwellFilter(st_duration=10.0, calibration=&quot;sss_cal.dat&quot;)</span>
+<span class="sd">    &gt;&gt;&gt; rt_mf.fit(raw.info, empty_room_raw=er_raw)</span>
+<span class="sd">    &gt;&gt;&gt; clean = rt_mf.transform(meg_chunk)</span>
+
+<span class="sd">    .. versionadded:: 1.0.0</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="RTMaxwellFilter.__init__">
+<a class="viewcode-back" href="../../../generated/mne_rt.tools.RTMaxwellFilter.html#mne_rt.tools.RTMaxwellFilter.__init__">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">int_order</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">8</span><span class="p">,</span>
+        <span class="n">ext_order</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">3</span><span class="p">,</span>
+        <span class="n">origin</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;auto&quot;</span><span class="p">,</span>
+        <span class="n">st_duration</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">st_correlation</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.98</span><span class="p">,</span>
+        <span class="n">st_update_interval</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
+        <span class="n">calibration</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">cross_talk</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">coord_frame</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;head&quot;</span><span class="p">,</span>
+        <span class="n">regularize</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;in&quot;</span><span class="p">,</span>
+        <span class="n">mag_scale</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">100.0</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">int_order</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;`int_order` must be a positive integer (≥ 1).&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">ext_order</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;`ext_order` must be a non-negative integer (≥ 0).&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="mf">0.0</span> <span class="o">&lt;</span> <span class="n">st_correlation</span> <span class="o">&lt;=</span> <span class="mf">1.0</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;`st_correlation` must be in (0, 1].&quot;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">int_order</span> <span class="o">=</span> <span class="n">int_order</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ext_order</span> <span class="o">=</span> <span class="n">ext_order</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">origin</span> <span class="o">=</span> <span class="n">origin</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">st_duration</span> <span class="o">=</span> <span class="n">st_duration</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">st_correlation</span> <span class="o">=</span> <span class="n">st_correlation</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">st_update_interval</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="nb">int</span><span class="p">(</span><span class="n">st_update_interval</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">calibration</span> <span class="o">=</span> <span class="n">calibration</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cross_talk</span> <span class="o">=</span> <span class="n">cross_talk</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">coord_frame</span> <span class="o">=</span> <span class="n">coord_frame</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">regularize</span> <span class="o">=</span> <span class="n">regularize</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">mag_scale</span> <span class="o">=</span> <span class="n">mag_scale</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_fitted</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_meg_good_picks</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_meg_all_picks</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_P_sss</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_resolved_origin</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;auto&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">n_use_in</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span>
+
+        <span class="c1"># tSSS rolling-buffer state</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_buffer</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_buf_samp</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_sfreq</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_chunk_count</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_info</span> <span class="o">=</span> <span class="kc">None</span></div>
+
+
+    <span class="c1"># ------------------------------------------------------------------</span>
+    <span class="c1"># Fit</span>
+    <span class="c1"># ------------------------------------------------------------------</span>
+
+<div class="viewcode-block" id="RTMaxwellFilter.fit">
+<a class="viewcode-back" href="../../../generated/mne_rt.tools.RTMaxwellFilter.html#mne_rt.tools.RTMaxwellFilter.fit">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">fit</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">info</span><span class="p">,</span>
+        <span class="n">empty_room_raw</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;RTMaxwellFilter&quot;</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Pre-compute the SSS projection operator from MEG sensor geometry.</span>
+
+<span class="sd">        No data is required — the operator depends only on sensor positions.</span>
+<span class="sd">        An optional empty-room recording adds noise-informed regularisation.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        info : mne.Info</span>
+<span class="sd">            MEG measurement info with sensor positions and the</span>
+<span class="sd">            device-to-head transform (``dev_head_t``).</span>
+<span class="sd">        empty_room_raw : mne.io.Raw | None, default None</span>
+<span class="sd">            Empty-room recording in the same coordinate frame.  When given,</span>
+<span class="sd">            the operator is extracted via system identification so that</span>
+<span class="sd">            noise-informed regularisation is built into the cached matrix</span>
+<span class="sd">            (see class docstring).  ``None`` uses geometric regularisation</span>
+<span class="sd">            only via :func:`~mne.preprocessing.compute_maxwell_basis`.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        self : RTMaxwellFilter</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="kn">import</span><span class="w"> </span><span class="nn">mne</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">mne.preprocessing</span><span class="w"> </span><span class="kn">import</span> <span class="n">compute_maxwell_basis</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_info</span> <span class="o">=</span> <span class="n">info</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_sfreq</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">info</span><span class="p">[</span><span class="s2">&quot;sfreq&quot;</span><span class="p">])</span>
+
+        <span class="c1"># Channel index arrays</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_meg_good_picks</span> <span class="o">=</span> <span class="n">mne</span><span class="o">.</span><span class="n">pick_types</span><span class="p">(</span><span class="n">info</span><span class="p">,</span> <span class="n">meg</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">exclude</span><span class="o">=</span><span class="s2">&quot;bads&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_meg_all_picks</span> <span class="o">=</span> <span class="n">mne</span><span class="o">.</span><span class="n">pick_types</span><span class="p">(</span><span class="n">info</span><span class="p">,</span> <span class="n">meg</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">exclude</span><span class="o">=</span><span class="p">[])</span>
+        <span class="n">n_meg_good</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_meg_good_picks</span><span class="p">)</span>
+        <span class="n">n_ch</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">info</span><span class="p">[</span><span class="s2">&quot;ch_names&quot;</span><span class="p">])</span>
+
+        <span class="k">if</span> <span class="n">n_meg_good</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="s2">&quot;No MEG channels found in info. RTMaxwellFilter operates on MEG data only.&quot;</span>
+            <span class="p">)</span>
+
+        <span class="c1"># Resolve expansion origin — fall back gracefully when digitisation is absent</span>
+        <span class="n">origin</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">origin</span>
+        <span class="k">if</span> <span class="n">origin</span> <span class="o">==</span> <span class="s2">&quot;auto&quot;</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">mne</span><span class="o">.</span><span class="n">bem</span><span class="o">.</span><span class="n">_check_origin</span><span class="p">(</span><span class="s2">&quot;auto&quot;</span><span class="p">,</span> <span class="n">info</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">coord_frame</span><span class="p">,</span> <span class="n">disp</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+            <span class="k">except</span> <span class="ne">RuntimeError</span><span class="p">:</span>
+                <span class="n">origin</span> <span class="o">=</span> <span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.04</span><span class="p">)</span>  <span class="c1"># 4 cm: centre of a typical head</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
+                    <span class="s2">&quot;RTMaxwellFilter: no head digitisation found; using origin=(0, 0, 0.04) m.&quot;</span>
+                <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_resolved_origin</span> <span class="o">=</span> <span class="n">origin</span>
+
+        <span class="n">common_kw</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+            <span class="n">int_order</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">int_order</span><span class="p">,</span>
+            <span class="n">ext_order</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">ext_order</span><span class="p">,</span>
+            <span class="n">origin</span><span class="o">=</span><span class="n">origin</span><span class="p">,</span>
+            <span class="n">calibration</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">calibration</span><span class="p">,</span>
+            <span class="n">coord_frame</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">coord_frame</span><span class="p">,</span>
+            <span class="n">regularize</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">regularize</span><span class="p">,</span>
+            <span class="n">ignore_ref</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+            <span class="n">bad_condition</span><span class="o">=</span><span class="s2">&quot;warning&quot;</span><span class="p">,</span>
+            <span class="n">mag_scale</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">mag_scale</span><span class="p">,</span>
+        <span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">empty_room_raw</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
+                <span class="s2">&quot;RTMaxwellFilter: computing SSS basis (int=</span><span class="si">%d</span><span class="s2">, ext=</span><span class="si">%d</span><span class="s2">) …&quot;</span><span class="p">,</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">int_order</span><span class="p">,</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">ext_order</span><span class="p">,</span>
+            <span class="p">)</span>
+            <span class="n">S</span><span class="p">,</span> <span class="n">pS</span><span class="p">,</span> <span class="n">_reg_moments</span><span class="p">,</span> <span class="n">n_use_in</span> <span class="o">=</span> <span class="n">compute_maxwell_basis</span><span class="p">(</span><span class="n">info</span><span class="p">,</span> <span class="o">**</span><span class="n">common_kw</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+            <span class="c1"># P_sss = S_in @ S_in†  —  eq. 38, Taulu &amp; Kajola 2005</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_P_sss</span> <span class="o">=</span> <span class="n">S</span><span class="p">[:,</span> <span class="p">:</span><span class="n">n_use_in</span><span class="p">]</span> <span class="o">@</span> <span class="n">pS</span><span class="p">[:</span><span class="n">n_use_in</span><span class="p">]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">n_use_in</span> <span class="o">=</span> <span class="n">n_use_in</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
+                <span class="s2">&quot;RTMaxwellFilter: SSS operator ready — </span><span class="si">%d</span><span class="s2">/</span><span class="si">%d</span><span class="s2"> internal moments retained.&quot;</span><span class="p">,</span>
+                <span class="n">n_use_in</span><span class="p">,</span>
+                <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">int_order</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span>
+            <span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
+                <span class="s2">&quot;RTMaxwellFilter: extracting noise-informed SSS operator &quot;</span>
+                <span class="s2">&quot;from empty-room recording …&quot;</span>
+            <span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_P_sss</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_use_in</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_extract_operator_sysid</span><span class="p">(</span>
+                <span class="n">info</span><span class="p">,</span> <span class="n">n_ch</span><span class="p">,</span> <span class="n">empty_room_raw</span><span class="p">,</span> <span class="n">common_kw</span>
+            <span class="p">)</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
+                <span class="s2">&quot;RTMaxwellFilter: noise-informed operator ready (n_internal=</span><span class="si">%d</span><span class="s2">).&quot;</span><span class="p">,</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">n_use_in</span><span class="p">,</span>
+            <span class="p">)</span>
+
+        <span class="c1"># Initialise tSSS buffer</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">st_duration</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_buf_samp</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">st_duration</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sfreq</span><span class="p">),</span> <span class="mi">1</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_buffer</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">n_ch</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_chunk_count</span> <span class="o">=</span> <span class="mi">0</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_fitted</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="k">return</span> <span class="bp">self</span></div>
+
+
+    <span class="c1"># ------------------------------------------------------------------</span>
+    <span class="c1"># Transform</span>
+    <span class="c1"># ------------------------------------------------------------------</span>
+
+<div class="viewcode-block" id="RTMaxwellFilter.transform">
+<a class="viewcode-back" href="../../../generated/mne_rt.tools.RTMaxwellFilter.html#mne_rt.tools.RTMaxwellFilter.transform">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">transform</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Apply Maxwell filtering to a streaming MEG window.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        data : ndarray, shape (n_channels, n_samples)</span>
+<span class="sd">            Raw MEG window.  Non-MEG channels are passed through unchanged.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        clean : ndarray, shape (n_channels, n_samples)</span>
+<span class="sd">            SSS- or tSSS-cleaned data.</span>
+
+<span class="sd">        Raises</span>
+<span class="sd">        ------</span>
+<span class="sd">        RuntimeError</span>
+<span class="sd">            If :meth:`fit` has not been called.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_check_fitted</span><span class="p">()</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">st_duration</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_apply_sss</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_apply_tsss</span><span class="p">(</span><span class="n">data</span><span class="p">)</span></div>
+
+
+    <span class="c1"># ------------------------------------------------------------------</span>
+    <span class="c1"># Internal: SSS</span>
+    <span class="c1"># ------------------------------------------------------------------</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_apply_sss</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Apply the cached projector: P_sss maps good → all MEG channels.</span>
+
+<span class="sd">        Bad channels are reconstructed from surrounding sensors as a side</span>
+<span class="sd">        effect of the spherical-harmonic reconstruction.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">out</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+        <span class="n">out</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_meg_all_picks</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_P_sss</span> <span class="o">@</span> <span class="n">data</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_meg_good_picks</span><span class="p">]</span>
+        <span class="k">return</span> <span class="n">out</span>
+
+    <span class="c1"># ------------------------------------------------------------------</span>
+    <span class="c1"># Internal: rolling-buffer tSSS</span>
+    <span class="c1"># ------------------------------------------------------------------</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_apply_tsss</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Two-stage tSSS: instant SSS then periodic MNE temporal correction.&quot;&quot;&quot;</span>
+        <span class="kn">import</span><span class="w"> </span><span class="nn">mne</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">mne.preprocessing</span><span class="w"> </span><span class="kn">import</span> <span class="n">maxwell_filter</span>
+
+        <span class="n">n_chunk</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+
+        <span class="c1"># Stage 1: instant spatial SSS on the incoming chunk</span>
+        <span class="n">sss_data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_apply_sss</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+
+        <span class="c1"># Accumulate buffer; trim to st_duration</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_buffer</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">_buffer</span><span class="p">,</span> <span class="n">sss_data</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_buffer</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">_buf_samp</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_buffer</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_buffer</span><span class="p">[:,</span> <span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">_buf_samp</span> <span class="p">:]</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_chunk_count</span> <span class="o">+=</span> <span class="mi">1</span>
+
+        <span class="c1"># SSS fallback while buffer is filling</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_buffer</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">_buf_samp</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span>
+                <span class="s2">&quot;RTMaxwellFilter: buffer </span><span class="si">%.1f</span><span class="s2">/</span><span class="si">%.1f</span><span class="s2"> s — SSS fallback.&quot;</span><span class="p">,</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_buffer</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sfreq</span><span class="p">,</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">st_duration</span><span class="p">,</span>
+            <span class="p">)</span>
+            <span class="k">return</span> <span class="n">sss_data</span>
+
+        <span class="c1"># Stage 2: temporal tSSS on the full buffer (periodic)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_chunk_count</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">st_update_interval</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">sss_data</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">buf_raw</span> <span class="o">=</span> <span class="n">mne</span><span class="o">.</span><span class="n">io</span><span class="o">.</span><span class="n">RawArray</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_buffer</span><span class="o">.</span><span class="n">copy</span><span class="p">(),</span> <span class="bp">self</span><span class="o">.</span><span class="n">_info</span><span class="o">.</span><span class="n">copy</span><span class="p">(),</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+            <span class="n">tsss_kw</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+                <span class="n">origin</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_resolved_origin</span><span class="p">,</span>
+                <span class="n">int_order</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">int_order</span><span class="p">,</span>
+                <span class="n">ext_order</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">ext_order</span><span class="p">,</span>
+                <span class="n">calibration</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">calibration</span><span class="p">,</span>
+                <span class="n">cross_talk</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">cross_talk</span><span class="p">,</span>
+                <span class="n">coord_frame</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">coord_frame</span><span class="p">,</span>
+                <span class="n">regularize</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">regularize</span><span class="p">,</span>
+                <span class="n">mag_scale</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">mag_scale</span><span class="p">,</span>
+                <span class="n">st_duration</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">st_duration</span><span class="p">,</span>
+                <span class="n">st_correlation</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">st_correlation</span><span class="p">,</span>
+                <span class="n">st_only</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>  <span class="c1"># skip spatial SSS (already applied above)</span>
+                <span class="n">ignore_ref</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                <span class="n">bad_condition</span><span class="o">=</span><span class="s2">&quot;warning&quot;</span><span class="p">,</span>
+                <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+            <span class="p">)</span>
+            <span class="n">clean_buf</span> <span class="o">=</span> <span class="n">maxwell_filter</span><span class="p">(</span><span class="n">buf_raw</span><span class="p">,</span> <span class="o">**</span><span class="n">tsss_kw</span><span class="p">)</span><span class="o">.</span><span class="n">get_data</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_buffer</span> <span class="o">=</span> <span class="n">clean_buf</span>  <span class="c1"># update buffer to cleaned version</span>
+            <span class="k">return</span> <span class="n">clean_buf</span><span class="p">[:,</span> <span class="o">-</span><span class="n">n_chunk</span><span class="p">:]</span>  <span class="c1"># return latest chunk only</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">exc</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;RTMaxwellFilter: tSSS step failed (</span><span class="si">%s</span><span class="s2">) — SSS fallback.&quot;</span><span class="p">,</span> <span class="n">exc</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">sss_data</span>
+
+    <span class="c1"># ------------------------------------------------------------------</span>
+    <span class="c1"># Internal: system-identification operator extraction</span>
+    <span class="c1"># ------------------------------------------------------------------</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_extract_operator_sysid</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">info</span><span class="p">,</span>
+        <span class="n">n_ch</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+        <span class="n">empty_room_raw</span><span class="p">,</span>
+        <span class="n">common_kw</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="nb">int</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Recover P_sss via least squares from a Gaussian test signal.</span>
+
+<span class="sd">        System-identification approach:</span>
+
+<span class="sd">        1. Generate random test signal :math:`\\mathbf{X}` on MEG channels.</span>
+<span class="sd">        2. Apply MNE maxwell_filter (with ``noise_cov`` from empty room) to get</span>
+<span class="sd">           output :math:`\\mathbf{Y}`.</span>
+<span class="sd">        3. Solve :math:`\\mathbf{P}_{\\mathrm{sss}} = \\mathbf{Y}\\,\\mathbf{X}^+`</span>
+<span class="sd">           via SVD-based pseudoinverse.</span>
+
+<span class="sd">        This embeds fine calibration, cross-talk compensation, and noise-</span>
+<span class="sd">        informed regularisation into the single cached matrix.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="kn">import</span><span class="w"> </span><span class="nn">mne</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">mne.preprocessing</span><span class="w"> </span><span class="kn">import</span> <span class="n">maxwell_filter</span><span class="p">,</span> <span class="n">maxwell_filter_prepare_emptyroom</span>
+
+        <span class="n">n_meg_good</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_meg_good_picks</span><span class="p">)</span>
+        <span class="n">n_samp</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">n_meg_good</span> <span class="o">*</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">500</span><span class="p">)</span>
+        <span class="n">rng</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">default_rng</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+        <span class="n">X_all</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">n_ch</span><span class="p">,</span> <span class="n">n_samp</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span>
+        <span class="n">X_all</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_meg_good_picks</span><span class="p">]</span> <span class="o">=</span> <span class="n">rng</span><span class="o">.</span><span class="n">standard_normal</span><span class="p">((</span><span class="n">n_meg_good</span><span class="p">,</span> <span class="n">n_samp</span><span class="p">))</span> <span class="o">*</span> <span class="mf">1e-12</span>
+
+        <span class="n">test_raw</span> <span class="o">=</span> <span class="n">mne</span><span class="o">.</span><span class="n">io</span><span class="o">.</span><span class="n">RawArray</span><span class="p">(</span><span class="n">X_all</span><span class="p">,</span> <span class="n">info</span><span class="o">.</span><span class="n">copy</span><span class="p">(),</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="n">er_prep</span> <span class="o">=</span> <span class="n">maxwell_filter_prepare_emptyroom</span><span class="p">(</span><span class="n">empty_room_raw</span><span class="p">,</span> <span class="n">raw</span><span class="o">=</span><span class="n">test_raw</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="n">filtered</span> <span class="o">=</span> <span class="n">maxwell_filter</span><span class="p">(</span>
+            <span class="n">test_raw</span><span class="p">,</span>
+            <span class="o">**</span><span class="n">common_kw</span><span class="p">,</span>
+            <span class="n">cross_talk</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">cross_talk</span><span class="p">,</span>
+            <span class="n">noise_cov</span><span class="o">=</span><span class="n">er_prep</span><span class="p">,</span>
+            <span class="n">st_duration</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+            <span class="n">ignore_ref</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+            <span class="n">bad_condition</span><span class="o">=</span><span class="s2">&quot;warning&quot;</span><span class="p">,</span>
+            <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="p">)</span><span class="o">.</span><span class="n">get_data</span><span class="p">()</span>
+
+        <span class="n">Y</span> <span class="o">=</span> <span class="n">filtered</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_meg_all_picks</span><span class="p">]</span>  <span class="c1"># (n_meg_all, n_samp)</span>
+        <span class="n">X</span> <span class="o">=</span> <span class="n">X_all</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_meg_good_picks</span><span class="p">]</span>  <span class="c1"># (n_meg_good, n_samp)</span>
+        <span class="n">P_sss</span> <span class="o">=</span> <span class="n">Y</span> <span class="o">@</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">pinv</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>  <span class="c1"># (n_meg_all, n_meg_good)</span>
+
+        <span class="n">sv</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">svd</span><span class="p">(</span><span class="n">P_sss</span><span class="p">,</span> <span class="n">compute_uv</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="n">n_use_in</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">sv</span> <span class="o">&gt;</span> <span class="n">sv</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="mf">1e-6</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">P_sss</span><span class="p">,</span> <span class="n">n_use_in</span>
+
+    <span class="c1"># ------------------------------------------------------------------</span>
+    <span class="c1"># Properties &amp; helpers</span>
+    <span class="c1"># ------------------------------------------------------------------</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">sss_projector</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Cached SSS matrix, shape (n_meg_all, n_meg_good).</span>
+
+<span class="sd">        Maps good-channel input to the SSS-reconstructed output for all</span>
+<span class="sd">        MEG channels, interpolating bad sensors from surrounding ones.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_check_fitted</span><span class="p">()</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_P_sss</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">mode</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Operating mode: ``&quot;sss&quot;`` or ``&quot;tsss&quot;``.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="s2">&quot;tsss&quot;</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">st_duration</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="s2">&quot;sss&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_check_fitted</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_fitted</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;Call fit() before using this method.&quot;</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="n">state</span> <span class="o">=</span> <span class="s2">&quot;fitted&quot;</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_fitted</span> <span class="k">else</span> <span class="s2">&quot;not fitted&quot;</span>
+        <span class="k">return</span> <span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;RTMaxwellFilter(&quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;int_order=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">int_order</span><span class="si">}</span><span class="s2">, &quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;ext_order=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">ext_order</span><span class="si">}</span><span class="s2">, &quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;mode=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">mode</span><span class="si">!r}</span><span class="s2">, &quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;state=</span><span class="si">{</span><span class="n">state</span><span class="si">!r}</span><span class="s2">)&quot;</span>
+        <span class="p">)</span></div>
+
+</pre></div>
+
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../../../_static/scripts/bootstrap.js?digest=90905a2f556bf617f1a9"></script>
+<script defer src="../../../_static/scripts/pydata-sphinx-theme.js?digest=90905a2f556bf617f1a9"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright 2025, Payam S. Shabestari.
+      <br/>
+    
+  </p>
+</div>
+      
+        <div class="footer-item">
+
+  <p class="sphinx-version">
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 9.0.4.
+    <br/>
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
+<p class="theme-version">
+  <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.20.0.
+</p></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>

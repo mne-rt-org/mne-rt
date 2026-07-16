@@ -1,0 +1,802 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../../../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>mne_rt.tools.asr &#8212; MNE-RT</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../../_static/styles/theme.css?digest=90905a2f556bf617f1a9" rel="stylesheet" />
+<link href="../../../_static/styles/pydata-sphinx-theme.css?digest=90905a2f556bf617f1a9" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/sg_gallery.css?v=fd6457a4" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/sg_gallery-binder.css?v=f4aeca0c" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/sg_gallery-dataframe.css?v=2082cf3c" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/sg_gallery-rendered-html.css?v=1277b6f3" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/custom.css?v=5bf657dd" />
+  
+  <!-- So that users can add custom icons -->
+  <script defer src="../../../_static/scripts/fontawesome.js?digest=90905a2f556bf617f1a9"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../../_static/scripts/bootstrap.js?digest=90905a2f556bf617f1a9" />
+<link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=90905a2f556bf617f1a9" />
+
+    <script src="../../../_static/documentation_options.js?v=8d563738"></script>
+    <script src="../../../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="../../../_static/sg-tags.js?v=d80f6fa4"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = '_modules/mne_rt/tools/asr';</script>
+    <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="" />
+  
+    
+    <script src="../../../_static/searchtools.js"></script>
+    <script src="../../../_static/language_data.js"></script>
+    <script src="../../../searchindex.js"></script>
+  
+  </head>
+  <body data-default-mode="">
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+  
+  
+  
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../../../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header id="pst-header" class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../../../index.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../../../_static/mne_rt_logo.svg" class="logo__image only-light" alt="MNE-RT - Home"/>
+    <img src="../../../_static/mne_rt_logo.svg" class="logo__image only-dark pst-js-only" alt="MNE-RT - Home"/>
+  
+  
+</a></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../install.html">
+    Installation
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../tutorial.html">
+    User Guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../api.html">
+    API Reference
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../visualization.html">
+    Visualisation
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../cli.html">
+    CLI
+  </a>
+</li>
+
+            <li class="nav-item dropdown">
+                <button class="btn dropdown-toggle nav-item" type="button"
+                data-bs-toggle="dropdown" aria-expanded="false"
+                aria-controls="pst-nav-more-links">
+                    More
+                </button>
+                <ul id="pst-nav-more-links" class="dropdown-menu">
+                    
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../../../denoising.html">
+    Artifact Correction
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../../../modalities.html">
+    Real-time Feature Modalities
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../../../protocols.html">
+    NF Protocols
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../../../whats_new.html">
+    What’s new
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../../../auto_examples/index.html">
+    Examples Gallery
+  </a>
+</li>
+
+                </ul>
+            </li>
+            
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+        </div>
+      
+      
+        <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/payamsash/mne-rt" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-square-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
+        </li>
+</ul></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+    </div>
+  
+
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+        
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar hide-on-wide">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../install.html">
+    Installation
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../tutorial.html">
+    User Guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../api.html">
+    API Reference
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../visualization.html">
+    Visualisation
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../cli.html">
+    CLI
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../denoising.html">
+    Artifact Correction
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../modalities.html">
+    Real-time Feature Modalities
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../protocols.html">
+    NF Protocols
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../whats_new.html">
+    What’s new
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../auto_examples/index.html">
+    Examples Gallery
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/payamsash/mne-rt" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-square-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
+        </li>
+</ul></div>
+        
+      </div>
+    
+  </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../../../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    
+    <li class="breadcrumb-item"><a href="../../index.html" class="nav-link">Module code</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">mne_rt.tools.asr</span></li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <h1>Source code for mne_rt.tools.asr</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;Artifact Subspace Reconstruction (ASR) for real-time EEG denoising.</span>
+
+<span class="sd">Classes</span>
+<span class="sd">-------</span>
+<span class="sd">ASRDenoiser</span>
+<span class="sd">    Calibrate-once, apply-online artifact suppressor for streaming EEG.</span>
+
+<span class="sd">References</span>
+<span class="sd">----------</span>
+<span class="sd">Mullen, T. R., et al. (2015). Real-time neuroimaging and cognitive monitoring</span>
+<span class="sd">using wearable dry EEG. *IEEE Trans. Biomed. Eng.*, 62(11), 2553–2567.</span>
+<span class="sd">https://doi.org/10.1109/TBME.2015.2481482</span>
+
+<span class="sd">de Cheveigné, A., &amp; Arzounian, D. (2018). Robust detrending, referencing,</span>
+<span class="sd">outlier detection, and inpainting for multichannel data. *NeuroImage*, 172,</span>
+<span class="sd">903–912. https://doi.org/10.1016/j.neuroimage.2018.01.035</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Optional</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">scipy</span><span class="w"> </span><span class="kn">import</span> <span class="n">linalg</span>
+
+
+<div class="viewcode-block" id="ASRDenoiser">
+<a class="viewcode-back" href="../../../generated/mne_rt.tools.ASRDenoiser.html#mne_rt.tools.ASRDenoiser">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">ASRDenoiser</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Artifact Subspace Reconstruction (ASR) for streaming EEG.</span>
+
+<span class="sd">    ASR :footcite:p:`mullen2015real,de2018robust` separates *clean*</span>
+<span class="sd">    from *artifactual* activity by learning the statistics of a resting-state</span>
+<span class="sd">    baseline and projecting out components that deviate beyond a threshold.</span>
+
+<span class="sd">    **Calibration** (:meth:`fit`)</span>
+<span class="sd">        Segment the baseline into overlapping windows of length</span>
+<span class="sd">        :math:`T_{\\mathrm{win}}`, compute the sample covariance per window,</span>
+<span class="sd">        discard the fraction ``max_dropout_fraction`` with the highest total</span>
+<span class="sd">        power (likely artifact), and eigendecompose the mean clean covariance:</span>
+
+<span class="sd">        .. math::</span>
+
+<span class="sd">            \\mathbf{C}_0 = \\mathbf{U}\\,\\mathrm{diag}(d_1,\\dots,d_p)\\,\\mathbf{U}^\\top.</span>
+
+<span class="sd">        Per-component RMS thresholds are then set as:</span>
+
+<span class="sd">        .. math::</span>
+
+<span class="sd">            T_k = \\sigma \\cdot \\sqrt{d_k}, \\qquad k = 1,\\dots,p,</span>
+
+<span class="sd">        where :math:`\\sigma` = ``cutoff`` (default 5).</span>
+
+<span class="sd">    **Cleaning** (:meth:`transform`)</span>
+<span class="sd">        For each incoming window :math:`\\mathbf{X} \\in \\mathbb{R}^{p \\times n}`:</span>
+
+<span class="sd">        1. Project to calibration component space:</span>
+<span class="sd">           :math:`\\mathbf{Z} = \\mathbf{U}^\\top\\mathbf{X}`.</span>
+<span class="sd">        2. Compute per-component RMS:</span>
+<span class="sd">           :math:`r_k = \\sqrt{\\operatorname{mean}(Z_k^2)}`.</span>
+<span class="sd">        3. Zero components that exceed the threshold</span>
+<span class="sd">           (:math:`r_k &gt; T_k`).</span>
+<span class="sd">        4. Back-project:</span>
+<span class="sd">           :math:`\\hat{\\mathbf{X}} = \\mathbf{U}\\mathbf{Z}`.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    cutoff : float, default 5.0</span>
+<span class="sd">        Rejection threshold in multiples of the clean-data per-component RMS.</span>
+<span class="sd">        Lower values (3–4) are more aggressive; higher values (8–10) are more</span>
+<span class="sd">        conservative.  Mullen et al. (2015) recommend 5.</span>
+<span class="sd">    max_dropout_fraction : float, default 0.1</span>
+<span class="sd">        Fraction of calibration windows with the highest total power to</span>
+<span class="sd">        discard before estimating clean statistics.  ``0.1`` retains the</span>
+<span class="sd">        90 % &quot;cleanest&quot; windows.</span>
+<span class="sd">    window_overlap : float, default 0.5</span>
+<span class="sd">        Fractional overlap between consecutive calibration windows (0–1).</span>
+<span class="sd">        ``0.5`` halves the effective hop size, doubling the number of windows.</span>
+
+<span class="sd">    Attributes</span>
+<span class="sd">    ----------</span>
+<span class="sd">    cutoff : float</span>
+<span class="sd">    max_dropout_fraction : float</span>
+<span class="sd">    window_overlap : float</span>
+
+<span class="sd">    Raises</span>
+<span class="sd">    ------</span>
+<span class="sd">    ValueError</span>
+<span class="sd">        If constructor arguments are out of valid range.</span>
+<span class="sd">    RuntimeError</span>
+<span class="sd">        If :meth:`transform` is called before :meth:`fit`.</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    ant.tools.GEDAIDenoiser : GED-based spatial filter (requires forward model).</span>
+<span class="sd">    ant.tools.ORICA : Online recursive ICA for adaptive unmixing.</span>
+<span class="sd">    mne_rt.RTStream.fit_asr : Fit from a live session baseline.</span>
+
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
+<span class="sd">    .. footbibliography::</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; asr = ASRDenoiser(cutoff=5.0)</span>
+<span class="sd">    &gt;&gt;&gt; asr.fit(baseline_data, sfreq=250.0)</span>
+<span class="sd">    &gt;&gt;&gt; clean = asr.transform(noisy_window)</span>
+
+<span class="sd">    .. versionadded:: 1.0.0</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="ASRDenoiser.__init__">
+<a class="viewcode-back" href="../../../generated/mne_rt.tools.ASRDenoiser.html#mne_rt.tools.ASRDenoiser.__init__">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">cutoff</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">5.0</span><span class="p">,</span>
+        <span class="n">max_dropout_fraction</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.1</span><span class="p">,</span>
+        <span class="n">window_overlap</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.5</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">cutoff</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;`cutoff` must be a positive float.&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="mf">0.0</span> <span class="o">&lt;=</span> <span class="n">max_dropout_fraction</span> <span class="o">&lt;</span> <span class="mf">1.0</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;`max_dropout_fraction` must be in [0, 1).&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="mf">0.0</span> <span class="o">&lt;=</span> <span class="n">window_overlap</span> <span class="o">&lt;</span> <span class="mf">1.0</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;`window_overlap` must be in [0, 1).&quot;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">cutoff</span> <span class="o">=</span> <span class="n">cutoff</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">max_dropout_fraction</span> <span class="o">=</span> <span class="n">max_dropout_fraction</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">window_overlap</span> <span class="o">=</span> <span class="n">window_overlap</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_U</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># calibration eigenvectors</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_T</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># per-component RMS thresholds</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_fitted</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span></div>
+
+
+    <span class="c1"># ------------------------------------------------------------------</span>
+    <span class="c1"># Fit</span>
+    <span class="c1"># ------------------------------------------------------------------</span>
+
+<div class="viewcode-block" id="ASRDenoiser.fit">
+<a class="viewcode-back" href="../../../generated/mne_rt.tools.ASRDenoiser.html#mne_rt.tools.ASRDenoiser.fit">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">fit</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">data</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
+        <span class="n">sfreq</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+        <span class="n">window_len</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1.0</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;ASRDenoiser&quot;</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Calibrate from a clean resting-state baseline.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        data : ndarray, shape (n_channels, n_samples)</span>
+<span class="sd">            Baseline M/EEG recording.  Eyes-closed resting state is</span>
+<span class="sd">            recommended to minimise ocular and muscular contamination.</span>
+<span class="sd">        sfreq : float</span>
+<span class="sd">            Sampling frequency in Hz.</span>
+<span class="sd">        window_len : float, default 1.0</span>
+<span class="sd">            Calibration window length in seconds.  Shorter windows yield</span>
+<span class="sd">            more estimates with higher variance; 0.5–1.0 s is typical.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        self : ASRDenoiser</span>
+
+<span class="sd">        Raises</span>
+<span class="sd">        ------</span>
+<span class="sd">        ValueError</span>
+<span class="sd">            If fewer samples are available than one window, or all windows</span>
+<span class="sd">            are discarded as outliers.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">n_ch</span><span class="p">,</span> <span class="n">n_samp</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">shape</span>
+        <span class="n">win_samp</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">window_len</span> <span class="o">*</span> <span class="n">sfreq</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">win_samp</span> <span class="o">&lt;</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;window_len=</span><span class="si">{</span><span class="n">window_len</span><span class="si">}</span><span class="s2"> s at </span><span class="si">{</span><span class="n">sfreq</span><span class="si">}</span><span class="s2"> Hz → </span><span class="si">{</span><span class="n">win_samp</span><span class="si">}</span><span class="s2"> samples: &quot;</span>
+                <span class="s2">&quot;too short for covariance estimation.&quot;</span>
+            <span class="p">)</span>
+        <span class="k">if</span> <span class="n">n_samp</span> <span class="o">&lt;</span> <span class="n">win_samp</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Data has </span><span class="si">{</span><span class="n">n_samp</span><span class="si">}</span><span class="s2"> samples but window_len needs </span><span class="si">{</span><span class="n">win_samp</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
+
+        <span class="n">hop</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">win_samp</span> <span class="o">*</span> <span class="p">(</span><span class="mf">1.0</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">window_overlap</span><span class="p">)),</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="n">X</span> <span class="o">=</span> <span class="n">data</span> <span class="o">-</span> <span class="n">data</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">keepdims</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+        <span class="c1"># Per-window sample covariance matrices</span>
+        <span class="n">covs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">stack</span><span class="p">(</span>
+            <span class="p">[</span>
+                <span class="p">(</span><span class="n">X</span><span class="p">[:,</span> <span class="n">s</span> <span class="p">:</span> <span class="n">s</span> <span class="o">+</span> <span class="n">win_samp</span><span class="p">]</span> <span class="o">@</span> <span class="n">X</span><span class="p">[:,</span> <span class="n">s</span> <span class="p">:</span> <span class="n">s</span> <span class="o">+</span> <span class="n">win_samp</span><span class="p">]</span><span class="o">.</span><span class="n">T</span><span class="p">)</span> <span class="o">/</span> <span class="n">win_samp</span>
+                <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">n_samp</span> <span class="o">-</span> <span class="n">win_samp</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">hop</span><span class="p">)</span>
+            <span class="p">]</span>
+        <span class="p">)</span>
+
+        <span class="c1"># Discard windows with highest total power (likely artifact)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_dropout_fraction</span> <span class="o">&gt;</span> <span class="mf">0.0</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">covs</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="n">power</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">np</span><span class="o">.</span><span class="n">trace</span><span class="p">(</span><span class="n">c</span><span class="p">)</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">covs</span><span class="p">])</span>
+            <span class="n">keep</span> <span class="o">=</span> <span class="n">power</span> <span class="o">&lt;=</span> <span class="n">np</span><span class="o">.</span><span class="n">quantile</span><span class="p">(</span><span class="n">power</span><span class="p">,</span> <span class="mf">1.0</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_dropout_fraction</span><span class="p">)</span>
+            <span class="n">clean_covs</span> <span class="o">=</span> <span class="n">covs</span><span class="p">[</span><span class="n">keep</span><span class="p">]</span> <span class="k">if</span> <span class="n">keep</span><span class="o">.</span><span class="n">any</span><span class="p">()</span> <span class="k">else</span> <span class="n">covs</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">clean_covs</span> <span class="o">=</span> <span class="n">covs</span>
+
+        <span class="c1"># Mean clean covariance + small diagonal regularisation</span>
+        <span class="n">C0</span> <span class="o">=</span> <span class="n">clean_covs</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+        <span class="n">C0</span> <span class="o">+=</span> <span class="n">np</span><span class="o">.</span><span class="n">eye</span><span class="p">(</span><span class="n">n_ch</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="mf">1e-8</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">trace</span><span class="p">(</span><span class="n">C0</span><span class="p">)</span> <span class="o">/</span> <span class="n">n_ch</span><span class="p">)</span>
+
+        <span class="n">d</span><span class="p">,</span> <span class="n">U</span> <span class="o">=</span> <span class="n">linalg</span><span class="o">.</span><span class="n">eigh</span><span class="p">(</span><span class="n">C0</span><span class="p">)</span>
+        <span class="n">order</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">argsort</span><span class="p">(</span><span class="n">d</span><span class="p">)[::</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>  <span class="c1"># descending eigenvalue order</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_U</span> <span class="o">=</span> <span class="n">U</span><span class="p">[:,</span> <span class="n">order</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_T</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cutoff</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">maximum</span><span class="p">(</span><span class="n">d</span><span class="p">[</span><span class="n">order</span><span class="p">],</span> <span class="mf">0.0</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_fitted</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="k">return</span> <span class="bp">self</span></div>
+
+
+    <span class="c1"># ------------------------------------------------------------------</span>
+    <span class="c1"># Transform</span>
+    <span class="c1"># ------------------------------------------------------------------</span>
+
+<div class="viewcode-block" id="ASRDenoiser.transform">
+<a class="viewcode-back" href="../../../generated/mne_rt.tools.ASRDenoiser.html#mne_rt.tools.ASRDenoiser.transform">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">transform</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Remove artifact-dominated components from a data window.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        data : ndarray, shape (n_channels, n_samples)</span>
+<span class="sd">            Raw EEG window to clean.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        clean : ndarray, shape (n_channels, n_samples)</span>
+<span class="sd">            Cleaned data.  Returned unchanged if no component exceeds its</span>
+<span class="sd">            threshold (no-op when data is already clean).</span>
+
+<span class="sd">        Raises</span>
+<span class="sd">        ------</span>
+<span class="sd">        RuntimeError</span>
+<span class="sd">            If :meth:`fit` has not been called.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_check_fitted</span><span class="p">()</span>
+        <span class="n">mean</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">keepdims</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">Z</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_U</span><span class="o">.</span><span class="n">T</span> <span class="o">@</span> <span class="p">(</span><span class="n">data</span> <span class="o">-</span> <span class="n">mean</span><span class="p">)</span>  <span class="c1"># project to component space</span>
+        <span class="n">rms</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">Z</span><span class="o">**</span><span class="mi">2</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">))</span>  <span class="c1"># per-component RMS</span>
+        <span class="n">bad</span> <span class="o">=</span> <span class="n">rms</span> <span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">_T</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">bad</span><span class="o">.</span><span class="n">any</span><span class="p">():</span>
+            <span class="k">return</span> <span class="n">data</span>
+        <span class="n">Z</span><span class="p">[</span><span class="n">bad</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.0</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_U</span> <span class="o">@</span> <span class="n">Z</span> <span class="o">+</span> <span class="n">mean</span>  <span class="c1"># back-project + restore mean</span></div>
+
+
+    <span class="c1"># ------------------------------------------------------------------</span>
+    <span class="c1"># Properties &amp; helpers</span>
+    <span class="c1"># ------------------------------------------------------------------</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">thresholds</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Per-component RMS thresholds, shape (n_channels,).&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_check_fitted</span><span class="p">()</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_T</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">eigenvectors</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Calibration eigenvectors :math:`\\mathbf{U}`, shape (n_ch, n_ch).&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_check_fitted</span><span class="p">()</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_U</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_check_fitted</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_fitted</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;Call fit() before using this method.&quot;</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="n">state</span> <span class="o">=</span> <span class="s2">&quot;fitted&quot;</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_fitted</span> <span class="k">else</span> <span class="s2">&quot;not fitted&quot;</span>
+        <span class="k">return</span> <span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;ASRDenoiser(cutoff=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">cutoff</span><span class="si">}</span><span class="s2">, &quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;max_dropout_fraction=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">max_dropout_fraction</span><span class="si">}</span><span class="s2">, &quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;state=</span><span class="si">{</span><span class="n">state</span><span class="si">!r}</span><span class="s2">)&quot;</span>
+        <span class="p">)</span></div>
+
+</pre></div>
+
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../../../_static/scripts/bootstrap.js?digest=90905a2f556bf617f1a9"></script>
+<script defer src="../../../_static/scripts/pydata-sphinx-theme.js?digest=90905a2f556bf617f1a9"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright 2025, Payam S. Shabestari.
+      <br/>
+    
+  </p>
+</div>
+      
+        <div class="footer-item">
+
+  <p class="sphinx-version">
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 9.0.4.
+    <br/>
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
+<p class="theme-version">
+  <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.20.0.
+</p></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>

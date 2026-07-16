@@ -1,0 +1,1710 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../../../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>mne_rt.viz.brain_plot &#8212; MNE-RT</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../../_static/styles/theme.css?digest=90905a2f556bf617f1a9" rel="stylesheet" />
+<link href="../../../_static/styles/pydata-sphinx-theme.css?digest=90905a2f556bf617f1a9" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/sg_gallery.css?v=fd6457a4" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/sg_gallery-binder.css?v=f4aeca0c" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/sg_gallery-dataframe.css?v=2082cf3c" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/sg_gallery-rendered-html.css?v=1277b6f3" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/custom.css?v=5bf657dd" />
+  
+  <!-- So that users can add custom icons -->
+  <script defer src="../../../_static/scripts/fontawesome.js?digest=90905a2f556bf617f1a9"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../../_static/scripts/bootstrap.js?digest=90905a2f556bf617f1a9" />
+<link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=90905a2f556bf617f1a9" />
+
+    <script src="../../../_static/documentation_options.js?v=8d563738"></script>
+    <script src="../../../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="../../../_static/sg-tags.js?v=d80f6fa4"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = '_modules/mne_rt/viz/brain_plot';</script>
+    <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="" />
+  
+    
+    <script src="../../../_static/searchtools.js"></script>
+    <script src="../../../_static/language_data.js"></script>
+    <script src="../../../searchindex.js"></script>
+  
+  </head>
+  <body data-default-mode="">
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+  
+  
+  
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../../../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header id="pst-header" class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../../../index.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../../../_static/mne_rt_logo.svg" class="logo__image only-light" alt="MNE-RT - Home"/>
+    <img src="../../../_static/mne_rt_logo.svg" class="logo__image only-dark pst-js-only" alt="MNE-RT - Home"/>
+  
+  
+</a></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../install.html">
+    Installation
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../tutorial.html">
+    User Guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../api.html">
+    API Reference
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../visualization.html">
+    Visualisation
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../cli.html">
+    CLI
+  </a>
+</li>
+
+            <li class="nav-item dropdown">
+                <button class="btn dropdown-toggle nav-item" type="button"
+                data-bs-toggle="dropdown" aria-expanded="false"
+                aria-controls="pst-nav-more-links">
+                    More
+                </button>
+                <ul id="pst-nav-more-links" class="dropdown-menu">
+                    
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../../../denoising.html">
+    Artifact Correction
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../../../modalities.html">
+    Real-time Feature Modalities
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../../../protocols.html">
+    NF Protocols
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../../../whats_new.html">
+    What’s new
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../../../auto_examples/index.html">
+    Examples Gallery
+  </a>
+</li>
+
+                </ul>
+            </li>
+            
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+        </div>
+      
+      
+        <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/payamsash/mne-rt" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-square-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
+        </li>
+</ul></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+    </div>
+  
+
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+        
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar hide-on-wide">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../install.html">
+    Installation
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../tutorial.html">
+    User Guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../api.html">
+    API Reference
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../visualization.html">
+    Visualisation
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../cli.html">
+    CLI
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../denoising.html">
+    Artifact Correction
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../modalities.html">
+    Real-time Feature Modalities
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../protocols.html">
+    NF Protocols
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../whats_new.html">
+    What’s new
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../auto_examples/index.html">
+    Examples Gallery
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/payamsash/mne-rt" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-square-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
+        </li>
+</ul></div>
+        
+      </div>
+    
+  </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../../../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    
+    <li class="breadcrumb-item"><a href="../../index.html" class="nav-link">Module code</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">mne_rt.viz.brain_plot</span></li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <h1>Source code for mne_rt.viz.brain_plot</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;Real-time 3D brain activation display.</span>
+
+<span class="sd">Built on PyVista / pyvistaqt with a Qt control panel, hemisphere toggles,</span>
+<span class="sd">surface switching, view presets, and screenshot support.</span>
+
+<span class="sd">Classes</span>
+<span class="sd">-------</span>
+<span class="sd">BrainPlot</span>
+<span class="sd">    Interactive real-time 3D brain surface with NF activity overlay.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">datetime</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">time</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Union</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+
+<span class="k">try</span><span class="p">:</span>
+    <span class="kn">import</span><span class="w"> </span><span class="nn">pyvista</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pv</span>
+
+    <span class="n">_pyvista_available</span> <span class="o">=</span> <span class="kc">True</span>
+<span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
+    <span class="n">pv</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># type: ignore[assignment]</span>
+    <span class="n">_pyvista_available</span> <span class="o">=</span> <span class="kc">False</span>
+
+<span class="k">try</span><span class="p">:</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">pyvistaqt</span><span class="w"> </span><span class="kn">import</span> <span class="n">BackgroundPlotter</span> <span class="k">as</span> <span class="n">_BackgroundPlotter</span>
+
+    <span class="n">_pyvistaqt_available</span> <span class="o">=</span> <span class="kc">True</span>
+<span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
+    <span class="n">_BackgroundPlotter</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># type: ignore[assignment]</span>
+    <span class="n">_pyvistaqt_available</span> <span class="o">=</span> <span class="kc">False</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">mne_rt._logging</span><span class="w"> </span><span class="kn">import</span> <span class="n">logger</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">mne_rt.tools</span><span class="w"> </span><span class="kn">import</span> <span class="n">setup_surface</span>
+
+<span class="c1"># ---------------------------------------------------------------------------</span>
+<span class="c1"># Constants</span>
+<span class="c1"># ---------------------------------------------------------------------------</span>
+
+<span class="n">_CMAPS</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;hot&quot;</span><span class="p">,</span> <span class="s2">&quot;plasma&quot;</span><span class="p">,</span> <span class="s2">&quot;viridis&quot;</span><span class="p">,</span> <span class="s2">&quot;Reds&quot;</span><span class="p">,</span> <span class="s2">&quot;YlOrRd&quot;</span><span class="p">,</span> <span class="s2">&quot;RdBu_r&quot;</span><span class="p">]</span>
+
+<span class="n">_SURFACES</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;inflated&quot;</span><span class="p">,</span> <span class="s2">&quot;pial&quot;</span><span class="p">,</span> <span class="s2">&quot;white&quot;</span><span class="p">,</span> <span class="s2">&quot;sphere&quot;</span><span class="p">]</span>
+
+<span class="c1"># Display modes: label shown in the scalar bar title</span>
+<span class="n">_DISPLAY_MODES</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="s2">&quot;Source Activation&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;Alpha Power  (8–13 Hz)&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;Beta Power   (13–30 Hz)&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;Theta Power  (4–8 Hz)&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;Gamma Power  (30–80 Hz)&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;SMR Power    (12–15 Hz)&quot;</span><span class="p">,</span>
+<span class="p">]</span>
+
+<span class="c1"># Suggested clim ranges for each display mode</span>
+<span class="n">_DISPLAY_CLIM_HINTS</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">]]</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">&quot;Source Activation&quot;</span><span class="p">:</span> <span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.6</span><span class="p">),</span>
+    <span class="s2">&quot;Alpha Power  (8–13 Hz)&quot;</span><span class="p">:</span> <span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">),</span>
+    <span class="s2">&quot;Beta Power   (13–30 Hz)&quot;</span><span class="p">:</span> <span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.3</span><span class="p">),</span>
+    <span class="s2">&quot;Theta Power  (4–8 Hz)&quot;</span><span class="p">:</span> <span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">),</span>
+    <span class="s2">&quot;Gamma Power  (30–80 Hz)&quot;</span><span class="p">:</span> <span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.2</span><span class="p">),</span>
+    <span class="s2">&quot;SMR Power    (12–15 Hz)&quot;</span><span class="p">:</span> <span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.4</span><span class="p">),</span>
+<span class="p">}</span>
+
+<span class="n">_VIEW_PRESETS</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">dict</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">&quot;lateral_lh&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;position&quot;</span><span class="p">:</span> <span class="p">(</span><span class="o">-</span><span class="mi">450</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="s2">&quot;focal&quot;</span><span class="p">:</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="s2">&quot;up&quot;</span><span class="p">:</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">)},</span>
+    <span class="s2">&quot;lateral_rh&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;position&quot;</span><span class="p">:</span> <span class="p">(</span><span class="mi">450</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="s2">&quot;focal&quot;</span><span class="p">:</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="s2">&quot;up&quot;</span><span class="p">:</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">)},</span>
+    <span class="s2">&quot;dorsal&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;position&quot;</span><span class="p">:</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">450</span><span class="p">),</span> <span class="s2">&quot;focal&quot;</span><span class="p">:</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="s2">&quot;up&quot;</span><span class="p">:</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">)},</span>
+    <span class="s2">&quot;frontal&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;position&quot;</span><span class="p">:</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="o">-</span><span class="mi">450</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="s2">&quot;focal&quot;</span><span class="p">:</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="s2">&quot;up&quot;</span><span class="p">:</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">)},</span>
+    <span class="s2">&quot;ventral&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;position&quot;</span><span class="p">:</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="o">-</span><span class="mi">450</span><span class="p">),</span> <span class="s2">&quot;focal&quot;</span><span class="p">:</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="s2">&quot;up&quot;</span><span class="p">:</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">)},</span>
+<span class="p">}</span>
+
+<span class="c1"># Dark stylesheet for the Qt control panel — matches the dark UI of other plots</span>
+<span class="n">_PANEL_DARK_STYLE</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">    QWidget {</span>
+<span class="s2">        background: #161b22;</span>
+<span class="s2">        color: #e6edf3;</span>
+<span class="s2">        font-family: -apple-system, &#39;Segoe UI&#39;, sans-serif;</span>
+<span class="s2">        font-size: 11px;</span>
+<span class="s2">    }</span>
+<span class="s2">    QGroupBox {</span>
+<span class="s2">        border: 1px solid #30363d;</span>
+<span class="s2">        border-radius: 6px;</span>
+<span class="s2">        margin-top: 10px;</span>
+<span class="s2">        padding-top: 8px;</span>
+<span class="s2">        color: #8b949e;</span>
+<span class="s2">        font-weight: 600;</span>
+<span class="s2">        font-size: 10px;</span>
+<span class="s2">    }</span>
+<span class="s2">    QGroupBox::title {</span>
+<span class="s2">        subcontrol-origin: margin;</span>
+<span class="s2">        left: 8px;</span>
+<span class="s2">        padding: 0 4px;</span>
+<span class="s2">        color: #8b949e;</span>
+<span class="s2">    }</span>
+<span class="s2">    QLabel { color: #c9d1d9; background: transparent; }</span>
+<span class="s2">    QComboBox {</span>
+<span class="s2">        background: #21262d;</span>
+<span class="s2">        border: 1px solid #30363d;</span>
+<span class="s2">        border-radius: 5px;</span>
+<span class="s2">        padding: 4px 8px;</span>
+<span class="s2">        color: #e6edf3;</span>
+<span class="s2">    }</span>
+<span class="s2">    QComboBox::drop-down { border: none; width: 18px; }</span>
+<span class="s2">    QComboBox QAbstractItemView {</span>
+<span class="s2">        background: #161b22;</span>
+<span class="s2">        border: 1px solid #30363d;</span>
+<span class="s2">        color: #e6edf3;</span>
+<span class="s2">        selection-background-color: #1f6feb;</span>
+<span class="s2">    }</span>
+<span class="s2">    QSlider::groove:horizontal {</span>
+<span class="s2">        height: 3px;</span>
+<span class="s2">        background: #30363d;</span>
+<span class="s2">        border-radius: 2px;</span>
+<span class="s2">    }</span>
+<span class="s2">    QSlider::handle:horizontal {</span>
+<span class="s2">        background: #58a6ff;</span>
+<span class="s2">        width: 12px;</span>
+<span class="s2">        height: 12px;</span>
+<span class="s2">        margin: -5px 0;</span>
+<span class="s2">        border-radius: 6px;</span>
+<span class="s2">    }</span>
+<span class="s2">    QSlider::sub-page:horizontal {</span>
+<span class="s2">        background: #388bfd;</span>
+<span class="s2">        border-radius: 2px;</span>
+<span class="s2">    }</span>
+<span class="s2">    QPushButton {</span>
+<span class="s2">        background: #21262d;</span>
+<span class="s2">        border: 1px solid #30363d;</span>
+<span class="s2">        border-radius: 5px;</span>
+<span class="s2">        padding: 5px 8px;</span>
+<span class="s2">        color: #c9d1d9;</span>
+<span class="s2">        font-weight: 500;</span>
+<span class="s2">    }</span>
+<span class="s2">    QPushButton:hover { background: #30363d; border-color: #8b949e; color: #e6edf3; }</span>
+<span class="s2">    QPushButton:pressed { background: #1f6feb; border-color: #388bfd; color: #ffffff; }</span>
+<span class="s2">    QCheckBox { spacing: 6px; color: #c9d1d9; }</span>
+<span class="s2">    QCheckBox::indicator {</span>
+<span class="s2">        width: 13px; height: 13px;</span>
+<span class="s2">        border-radius: 3px;</span>
+<span class="s2">        border: 1px solid #30363d;</span>
+<span class="s2">        background: #21262d;</span>
+<span class="s2">    }</span>
+<span class="s2">    QCheckBox::indicator:checked { background: #238636; border-color: #2ea043; }</span>
+<span class="s2">    QDoubleSpinBox {</span>
+<span class="s2">        background: #21262d;</span>
+<span class="s2">        border: 1px solid #30363d;</span>
+<span class="s2">        border-radius: 5px;</span>
+<span class="s2">        padding: 3px 6px;</span>
+<span class="s2">        color: #e6edf3;</span>
+<span class="s2">    }</span>
+<span class="s2">    QDoubleSpinBox::up-button, QDoubleSpinBox::down-button {</span>
+<span class="s2">        background: #30363d; border: none; width: 14px;</span>
+<span class="s2">    }</span>
+<span class="s2">    QDockWidget { color: #e6edf3; background: #0d1117; }</span>
+<span class="s2">    QDockWidget::title {</span>
+<span class="s2">        background: #161b22;</span>
+<span class="s2">        border-bottom: 1px solid #30363d;</span>
+<span class="s2">        padding: 6px 8px;</span>
+<span class="s2">        color: #e6edf3;</span>
+<span class="s2">        font-weight: 700;</span>
+<span class="s2">    }</span>
+<span class="s2">    QScrollBar:vertical { background: #0d1117; width: 8px; border-radius: 4px; }</span>
+<span class="s2">    QScrollBar::handle:vertical {</span>
+<span class="s2">        background: #30363d; border-radius: 4px; min-height: 20px;</span>
+<span class="s2">    }</span>
+<span class="s2">&quot;&quot;&quot;</span>
+
+<span class="c1"># Background colour presets  (bottom_hex, top_hex)</span>
+<span class="n">_BACKGROUNDS</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">&quot;Deep space&quot;</span><span class="p">:</span> <span class="p">(</span><span class="s2">&quot;#040810&quot;</span><span class="p">,</span> <span class="s2">&quot;#0b1628&quot;</span><span class="p">),</span>
+    <span class="s2">&quot;Midnight&quot;</span><span class="p">:</span> <span class="p">(</span><span class="s2">&quot;#050d1a&quot;</span><span class="p">,</span> <span class="s2">&quot;#0d1b35&quot;</span><span class="p">),</span>
+    <span class="s2">&quot;Slate&quot;</span><span class="p">:</span> <span class="p">(</span><span class="s2">&quot;#0d1117&quot;</span><span class="p">,</span> <span class="s2">&quot;#1c2333&quot;</span><span class="p">),</span>
+    <span class="s2">&quot;Charcoal&quot;</span><span class="p">:</span> <span class="p">(</span><span class="s2">&quot;#111111&quot;</span><span class="p">,</span> <span class="s2">&quot;#1e1e1e&quot;</span><span class="p">),</span>
+    <span class="s2">&quot;Black&quot;</span><span class="p">:</span> <span class="p">(</span><span class="s2">&quot;#000000&quot;</span><span class="p">,</span> <span class="s2">&quot;#050505&quot;</span><span class="p">),</span>
+    <span class="s2">&quot;Light&quot;</span><span class="p">:</span> <span class="p">(</span><span class="s2">&quot;#e8eaf0&quot;</span><span class="p">,</span> <span class="s2">&quot;#ffffff&quot;</span><span class="p">),</span>  <span class="c1"># publication / presentations</span>
+<span class="p">}</span>
+
+<span class="n">_DEFAULT_BG</span> <span class="o">=</span> <span class="s2">&quot;Midnight&quot;</span>
+
+
+<div class="viewcode-block" id="BrainPlot">
+<a class="viewcode-back" href="../../../generated/mne_rt.viz.BrainPlot.html#mne_rt.viz.BrainPlot">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">BrainPlot</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Interactive real-time 3D brain activation display.</span>
+
+<span class="sd">    Renders bilateral ``fsaverage`` cortical surfaces with a colour-mapped</span>
+<span class="sd">    activity overlay and a Qt control panel docked on the right.  Designed</span>
+<span class="sd">    to run alongside :class:`~mne_rt.viz.NFPlot` inside a shared Qt</span>
+<span class="sd">    event loop — call :meth:`update_from_arrays` or :meth:`update` from the</span>
+<span class="sd">    acquisition thread&#39;s pump timer.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    subjects_fs_dir : str | Path</span>
+<span class="sd">        FreeSurfer subjects directory.  The MNE-bundled ``fsaverage``</span>
+<span class="sd">        template is used automatically (auto-downloaded on first use);</span>
+<span class="sd">        this path is accepted for API compatibility.</span>
+<span class="sd">    clim : tuple of float, default (0.0, 0.6)</span>
+<span class="sd">        Initial ``(min, max)`` colour-map range for the activity overlay.</span>
+<span class="sd">    hemi_distance : float, default 20.0</span>
+<span class="sd">        Gap in mm between the medial walls of the two hemispheres.</span>
+<span class="sd">    surf : {&quot;inflated&quot;, &quot;pial&quot;, &quot;white&quot;, &quot;sphere&quot;}, default &quot;inflated&quot;</span>
+<span class="sd">        Initial cortical surface geometry to display.</span>
+<span class="sd">    cmap : str, default &quot;hot&quot;</span>
+<span class="sd">        Initial colour map name.  Must be one of</span>
+<span class="sd">        ``[&quot;hot&quot;, &quot;plasma&quot;, &quot;viridis&quot;, &quot;Reds&quot;, &quot;YlOrRd&quot;, &quot;RdBu_r&quot;]``.</span>
+<span class="sd">    opacity : float, default 0.6</span>
+<span class="sd">        Initial opacity of the activity overlay (0 = transparent, 1 = opaque).</span>
+<span class="sd">    window_size : tuple of int, default (1600, 1000)</span>
+<span class="sd">        Width × height of the render window in pixels.</span>
+<span class="sd">    display_smoothing : float, default 0.3</span>
+<span class="sd">        EMA factor applied to the per-vertex activation arrays before each</span>
+<span class="sd">        render.  ``1.0`` disables smoothing; lower values blend consecutive</span>
+<span class="sd">        frames so the cortical map transitions smoothly instead of jumping</span>
+<span class="sd">        between analysis windows.</span>
+<span class="sd">    verbose : bool | str | None, default None</span>
+<span class="sd">        Verbosity level.</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    mne_rt.viz.NFPlot : Scrolling real-time NF signal plot.</span>
+<span class="sd">    mne_rt.RTStream.record_main : Main NF loop that drives both plots.</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    Activity values are spread from the 10 242 ico-5 source vertices to all</span>
+<span class="sd">    163 842 fsaverage surface vertices via nearest-neighbour interpolation,</span>
+<span class="sd">    giving a smooth spatial appearance.</span>
+
+<span class="sd">    .. versionadded:: 1.0.0</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="BrainPlot.__init__">
+<a class="viewcode-back" href="../../../generated/mne_rt.viz.BrainPlot.html#mne_rt.viz.BrainPlot.__init__">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">subjects_fs_dir</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Path</span><span class="p">],</span>
+        <span class="n">clim</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.6</span><span class="p">),</span>
+        <span class="n">hemi_distance</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">20.0</span><span class="p">,</span>
+        <span class="n">surf</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;inflated&quot;</span><span class="p">,</span>
+        <span class="n">cmap</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;hot&quot;</span><span class="p">,</span>
+        <span class="n">opacity</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.6</span><span class="p">,</span>
+        <span class="n">window_size</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="mi">1600</span><span class="p">,</span> <span class="mi">1000</span><span class="p">),</span>
+        <span class="n">display_smoothing</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.3</span><span class="p">,</span>
+        <span class="n">verbose</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">bool</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="kc">None</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">_pyvista_available</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">_pyvistaqt_available</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ImportError</span><span class="p">(</span>
+                <span class="s2">&quot;pyvista and pyvistaqt are required for BrainPlot. &quot;</span>
+                <span class="s2">&quot;Install them with:  pip install &#39;mne-rt[viz]&#39;&quot;</span>
+            <span class="p">)</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">mne_rt._logging</span><span class="w"> </span><span class="kn">import</span> <span class="n">set_log_level</span>
+
+        <span class="n">set_log_level</span><span class="p">(</span><span class="n">verbose</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">cmap</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">_CMAPS</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;cmap </span><span class="si">{</span><span class="n">cmap</span><span class="si">!r}</span><span class="s2"> not recognised.  Choose from </span><span class="si">{</span><span class="n">_CMAPS</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">surf</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">_SURFACES</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;surf </span><span class="si">{</span><span class="n">surf</span><span class="si">!r}</span><span class="s2"> not recognised.  Choose from </span><span class="si">{</span><span class="n">_SURFACES</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_subjects_fs_dir</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">subjects_fs_dir</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_clim</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">clim</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_hemi_distance</span> <span class="o">=</span> <span class="n">hemi_distance</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_surf</span> <span class="o">=</span> <span class="n">surf</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_opacity</span> <span class="o">=</span> <span class="n">opacity</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_threshold</span> <span class="o">=</span> <span class="mf">0.0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_cmap_idx</span> <span class="o">=</span> <span class="n">_CMAPS</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">cmap</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_hemi_visible</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;lh&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span> <span class="s2">&quot;rh&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_bg_name</span> <span class="o">=</span> <span class="n">_DEFAULT_BG</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_display_mode</span> <span class="o">=</span> <span class="n">_DISPLAY_MODES</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_recording</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_video_writer</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_video_path</span><span class="p">:</span> <span class="n">Path</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_display_alpha</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">clip</span><span class="p">(</span><span class="n">display_smoothing</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_lh_ema</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_rh_ema</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="c1"># Custom band overlay state</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_custom_band_hz</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="c1"># Parcellation border overlay state</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_parc_name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_parc_actor</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_parc_edges</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># (n_edges, 2) vertex index pairs</span>
+
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Loading </span><span class="si">%s</span><span class="s2"> surface …&quot;</span><span class="p">,</span> <span class="n">surf</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_load_surface</span><span class="p">(</span><span class="n">surf</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_plotter</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_build_plotter</span><span class="p">(</span><span class="n">window_size</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_sync_scalar_bar_lut</span><span class="p">()</span>  <span class="c1"># link scalar bar to activity actor&#39;s LUT</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_add_key_bindings</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_add_overlays</span><span class="p">()</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;BrainPlot ready.&quot;</span><span class="p">)</span></div>
+
+
+    <span class="c1"># ------------------------------------------------------------------</span>
+    <span class="c1"># Surface management</span>
+    <span class="c1"># ------------------------------------------------------------------</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_load_surface</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">surf</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_hemi_offsets</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_scalars_full</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_mesh</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_verts_stc</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_nn_map</span><span class="p">,</span>
+        <span class="p">)</span> <span class="o">=</span> <span class="n">setup_surface</span><span class="p">(</span>
+            <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_subjects_fs_dir</span><span class="p">),</span>
+            <span class="n">hemi_distance</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_hemi_distance</span><span class="p">,</span>
+            <span class="n">surf</span><span class="o">=</span><span class="n">surf</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_n_lh</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_hemi_offsets</span><span class="p">[</span><span class="s2">&quot;rh&quot;</span><span class="p">])</span>
+
+    <span class="c1"># ------------------------------------------------------------------</span>
+    <span class="c1"># Plotter construction</span>
+    <span class="c1"># ------------------------------------------------------------------</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_build_plotter</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">window_size</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="s2">&quot;_BackgroundPlotter&quot;</span><span class="p">:</span>
+        <span class="n">p</span> <span class="o">=</span> <span class="n">_BackgroundPlotter</span><span class="p">(</span>
+            <span class="n">window_size</span><span class="o">=</span><span class="nb">tuple</span><span class="p">(</span><span class="n">window_size</span><span class="p">),</span>
+            <span class="n">lighting</span><span class="o">=</span><span class="s2">&quot;three lights&quot;</span><span class="p">,</span>
+            <span class="n">title</span><span class="o">=</span><span class="s2">&quot;MNE-RT — Brain Activation&quot;</span><span class="p">,</span>
+            <span class="n">toolbar</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+            <span class="n">menu_bar</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+            <span class="n">editor</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="p">)</span>
+
+        <span class="c1"># Background gradient</span>
+        <span class="n">bg_bot</span><span class="p">,</span> <span class="n">bg_top</span> <span class="o">=</span> <span class="n">_BACKGROUNDS</span><span class="p">[</span><span class="n">_DEFAULT_BG</span><span class="p">]</span>
+        <span class="n">p</span><span class="o">.</span><span class="n">set_background</span><span class="p">(</span><span class="n">bg_bot</span><span class="p">,</span> <span class="n">top</span><span class="o">=</span><span class="n">bg_top</span><span class="p">)</span>
+
+        <span class="c1"># ── Base sulcal-depth mesh ────────────────────────────────────────</span>
+        <span class="c1"># sulc values: negative = gyri (light), positive = sulci (dark)</span>
+        <span class="c1"># &quot;Greys_r&quot; maps low→white, high→black → correct neuroimaging convention</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_base_actor</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">add_mesh</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_mesh</span><span class="p">,</span>
+            <span class="n">scalars</span><span class="o">=</span><span class="s2">&quot;base&quot;</span><span class="p">,</span>
+            <span class="n">cmap</span><span class="o">=</span><span class="s2">&quot;Greys_r&quot;</span><span class="p">,</span>
+            <span class="n">clim</span><span class="o">=</span><span class="p">[</span><span class="o">-</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">1.5</span><span class="p">],</span>
+            <span class="n">smooth_shading</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+            <span class="n">show_scalar_bar</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="p">)</span>
+
+        <span class="c1"># ── Activity overlay ──────────────────────────────────────────────</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_act_actor</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">add_mesh</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_mesh</span><span class="p">,</span>
+            <span class="n">scalars</span><span class="o">=</span><span class="s2">&quot;activity&quot;</span><span class="p">,</span>
+            <span class="n">cmap</span><span class="o">=</span><span class="n">_CMAPS</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_cmap_idx</span><span class="p">],</span>
+            <span class="n">opacity</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_opacity</span><span class="p">,</span>
+            <span class="n">clim</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_clim</span><span class="p">,</span>
+            <span class="n">smooth_shading</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+            <span class="n">show_scalar_bar</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+            <span class="n">interpolate_before_map</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+            <span class="n">nan_opacity</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span>
+        <span class="p">)</span>
+
+        <span class="c1"># ── Scalar bar (no title, no tick numbers) ───────────────────────</span>
+        <span class="n">p</span><span class="o">.</span><span class="n">add_scalar_bar</span><span class="p">(</span>
+            <span class="n">title</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span>
+            <span class="n">italic</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+            <span class="n">vertical</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+            <span class="n">position_x</span><span class="o">=</span><span class="mf">0.02</span><span class="p">,</span>
+            <span class="n">position_y</span><span class="o">=</span><span class="mf">0.20</span><span class="p">,</span>
+            <span class="n">height</span><span class="o">=</span><span class="mf">0.38</span><span class="p">,</span>
+            <span class="n">width</span><span class="o">=</span><span class="mf">0.04</span><span class="p">,</span>
+            <span class="n">color</span><span class="o">=</span><span class="s2">&quot;white&quot;</span><span class="p">,</span>
+            <span class="n">title_font_size</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+            <span class="n">label_font_size</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span>
+            <span class="n">n_labels</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+        <span class="p">)</span>
+
+        <span class="c1"># ── Lighting &amp; post-processing ────────────────────────────────────</span>
+        <span class="n">p</span><span class="o">.</span><span class="n">enable_eye_dome_lighting</span><span class="p">()</span>
+        <span class="n">p</span><span class="o">.</span><span class="n">enable_ssao</span><span class="p">(</span><span class="n">radius</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">bias</span><span class="o">=</span><span class="mf">0.005</span><span class="p">,</span> <span class="n">kernel_size</span><span class="o">=</span><span class="mi">256</span><span class="p">)</span>
+        <span class="n">p</span><span class="o">.</span><span class="n">enable_anti_aliasing</span><span class="p">(</span><span class="s2">&quot;ssaa&quot;</span><span class="p">)</span>
+        <span class="n">p</span><span class="o">.</span><span class="n">add_camera_orientation_widget</span><span class="p">()</span>
+        <span class="n">p</span><span class="o">.</span><span class="n">camera_position</span> <span class="o">=</span> <span class="s2">&quot;yz&quot;</span>
+        <span class="n">p</span><span class="o">.</span><span class="n">camera</span><span class="o">.</span><span class="n">azimuth</span> <span class="o">=</span> <span class="mi">45</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_add_control_panel</span><span class="p">(</span><span class="n">p</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">p</span>
+
+    <span class="c1"># ------------------------------------------------------------------</span>
+    <span class="c1"># Qt control panel</span>
+    <span class="c1"># ------------------------------------------------------------------</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_add_control_panel</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">p</span><span class="p">:</span> <span class="s2">&quot;_BackgroundPlotter&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Dock a Qt control panel on the right side of the brain window.&quot;&quot;&quot;</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">qtpy.QtCore</span><span class="w"> </span><span class="kn">import</span> <span class="n">Qt</span> <span class="k">as</span> <span class="n">Qt_</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">qtpy.QtWidgets</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+            <span class="n">QCheckBox</span><span class="p">,</span>
+            <span class="n">QComboBox</span><span class="p">,</span>
+            <span class="n">QDockWidget</span><span class="p">,</span>
+            <span class="n">QDoubleSpinBox</span><span class="p">,</span>
+            <span class="n">QGroupBox</span><span class="p">,</span>
+            <span class="n">QHBoxLayout</span><span class="p">,</span>
+            <span class="n">QLabel</span><span class="p">,</span>
+            <span class="n">QPushButton</span><span class="p">,</span>
+            <span class="n">QSlider</span><span class="p">,</span>
+            <span class="n">QVBoxLayout</span><span class="p">,</span>
+            <span class="n">QWidget</span><span class="p">,</span>
+        <span class="p">)</span>
+
+        <span class="c1"># ── helpers ──────────────────────────────────────────────────────</span>
+        <span class="k">def</span><span class="w"> </span><span class="nf">_hslider</span><span class="p">(</span><span class="n">lo</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="n">hi</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">100</span><span class="p">,</span> <span class="n">val</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">QSlider</span><span class="p">:</span>
+            <span class="n">sl</span> <span class="o">=</span> <span class="n">QSlider</span><span class="p">(</span><span class="n">Qt_</span><span class="o">.</span><span class="n">Orientation</span><span class="o">.</span><span class="n">Horizontal</span><span class="p">)</span>
+            <span class="n">sl</span><span class="o">.</span><span class="n">setRange</span><span class="p">(</span><span class="n">lo</span><span class="p">,</span> <span class="n">hi</span><span class="p">)</span>
+            <span class="n">sl</span><span class="o">.</span><span class="n">setValue</span><span class="p">(</span><span class="n">val</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">sl</span>
+
+        <span class="k">def</span><span class="w"> </span><span class="nf">_group</span><span class="p">(</span><span class="n">title</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">QGroupBox</span><span class="p">,</span> <span class="n">QVBoxLayout</span><span class="p">]:</span>
+            <span class="n">grp</span> <span class="o">=</span> <span class="n">QGroupBox</span><span class="p">(</span><span class="n">title</span><span class="p">)</span>
+            <span class="n">ly</span> <span class="o">=</span> <span class="n">QVBoxLayout</span><span class="p">(</span><span class="n">grp</span><span class="p">)</span>
+            <span class="n">ly</span><span class="o">.</span><span class="n">setSpacing</span><span class="p">(</span><span class="mi">4</span><span class="p">)</span>
+            <span class="n">ly</span><span class="o">.</span><span class="n">setContentsMargins</span><span class="p">(</span><span class="mi">6</span><span class="p">,</span> <span class="mi">12</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">6</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">grp</span><span class="p">,</span> <span class="n">ly</span>
+
+        <span class="c1"># ── root panel ────────────────────────────────────────────────────</span>
+        <span class="n">panel</span> <span class="o">=</span> <span class="n">QWidget</span><span class="p">()</span>
+        <span class="n">panel</span><span class="o">.</span><span class="n">setMinimumWidth</span><span class="p">(</span><span class="mi">210</span><span class="p">)</span>
+        <span class="n">panel</span><span class="o">.</span><span class="n">setMaximumWidth</span><span class="p">(</span><span class="mi">260</span><span class="p">)</span>
+        <span class="n">panel</span><span class="o">.</span><span class="n">setStyleSheet</span><span class="p">(</span><span class="n">_PANEL_DARK_STYLE</span><span class="p">)</span>
+        <span class="n">root</span> <span class="o">=</span> <span class="n">QVBoxLayout</span><span class="p">(</span><span class="n">panel</span><span class="p">)</span>
+        <span class="n">root</span><span class="o">.</span><span class="n">setSpacing</span><span class="p">(</span><span class="mi">6</span><span class="p">)</span>
+        <span class="n">root</span><span class="o">.</span><span class="n">setContentsMargins</span><span class="p">(</span><span class="mi">6</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">6</span><span class="p">)</span>
+
+        <span class="c1"># ── Surface ───────────────────────────────────────────────────────</span>
+        <span class="n">grp</span><span class="p">,</span> <span class="n">ly</span> <span class="o">=</span> <span class="n">_group</span><span class="p">(</span><span class="s2">&quot;Surface&quot;</span><span class="p">)</span>
+        <span class="n">surf_combo</span> <span class="o">=</span> <span class="n">QComboBox</span><span class="p">()</span>
+        <span class="n">surf_combo</span><span class="o">.</span><span class="n">addItems</span><span class="p">(</span><span class="n">_SURFACES</span><span class="p">)</span>
+        <span class="n">surf_combo</span><span class="o">.</span><span class="n">setCurrentText</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_surf</span><span class="p">)</span>
+        <span class="n">surf_combo</span><span class="o">.</span><span class="n">currentTextChanged</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span>
+            <span class="k">lambda</span> <span class="n">s</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">set_surface</span><span class="p">(</span><span class="n">s</span><span class="p">)</span> <span class="k">if</span> <span class="n">s</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_surf</span> <span class="k">else</span> <span class="kc">None</span>
+        <span class="p">)</span>
+        <span class="n">ly</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="n">surf_combo</span><span class="p">)</span>
+        <span class="n">root</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="n">grp</span><span class="p">)</span>
+
+        <span class="c1"># ── Parcellation ──────────────────────────────────────────────────</span>
+        <span class="n">grp</span><span class="p">,</span> <span class="n">ly</span> <span class="o">=</span> <span class="n">_group</span><span class="p">(</span><span class="s2">&quot;Parcellation&quot;</span><span class="p">)</span>
+        <span class="n">_PARC_ITEMS</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;None&quot;</span><span class="p">,</span> <span class="s2">&quot;aparc  (Desikan)&quot;</span><span class="p">,</span> <span class="s2">&quot;aparc.a2009s  (Destrieux)&quot;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_parc_combo</span> <span class="o">=</span> <span class="n">QComboBox</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_parc_combo</span><span class="o">.</span><span class="n">addItems</span><span class="p">(</span><span class="n">_PARC_ITEMS</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_parc_combo</span><span class="o">.</span><span class="n">currentTextChanged</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_set_parcellation</span><span class="p">)</span>
+        <span class="n">ly</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_parc_combo</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_parc_status_lbl</span> <span class="o">=</span> <span class="n">QLabel</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_parc_status_lbl</span><span class="o">.</span><span class="n">setWordWrap</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_parc_status_lbl</span><span class="o">.</span><span class="n">setStyleSheet</span><span class="p">(</span><span class="s2">&quot;color:#8b949e; font-size:9px;&quot;</span><span class="p">)</span>
+        <span class="n">ly</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_parc_status_lbl</span><span class="p">)</span>
+        <span class="n">root</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="n">grp</span><span class="p">)</span>
+
+        <span class="c1"># ── Hemispheres ───────────────────────────────────────────────────</span>
+        <span class="n">grp</span><span class="p">,</span> <span class="n">ly</span> <span class="o">=</span> <span class="n">_group</span><span class="p">(</span><span class="s2">&quot;Hemispheres&quot;</span><span class="p">)</span>
+        <span class="n">hl</span> <span class="o">=</span> <span class="n">QHBoxLayout</span><span class="p">()</span>
+        <span class="n">lh_cb</span> <span class="o">=</span> <span class="n">QCheckBox</span><span class="p">(</span><span class="s2">&quot;Left&quot;</span><span class="p">)</span>
+        <span class="n">lh_cb</span><span class="o">.</span><span class="n">setChecked</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">rh_cb</span> <span class="o">=</span> <span class="n">QCheckBox</span><span class="p">(</span><span class="s2">&quot;Right&quot;</span><span class="p">)</span>
+        <span class="n">rh_cb</span><span class="o">.</span><span class="n">setChecked</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
+
+        <span class="k">def</span><span class="w"> </span><span class="nf">_on_lh</span><span class="p">(</span><span class="n">state</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_hemi_visible</span><span class="p">[</span><span class="s2">&quot;lh&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">bool</span><span class="p">(</span><span class="n">state</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_refresh_scalars</span><span class="p">()</span>
+
+        <span class="k">def</span><span class="w"> </span><span class="nf">_on_rh</span><span class="p">(</span><span class="n">state</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_hemi_visible</span><span class="p">[</span><span class="s2">&quot;rh&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">bool</span><span class="p">(</span><span class="n">state</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_refresh_scalars</span><span class="p">()</span>
+
+        <span class="n">lh_cb</span><span class="o">.</span><span class="n">stateChanged</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">_on_lh</span><span class="p">)</span>
+        <span class="n">rh_cb</span><span class="o">.</span><span class="n">stateChanged</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">_on_rh</span><span class="p">)</span>
+        <span class="n">hl</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="n">lh_cb</span><span class="p">)</span>
+        <span class="n">hl</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="n">rh_cb</span><span class="p">)</span>
+        <span class="n">ly</span><span class="o">.</span><span class="n">addLayout</span><span class="p">(</span><span class="n">hl</span><span class="p">)</span>
+        <span class="n">root</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="n">grp</span><span class="p">)</span>
+
+        <span class="c1"># ── Colormap ──────────────────────────────────────────────────────</span>
+        <span class="n">grp</span><span class="p">,</span> <span class="n">ly</span> <span class="o">=</span> <span class="n">_group</span><span class="p">(</span><span class="s2">&quot;Colormap&quot;</span><span class="p">)</span>
+        <span class="n">cmap_combo</span> <span class="o">=</span> <span class="n">QComboBox</span><span class="p">()</span>
+        <span class="n">cmap_combo</span><span class="o">.</span><span class="n">addItems</span><span class="p">(</span><span class="n">_CMAPS</span><span class="p">)</span>
+        <span class="n">cmap_combo</span><span class="o">.</span><span class="n">setCurrentText</span><span class="p">(</span><span class="n">_CMAPS</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_cmap_idx</span><span class="p">])</span>
+
+        <span class="k">def</span><span class="w"> </span><span class="nf">_on_cmap</span><span class="p">(</span><span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">idx</span> <span class="o">=</span> <span class="n">_CMAPS</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">idx</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cmap_idx</span><span class="p">:</span>
+                <span class="k">return</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_cmap_idx</span> <span class="o">=</span> <span class="n">idx</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_sync_scalar_bar_lut</span><span class="p">()</span>
+            <span class="n">p</span><span class="o">.</span><span class="n">render</span><span class="p">()</span>
+
+        <span class="n">cmap_combo</span><span class="o">.</span><span class="n">currentTextChanged</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">_on_cmap</span><span class="p">)</span>
+        <span class="n">ly</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="n">cmap_combo</span><span class="p">)</span>
+        <span class="n">root</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="n">grp</span><span class="p">)</span>
+
+        <span class="c1"># ── Color range (clim) ────────────────────────────────────────────</span>
+        <span class="n">grp</span><span class="p">,</span> <span class="n">ly</span> <span class="o">=</span> <span class="n">_group</span><span class="p">(</span><span class="s2">&quot;Color Range&quot;</span><span class="p">)</span>
+        <span class="n">clim_max_lbl</span> <span class="o">=</span> <span class="n">QLabel</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;max  </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_clim</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="n">clim_max_sl</span> <span class="o">=</span> <span class="n">_hslider</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">100</span><span class="p">,</span> <span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_clim</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="mi">100</span><span class="p">))</span>
+        <span class="n">clim_min_lbl</span> <span class="o">=</span> <span class="n">QLabel</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;min  </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_clim</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="n">clim_min_sl</span> <span class="o">=</span> <span class="n">_hslider</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">100</span><span class="p">,</span> <span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_clim</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="mi">100</span><span class="p">))</span>
+
+        <span class="k">def</span><span class="w"> </span><span class="nf">_on_clim_max</span><span class="p">(</span><span class="n">v</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_clim</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">v</span> <span class="o">/</span> <span class="mf">100.0</span>
+            <span class="n">clim_max_lbl</span><span class="o">.</span><span class="n">setText</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;max  </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_clim</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_act_actor</span><span class="o">.</span><span class="n">GetMapper</span><span class="p">()</span><span class="o">.</span><span class="n">SetScalarRange</span><span class="p">(</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">_clim</span><span class="p">)</span>
+            <span class="n">p</span><span class="o">.</span><span class="n">render</span><span class="p">()</span>
+
+        <span class="k">def</span><span class="w"> </span><span class="nf">_on_clim_min</span><span class="p">(</span><span class="n">v</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_clim</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">v</span> <span class="o">/</span> <span class="mf">100.0</span>
+            <span class="n">clim_min_lbl</span><span class="o">.</span><span class="n">setText</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;min  </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_clim</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_act_actor</span><span class="o">.</span><span class="n">GetMapper</span><span class="p">()</span><span class="o">.</span><span class="n">SetScalarRange</span><span class="p">(</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">_clim</span><span class="p">)</span>
+            <span class="n">p</span><span class="o">.</span><span class="n">render</span><span class="p">()</span>
+
+        <span class="n">clim_max_sl</span><span class="o">.</span><span class="n">valueChanged</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">_on_clim_max</span><span class="p">)</span>
+        <span class="n">clim_min_sl</span><span class="o">.</span><span class="n">valueChanged</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">_on_clim_min</span><span class="p">)</span>
+        <span class="n">ly</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="n">clim_max_lbl</span><span class="p">)</span>
+        <span class="n">ly</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="n">clim_max_sl</span><span class="p">)</span>
+        <span class="n">ly</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="n">clim_min_lbl</span><span class="p">)</span>
+        <span class="n">ly</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="n">clim_min_sl</span><span class="p">)</span>
+        <span class="n">root</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="n">grp</span><span class="p">)</span>
+
+        <span class="c1"># ── Opacity ───────────────────────────────────────────────────────</span>
+        <span class="n">grp</span><span class="p">,</span> <span class="n">ly</span> <span class="o">=</span> <span class="n">_group</span><span class="p">(</span><span class="s2">&quot;Opacity&quot;</span><span class="p">)</span>
+        <span class="n">op_lbl</span> <span class="o">=</span> <span class="n">QLabel</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_opacity</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="n">op_sl</span> <span class="o">=</span> <span class="n">_hslider</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">100</span><span class="p">,</span> <span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_opacity</span> <span class="o">*</span> <span class="mi">100</span><span class="p">))</span>
+
+        <span class="k">def</span><span class="w"> </span><span class="nf">_on_opacity</span><span class="p">(</span><span class="n">v</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_opacity</span> <span class="o">=</span> <span class="n">v</span> <span class="o">/</span> <span class="mf">100.0</span>
+            <span class="n">op_lbl</span><span class="o">.</span><span class="n">setText</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_opacity</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_act_actor</span><span class="o">.</span><span class="n">GetProperty</span><span class="p">()</span><span class="o">.</span><span class="n">SetOpacity</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_opacity</span><span class="p">)</span>
+            <span class="n">p</span><span class="o">.</span><span class="n">render</span><span class="p">()</span>
+
+        <span class="n">op_sl</span><span class="o">.</span><span class="n">valueChanged</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">_on_opacity</span><span class="p">)</span>
+        <span class="n">ly</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="n">op_lbl</span><span class="p">)</span>
+        <span class="n">ly</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="n">op_sl</span><span class="p">)</span>
+        <span class="n">root</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="n">grp</span><span class="p">)</span>
+
+        <span class="c1"># ── Threshold ─────────────────────────────────────────────────────</span>
+        <span class="n">grp</span><span class="p">,</span> <span class="n">ly</span> <span class="o">=</span> <span class="n">_group</span><span class="p">(</span><span class="s2">&quot;Threshold  (0 → 1)&quot;</span><span class="p">)</span>
+        <span class="n">thr_lbl</span> <span class="o">=</span> <span class="n">QLabel</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_threshold</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="n">thr_sl</span> <span class="o">=</span> <span class="n">_hslider</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">100</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+
+        <span class="k">def</span><span class="w"> </span><span class="nf">_on_threshold</span><span class="p">(</span><span class="n">v</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_threshold</span> <span class="o">=</span> <span class="n">v</span> <span class="o">/</span> <span class="mf">100.0</span>
+            <span class="n">thr_lbl</span><span class="o">.</span><span class="n">setText</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_threshold</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_refresh_scalars</span><span class="p">()</span>
+
+        <span class="n">thr_sl</span><span class="o">.</span><span class="n">valueChanged</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">_on_threshold</span><span class="p">)</span>
+        <span class="n">ly</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="n">thr_lbl</span><span class="p">)</span>
+        <span class="n">ly</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="n">thr_sl</span><span class="p">)</span>
+        <span class="n">root</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="n">grp</span><span class="p">)</span>
+
+        <span class="c1"># ── Background ────────────────────────────────────────────────────</span>
+        <span class="n">grp</span><span class="p">,</span> <span class="n">ly</span> <span class="o">=</span> <span class="n">_group</span><span class="p">(</span><span class="s2">&quot;Background&quot;</span><span class="p">)</span>
+        <span class="n">bg_combo</span> <span class="o">=</span> <span class="n">QComboBox</span><span class="p">()</span>
+        <span class="n">bg_combo</span><span class="o">.</span><span class="n">addItems</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">_BACKGROUNDS</span><span class="o">.</span><span class="n">keys</span><span class="p">()))</span>
+        <span class="n">bg_combo</span><span class="o">.</span><span class="n">setCurrentText</span><span class="p">(</span><span class="n">_DEFAULT_BG</span><span class="p">)</span>
+
+        <span class="k">def</span><span class="w"> </span><span class="nf">_on_bg</span><span class="p">(</span><span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_bg_name</span> <span class="o">=</span> <span class="n">name</span>
+            <span class="n">bot</span><span class="p">,</span> <span class="n">top</span> <span class="o">=</span> <span class="n">_BACKGROUNDS</span><span class="p">[</span><span class="n">name</span><span class="p">]</span>
+            <span class="n">p</span><span class="o">.</span><span class="n">set_background</span><span class="p">(</span><span class="n">bot</span><span class="p">,</span> <span class="n">top</span><span class="o">=</span><span class="n">top</span><span class="p">)</span>
+            <span class="n">p</span><span class="o">.</span><span class="n">render</span><span class="p">()</span>
+
+        <span class="n">bg_combo</span><span class="o">.</span><span class="n">currentTextChanged</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">_on_bg</span><span class="p">)</span>
+        <span class="n">ly</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="n">bg_combo</span><span class="p">)</span>
+        <span class="n">root</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="n">grp</span><span class="p">)</span>
+
+        <span class="c1"># ── View presets ──────────────────────────────────────────────────</span>
+        <span class="n">grp</span><span class="p">,</span> <span class="n">ly</span> <span class="o">=</span> <span class="n">_group</span><span class="p">(</span><span class="s2">&quot;View Presets&quot;</span><span class="p">)</span>
+        <span class="n">btn_row</span> <span class="o">=</span> <span class="n">QHBoxLayout</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">label</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">tip</span> <span class="ow">in</span> <span class="p">[</span>
+            <span class="p">(</span><span class="s2">&quot;L&quot;</span><span class="p">,</span> <span class="s2">&quot;lateral_lh&quot;</span><span class="p">,</span> <span class="s2">&quot;Left lateral&quot;</span><span class="p">),</span>
+            <span class="p">(</span><span class="s2">&quot;R&quot;</span><span class="p">,</span> <span class="s2">&quot;lateral_rh&quot;</span><span class="p">,</span> <span class="s2">&quot;Right lateral&quot;</span><span class="p">),</span>
+            <span class="p">(</span><span class="s2">&quot;D&quot;</span><span class="p">,</span> <span class="s2">&quot;dorsal&quot;</span><span class="p">,</span> <span class="s2">&quot;Dorsal (top)&quot;</span><span class="p">),</span>
+            <span class="p">(</span><span class="s2">&quot;F&quot;</span><span class="p">,</span> <span class="s2">&quot;frontal&quot;</span><span class="p">,</span> <span class="s2">&quot;Frontal&quot;</span><span class="p">),</span>
+            <span class="p">(</span><span class="s2">&quot;V&quot;</span><span class="p">,</span> <span class="s2">&quot;ventral&quot;</span><span class="p">,</span> <span class="s2">&quot;Ventral (bottom)&quot;</span><span class="p">),</span>
+        <span class="p">]:</span>
+            <span class="n">btn</span> <span class="o">=</span> <span class="n">QPushButton</span><span class="p">(</span><span class="n">label</span><span class="p">)</span>
+            <span class="n">btn</span><span class="o">.</span><span class="n">setFixedSize</span><span class="p">(</span><span class="mi">32</span><span class="p">,</span> <span class="mi">28</span><span class="p">)</span>
+            <span class="n">btn</span><span class="o">.</span><span class="n">setToolTip</span><span class="p">(</span><span class="n">tip</span><span class="p">)</span>
+            <span class="n">btn</span><span class="o">.</span><span class="n">clicked</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="k">lambda</span> <span class="n">_</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">k</span><span class="o">=</span><span class="n">key</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_set_view</span><span class="p">(</span><span class="n">k</span><span class="p">))</span>
+            <span class="n">btn_row</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="n">btn</span><span class="p">)</span>
+        <span class="n">ly</span><span class="o">.</span><span class="n">addLayout</span><span class="p">(</span><span class="n">btn_row</span><span class="p">)</span>
+        <span class="n">root</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="n">grp</span><span class="p">)</span>
+
+        <span class="c1"># ── Display Mode ──────────────────────────────────────────────────</span>
+        <span class="n">grp</span><span class="p">,</span> <span class="n">ly</span> <span class="o">=</span> <span class="n">_group</span><span class="p">(</span><span class="s2">&quot;Display Mode&quot;</span><span class="p">)</span>
+        <span class="n">mode_combo</span> <span class="o">=</span> <span class="n">QComboBox</span><span class="p">()</span>
+        <span class="n">mode_combo</span><span class="o">.</span><span class="n">addItems</span><span class="p">(</span><span class="n">_DISPLAY_MODES</span><span class="p">)</span>
+        <span class="n">mode_combo</span><span class="o">.</span><span class="n">setCurrentText</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_display_mode</span><span class="p">)</span>
+        <span class="n">mode_lbl</span> <span class="o">=</span> <span class="n">QLabel</span><span class="p">(</span>
+            <span class="s2">&quot;&lt;span style=&#39;color:#8b949e;font-size:9px;&#39;&gt;&quot;</span>
+            <span class="s2">&quot;Configure RTStream modality to match selected mode&quot;</span>
+            <span class="s2">&quot;&lt;/span&gt;&quot;</span>
+        <span class="p">)</span>
+        <span class="n">mode_lbl</span><span class="o">.</span><span class="n">setWordWrap</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
+
+        <span class="k">def</span><span class="w"> </span><span class="nf">_on_display_mode</span><span class="p">(</span><span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">set_display_mode</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+
+        <span class="n">mode_combo</span><span class="o">.</span><span class="n">currentTextChanged</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">_on_display_mode</span><span class="p">)</span>
+        <span class="n">ly</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="n">mode_combo</span><span class="p">)</span>
+        <span class="n">ly</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="n">mode_lbl</span><span class="p">)</span>
+        <span class="n">root</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="n">grp</span><span class="p">)</span>
+
+        <span class="c1"># ── Custom frequency band ─────────────────────────────────────────</span>
+        <span class="n">grp</span><span class="p">,</span> <span class="n">ly</span> <span class="o">=</span> <span class="n">_group</span><span class="p">(</span><span class="s2">&quot;Custom Band  (Hz)&quot;</span><span class="p">)</span>
+        <span class="n">band_row</span> <span class="o">=</span> <span class="n">QHBoxLayout</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_custom_lo_spin</span> <span class="o">=</span> <span class="n">QDoubleSpinBox</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_custom_lo_spin</span><span class="o">.</span><span class="n">setRange</span><span class="p">(</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">200.0</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_custom_lo_spin</span><span class="o">.</span><span class="n">setValue</span><span class="p">(</span><span class="mf">13.0</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_custom_lo_spin</span><span class="o">.</span><span class="n">setSuffix</span><span class="p">(</span><span class="s2">&quot; Hz&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_custom_lo_spin</span><span class="o">.</span><span class="n">setDecimals</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">dash_lbl2</span> <span class="o">=</span> <span class="n">QLabel</span><span class="p">(</span><span class="s2">&quot;–&quot;</span><span class="p">)</span>
+        <span class="n">dash_lbl2</span><span class="o">.</span><span class="n">setStyleSheet</span><span class="p">(</span><span class="s2">&quot;color:#8b949e;&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_custom_hi_spin</span> <span class="o">=</span> <span class="n">QDoubleSpinBox</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_custom_hi_spin</span><span class="o">.</span><span class="n">setRange</span><span class="p">(</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">500.0</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_custom_hi_spin</span><span class="o">.</span><span class="n">setValue</span><span class="p">(</span><span class="mf">30.0</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_custom_hi_spin</span><span class="o">.</span><span class="n">setSuffix</span><span class="p">(</span><span class="s2">&quot; Hz&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_custom_hi_spin</span><span class="o">.</span><span class="n">setDecimals</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">band_row</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_custom_lo_spin</span><span class="p">)</span>
+        <span class="n">band_row</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="n">dash_lbl2</span><span class="p">)</span>
+        <span class="n">band_row</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_custom_hi_spin</span><span class="p">)</span>
+        <span class="n">ly</span><span class="o">.</span><span class="n">addLayout</span><span class="p">(</span><span class="n">band_row</span><span class="p">)</span>
+
+        <span class="n">btn_band_row</span> <span class="o">=</span> <span class="n">QHBoxLayout</span><span class="p">()</span>
+        <span class="n">btn_set_band</span> <span class="o">=</span> <span class="n">QPushButton</span><span class="p">(</span><span class="s2">&quot;Set&quot;</span><span class="p">)</span>
+        <span class="n">btn_set_band</span><span class="o">.</span><span class="n">clicked</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_set_custom_band</span><span class="p">)</span>
+        <span class="n">btn_clr_band</span> <span class="o">=</span> <span class="n">QPushButton</span><span class="p">(</span><span class="s2">&quot;Clear&quot;</span><span class="p">)</span>
+        <span class="n">btn_clr_band</span><span class="o">.</span><span class="n">clicked</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_clear_custom_band</span><span class="p">)</span>
+        <span class="n">btn_band_row</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="n">btn_set_band</span><span class="p">)</span>
+        <span class="n">btn_band_row</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="n">btn_clr_band</span><span class="p">)</span>
+        <span class="n">ly</span><span class="o">.</span><span class="n">addLayout</span><span class="p">(</span><span class="n">btn_band_row</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_custom_band_lbl</span> <span class="o">=</span> <span class="n">QLabel</span><span class="p">(</span><span class="s2">&quot;No custom band set&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_custom_band_lbl</span><span class="o">.</span><span class="n">setStyleSheet</span><span class="p">(</span><span class="s2">&quot;color:#8b949e; font-size:10px;&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_custom_band_lbl</span><span class="o">.</span><span class="n">setWordWrap</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">ly</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_custom_band_lbl</span><span class="p">)</span>
+        <span class="n">root</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="n">grp</span><span class="p">)</span>
+
+        <span class="c1"># ── Actions ───────────────────────────────────────────────────────</span>
+        <span class="n">grp</span><span class="p">,</span> <span class="n">ly</span> <span class="o">=</span> <span class="n">_group</span><span class="p">(</span><span class="s2">&quot;Actions&quot;</span><span class="p">)</span>
+        <span class="n">reset_btn</span> <span class="o">=</span> <span class="n">QPushButton</span><span class="p">(</span><span class="s2">&quot;Reset activity  (r)&quot;</span><span class="p">)</span>
+        <span class="n">reset_btn</span><span class="o">.</span><span class="n">clicked</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">reset_activity</span><span class="p">)</span>
+        <span class="n">shot_btn</span> <span class="o">=</span> <span class="n">QPushButton</span><span class="p">(</span><span class="s2">&quot;Screenshot  (s)&quot;</span><span class="p">)</span>
+        <span class="n">shot_btn</span><span class="o">.</span><span class="n">clicked</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="k">lambda</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">screenshot</span><span class="p">())</span>
+        <span class="n">ly</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="n">reset_btn</span><span class="p">)</span>
+        <span class="n">ly</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="n">shot_btn</span><span class="p">)</span>
+        <span class="n">root</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="n">grp</span><span class="p">)</span>
+
+        <span class="n">root</span><span class="o">.</span><span class="n">addStretch</span><span class="p">()</span>
+
+        <span class="c1"># ── Keyboard hint ─────────────────────────────────────────────────</span>
+        <span class="n">hint</span> <span class="o">=</span> <span class="n">QLabel</span><span class="p">(</span>
+            <span class="s2">&quot;&lt;span style=&#39;color:#8b949e; font-size:10px;&#39;&gt;&quot;</span>
+            <span class="s2">&quot;Keys: 1-5 views · i/p/w/h surface · s screenshot · r reset&quot;</span>
+            <span class="s2">&quot;&lt;/span&gt;&quot;</span>
+        <span class="p">)</span>
+        <span class="n">hint</span><span class="o">.</span><span class="n">setWordWrap</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">root</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="n">hint</span><span class="p">)</span>
+
+        <span class="c1"># ── Dock widget ───────────────────────────────────────────────────</span>
+        <span class="n">dock</span> <span class="o">=</span> <span class="n">QDockWidget</span><span class="p">(</span><span class="s2">&quot;Brain Controls&quot;</span><span class="p">)</span>
+        <span class="n">dock</span><span class="o">.</span><span class="n">setWidget</span><span class="p">(</span><span class="n">panel</span><span class="p">)</span>
+        <span class="n">dock</span><span class="o">.</span><span class="n">setFeatures</span><span class="p">(</span>
+            <span class="n">QDockWidget</span><span class="o">.</span><span class="n">DockWidgetFeature</span><span class="o">.</span><span class="n">DockWidgetMovable</span>
+            <span class="o">|</span> <span class="n">QDockWidget</span><span class="o">.</span><span class="n">DockWidgetFeature</span><span class="o">.</span><span class="n">DockWidgetFloatable</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="n">p</span><span class="o">.</span><span class="n">app_window</span><span class="o">.</span><span class="n">addDockWidget</span><span class="p">(</span><span class="n">Qt_</span><span class="o">.</span><span class="n">DockWidgetArea</span><span class="o">.</span><span class="n">RightDockWidgetArea</span><span class="p">,</span> <span class="n">dock</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_add_key_bindings</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">p</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_plotter</span>
+        <span class="n">p</span><span class="o">.</span><span class="n">add_key_event</span><span class="p">(</span><span class="s2">&quot;1&quot;</span><span class="p">,</span> <span class="k">lambda</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_set_view</span><span class="p">(</span><span class="s2">&quot;lateral_lh&quot;</span><span class="p">))</span>
+        <span class="n">p</span><span class="o">.</span><span class="n">add_key_event</span><span class="p">(</span><span class="s2">&quot;2&quot;</span><span class="p">,</span> <span class="k">lambda</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_set_view</span><span class="p">(</span><span class="s2">&quot;lateral_rh&quot;</span><span class="p">))</span>
+        <span class="n">p</span><span class="o">.</span><span class="n">add_key_event</span><span class="p">(</span><span class="s2">&quot;3&quot;</span><span class="p">,</span> <span class="k">lambda</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_set_view</span><span class="p">(</span><span class="s2">&quot;dorsal&quot;</span><span class="p">))</span>
+        <span class="n">p</span><span class="o">.</span><span class="n">add_key_event</span><span class="p">(</span><span class="s2">&quot;4&quot;</span><span class="p">,</span> <span class="k">lambda</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_set_view</span><span class="p">(</span><span class="s2">&quot;frontal&quot;</span><span class="p">))</span>
+        <span class="n">p</span><span class="o">.</span><span class="n">add_key_event</span><span class="p">(</span><span class="s2">&quot;5&quot;</span><span class="p">,</span> <span class="k">lambda</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_set_view</span><span class="p">(</span><span class="s2">&quot;ventral&quot;</span><span class="p">))</span>
+        <span class="n">p</span><span class="o">.</span><span class="n">add_key_event</span><span class="p">(</span><span class="s2">&quot;s&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">screenshot</span><span class="p">)</span>
+        <span class="n">p</span><span class="o">.</span><span class="n">add_key_event</span><span class="p">(</span><span class="s2">&quot;r&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">reset_activity</span><span class="p">)</span>
+        <span class="n">p</span><span class="o">.</span><span class="n">add_key_event</span><span class="p">(</span><span class="s2">&quot;i&quot;</span><span class="p">,</span> <span class="k">lambda</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">set_surface</span><span class="p">(</span><span class="s2">&quot;inflated&quot;</span><span class="p">))</span>
+        <span class="n">p</span><span class="o">.</span><span class="n">add_key_event</span><span class="p">(</span><span class="s2">&quot;p&quot;</span><span class="p">,</span> <span class="k">lambda</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">set_surface</span><span class="p">(</span><span class="s2">&quot;pial&quot;</span><span class="p">))</span>
+        <span class="n">p</span><span class="o">.</span><span class="n">add_key_event</span><span class="p">(</span><span class="s2">&quot;w&quot;</span><span class="p">,</span> <span class="k">lambda</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">set_surface</span><span class="p">(</span><span class="s2">&quot;white&quot;</span><span class="p">))</span>
+        <span class="n">p</span><span class="o">.</span><span class="n">add_key_event</span><span class="p">(</span><span class="s2">&quot;h&quot;</span><span class="p">,</span> <span class="k">lambda</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">set_surface</span><span class="p">(</span><span class="s2">&quot;sphere&quot;</span><span class="p">))</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_add_overlays</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_rec_label</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_plotter</span><span class="o">.</span><span class="n">add_text</span><span class="p">(</span>
+            <span class="s2">&quot;&quot;</span><span class="p">,</span>
+            <span class="n">position</span><span class="o">=</span><span class="s2">&quot;lower_right&quot;</span><span class="p">,</span>
+            <span class="n">font_size</span><span class="o">=</span><span class="mi">12</span><span class="p">,</span>
+            <span class="n">color</span><span class="o">=</span><span class="s2">&quot;#FF4444&quot;</span><span class="p">,</span>
+        <span class="p">)</span>
+
+    <span class="c1"># ------------------------------------------------------------------</span>
+    <span class="c1"># Internal helpers</span>
+    <span class="c1"># ------------------------------------------------------------------</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_refresh_scalars</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">deferred</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Recompute display scalars respecting threshold and hemisphere masks.&quot;&quot;&quot;</span>
+        <span class="n">display</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_scalars_full</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+        <span class="n">display</span><span class="p">[</span><span class="n">display</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">_threshold</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_hemi_visible</span><span class="p">[</span><span class="s2">&quot;lh&quot;</span><span class="p">]:</span>
+            <span class="n">display</span><span class="p">[:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_n_lh</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_hemi_visible</span><span class="p">[</span><span class="s2">&quot;rh&quot;</span><span class="p">]:</span>
+            <span class="n">display</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_n_lh</span> <span class="p">:]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_mesh</span><span class="p">[</span><span class="s2">&quot;activity&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">display</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">deferred</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_plotter</span><span class="o">.</span><span class="n">render</span><span class="p">()</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_set_view</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">preset</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">preset</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">_VIEW_PRESETS</span><span class="p">:</span>
+            <span class="k">return</span>
+        <span class="n">v</span> <span class="o">=</span> <span class="n">_VIEW_PRESETS</span><span class="p">[</span><span class="n">preset</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_plotter</span><span class="o">.</span><span class="n">camera_position</span> <span class="o">=</span> <span class="p">[</span><span class="n">v</span><span class="p">[</span><span class="s2">&quot;position&quot;</span><span class="p">],</span> <span class="n">v</span><span class="p">[</span><span class="s2">&quot;focal&quot;</span><span class="p">],</span> <span class="n">v</span><span class="p">[</span><span class="s2">&quot;up&quot;</span><span class="p">]]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_plotter</span><span class="o">.</span><span class="n">render</span><span class="p">()</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_rebuild_actors</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Remove and re-add mesh actors after a surface swap.&quot;&quot;&quot;</span>
+        <span class="n">p</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_plotter</span>
+        <span class="n">p</span><span class="o">.</span><span class="n">remove_actor</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_base_actor</span><span class="p">)</span>
+        <span class="n">p</span><span class="o">.</span><span class="n">remove_actor</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_act_actor</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_remove_parc_actor</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_base_actor</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">add_mesh</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_mesh</span><span class="p">,</span>
+            <span class="n">scalars</span><span class="o">=</span><span class="s2">&quot;base&quot;</span><span class="p">,</span>
+            <span class="n">cmap</span><span class="o">=</span><span class="s2">&quot;Greys_r&quot;</span><span class="p">,</span>
+            <span class="n">clim</span><span class="o">=</span><span class="p">[</span><span class="o">-</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">1.5</span><span class="p">],</span>
+            <span class="n">smooth_shading</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+            <span class="n">show_scalar_bar</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_act_actor</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">add_mesh</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_mesh</span><span class="p">,</span>
+            <span class="n">scalars</span><span class="o">=</span><span class="s2">&quot;activity&quot;</span><span class="p">,</span>
+            <span class="n">cmap</span><span class="o">=</span><span class="n">_CMAPS</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_cmap_idx</span><span class="p">],</span>
+            <span class="n">opacity</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_opacity</span><span class="p">,</span>
+            <span class="n">clim</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_clim</span><span class="p">,</span>
+            <span class="n">smooth_shading</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+            <span class="n">show_scalar_bar</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+            <span class="n">interpolate_before_map</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+            <span class="n">nan_opacity</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_sync_scalar_bar_lut</span><span class="p">()</span>
+
+        <span class="c1"># Re-overlay parcellation borders on the new surface geometry</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_parc_edges</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_build_parc_actor</span><span class="p">()</span>
+
+        <span class="n">p</span><span class="o">.</span><span class="n">render</span><span class="p">()</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_sync_scalar_bar_lut</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Sync the scalar bar LUT with the current activity actor&#39;s mapper.&quot;&quot;&quot;</span>
+        <span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib</span>
+
+        <span class="n">cmap_obj</span> <span class="o">=</span> <span class="n">matplotlib</span><span class="o">.</span><span class="n">colormaps</span><span class="p">[</span><span class="n">_CMAPS</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_cmap_idx</span><span class="p">]]</span>
+        <span class="n">lut</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_act_actor</span><span class="o">.</span><span class="n">GetMapper</span><span class="p">()</span><span class="o">.</span><span class="n">GetLookupTable</span><span class="p">()</span>
+        <span class="n">lut</span><span class="o">.</span><span class="n">SetNumberOfColors</span><span class="p">(</span><span class="mi">256</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">256</span><span class="p">):</span>
+            <span class="n">r</span><span class="p">,</span> <span class="n">g</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">a</span> <span class="o">=</span> <span class="n">cmap_obj</span><span class="p">(</span><span class="n">i</span> <span class="o">/</span> <span class="mf">255.0</span><span class="p">)</span>
+            <span class="n">lut</span><span class="o">.</span><span class="n">SetTableValue</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">r</span><span class="p">,</span> <span class="n">g</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">a</span><span class="p">)</span>
+        <span class="n">lut</span><span class="o">.</span><span class="n">Build</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_plotter</span><span class="o">.</span><span class="n">scalar_bar</span><span class="o">.</span><span class="n">SetLookupTable</span><span class="p">(</span><span class="n">lut</span><span class="p">)</span>
+
+    <span class="c1"># ------------------------------------------------------------------</span>
+    <span class="c1"># Parcellation border overlay</span>
+    <span class="c1"># ------------------------------------------------------------------</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_set_parcellation</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parc_label</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Load annotation and draw parcel boundary edges on the surface.&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_remove_parc_actor</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_parc_edges</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_parc_name</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="k">if</span> <span class="n">parc_label</span> <span class="o">==</span> <span class="s2">&quot;None&quot;</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;_parc_status_lbl&quot;</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_parc_status_lbl</span><span class="o">.</span><span class="n">setText</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">)</span>
+            <span class="k">return</span>
+
+        <span class="n">parc_id</span> <span class="o">=</span> <span class="n">parc_label</span><span class="o">.</span><span class="n">split</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span>  <span class="c1"># &quot;aparc  (Desikan)&quot; → &quot;aparc&quot;</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Loading parcellation </span><span class="si">%r</span><span class="s2"> …&quot;</span><span class="p">,</span> <span class="n">parc_id</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;_parc_status_lbl&quot;</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_parc_status_lbl</span><span class="o">.</span><span class="n">setText</span><span class="p">(</span><span class="s2">&quot;Loading …&quot;</span><span class="p">)</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span> <span class="k">as</span> <span class="n">_Path</span>
+
+            <span class="kn">import</span><span class="w"> </span><span class="nn">mne</span>
+
+            <span class="n">fs_dir</span> <span class="o">=</span> <span class="n">_Path</span><span class="p">(</span><span class="n">mne</span><span class="o">.</span><span class="n">datasets</span><span class="o">.</span><span class="n">fetch_fsaverage</span><span class="p">(</span><span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">))</span>
+            <span class="n">subjects_dir</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">fs_dir</span><span class="o">.</span><span class="n">parent</span><span class="p">)</span>
+
+            <span class="n">labels_lh</span> <span class="o">=</span> <span class="n">mne</span><span class="o">.</span><span class="n">read_labels_from_annot</span><span class="p">(</span>
+                <span class="s2">&quot;fsaverage&quot;</span><span class="p">,</span>
+                <span class="n">parc</span><span class="o">=</span><span class="n">parc_id</span><span class="p">,</span>
+                <span class="n">hemi</span><span class="o">=</span><span class="s2">&quot;lh&quot;</span><span class="p">,</span>
+                <span class="n">subjects_dir</span><span class="o">=</span><span class="n">subjects_dir</span><span class="p">,</span>
+                <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+            <span class="p">)</span>
+            <span class="n">labels_rh</span> <span class="o">=</span> <span class="n">mne</span><span class="o">.</span><span class="n">read_labels_from_annot</span><span class="p">(</span>
+                <span class="s2">&quot;fsaverage&quot;</span><span class="p">,</span>
+                <span class="n">parc</span><span class="o">=</span><span class="n">parc_id</span><span class="p">,</span>
+                <span class="n">hemi</span><span class="o">=</span><span class="s2">&quot;rh&quot;</span><span class="p">,</span>
+                <span class="n">subjects_dir</span><span class="o">=</span><span class="n">subjects_dir</span><span class="p">,</span>
+                <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+            <span class="p">)</span>
+
+            <span class="n">n_lh</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_n_lh</span>
+            <span class="n">n_rh</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_mesh</span><span class="o">.</span><span class="n">n_points</span> <span class="o">-</span> <span class="n">n_lh</span>
+            <span class="n">parcel_lh</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">full</span><span class="p">(</span><span class="n">n_lh</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">int32</span><span class="p">)</span>
+            <span class="n">parcel_rh</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">full</span><span class="p">(</span><span class="n">n_rh</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">int32</span><span class="p">)</span>
+
+            <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">lbl</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">labels_lh</span><span class="p">):</span>
+                <span class="n">verts</span> <span class="o">=</span> <span class="n">lbl</span><span class="o">.</span><span class="n">vertices</span><span class="p">[</span><span class="n">lbl</span><span class="o">.</span><span class="n">vertices</span> <span class="o">&lt;</span> <span class="n">n_lh</span><span class="p">]</span>
+                <span class="n">parcel_lh</span><span class="p">[</span><span class="n">verts</span><span class="p">]</span> <span class="o">=</span> <span class="n">i</span>
+            <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">lbl</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">labels_rh</span><span class="p">):</span>
+                <span class="n">verts</span> <span class="o">=</span> <span class="n">lbl</span><span class="o">.</span><span class="n">vertices</span><span class="p">[</span><span class="n">lbl</span><span class="o">.</span><span class="n">vertices</span> <span class="o">&lt;</span> <span class="n">n_rh</span><span class="p">]</span>
+                <span class="n">parcel_rh</span><span class="p">[</span><span class="n">verts</span><span class="p">]</span> <span class="o">=</span> <span class="n">i</span>
+
+            <span class="n">parcel_all</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">([</span><span class="n">parcel_lh</span><span class="p">,</span> <span class="n">parcel_rh</span><span class="p">])</span>
+
+            <span class="c1"># Extract triangle edges and keep those crossing parcel boundaries</span>
+            <span class="n">faces</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_mesh</span><span class="o">.</span><span class="n">faces</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">4</span><span class="p">)[:,</span> <span class="mi">1</span><span class="p">:]</span>  <span class="c1"># (n_faces, 3)</span>
+            <span class="n">e01</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="n">faces</span><span class="p">[:,</span> <span class="p">:</span><span class="mi">2</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+            <span class="n">e12</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="n">faces</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">:],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+            <span class="n">e02</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="n">faces</span><span class="p">[:,</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">]],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+            <span class="n">all_edges</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">vstack</span><span class="p">([</span><span class="n">e01</span><span class="p">,</span> <span class="n">e12</span><span class="p">,</span> <span class="n">e02</span><span class="p">]),</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+
+            <span class="n">mask</span> <span class="o">=</span> <span class="n">parcel_all</span><span class="p">[</span><span class="n">all_edges</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]]</span> <span class="o">!=</span> <span class="n">parcel_all</span><span class="p">[</span><span class="n">all_edges</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">]]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_parc_edges</span> <span class="o">=</span> <span class="n">all_edges</span><span class="p">[</span><span class="n">mask</span><span class="p">]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_parc_name</span> <span class="o">=</span> <span class="n">parc_id</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">_build_parc_actor</span><span class="p">()</span>
+            <span class="n">n_bnd</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_parc_edges</span><span class="p">)</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Parcellation </span><span class="si">%r</span><span class="s2">: </span><span class="si">%d</span><span class="s2"> boundary edges&quot;</span><span class="p">,</span> <span class="n">parc_id</span><span class="p">,</span> <span class="n">n_bnd</span><span class="p">)</span>
+            <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;_parc_status_lbl&quot;</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_parc_status_lbl</span><span class="o">.</span><span class="n">setText</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">n_bnd</span><span class="si">:</span><span class="s2">,</span><span class="si">}</span><span class="s2"> boundary edges&quot;</span><span class="p">)</span>
+
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">exc</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_parc_edges</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_parc_name</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;Parcellation load failed: </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">exc</span><span class="p">)</span>
+            <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;_parc_status_lbl&quot;</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_parc_status_lbl</span><span class="o">.</span><span class="n">setText</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Error: </span><span class="si">{</span><span class="n">exc</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_build_parc_actor</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Create a pyvista line mesh from stored boundary edges and add it.&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_parc_edges</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_parc_edges</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">return</span>
+        <span class="n">pts</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_mesh</span><span class="o">.</span><span class="n">points</span>
+        <span class="n">n_segs</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_parc_edges</span><span class="p">)</span>
+
+        <span class="n">seg_pts</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">((</span><span class="n">n_segs</span> <span class="o">*</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">)</span>
+        <span class="n">seg_pts</span><span class="p">[</span><span class="mi">0</span><span class="p">::</span><span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="n">pts</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_parc_edges</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]]</span>
+        <span class="n">seg_pts</span><span class="p">[</span><span class="mi">1</span><span class="p">::</span><span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="n">pts</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_parc_edges</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">]]</span>
+
+        <span class="n">lines_conn</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span><span class="n">n_segs</span> <span class="o">*</span> <span class="mi">3</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">int_</span><span class="p">)</span>
+        <span class="n">lines_conn</span><span class="p">[</span><span class="mi">0</span><span class="p">::</span><span class="mi">3</span><span class="p">]</span> <span class="o">=</span> <span class="mi">2</span>
+        <span class="n">lines_conn</span><span class="p">[</span><span class="mi">1</span><span class="p">::</span><span class="mi">3</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">n_segs</span> <span class="o">*</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+        <span class="n">lines_conn</span><span class="p">[</span><span class="mi">2</span><span class="p">::</span><span class="mi">3</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">n_segs</span> <span class="o">*</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+
+        <span class="n">bnd</span> <span class="o">=</span> <span class="n">pv</span><span class="o">.</span><span class="n">PolyData</span><span class="p">(</span><span class="n">seg_pts</span><span class="p">,</span> <span class="n">lines</span><span class="o">=</span><span class="n">lines_conn</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_parc_actor</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_plotter</span><span class="o">.</span><span class="n">add_mesh</span><span class="p">(</span>
+            <span class="n">bnd</span><span class="p">,</span>
+            <span class="n">color</span><span class="o">=</span><span class="s2">&quot;#ffffff&quot;</span><span class="p">,</span>
+            <span class="n">line_width</span><span class="o">=</span><span class="mf">2.0</span><span class="p">,</span>
+            <span class="n">render_lines_as_tubes</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+            <span class="n">show_scalar_bar</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_remove_parc_actor</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_parc_actor</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_plotter</span><span class="o">.</span><span class="n">remove_actor</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_parc_actor</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_parc_actor</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="c1"># ------------------------------------------------------------------</span>
+    <span class="c1"># Custom frequency band</span>
+    <span class="c1"># ------------------------------------------------------------------</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_set_custom_band</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">lo</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_custom_lo_spin</span><span class="o">.</span><span class="n">value</span><span class="p">()</span>
+        <span class="n">hi</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_custom_hi_spin</span><span class="o">.</span><span class="n">value</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">lo</span> <span class="o">&gt;=</span> <span class="n">hi</span><span class="p">:</span>
+            <span class="k">return</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_custom_band_hz</span> <span class="o">=</span> <span class="p">(</span><span class="n">lo</span><span class="p">,</span> <span class="n">hi</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_display_mode</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;Custom  </span><span class="si">{</span><span class="n">lo</span><span class="si">:</span><span class="s2">.1f</span><span class="si">}</span><span class="s2">–</span><span class="si">{</span><span class="n">hi</span><span class="si">:</span><span class="s2">.1f</span><span class="si">}</span><span class="s2"> Hz&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_custom_band_lbl</span><span class="o">.</span><span class="n">setText</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Active: </span><span class="si">{</span><span class="n">lo</span><span class="si">:</span><span class="s2">.1f</span><span class="si">}</span><span class="s2">–</span><span class="si">{</span><span class="n">hi</span><span class="si">:</span><span class="s2">.1f</span><span class="si">}</span><span class="s2"> Hz&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_custom_band_lbl</span><span class="o">.</span><span class="n">setStyleSheet</span><span class="p">(</span><span class="s2">&quot;color:#80d8ff; font-size:10px;&quot;</span><span class="p">)</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;BrainPlot custom band → </span><span class="si">%.1f</span><span class="s2">–</span><span class="si">%.1f</span><span class="s2"> Hz&quot;</span><span class="p">,</span> <span class="n">lo</span><span class="p">,</span> <span class="n">hi</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_clear_custom_band</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_custom_band_hz</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_display_mode</span> <span class="o">=</span> <span class="n">_DISPLAY_MODES</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_custom_band_lbl</span><span class="o">.</span><span class="n">setText</span><span class="p">(</span><span class="s2">&quot;No custom band set&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_custom_band_lbl</span><span class="o">.</span><span class="n">setStyleSheet</span><span class="p">(</span><span class="s2">&quot;color:#8b949e; font-size:10px;&quot;</span><span class="p">)</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;BrainPlot custom band cleared&quot;</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">custom_band</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Active custom frequency band ``(lo, hi)`` in Hz, or ``None``.</span>
+
+<span class="sd">        Read this in the acquisition loop alongside :attr:`display_mode` to</span>
+<span class="sd">        decide which frequency range to pass to :meth:`update_from_arrays`.</span>
+<span class="sd">        When not ``None`` it overrides the built-in band labels.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_custom_band_hz</span>
+
+    <span class="c1"># ------------------------------------------------------------------</span>
+    <span class="c1"># Public interface</span>
+    <span class="c1"># ------------------------------------------------------------------</span>
+
+<div class="viewcode-block" id="BrainPlot.set_surface">
+<a class="viewcode-back" href="../../../generated/mne_rt.viz.BrainPlot.html#mne_rt.viz.BrainPlot.set_surface">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">set_surface</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">surf</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Switch the cortical surface geometry.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        surf : {&quot;inflated&quot;, &quot;pial&quot;, &quot;white&quot;, &quot;sphere&quot;}</span>
+<span class="sd">            Target surface geometry.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">surf</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">_SURFACES</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;surf </span><span class="si">{</span><span class="n">surf</span><span class="si">!r}</span><span class="s2"> not recognised.  Choose from </span><span class="si">{</span><span class="n">_SURFACES</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">surf</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">_surf</span><span class="p">:</span>
+            <span class="k">return</span>
+
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Switching surface: </span><span class="si">%s</span><span class="s2"> → </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_surf</span><span class="p">,</span> <span class="n">surf</span><span class="p">)</span>
+        <span class="n">saved_scalars</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_scalars_full</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_surf</span> <span class="o">=</span> <span class="n">surf</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_load_surface</span><span class="p">(</span><span class="n">surf</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">saved_scalars</span><span class="p">)</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_scalars_full</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_scalars_full</span><span class="p">[:]</span> <span class="o">=</span> <span class="n">saved_scalars</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_mesh</span><span class="p">[</span><span class="s2">&quot;activity&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">saved_scalars</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_rebuild_actors</span><span class="p">()</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Surface changed to </span><span class="si">%r</span><span class="s2">.&quot;</span><span class="p">,</span> <span class="n">surf</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="BrainPlot.update_from_arrays">
+<a class="viewcode-back" href="../../../generated/mne_rt.viz.BrainPlot.html#mne_rt.viz.BrainPlot.update_from_arrays">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">update_from_arrays</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">lh_scalars</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
+        <span class="n">rh_scalars</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
+        <span class="n">mode</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;power&quot;</span><span class="p">,</span>
+        <span class="n">deferred</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Update the brain display from pre-computed per-source-vertex scalars.</span>
+
+<span class="sd">        Source values (10 242 per hemisphere) are spread to all 163 842</span>
+<span class="sd">        surface vertices via nearest-neighbour interpolation.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        lh_scalars : ndarray, shape (10242,)</span>
+<span class="sd">            Activity values for left-hemisphere source vertices.</span>
+<span class="sd">        rh_scalars : ndarray, shape (10242,)</span>
+<span class="sd">            Activity values for right-hemisphere source vertices.</span>
+<span class="sd">        mode : str, default &quot;power&quot;</span>
+<span class="sd">            Kept for API symmetry; unused internally.</span>
+<span class="sd">        deferred : bool, default False</span>
+<span class="sd">            If ``True``, skip the immediate ``render()`` call.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_display_alpha</span> <span class="o">&lt;</span> <span class="mf">1.0</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_lh_ema</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_lh_ema</span> <span class="o">=</span> <span class="n">lh_scalars</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_rh_ema</span> <span class="o">=</span> <span class="n">rh_scalars</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">a</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_display_alpha</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_lh_ema</span> <span class="o">=</span> <span class="n">a</span> <span class="o">*</span> <span class="n">lh_scalars</span> <span class="o">+</span> <span class="p">(</span><span class="mf">1.0</span> <span class="o">-</span> <span class="n">a</span><span class="p">)</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">_lh_ema</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_rh_ema</span> <span class="o">=</span> <span class="n">a</span> <span class="o">*</span> <span class="n">rh_scalars</span> <span class="o">+</span> <span class="p">(</span><span class="mf">1.0</span> <span class="o">-</span> <span class="n">a</span><span class="p">)</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">_rh_ema</span>
+            <span class="n">lh_scalars</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_lh_ema</span>
+            <span class="n">rh_scalars</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_rh_ema</span>
+
+        <span class="n">n_lh</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_n_lh</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_scalars_full</span><span class="p">[:</span><span class="n">n_lh</span><span class="p">]</span> <span class="o">=</span> <span class="n">lh_scalars</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_nn_map</span><span class="p">[</span><span class="s2">&quot;lh&quot;</span><span class="p">]]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_scalars_full</span><span class="p">[</span><span class="n">n_lh</span><span class="p">:]</span> <span class="o">=</span> <span class="n">rh_scalars</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_nn_map</span><span class="p">[</span><span class="s2">&quot;rh&quot;</span><span class="p">]]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_refresh_scalars</span><span class="p">(</span><span class="n">deferred</span><span class="o">=</span><span class="n">deferred</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="BrainPlot.update">
+<a class="viewcode-back" href="../../../generated/mne_rt.viz.BrainPlot.html#mne_rt.viz.BrainPlot.update">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">update</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">stc</span><span class="p">,</span>
+        <span class="n">mode</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;power&quot;</span><span class="p">,</span>
+        <span class="n">interval</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.05</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Animate the brain from a source time-course estimate.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        stc : mne.SourceEstimate</span>
+<span class="sd">            Source estimate returned by ``apply_inverse_raw`` or similar.</span>
+<span class="sd">        mode : {&quot;power&quot;, &quot;activation&quot;}, default &quot;power&quot;</span>
+<span class="sd">            ``&quot;power&quot;`` displays mean squared amplitude;</span>
+<span class="sd">            ``&quot;activation&quot;`` displays the time-averaged amplitude.</span>
+<span class="sd">        interval : float, default 0.05</span>
+<span class="sd">            Seconds to pause between frame updates.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">n_times</span> <span class="o">=</span> <span class="n">stc</span><span class="o">.</span><span class="n">lh_data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+        <span class="n">block</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">n_times</span> <span class="o">//</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="n">n_lh</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_n_lh</span>
+
+        <span class="k">for</span> <span class="n">b_start</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">n_times</span><span class="p">,</span> <span class="n">block</span><span class="p">):</span>
+            <span class="n">b_end</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">b_start</span> <span class="o">+</span> <span class="n">block</span><span class="p">,</span> <span class="n">n_times</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">hemi</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;lh&quot;</span><span class="p">,</span> <span class="s2">&quot;rh&quot;</span><span class="p">):</span>
+                <span class="n">raw_d</span> <span class="o">=</span> <span class="n">stc</span><span class="o">.</span><span class="n">rh_data</span> <span class="k">if</span> <span class="n">hemi</span> <span class="o">==</span> <span class="s2">&quot;rh&quot;</span> <span class="k">else</span> <span class="n">stc</span><span class="o">.</span><span class="n">lh_data</span>
+                <span class="n">chunk</span> <span class="o">=</span> <span class="n">raw_d</span><span class="p">[:,</span> <span class="n">b_start</span><span class="p">:</span><span class="n">b_end</span><span class="p">]</span>
+                <span class="n">src_vals</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">chunk</span><span class="o">**</span><span class="mi">2</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span> <span class="k">if</span> <span class="n">mode</span> <span class="o">==</span> <span class="s2">&quot;power&quot;</span> <span class="k">else</span> <span class="n">chunk</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+                <span class="n">nn</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_nn_map</span><span class="p">[</span><span class="n">hemi</span><span class="p">]</span>
+                <span class="k">if</span> <span class="n">hemi</span> <span class="o">==</span> <span class="s2">&quot;lh&quot;</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_scalars_full</span><span class="p">[:</span><span class="n">n_lh</span><span class="p">]</span> <span class="o">=</span> <span class="n">src_vals</span><span class="p">[</span><span class="n">nn</span><span class="p">]</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_scalars_full</span><span class="p">[</span><span class="n">n_lh</span><span class="p">:]</span> <span class="o">=</span> <span class="n">src_vals</span><span class="p">[</span><span class="n">nn</span><span class="p">]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_refresh_scalars</span><span class="p">()</span>
+            <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="n">interval</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="BrainPlot.set_display_mode">
+<a class="viewcode-back" href="../../../generated/mne_rt.viz.BrainPlot.html#mne_rt.viz.BrainPlot.set_display_mode">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">set_display_mode</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mode</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Switch the display mode label and reset clim to sensible defaults.</span>
+
+<span class="sd">        The display mode is a **label only** — it tells both the operator and</span>
+<span class="sd">        the visualisation what kind of values are being streamed in.  Configure</span>
+<span class="sd">        :meth:`~mne_rt.RTStream.record_main` with the matching ``modality`` to</span>
+<span class="sd">        pass the correct data.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        mode : str</span>
+<span class="sd">            One of :data:`_DISPLAY_MODES`.  Choosing a band-power mode will</span>
+<span class="sd">            also set the colour-range (clim) to a typical power scale;</span>
+<span class="sd">            choosing &quot;Source Activation&quot; restores the activation scale.</span>
+
+<span class="sd">        Notes</span>
+<span class="sd">        -----</span>
+<span class="sd">        For **band power** modes pass per-source-vertex spectral power (e.g.,</span>
+<span class="sd">        from ``modality=&quot;source_power&quot;``) to :meth:`update_from_arrays`.</span>
+<span class="sd">        For **activation** mode pass eLORETA / dSPM amplitude values from</span>
+<span class="sd">        :meth:`update` (``stc`` from MNE inverse operator).</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">mode</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">_DISPLAY_MODES</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;mode </span><span class="si">{</span><span class="n">mode</span><span class="si">!r}</span><span class="s2"> not recognised.  Choose from </span><span class="si">{</span><span class="n">_DISPLAY_MODES</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_display_mode</span> <span class="o">=</span> <span class="n">mode</span>
+        <span class="n">clim_hint</span> <span class="o">=</span> <span class="n">_DISPLAY_CLIM_HINTS</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">mode</span><span class="p">,</span> <span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.6</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_clim</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">clim_hint</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_clim</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">clim_hint</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_act_actor</span><span class="o">.</span><span class="n">GetMapper</span><span class="p">()</span><span class="o">.</span><span class="n">SetScalarRange</span><span class="p">(</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">_clim</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_plotter</span><span class="o">.</span><span class="n">render</span><span class="p">()</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;BrainPlot display mode → </span><span class="si">%r</span><span class="s2">  (clim </span><span class="si">%s</span><span class="s2">)&quot;</span><span class="p">,</span> <span class="n">mode</span><span class="p">,</span> <span class="n">clim_hint</span><span class="p">)</span></div>
+
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">display_mode</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Current display mode string (e.g. ``&quot;Alpha Power  (8–13 Hz)&quot;``).</span>
+
+<span class="sd">        Read this in the acquisition loop to decide which modality to compute</span>
+<span class="sd">        and pass to :meth:`update_from_arrays`.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_display_mode</span>
+
+<div class="viewcode-block" id="BrainPlot.reset_activity">
+<a class="viewcode-back" href="../../../generated/mne_rt.viz.BrainPlot.html#mne_rt.viz.BrainPlot.reset_activity">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">reset_activity</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Zero out all activity scalars and refresh the display.&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_scalars_full</span><span class="p">[:]</span> <span class="o">=</span> <span class="mf">0.0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_refresh_scalars</span><span class="p">()</span></div>
+
+
+    <span class="c1"># ------------------------------------------------------------------</span>
+    <span class="c1"># Video recording</span>
+    <span class="c1"># ------------------------------------------------------------------</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_toggle_recording</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_recording</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">stop_recording</span><span class="p">()</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">record_video</span><span class="p">()</span>
+
+<div class="viewcode-block" id="BrainPlot.record_video">
+<a class="viewcode-back" href="../../../generated/mne_rt.viz.BrainPlot.html#mne_rt.viz.BrainPlot.record_video">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">record_video</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Path</span><span class="p">,</span> <span class="kc">None</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Path</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Start recording the brain display to an MP4 video file.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        path : str | Path | None, default None</span>
+<span class="sd">            Destination file.  Defaults to ``~/ant_brain_&lt;timestamp&gt;.mp4``.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        path : Path</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="kn">import</span><span class="w"> </span><span class="nn">imageio</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_recording</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;Already recording. Call stop_recording() first.&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">path</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">ts</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s2">&quot;%Y%m</span><span class="si">%d</span><span class="s2">_%H%M%S&quot;</span><span class="p">)</span>
+            <span class="n">path</span> <span class="o">=</span> <span class="n">Path</span><span class="o">.</span><span class="n">home</span><span class="p">()</span> <span class="o">/</span> <span class="sa">f</span><span class="s2">&quot;ant_brain_</span><span class="si">{</span><span class="n">ts</span><span class="si">}</span><span class="s2">.mp4&quot;</span>
+        <span class="n">path</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_video_writer</span> <span class="o">=</span> <span class="n">imageio</span><span class="o">.</span><span class="n">get_writer</span><span class="p">(</span>
+            <span class="nb">str</span><span class="p">(</span><span class="n">path</span><span class="p">),</span> <span class="n">fps</span><span class="o">=</span><span class="mi">24</span><span class="p">,</span> <span class="n">macro_block_size</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">plugin</span><span class="o">=</span><span class="s2">&quot;ffmpeg&quot;</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_video_path</span> <span class="o">=</span> <span class="n">path</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_recording</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_rec_label</span><span class="o">.</span><span class="n">SetInput</span><span class="p">(</span><span class="s2">&quot;● REC&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_plotter</span><span class="o">.</span><span class="n">render</span><span class="p">()</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Brain video recording started: </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">path</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">path</span></div>
+
+
+<div class="viewcode-block" id="BrainPlot.stop_recording">
+<a class="viewcode-back" href="../../../generated/mne_rt.viz.BrainPlot.html#mne_rt.viz.BrainPlot.stop_recording">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">stop_recording</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">Path</span><span class="p">,</span> <span class="kc">None</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Stop recording and finalise the video file.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        path : Path | None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_recording</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">None</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_video_writer</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_video_writer</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_video_writer</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_recording</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_rec_label</span><span class="o">.</span><span class="n">SetInput</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_plotter</span><span class="o">.</span><span class="n">render</span><span class="p">()</span>
+        <span class="n">path</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_video_path</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_video_path</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Brain video saved: </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">path</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">path</span></div>
+
+
+<div class="viewcode-block" id="BrainPlot.write_frame_if_recording">
+<a class="viewcode-back" href="../../../generated/mne_rt.viz.BrainPlot.html#mne_rt.viz.BrainPlot.write_frame_if_recording">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">write_frame_if_recording</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Capture a video frame if recording is active (no-op otherwise).&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_recording</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">_video_writer</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">frame</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_plotter</span><span class="o">.</span><span class="n">screenshot</span><span class="p">(</span><span class="n">return_img</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_video_writer</span><span class="o">.</span><span class="n">append_data</span><span class="p">(</span><span class="n">frame</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+            <span class="k">pass</span></div>
+
+
+<div class="viewcode-block" id="BrainPlot.screenshot">
+<a class="viewcode-back" href="../../../generated/mne_rt.viz.BrainPlot.html#mne_rt.viz.BrainPlot.screenshot">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">screenshot</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Path</span><span class="p">,</span> <span class="kc">None</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Path</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Save a PNG screenshot of the current brain view.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        path : str | Path | None, default None</span>
+<span class="sd">            Destination file.  Defaults to ``~/ant_brain_&lt;timestamp&gt;.png``.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        path : Path</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">path</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">ts</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s2">&quot;%Y%m</span><span class="si">%d</span><span class="s2">_%H%M%S&quot;</span><span class="p">)</span>
+            <span class="n">path</span> <span class="o">=</span> <span class="n">Path</span><span class="o">.</span><span class="n">home</span><span class="p">()</span> <span class="o">/</span> <span class="sa">f</span><span class="s2">&quot;ant_brain_</span><span class="si">{</span><span class="n">ts</span><span class="si">}</span><span class="s2">.png&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_plotter</span><span class="o">.</span><span class="n">screenshot</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">path</span><span class="p">))</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Screenshot saved: </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">path</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">Path</span><span class="p">(</span><span class="n">path</span><span class="p">)</span></div>
+
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">plotter</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;_BackgroundPlotter&quot;</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;The underlying :class:`pyvistaqt.BackgroundPlotter` instance.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_plotter</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">surf</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Currently displayed surface geometry name.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_surf</span></div>
+
+</pre></div>
+
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../../../_static/scripts/bootstrap.js?digest=90905a2f556bf617f1a9"></script>
+<script defer src="../../../_static/scripts/pydata-sphinx-theme.js?digest=90905a2f556bf617f1a9"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright 2025, Payam S. Shabestari.
+      <br/>
+    
+  </p>
+</div>
+      
+        <div class="footer-item">
+
+  <p class="sphinx-version">
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 9.0.4.
+    <br/>
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
+<p class="theme-version">
+  <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.20.0.
+</p></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>

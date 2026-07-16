@@ -1,0 +1,1582 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>mne_rt.modalities &#8212; MNE-RT</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../_static/styles/theme.css?digest=90905a2f556bf617f1a9" rel="stylesheet" />
+<link href="../../_static/styles/pydata-sphinx-theme.css?digest=90905a2f556bf617f1a9" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery.css?v=fd6457a4" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery-binder.css?v=f4aeca0c" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery-dataframe.css?v=2082cf3c" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery-rendered-html.css?v=1277b6f3" />
+    <link rel="stylesheet" type="text/css" href="../../_static/custom.css?v=5bf657dd" />
+  
+  <!-- So that users can add custom icons -->
+  <script defer src="../../_static/scripts/fontawesome.js?digest=90905a2f556bf617f1a9"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=90905a2f556bf617f1a9" />
+<link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=90905a2f556bf617f1a9" />
+
+    <script src="../../_static/documentation_options.js?v=8d563738"></script>
+    <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="../../_static/sg-tags.js?v=d80f6fa4"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = '_modules/mne_rt/modalities';</script>
+    <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="" />
+  
+    
+    <script src="../../_static/searchtools.js"></script>
+    <script src="../../_static/language_data.js"></script>
+    <script src="../../searchindex.js"></script>
+  
+  </head>
+  <body data-default-mode="">
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+  
+  
+  
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header id="pst-header" class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../../index.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../../_static/mne_rt_logo.svg" class="logo__image only-light" alt="MNE-RT - Home"/>
+    <img src="../../_static/mne_rt_logo.svg" class="logo__image only-dark pst-js-only" alt="MNE-RT - Home"/>
+  
+  
+</a></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../install.html">
+    Installation
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../tutorial.html">
+    User Guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../api.html">
+    API Reference
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../visualization.html">
+    Visualisation
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../cli.html">
+    CLI
+  </a>
+</li>
+
+            <li class="nav-item dropdown">
+                <button class="btn dropdown-toggle nav-item" type="button"
+                data-bs-toggle="dropdown" aria-expanded="false"
+                aria-controls="pst-nav-more-links">
+                    More
+                </button>
+                <ul id="pst-nav-more-links" class="dropdown-menu">
+                    
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../../denoising.html">
+    Artifact Correction
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../../modalities.html">
+    Real-time Feature Modalities
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../../protocols.html">
+    NF Protocols
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../../whats_new.html">
+    What’s new
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../../auto_examples/index.html">
+    Examples Gallery
+  </a>
+</li>
+
+                </ul>
+            </li>
+            
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+        </div>
+      
+      
+        <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/payamsash/mne-rt" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-square-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
+        </li>
+</ul></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+    </div>
+  
+
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+        
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar hide-on-wide">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../install.html">
+    Installation
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../tutorial.html">
+    User Guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../api.html">
+    API Reference
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../visualization.html">
+    Visualisation
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../cli.html">
+    CLI
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../denoising.html">
+    Artifact Correction
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../modalities.html">
+    Real-time Feature Modalities
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../protocols.html">
+    NF Protocols
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../whats_new.html">
+    What’s new
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../auto_examples/index.html">
+    Examples Gallery
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/payamsash/mne-rt" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-square-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
+        </li>
+</ul></div>
+        
+      </div>
+    
+  </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    
+    <li class="breadcrumb-item"><a href="../index.html" class="nav-link">Module code</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">mne_rt.modalities</span></li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <h1>Source code for mne_rt.modalities</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;ModalityMixin — real-time feature extraction for all modalities.</span>
+
+<span class="sd">Mixed into :class:`RTStream`. Assumes the following attributes exist on</span>
+<span class="sd">``self`` at call time:</span>
+
+<span class="sd">- ``rec_info``      — MNE :class:`~mne.Info`</span>
+<span class="sd">- ``data_type``     — ``&quot;eeg&quot;`` | ``&quot;meg&quot;``</span>
+<span class="sd">- ``_sfreq``        — sampling frequency (Hz)</span>
+<span class="sd">- ``winsize``       — analysis window length (s)</span>
+<span class="sd">- ``picks``         — channel selection (may be ``None``)</span>
+<span class="sd">- ``params``        — current modality parameter dict (set before each prep call)</span>
+<span class="sd">- ``subject_fs_id`` — FreeSurfer subject identifier</span>
+<span class="sd">- ``subjects_fs_dir``</span>
+<span class="sd">- ``subject_dir``   — :class:`~pathlib.Path` to subject data folder</span>
+<span class="sd">- ``visit``         — visit number</span>
+<span class="sd">- ``raw_baseline``  — baseline :class:`~mne.io.RawArray` (source modalities)</span>
+<span class="sd">- ``fwd``, ``noise_cov`` — forward solution / covariance (LCMV)</span>
+<span class="sd">- ``_prepare_raw_array(data)`` — wraps data in ``RawArray``, applies EEG ref if needed</span>
+
+<span class="sd">New modalities added:</span>
+<span class="sd">- ``erd_ers``          — event-related desynchronisation/synchronisation (%)</span>
+<span class="sd">- ``laterality``       — inter-hemispheric power asymmetry index</span>
+<span class="sd">- ``hjorth``           — mean of Hjorth mobility and complexity (no FFT)</span>
+<span class="sd">- ``spectral_centroid``— frequency-weighted centre-of-mass of the PSD within a band</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Optional</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">warnings</span><span class="w"> </span><span class="kn">import</span> <span class="n">warn</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">mne</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">mne</span><span class="w"> </span><span class="kn">import</span> <span class="n">read_labels_from_annot</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">mne.beamformer</span><span class="w"> </span><span class="kn">import</span> <span class="n">apply_lcmv_raw</span><span class="p">,</span> <span class="n">make_lcmv</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">mne.minimum_norm</span><span class="w"> </span><span class="kn">import</span> <span class="n">apply_inverse_raw</span><span class="p">,</span> <span class="n">read_inverse_operator</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">mne_connectivity</span><span class="w"> </span><span class="kn">import</span> <span class="n">spectral_connectivity_time</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">mne_features.univariate</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">compute_app_entropy</span><span class="p">,</span>
+    <span class="n">compute_samp_entropy</span><span class="p">,</span>
+    <span class="n">compute_spect_entropy</span><span class="p">,</span>
+    <span class="n">compute_svd_entropy</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pactools</span><span class="w"> </span><span class="kn">import</span> <span class="n">Comodulogram</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">scipy.optimize</span><span class="w"> </span><span class="kn">import</span> <span class="n">curve_fit</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">scipy.signal</span><span class="w"> </span><span class="kn">import</span> <span class="n">butter</span><span class="p">,</span> <span class="n">sosfiltfilt</span><span class="p">,</span> <span class="n">welch</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">mne_rt._logging</span><span class="w"> </span><span class="kn">import</span> <span class="n">logger</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">mne_rt.tools</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">butter_bandpass</span><span class="p">,</span>
+    <span class="n">compute_bandpower</span><span class="p">,</span>
+    <span class="n">compute_fft</span><span class="p">,</span>
+    <span class="n">estimate_aperiodic_component</span><span class="p">,</span>
+    <span class="n">log_degree_barrier</span><span class="p">,</span>
+    <span class="n">timed</span><span class="p">,</span>
+<span class="p">)</span>
+
+
+<div class="viewcode-block" id="ModalityMixin">
+<a class="viewcode-back" href="../../generated/mne_rt.modalities.ModalityMixin.html#mne_rt.modalities.ModalityMixin">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">ModalityMixin</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Feature-extraction engine for all MNE-RT NF modalities.</span>
+
+<span class="sd">    :class:`ModalityMixin` is mixed into :class:`~mne_rt.RTStream` and provides</span>
+<span class="sd">    the **prep / compute** pair for every modality:</span>
+
+<span class="sd">    * **Prep** (``_&lt;modality&gt;_prep()``) — runs *once* before the main loop.</span>
+<span class="sd">      Returns a ``dict`` of pre-computed artefacts (filter coefficients, index</span>
+<span class="sd">      arrays, connectivity indices, …) that are passed as keyword arguments to</span>
+<span class="sd">      the compute step.</span>
+<span class="sd">    * **Compute** (``_&lt;modality&gt;(data, **prep_kwargs)``) — runs *every window*</span>
+<span class="sd">      inside a thread-pool worker.  Decorated with :func:`~ant.tools.timed` so</span>
+<span class="sd">      it returns ``(value, elapsed_seconds)``.</span>
+
+<span class="sd">    .. rubric:: Supported modalities (20 total)</span>
+
+
+<span class="sd">    **Sensor-space power &amp; time-domain**</span>
+
+<span class="sd">    ``sensor_power``, ``band_ratio``, ``erd_ers``, ``laterality``,</span>
+<span class="sd">    ``laterality_erd_ers``, ``hjorth``, ``spectral_centroid``, ``argmax_freq``,</span>
+<span class="sd">    ``individual_peak_power``, ``entropy``, ``instantaneous_phase``,</span>
+<span class="sd">    ``scp``, ``peak_alpha_freq``</span>
+
+<span class="sd">    **Sensor-space connectivity &amp; graph**</span>
+
+<span class="sd">    ``sensor_connectivity``, ``connectivity_ratio``, ``cfc_sensor``,</span>
+<span class="sd">    ``sensor_graph``</span>
+
+<span class="sd">    **Source-space**</span>
+
+<span class="sd">    ``source_power``, ``source_connectivity``, ``source_graph``</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    All methods are private (single-underscore prefix) and are called</span>
+<span class="sd">    internally by :meth:`~mne_rt.RTStream.record_main`.  To extend MNE-RT with a</span>
+<span class="sd">    custom modality, sub-class :class:`~mne_rt.RTStream` and add a matching</span>
+<span class="sd">    ``_&lt;name&gt;_prep`` / ``_&lt;name&gt;`` pair following the same pattern.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># ------------------------------------------------------------------</span>
+    <span class="c1"># Prep methods  (run once before the main loop, return kwargs dict)</span>
+    <span class="c1"># ------------------------------------------------------------------</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_sensor_power_prep</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+        <span class="k">return</span> <span class="p">{</span>
+            <span class="s2">&quot;sfreq&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">rec_info</span><span class="p">[</span><span class="s2">&quot;sfreq&quot;</span><span class="p">],</span>
+            <span class="s2">&quot;frange&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="p">[</span><span class="s2">&quot;frange&quot;</span><span class="p">],</span>
+            <span class="s2">&quot;method&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="p">[</span><span class="s2">&quot;method&quot;</span><span class="p">],</span>
+            <span class="s2">&quot;relative&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="p">[</span><span class="s2">&quot;relative&quot;</span><span class="p">],</span>
+        <span class="p">}</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_band_ratio_prep</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+        <span class="k">return</span> <span class="p">{</span>
+            <span class="s2">&quot;sfreq&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">rec_info</span><span class="p">[</span><span class="s2">&quot;sfreq&quot;</span><span class="p">],</span>
+            <span class="s2">&quot;frange_1&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="p">[</span><span class="s2">&quot;frange_1&quot;</span><span class="p">],</span>
+            <span class="s2">&quot;frange_2&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="p">[</span><span class="s2">&quot;frange_2&quot;</span><span class="p">],</span>
+            <span class="s2">&quot;method&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="p">[</span><span class="s2">&quot;method&quot;</span><span class="p">],</span>
+        <span class="p">}</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_individual_peak_power_prep</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+        <span class="n">_</span><span class="p">,</span> <span class="n">peak_params_</span> <span class="o">=</span> <span class="n">estimate_aperiodic_component</span><span class="p">(</span>
+            <span class="n">raw_baseline</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">raw_baseline</span><span class="p">,</span>
+            <span class="n">picks</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">picks</span><span class="p">,</span>
+            <span class="n">method</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="p">[</span><span class="s2">&quot;method&quot;</span><span class="p">],</span>
+        <span class="p">)</span>
+        <span class="n">candidates</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="n">p</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">peak_params_</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="p">[</span><span class="s2">&quot;frange&quot;</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="o">&lt;</span> <span class="n">p</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="p">[</span><span class="s2">&quot;frange&quot;</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span>
+        <span class="p">]</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">candidates</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="n">cf</span> <span class="o">=</span> <span class="n">candidates</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">cf</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="p">[</span><span class="s2">&quot;frange&quot;</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="p">[</span><span class="s2">&quot;frange&quot;</span><span class="p">][</span><span class="mi">1</span><span class="p">])</span> <span class="o">/</span> <span class="mf">2.0</span>
+            <span class="n">warn</span><span class="p">(</span>
+                <span class="s2">&quot;individual_peak_power: center frequency defaulted to mid-range &quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;(</span><span class="si">{</span><span class="n">cf</span><span class="si">:</span><span class="s2">.1f</span><span class="si">}</span><span class="s2"> Hz); found </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">candidates</span><span class="p">)</span><span class="si">}</span><span class="s2"> peak(s) in band.&quot;</span><span class="p">,</span>
+                <span class="ne">UserWarning</span><span class="p">,</span>
+                <span class="n">stacklevel</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+            <span class="p">)</span>
+        <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;sfreq&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sfreq</span><span class="p">,</span> <span class="s2">&quot;freq_var&quot;</span><span class="p">:</span> <span class="mf">2.0</span><span class="p">,</span> <span class="s2">&quot;cf&quot;</span><span class="p">:</span> <span class="n">cf</span><span class="p">}</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_entropy_prep</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+        <span class="n">sos</span> <span class="o">=</span> <span class="n">butter_bandpass</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="p">[</span><span class="s2">&quot;frange&quot;</span><span class="p">][</span><span class="mi">0</span><span class="p">],</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="p">[</span><span class="s2">&quot;frange&quot;</span><span class="p">][</span><span class="mi">1</span><span class="p">],</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_sfreq</span><span class="p">,</span>
+            <span class="n">order</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="k">return</span> <span class="p">{</span>
+            <span class="s2">&quot;sos&quot;</span><span class="p">:</span> <span class="n">sos</span><span class="p">,</span>
+            <span class="s2">&quot;method&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="p">[</span><span class="s2">&quot;method&quot;</span><span class="p">],</span>
+            <span class="s2">&quot;psd_method&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="p">[</span><span class="s2">&quot;psd_method&quot;</span><span class="p">],</span>
+        <span class="p">}</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_argmax_freq_prep</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;raw_baseline&quot;</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;Baseline recording must be completed before using &#39;argmax_freq&#39;.&quot;</span><span class="p">)</span>
+        <span class="n">ap_params</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">estimate_aperiodic_component</span><span class="p">(</span>
+            <span class="n">raw_baseline</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">raw_baseline</span><span class="p">,</span>
+            <span class="n">picks</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">picks</span><span class="p">,</span>
+            <span class="n">method</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="p">[</span><span class="s2">&quot;method&quot;</span><span class="p">],</span>
+        <span class="p">)</span>
+        <span class="n">n_samples</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">winsize</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sfreq</span><span class="p">)</span>
+        <span class="n">fft_window</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">hanning</span><span class="p">(</span><span class="n">n_samples</span><span class="p">)</span>
+        <span class="n">freqs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">fft</span><span class="o">.</span><span class="n">rfftfreq</span><span class="p">(</span><span class="n">n_samples</span><span class="p">,</span> <span class="n">d</span><span class="o">=</span><span class="mf">1.0</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sfreq</span><span class="p">)</span>
+        <span class="n">mask</span> <span class="o">=</span> <span class="p">(</span><span class="n">freqs</span> <span class="o">&gt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="p">[</span><span class="s2">&quot;frange&quot;</span><span class="p">][</span><span class="mi">0</span><span class="p">])</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">freqs</span> <span class="o">&lt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="p">[</span><span class="s2">&quot;frange&quot;</span><span class="p">][</span><span class="mi">1</span><span class="p">])</span>
+        <span class="n">freqs_band</span> <span class="o">=</span> <span class="n">freqs</span><span class="p">[</span><span class="n">mask</span><span class="p">]</span>
+        <span class="n">ap_model</span> <span class="o">=</span> <span class="p">(</span><span class="mi">10</span> <span class="o">**</span> <span class="n">ap_params</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">/</span> <span class="p">(</span><span class="n">freqs_band</span> <span class="o">**</span> <span class="n">ap_params</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+
+        <span class="k">def</span><span class="w"> </span><span class="nf">_gaussian</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">a</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">mu</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">sigma</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">a</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="p">((</span><span class="n">x</span> <span class="o">-</span> <span class="n">mu</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">sigma</span><span class="o">**</span><span class="mi">2</span><span class="p">))</span>
+
+        <span class="k">return</span> <span class="p">{</span>
+            <span class="s2">&quot;fft_window&quot;</span><span class="p">:</span> <span class="n">fft_window</span><span class="p">,</span>
+            <span class="s2">&quot;ap_model&quot;</span><span class="p">:</span> <span class="n">ap_model</span><span class="p">,</span>
+            <span class="s2">&quot;gaussian&quot;</span><span class="p">:</span> <span class="n">_gaussian</span><span class="p">,</span>
+        <span class="p">}</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_source_power_prep</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+        <span class="n">fft_window</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">freq_band_idxs</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">compute_fft</span><span class="p">(</span>
+            <span class="n">sfreq</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_sfreq</span><span class="p">,</span>
+            <span class="n">winsize</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">winsize</span><span class="p">,</span>
+            <span class="n">freq_range</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="p">[</span><span class="s2">&quot;frange&quot;</span><span class="p">],</span>
+        <span class="p">)</span>
+        <span class="n">bls</span> <span class="o">=</span> <span class="n">read_labels_from_annot</span><span class="p">(</span>
+            <span class="n">subject</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">subject_fs_id</span><span class="p">,</span>
+            <span class="n">parc</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="p">[</span><span class="s2">&quot;atlas&quot;</span><span class="p">],</span>
+            <span class="n">subjects_dir</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">subjects_fs_dir</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="n">brain_label</span> <span class="o">=</span> <span class="n">bls</span><span class="p">[[</span><span class="n">bl</span><span class="o">.</span><span class="n">name</span> <span class="k">for</span> <span class="n">bl</span> <span class="ow">in</span> <span class="n">bls</span><span class="p">]</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="p">[</span><span class="s2">&quot;brain_label&quot;</span><span class="p">])]</span>
+
+        <span class="n">method</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="p">[</span><span class="s2">&quot;method&quot;</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">method</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;MNE&quot;</span><span class="p">,</span> <span class="s2">&quot;dSPM&quot;</span><span class="p">,</span> <span class="s2">&quot;sLORETA&quot;</span><span class="p">,</span> <span class="s2">&quot;eLORETA&quot;</span><span class="p">):</span>
+            <span class="n">inverse_operator</span> <span class="o">=</span> <span class="n">read_inverse_operator</span><span class="p">(</span>
+                <span class="n">fname</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">subject_dir</span> <span class="o">/</span> <span class="s2">&quot;inv&quot;</span> <span class="o">/</span> <span class="sa">f</span><span class="s2">&quot;visit_</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">visit</span><span class="si">}</span><span class="s2">-inv.fif&quot;</span>
+            <span class="p">)</span>
+        <span class="k">elif</span> <span class="n">method</span> <span class="o">==</span> <span class="s2">&quot;LCMV&quot;</span><span class="p">:</span>
+            <span class="n">inverse_operator</span> <span class="o">=</span> <span class="n">make_lcmv</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">rec_info</span><span class="p">,</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">fwd</span><span class="p">,</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">noise_cov</span><span class="p">,</span>
+                <span class="n">reg</span><span class="o">=</span><span class="mf">0.05</span><span class="p">,</span>
+                <span class="n">pick_ori</span><span class="o">=</span><span class="s2">&quot;max-power&quot;</span><span class="p">,</span>
+                <span class="n">weight_norm</span><span class="o">=</span><span class="s2">&quot;unit-noise-gain&quot;</span><span class="p">,</span>
+                <span class="n">rank</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+            <span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;Unknown source method: </span><span class="si">{</span><span class="n">method</span><span class="si">!r}</span><span class="s2">. &quot;</span>
+                <span class="s2">&quot;Expected one of &#39;MNE&#39;, &#39;dSPM&#39;, &#39;sLORETA&#39;, &#39;eLORETA&#39;, &#39;LCMV&#39;.&quot;</span>
+            <span class="p">)</span>
+
+        <span class="k">return</span> <span class="p">{</span>
+            <span class="s2">&quot;fft_window&quot;</span><span class="p">:</span> <span class="n">fft_window</span><span class="p">,</span>
+            <span class="s2">&quot;freq_band_idxs&quot;</span><span class="p">:</span> <span class="n">freq_band_idxs</span><span class="p">,</span>
+            <span class="s2">&quot;brain_label&quot;</span><span class="p">:</span> <span class="n">brain_label</span><span class="p">,</span>
+            <span class="s2">&quot;inverse_operator&quot;</span><span class="p">:</span> <span class="n">inverse_operator</span><span class="p">,</span>
+            <span class="s2">&quot;method&quot;</span><span class="p">:</span> <span class="n">method</span><span class="p">,</span>
+        <span class="p">}</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_sensor_connectivity_prep</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+        <span class="n">ch_names</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">rec_info</span><span class="p">[</span><span class="s2">&quot;ch_names&quot;</span><span class="p">]</span>
+        <span class="n">chs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="p">[</span><span class="s2">&quot;channels&quot;</span><span class="p">]</span>
+        <span class="n">indices</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span>
+            <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">ch_names</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">ch1</span><span class="p">),</span> <span class="n">ch_names</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">ch2</span><span class="p">)])</span> <span class="k">for</span> <span class="n">ch1</span><span class="p">,</span> <span class="n">ch2</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">chs</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">chs</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+        <span class="p">)</span>
+        <span class="n">freqs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="p">[</span><span class="s2">&quot;frange&quot;</span><span class="p">][</span><span class="mi">0</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="p">[</span><span class="s2">&quot;frange&quot;</span><span class="p">][</span><span class="mi">1</span><span class="p">],</span> <span class="mi">6</span><span class="p">)</span>
+        <span class="k">return</span> <span class="p">{</span>
+            <span class="s2">&quot;indices&quot;</span><span class="p">:</span> <span class="n">indices</span><span class="p">,</span>
+            <span class="s2">&quot;freqs&quot;</span><span class="p">:</span> <span class="n">freqs</span><span class="p">,</span>
+            <span class="s2">&quot;fmin&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="p">[</span><span class="s2">&quot;frange&quot;</span><span class="p">][</span><span class="mi">0</span><span class="p">],</span>
+            <span class="s2">&quot;fmax&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="p">[</span><span class="s2">&quot;frange&quot;</span><span class="p">][</span><span class="mi">1</span><span class="p">],</span>
+            <span class="s2">&quot;mode&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="p">[</span><span class="s2">&quot;mode&quot;</span><span class="p">],</span>
+            <span class="s2">&quot;method&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="p">[</span><span class="s2">&quot;method&quot;</span><span class="p">],</span>
+        <span class="p">}</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_source_connectivity_prep</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+        <span class="n">lbl1</span><span class="p">,</span> <span class="n">lbl2</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="p">[</span><span class="s2">&quot;brain_label_1&quot;</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="p">[</span><span class="s2">&quot;brain_label_2&quot;</span><span class="p">]</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">lbl1</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s2">&quot;-lh&quot;</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;brain_label_1 must end with &#39;-lh&#39;, got </span><span class="si">{</span><span class="n">lbl1</span><span class="si">!r}</span><span class="s2">.&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">lbl2</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s2">&quot;-rh&quot;</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;brain_label_2 must end with &#39;-rh&#39;, got </span><span class="si">{</span><span class="n">lbl2</span><span class="si">!r}</span><span class="s2">.&quot;</span><span class="p">)</span>
+
+        <span class="n">bls</span> <span class="o">=</span> <span class="n">read_labels_from_annot</span><span class="p">(</span>
+            <span class="n">subject</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">subject_fs_id</span><span class="p">,</span>
+            <span class="n">parc</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="p">[</span><span class="s2">&quot;atlas&quot;</span><span class="p">],</span>
+            <span class="n">subjects_dir</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">subjects_fs_dir</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="n">bl_names</span> <span class="o">=</span> <span class="p">[</span><span class="n">bl</span><span class="o">.</span><span class="n">name</span> <span class="k">for</span> <span class="n">bl</span> <span class="ow">in</span> <span class="n">bls</span><span class="p">]</span>
+        <span class="n">merged_label</span> <span class="o">=</span> <span class="n">bls</span><span class="p">[</span><span class="n">bl_names</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">lbl1</span><span class="p">)]</span> <span class="o">+</span> <span class="n">bls</span><span class="p">[</span><span class="n">bl_names</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">lbl2</span><span class="p">)]</span>
+        <span class="n">inverse_operator</span> <span class="o">=</span> <span class="n">read_inverse_operator</span><span class="p">(</span>
+            <span class="n">fname</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">subject_dir</span> <span class="o">/</span> <span class="s2">&quot;inv&quot;</span> <span class="o">/</span> <span class="sa">f</span><span class="s2">&quot;visit_</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">visit</span><span class="si">}</span><span class="s2">-inv.fif&quot;</span>
+        <span class="p">)</span>
+        <span class="n">freqs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="p">[</span><span class="s2">&quot;frange&quot;</span><span class="p">][</span><span class="mi">0</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="p">[</span><span class="s2">&quot;frange&quot;</span><span class="p">][</span><span class="mi">1</span><span class="p">],</span> <span class="mi">6</span><span class="p">)</span>
+        <span class="k">return</span> <span class="p">{</span>
+            <span class="s2">&quot;merged_label&quot;</span><span class="p">:</span> <span class="n">merged_label</span><span class="p">,</span>
+            <span class="s2">&quot;inverse_operator&quot;</span><span class="p">:</span> <span class="n">inverse_operator</span><span class="p">,</span>
+            <span class="s2">&quot;freqs&quot;</span><span class="p">:</span> <span class="n">freqs</span><span class="p">,</span>
+        <span class="p">}</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_sensor_graph_prep</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+        <span class="n">ch_names</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">rec_info</span><span class="p">[</span><span class="s2">&quot;ch_names&quot;</span><span class="p">]</span>
+        <span class="n">chs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="p">[</span><span class="s2">&quot;channels&quot;</span><span class="p">]</span>
+        <span class="n">indices</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span>
+            <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">ch_names</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">ch1</span><span class="p">),</span> <span class="n">ch_names</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">ch2</span><span class="p">)])</span> <span class="k">for</span> <span class="n">ch1</span><span class="p">,</span> <span class="n">ch2</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">chs</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">chs</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+        <span class="p">)</span>
+        <span class="n">sos</span> <span class="o">=</span> <span class="n">butter_bandpass</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="p">[</span><span class="s2">&quot;frange&quot;</span><span class="p">][</span><span class="mi">0</span><span class="p">],</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="p">[</span><span class="s2">&quot;frange&quot;</span><span class="p">][</span><span class="mi">1</span><span class="p">],</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_sfreq</span><span class="p">,</span>
+            <span class="n">order</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="k">return</span> <span class="p">{</span>
+            <span class="s2">&quot;indices&quot;</span><span class="p">:</span> <span class="n">indices</span><span class="p">,</span>
+            <span class="s2">&quot;sos&quot;</span><span class="p">:</span> <span class="n">sos</span><span class="p">,</span>
+            <span class="s2">&quot;dist_type&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="p">[</span><span class="s2">&quot;dist_type&quot;</span><span class="p">],</span>
+            <span class="s2">&quot;alpha&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="p">[</span><span class="s2">&quot;alpha&quot;</span><span class="p">],</span>
+            <span class="s2">&quot;beta&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="p">[</span><span class="s2">&quot;beta&quot;</span><span class="p">],</span>
+        <span class="p">}</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_source_graph_prep</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+        <span class="n">bls</span> <span class="o">=</span> <span class="n">read_labels_from_annot</span><span class="p">(</span>
+            <span class="n">subject</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">subject_fs_id</span><span class="p">,</span>
+            <span class="n">parc</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="p">[</span><span class="s2">&quot;atlas&quot;</span><span class="p">],</span>
+            <span class="n">subjects_dir</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">subjects_fs_dir</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="n">bl_names</span> <span class="o">=</span> <span class="p">[</span><span class="n">bl</span><span class="o">.</span><span class="n">name</span> <span class="k">for</span> <span class="n">bl</span> <span class="ow">in</span> <span class="n">bls</span><span class="p">]</span>
+        <span class="n">bl_idxs</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="n">bl_names</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="p">[</span><span class="s2">&quot;brain_label_1&quot;</span><span class="p">]),</span>
+            <span class="n">bl_names</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="p">[</span><span class="s2">&quot;brain_label_2&quot;</span><span class="p">]),</span>
+        <span class="p">)</span>
+        <span class="n">inverse_operator</span> <span class="o">=</span> <span class="n">read_inverse_operator</span><span class="p">(</span>
+            <span class="n">fname</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">subject_dir</span> <span class="o">/</span> <span class="s2">&quot;inv&quot;</span> <span class="o">/</span> <span class="sa">f</span><span class="s2">&quot;visit_</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">visit</span><span class="si">}</span><span class="s2">-inv.fif&quot;</span>
+        <span class="p">)</span>
+        <span class="n">sos</span> <span class="o">=</span> <span class="n">butter_bandpass</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="p">[</span><span class="s2">&quot;frange&quot;</span><span class="p">][</span><span class="mi">0</span><span class="p">],</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="p">[</span><span class="s2">&quot;frange&quot;</span><span class="p">][</span><span class="mi">1</span><span class="p">],</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_sfreq</span><span class="p">,</span>
+            <span class="n">order</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="k">return</span> <span class="p">{</span>
+            <span class="s2">&quot;bls&quot;</span><span class="p">:</span> <span class="n">bls</span><span class="p">,</span>
+            <span class="s2">&quot;bl_idxs&quot;</span><span class="p">:</span> <span class="n">bl_idxs</span><span class="p">,</span>
+            <span class="s2">&quot;inverse_operator&quot;</span><span class="p">:</span> <span class="n">inverse_operator</span><span class="p">,</span>
+            <span class="s2">&quot;sos&quot;</span><span class="p">:</span> <span class="n">sos</span><span class="p">,</span>
+        <span class="p">}</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_cfc_sensor_prep</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+        <span class="n">comod</span> <span class="o">=</span> <span class="n">Comodulogram</span><span class="p">(</span>
+            <span class="n">fs</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_sfreq</span><span class="p">,</span>
+            <span class="n">low_fq_range</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="p">[</span><span class="s2">&quot;frange_1&quot;</span><span class="p">][</span><span class="mi">0</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="p">[</span><span class="s2">&quot;frange_1&quot;</span><span class="p">][</span><span class="mi">1</span><span class="p">],</span> <span class="mi">5</span><span class="p">),</span>
+            <span class="n">high_fq_range</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="p">[</span><span class="s2">&quot;frange_2&quot;</span><span class="p">][</span><span class="mi">0</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="p">[</span><span class="s2">&quot;frange_2&quot;</span><span class="p">][</span><span class="mi">1</span><span class="p">],</span> <span class="mi">5</span><span class="p">),</span>
+            <span class="n">method</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="p">[</span><span class="s2">&quot;method&quot;</span><span class="p">],</span>
+            <span class="n">n_surrogates</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;comod&quot;</span><span class="p">:</span> <span class="n">comod</span><span class="p">}</span>
+
+    <span class="c1"># ------------------------------------------------------------------</span>
+    <span class="c1"># Feature-extraction methods  (decorated with @timed)</span>
+    <span class="c1"># ------------------------------------------------------------------</span>
+
+    <span class="nd">@timed</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_sensor_power</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">data</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
+        <span class="n">sfreq</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+        <span class="n">frange</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">,</span>
+        <span class="n">method</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;welch&quot;</span><span class="p">,</span>
+        <span class="n">relative</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Mean band power across channels at sensor level.&quot;&quot;&quot;</span>
+        <span class="n">bp</span> <span class="o">=</span> <span class="n">compute_bandpower</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">sfreq</span><span class="p">,</span> <span class="n">frange</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="n">method</span><span class="p">,</span> <span class="n">relative</span><span class="o">=</span><span class="n">relative</span><span class="p">)</span>
+        <span class="k">return</span> <span class="nb">float</span><span class="p">(</span><span class="n">bp</span><span class="o">.</span><span class="n">mean</span><span class="p">())</span>
+
+    <span class="nd">@timed</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_band_ratio</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">data</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
+        <span class="n">sfreq</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+        <span class="n">frange_1</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">,</span>
+        <span class="n">frange_2</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">,</span>
+        <span class="n">method</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;welch&quot;</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Power ratio between two frequency bands.&quot;&quot;&quot;</span>
+        <span class="n">bp1</span> <span class="o">=</span> <span class="n">compute_bandpower</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">sfreq</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">frange_1</span><span class="p">),</span> <span class="n">method</span><span class="o">=</span><span class="n">method</span><span class="p">,</span> <span class="n">relative</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="n">bp2</span> <span class="o">=</span> <span class="n">compute_bandpower</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">sfreq</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">frange_2</span><span class="p">),</span> <span class="n">method</span><span class="o">=</span><span class="n">method</span><span class="p">,</span> <span class="n">relative</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="k">return</span> <span class="nb">float</span><span class="p">(</span><span class="n">bp1</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span> <span class="o">/</span> <span class="p">(</span><span class="n">bp2</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span> <span class="o">+</span> <span class="mf">1e-30</span><span class="p">))</span>
+
+    <span class="nd">@timed</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_individual_peak_power</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">data</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
+        <span class="n">sfreq</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+        <span class="n">freq_var</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+        <span class="n">cf</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Band power in a narrow window around the individual peak frequency.&quot;&quot;&quot;</span>
+        <span class="n">bp</span> <span class="o">=</span> <span class="n">compute_bandpower</span><span class="p">(</span>
+            <span class="n">data</span><span class="p">,</span>
+            <span class="n">sfreq</span><span class="p">,</span>
+            <span class="p">(</span><span class="n">cf</span> <span class="o">-</span> <span class="n">freq_var</span><span class="p">,</span> <span class="n">cf</span> <span class="o">+</span> <span class="n">freq_var</span><span class="p">),</span>
+            <span class="n">method</span><span class="o">=</span><span class="s2">&quot;welch&quot;</span><span class="p">,</span>
+            <span class="n">relative</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="k">return</span> <span class="nb">float</span><span class="p">(</span><span class="n">bp</span><span class="o">.</span><span class="n">mean</span><span class="p">())</span>
+
+    <span class="nd">@timed</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_entropy</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">data</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
+        <span class="n">sos</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
+        <span class="n">method</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">psd_method</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Entropy of band-filtered M/EEG signals.&quot;&quot;&quot;</span>
+        <span class="n">data_filt</span> <span class="o">=</span> <span class="n">sosfiltfilt</span><span class="p">(</span><span class="n">sos</span><span class="p">,</span> <span class="n">data</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">method</span> <span class="o">==</span> <span class="s2">&quot;AppEn&quot;</span><span class="p">:</span>
+            <span class="n">ents</span> <span class="o">=</span> <span class="n">compute_app_entropy</span><span class="p">(</span><span class="n">data_filt</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">method</span> <span class="o">==</span> <span class="s2">&quot;SampEn&quot;</span><span class="p">:</span>
+            <span class="n">ents</span> <span class="o">=</span> <span class="n">compute_samp_entropy</span><span class="p">(</span><span class="n">data_filt</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">method</span> <span class="o">==</span> <span class="s2">&quot;Spectral&quot;</span><span class="p">:</span>
+            <span class="n">ents</span> <span class="o">=</span> <span class="n">compute_spect_entropy</span><span class="p">(</span><span class="n">sfreq</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_sfreq</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">data_filt</span><span class="p">,</span> <span class="n">psd_method</span><span class="o">=</span><span class="n">psd_method</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">method</span> <span class="o">==</span> <span class="s2">&quot;SVD&quot;</span><span class="p">:</span>
+            <span class="n">ents</span> <span class="o">=</span> <span class="n">compute_svd_entropy</span><span class="p">(</span><span class="n">data_filt</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;Unknown entropy method: </span><span class="si">{</span><span class="n">method</span><span class="si">!r}</span><span class="s2">. &quot;</span>
+                <span class="s2">&quot;Expected one of &#39;AppEn&#39;, &#39;SampEn&#39;, &#39;Spectral&#39;, &#39;SVD&#39;.&quot;</span>
+            <span class="p">)</span>
+        <span class="k">return</span> <span class="nb">float</span><span class="p">(</span><span class="n">ents</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span> <span class="o">-</span> <span class="mi">2</span><span class="p">)</span>
+
+    <span class="nd">@timed</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_argmax_freq</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">data</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
+        <span class="n">fft_window</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
+        <span class="n">ap_model</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
+        <span class="n">gaussian</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Individual peak frequency via aperiodic subtraction + Gaussian fit.&quot;&quot;&quot;</span>
+        <span class="n">data_win</span> <span class="o">=</span> <span class="n">data</span> <span class="o">*</span> <span class="n">fft_window</span>
+        <span class="n">fftval</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">fft</span><span class="o">.</span><span class="n">rfft</span><span class="p">(</span><span class="n">data_win</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span> <span class="o">/</span> <span class="n">data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+        <span class="n">freqs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">fft</span><span class="o">.</span><span class="n">rfftfreq</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">d</span><span class="o">=</span><span class="mf">1.0</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sfreq</span><span class="p">)</span>
+
+        <span class="n">mask</span> <span class="o">=</span> <span class="p">(</span><span class="n">freqs</span> <span class="o">&gt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="p">[</span><span class="s2">&quot;frange&quot;</span><span class="p">][</span><span class="mi">0</span><span class="p">])</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">freqs</span> <span class="o">&lt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="p">[</span><span class="s2">&quot;frange&quot;</span><span class="p">][</span><span class="mi">1</span><span class="p">])</span>
+        <span class="n">freqs_band</span> <span class="o">=</span> <span class="n">freqs</span><span class="p">[</span><span class="n">mask</span><span class="p">]</span>
+        <span class="n">periodic_power</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">square</span><span class="p">(</span><span class="n">fftval</span><span class="p">[:,</span> <span class="n">mask</span><span class="p">]),</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span> <span class="o">-</span> <span class="n">ap_model</span>
+
+        <span class="n">p0</span> <span class="o">=</span> <span class="p">[</span><span class="n">periodic_power</span><span class="o">.</span><span class="n">max</span><span class="p">(),</span> <span class="n">freqs_band</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">argmax</span><span class="p">(</span><span class="n">periodic_power</span><span class="p">)],</span> <span class="mf">1.0</span><span class="p">]</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">popt</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">curve_fit</span><span class="p">(</span><span class="n">gaussian</span><span class="p">,</span> <span class="n">freqs_band</span><span class="p">,</span> <span class="n">periodic_power</span><span class="p">,</span> <span class="n">p0</span><span class="o">=</span><span class="n">p0</span><span class="p">)</span>
+            <span class="k">return</span> <span class="nb">float</span><span class="p">(</span><span class="n">popt</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+        <span class="k">except</span> <span class="ne">RuntimeError</span><span class="p">:</span>
+            <span class="n">warn</span><span class="p">(</span>
+                <span class="s2">&quot;argmax_freq: Gaussian fit failed; returning 0 Hz.&quot;</span><span class="p">,</span>
+                <span class="ne">RuntimeWarning</span><span class="p">,</span>
+                <span class="n">stacklevel</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+            <span class="p">)</span>
+            <span class="k">return</span> <span class="mf">0.0</span>
+
+    <span class="nd">@timed</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_source_power</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">data</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
+        <span class="n">fft_window</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
+        <span class="n">freq_band_idxs</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
+        <span class="n">brain_label</span><span class="p">,</span>
+        <span class="n">inverse_operator</span><span class="p">,</span>
+        <span class="n">method</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Source-level band power in a brain label.&quot;&quot;&quot;</span>
+        <span class="n">raw_data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_prepare_raw_array</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">method</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;MNE&quot;</span><span class="p">,</span> <span class="s2">&quot;dSPM&quot;</span><span class="p">,</span> <span class="s2">&quot;sLORETA&quot;</span><span class="p">,</span> <span class="s2">&quot;eLORETA&quot;</span><span class="p">):</span>
+            <span class="n">stc_data</span> <span class="o">=</span> <span class="n">apply_inverse_raw</span><span class="p">(</span>
+                <span class="n">raw_data</span><span class="p">,</span>
+                <span class="n">inverse_operator</span><span class="p">,</span>
+                <span class="n">lambda2</span><span class="o">=</span><span class="mf">1.0</span> <span class="o">/</span> <span class="mi">9</span><span class="p">,</span>
+                <span class="n">method</span><span class="o">=</span><span class="n">method</span><span class="p">,</span>
+                <span class="n">pick_ori</span><span class="o">=</span><span class="s2">&quot;normal&quot;</span><span class="p">,</span>
+                <span class="n">label</span><span class="o">=</span><span class="n">brain_label</span><span class="p">,</span>
+            <span class="p">)</span><span class="o">.</span><span class="n">data</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">stc_data</span> <span class="o">=</span> <span class="n">apply_lcmv_raw</span><span class="p">(</span><span class="n">raw_data</span><span class="p">,</span> <span class="n">inverse_operator</span><span class="p">)</span><span class="o">.</span><span class="n">data</span>
+
+        <span class="n">stc_data</span> <span class="o">=</span> <span class="n">stc_data</span> <span class="o">*</span> <span class="n">fft_window</span>
+        <span class="n">fft_val</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">fft</span><span class="o">.</span><span class="n">rfft</span><span class="p">(</span><span class="n">stc_data</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span> <span class="o">/</span> <span class="n">stc_data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+        <span class="k">return</span> <span class="nb">float</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">square</span><span class="p">(</span><span class="n">fft_val</span><span class="p">[:,</span> <span class="n">freq_band_idxs</span><span class="p">])))</span>
+
+    <span class="nd">@timed</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_sensor_connectivity</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">data</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
+        <span class="n">indices</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">,</span>
+        <span class="n">freqs</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
+        <span class="n">fmin</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+        <span class="n">fmax</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+        <span class="n">mode</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">method</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Sensor-level spectral connectivity between channel pairs.&quot;&quot;&quot;</span>
+        <span class="n">con</span> <span class="o">=</span> <span class="n">spectral_connectivity_time</span><span class="p">(</span>
+            <span class="n">data</span><span class="o">=</span><span class="n">data</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">newaxis</span><span class="p">,</span> <span class="p">:],</span>
+            <span class="n">freqs</span><span class="o">=</span><span class="n">freqs</span><span class="p">,</span>
+            <span class="n">indices</span><span class="o">=</span><span class="n">indices</span><span class="p">,</span>
+            <span class="n">average</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+            <span class="n">sfreq</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_sfreq</span><span class="p">,</span>
+            <span class="n">fmin</span><span class="o">=</span><span class="n">fmin</span><span class="p">,</span>
+            <span class="n">fmax</span><span class="o">=</span><span class="n">fmax</span><span class="p">,</span>
+            <span class="n">faverage</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+            <span class="n">mode</span><span class="o">=</span><span class="n">mode</span><span class="p">,</span>
+            <span class="n">method</span><span class="o">=</span><span class="n">method</span><span class="p">,</span>
+            <span class="n">n_cycles</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="k">return</span> <span class="nb">float</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">squeeze</span><span class="p">(</span><span class="n">con</span><span class="o">.</span><span class="n">get_data</span><span class="p">(</span><span class="n">output</span><span class="o">=</span><span class="s2">&quot;dense&quot;</span><span class="p">))[</span><span class="n">indices</span><span class="p">]</span><span class="o">.</span><span class="n">mean</span><span class="p">())</span>
+
+    <span class="nd">@timed</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_source_connectivity</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">data</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
+        <span class="n">merged_label</span><span class="p">,</span>
+        <span class="n">inverse_operator</span><span class="p">,</span>
+        <span class="n">freqs</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Source-level connectivity between two brain labels.&quot;&quot;&quot;</span>
+        <span class="n">raw_data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_prepare_raw_array</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+        <span class="n">stcs</span> <span class="o">=</span> <span class="n">apply_inverse_raw</span><span class="p">(</span>
+            <span class="n">raw_data</span><span class="p">,</span>
+            <span class="n">inverse_operator</span><span class="p">,</span>
+            <span class="n">lambda2</span><span class="o">=</span><span class="mf">1.0</span> <span class="o">/</span> <span class="mi">9</span><span class="p">,</span>
+            <span class="n">pick_ori</span><span class="o">=</span><span class="s2">&quot;normal&quot;</span><span class="p">,</span>
+            <span class="n">label</span><span class="o">=</span><span class="n">merged_label</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="n">con</span> <span class="o">=</span> <span class="n">spectral_connectivity_time</span><span class="p">(</span>
+            <span class="n">data</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="n">stcs</span><span class="o">.</span><span class="n">lh_data</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">),</span> <span class="n">stcs</span><span class="o">.</span><span class="n">rh_data</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)]]),</span>
+            <span class="n">freqs</span><span class="o">=</span><span class="n">freqs</span><span class="p">,</span>
+            <span class="n">indices</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+            <span class="n">average</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+            <span class="n">sfreq</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_sfreq</span><span class="p">,</span>
+            <span class="n">fmin</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="p">[</span><span class="s2">&quot;frange&quot;</span><span class="p">][</span><span class="mi">0</span><span class="p">],</span>
+            <span class="n">fmax</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="p">[</span><span class="s2">&quot;frange&quot;</span><span class="p">][</span><span class="mi">1</span><span class="p">],</span>
+            <span class="n">faverage</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+            <span class="n">mode</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="p">[</span><span class="s2">&quot;mode&quot;</span><span class="p">],</span>
+            <span class="n">method</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="p">[</span><span class="s2">&quot;method&quot;</span><span class="p">],</span>
+            <span class="n">n_cycles</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="k">return</span> <span class="nb">float</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">squeeze</span><span class="p">(</span><span class="n">con</span><span class="o">.</span><span class="n">get_data</span><span class="p">(</span><span class="n">output</span><span class="o">=</span><span class="s2">&quot;dense&quot;</span><span class="p">))[</span><span class="mi">1</span><span class="p">][</span><span class="mi">0</span><span class="p">])</span>
+
+    <span class="nd">@timed</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_sensor_graph</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">data</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
+        <span class="n">indices</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">,</span>
+        <span class="n">sos</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
+        <span class="n">dist_type</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">alpha</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+        <span class="n">beta</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Graph-theoretic connectivity from sensor-space M/EEG.&quot;&quot;&quot;</span>
+        <span class="n">data_filt</span> <span class="o">=</span> <span class="n">sosfiltfilt</span><span class="p">(</span><span class="n">sos</span><span class="p">,</span> <span class="n">data</span><span class="p">)</span>
+        <span class="n">graph_matrix</span> <span class="o">=</span> <span class="n">log_degree_barrier</span><span class="p">(</span><span class="n">data_filt</span><span class="p">,</span> <span class="n">dist_type</span><span class="o">=</span><span class="n">dist_type</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="n">alpha</span><span class="p">,</span> <span class="n">beta</span><span class="o">=</span><span class="n">beta</span><span class="p">)</span>
+        <span class="k">return</span> <span class="nb">float</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">([</span><span class="n">graph_matrix</span><span class="p">[</span><span class="n">idxs</span><span class="p">]</span> <span class="k">for</span> <span class="n">idxs</span> <span class="ow">in</span> <span class="n">indices</span><span class="p">])</span> <span class="o">-</span> <span class="mf">0.025</span><span class="p">)</span>
+
+    <span class="nd">@timed</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_source_graph</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">data</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
+        <span class="n">bls</span><span class="p">:</span> <span class="nb">list</span><span class="p">,</span>
+        <span class="n">bl_idxs</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">,</span>
+        <span class="n">inverse_operator</span><span class="p">,</span>
+        <span class="n">sos</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Graph-theoretic connectivity from source-space M/EEG.&quot;&quot;&quot;</span>
+        <span class="n">raw_data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_prepare_raw_array</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+        <span class="n">stcs</span> <span class="o">=</span> <span class="n">apply_inverse_raw</span><span class="p">(</span>
+            <span class="n">raw_data</span><span class="p">,</span>
+            <span class="n">inverse_operator</span><span class="p">,</span>
+            <span class="n">lambda2</span><span class="o">=</span><span class="mf">1.0</span> <span class="o">/</span> <span class="mi">9</span><span class="p">,</span>
+            <span class="n">pick_ori</span><span class="o">=</span><span class="s2">&quot;normal&quot;</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="n">tcs</span> <span class="o">=</span> <span class="n">stcs</span><span class="o">.</span><span class="n">extract_label_time_course</span><span class="p">(</span>
+            <span class="n">bls</span><span class="p">,</span>
+            <span class="n">src</span><span class="o">=</span><span class="n">inverse_operator</span><span class="p">[</span><span class="s2">&quot;src&quot;</span><span class="p">],</span>
+            <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;mean_flip&quot;</span><span class="p">,</span>
+            <span class="n">allow_empty</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="n">tcs_filt</span> <span class="o">=</span> <span class="n">sosfiltfilt</span><span class="p">(</span><span class="n">sos</span><span class="p">,</span> <span class="n">tcs</span><span class="p">)</span>
+        <span class="n">graph_matrix</span> <span class="o">=</span> <span class="n">log_degree_barrier</span><span class="p">(</span>
+            <span class="n">tcs_filt</span><span class="p">,</span>
+            <span class="n">dist_type</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="p">[</span><span class="s2">&quot;dist_type&quot;</span><span class="p">],</span>
+            <span class="n">alpha</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="p">[</span><span class="s2">&quot;alpha&quot;</span><span class="p">],</span>
+            <span class="n">beta</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="p">[</span><span class="s2">&quot;beta&quot;</span><span class="p">],</span>
+        <span class="p">)</span>
+        <span class="k">return</span> <span class="nb">float</span><span class="p">(</span><span class="n">graph_matrix</span><span class="p">[</span><span class="n">bl_idxs</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">bl_idxs</span><span class="p">[</span><span class="mi">1</span><span class="p">]])</span>
+
+    <span class="nd">@timed</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_cfc_sensor</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">comod</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Cross-frequency coupling (modulation index) at sensor level.&quot;&quot;&quot;</span>
+        <span class="n">comod</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+        <span class="k">return</span> <span class="nb">float</span><span class="p">(</span><span class="n">comod</span><span class="o">.</span><span class="n">comod_</span><span class="o">.</span><span class="n">mean</span><span class="p">())</span>
+
+    <span class="c1"># ------------------------------------------------------------------</span>
+    <span class="c1"># ERD/ERS</span>
+    <span class="c1"># ------------------------------------------------------------------</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_erd_ers_prep</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;raw_baseline&quot;</span><span class="p">)</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">raw_baseline</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span>
+                <span class="s2">&quot;erd_ers requires a completed baseline recording. Call record_baseline() first.&quot;</span>
+            <span class="p">)</span>
+        <span class="n">baseline_power</span> <span class="o">=</span> <span class="n">compute_bandpower</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">raw_baseline</span><span class="o">.</span><span class="n">get_data</span><span class="p">(),</span>
+            <span class="n">sfreq</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_sfreq</span><span class="p">,</span>
+            <span class="n">band</span><span class="o">=</span><span class="nb">tuple</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="p">[</span><span class="s2">&quot;frange&quot;</span><span class="p">]),</span>
+            <span class="n">method</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="p">[</span><span class="s2">&quot;method&quot;</span><span class="p">],</span>
+            <span class="n">relative</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="p">)</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span>
+        <span class="k">return</span> <span class="p">{</span>
+            <span class="s2">&quot;sfreq&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sfreq</span><span class="p">,</span>
+            <span class="s2">&quot;frange&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="p">[</span><span class="s2">&quot;frange&quot;</span><span class="p">],</span>
+            <span class="s2">&quot;method&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="p">[</span><span class="s2">&quot;method&quot;</span><span class="p">],</span>
+            <span class="s2">&quot;baseline_power&quot;</span><span class="p">:</span> <span class="nb">float</span><span class="p">(</span><span class="n">baseline_power</span><span class="p">),</span>
+        <span class="p">}</span>
+
+    <span class="nd">@timed</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_erd_ers</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">data</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
+        <span class="n">sfreq</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+        <span class="n">frange</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">,</span>
+        <span class="n">method</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">baseline_power</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Event-related desynchronisation / synchronisation (%).</span>
+
+<span class="sd">        Positive values = synchronisation (ERS); negative = desynchronisation (ERD).</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">current_power</span> <span class="o">=</span> <span class="n">compute_bandpower</span><span class="p">(</span>
+            <span class="n">data</span><span class="p">,</span> <span class="n">sfreq</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">frange</span><span class="p">),</span> <span class="n">method</span><span class="o">=</span><span class="n">method</span><span class="p">,</span> <span class="n">relative</span><span class="o">=</span><span class="kc">False</span>
+        <span class="p">)</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span>
+        <span class="k">return</span> <span class="nb">float</span><span class="p">((</span><span class="n">current_power</span> <span class="o">-</span> <span class="n">baseline_power</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="n">baseline_power</span> <span class="o">+</span> <span class="mf">1e-300</span><span class="p">)</span> <span class="o">*</span> <span class="mf">100.0</span><span class="p">)</span>
+
+    <span class="c1"># ------------------------------------------------------------------</span>
+    <span class="c1"># Laterality</span>
+    <span class="c1"># ------------------------------------------------------------------</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_laterality_prep</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+        <span class="n">ch_names</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">rec_info</span><span class="p">[</span><span class="s2">&quot;ch_names&quot;</span><span class="p">]</span>
+
+        <span class="k">def</span><span class="w"> </span><span class="nf">_is_left</span><span class="p">(</span><span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+            <span class="c1"># 10-20 convention: trailing odd digit → left hemisphere</span>
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">name</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">):</span>
+                <span class="k">if</span> <span class="n">name</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">isdigit</span><span class="p">():</span>
+                    <span class="k">return</span> <span class="nb">int</span><span class="p">(</span><span class="n">name</span><span class="p">[</span><span class="n">i</span><span class="p">])</span> <span class="o">%</span> <span class="mi">2</span> <span class="o">==</span> <span class="mi">1</span>
+            <span class="k">return</span> <span class="kc">False</span>
+
+        <span class="k">def</span><span class="w"> </span><span class="nf">_is_right</span><span class="p">(</span><span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">name</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">):</span>
+                <span class="k">if</span> <span class="n">name</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">isdigit</span><span class="p">():</span>
+                    <span class="k">return</span> <span class="nb">int</span><span class="p">(</span><span class="n">name</span><span class="p">[</span><span class="n">i</span><span class="p">])</span> <span class="o">%</span> <span class="mi">2</span> <span class="o">==</span> <span class="mi">0</span>
+            <span class="k">return</span> <span class="kc">False</span>
+
+        <span class="n">lh_idx</span> <span class="o">=</span> <span class="p">[</span><span class="n">i</span> <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">ch</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">ch_names</span><span class="p">)</span> <span class="k">if</span> <span class="n">_is_left</span><span class="p">(</span><span class="n">ch</span><span class="p">)]</span>
+        <span class="n">rh_idx</span> <span class="o">=</span> <span class="p">[</span><span class="n">i</span> <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">ch</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">ch_names</span><span class="p">)</span> <span class="k">if</span> <span class="n">_is_right</span><span class="p">(</span><span class="n">ch</span><span class="p">)]</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">lh_idx</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">rh_idx</span><span class="p">:</span>
+            <span class="n">warn</span><span class="p">(</span>
+                <span class="s2">&quot;laterality: could not auto-detect left/right channels from names; &quot;</span>
+                <span class="s2">&quot;splitting by index instead.&quot;</span><span class="p">,</span>
+                <span class="ne">UserWarning</span><span class="p">,</span>
+                <span class="n">stacklevel</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+            <span class="p">)</span>
+            <span class="n">mid</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">ch_names</span><span class="p">)</span> <span class="o">//</span> <span class="mi">2</span>
+            <span class="n">lh_idx</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="n">mid</span><span class="p">))</span>
+            <span class="n">rh_idx</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="n">mid</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">ch_names</span><span class="p">)))</span>
+
+        <span class="k">return</span> <span class="p">{</span>
+            <span class="s2">&quot;sfreq&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sfreq</span><span class="p">,</span>
+            <span class="s2">&quot;frange&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="p">[</span><span class="s2">&quot;frange&quot;</span><span class="p">],</span>
+            <span class="s2">&quot;method&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="p">[</span><span class="s2">&quot;method&quot;</span><span class="p">],</span>
+            <span class="s2">&quot;lh_idx&quot;</span><span class="p">:</span> <span class="n">lh_idx</span><span class="p">,</span>
+            <span class="s2">&quot;rh_idx&quot;</span><span class="p">:</span> <span class="n">rh_idx</span><span class="p">,</span>
+        <span class="p">}</span>
+
+    <span class="nd">@timed</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_laterality</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">data</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
+        <span class="n">sfreq</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+        <span class="n">frange</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">,</span>
+        <span class="n">method</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">lh_idx</span><span class="p">:</span> <span class="nb">list</span><span class="p">,</span>
+        <span class="n">rh_idx</span><span class="p">:</span> <span class="nb">list</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Inter-hemispheric power asymmetry: log(P_right) − log(P_left).</span>
+
+<span class="sd">        Positive → right dominance; negative → left dominance.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">lh_power</span> <span class="o">=</span> <span class="n">compute_bandpower</span><span class="p">(</span>
+            <span class="n">data</span><span class="p">[</span><span class="n">lh_idx</span><span class="p">],</span> <span class="n">sfreq</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">frange</span><span class="p">),</span> <span class="n">method</span><span class="o">=</span><span class="n">method</span><span class="p">,</span> <span class="n">relative</span><span class="o">=</span><span class="kc">False</span>
+        <span class="p">)</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span>
+        <span class="n">rh_power</span> <span class="o">=</span> <span class="n">compute_bandpower</span><span class="p">(</span>
+            <span class="n">data</span><span class="p">[</span><span class="n">rh_idx</span><span class="p">],</span> <span class="n">sfreq</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">frange</span><span class="p">),</span> <span class="n">method</span><span class="o">=</span><span class="n">method</span><span class="p">,</span> <span class="n">relative</span><span class="o">=</span><span class="kc">False</span>
+        <span class="p">)</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span>
+        <span class="k">return</span> <span class="nb">float</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">rh_power</span> <span class="o">+</span> <span class="mf">1e-300</span><span class="p">)</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">lh_power</span> <span class="o">+</span> <span class="mf">1e-300</span><span class="p">))</span>
+
+    <span class="c1"># ------------------------------------------------------------------</span>
+    <span class="c1"># Hjorth parameters</span>
+    <span class="c1"># ------------------------------------------------------------------</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_hjorth_prep</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+        <span class="n">sos</span> <span class="o">=</span> <span class="n">butter_bandpass</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="p">[</span><span class="s2">&quot;frange&quot;</span><span class="p">][</span><span class="mi">0</span><span class="p">],</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="p">[</span><span class="s2">&quot;frange&quot;</span><span class="p">][</span><span class="mi">1</span><span class="p">],</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_sfreq</span><span class="p">,</span>
+            <span class="n">order</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;sos&quot;</span><span class="p">:</span> <span class="n">sos</span><span class="p">}</span>
+
+    <span class="nd">@timed</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_hjorth</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">sos</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Mean of Hjorth mobility and complexity across channels.</span>
+
+<span class="sd">        Mobility ≈ dominant frequency proxy; complexity ≈ signal irregularity.</span>
+<span class="sd">        No FFT required — pure time-domain.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="n">sosfiltfilt</span><span class="p">(</span><span class="n">sos</span><span class="p">,</span> <span class="n">data</span><span class="p">)</span>  <span class="c1"># shape (n_ch, n_samples)</span>
+        <span class="n">dx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">diff</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">ddx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">diff</span><span class="p">(</span><span class="n">dx</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+
+        <span class="n">var_x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">var</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span> <span class="o">+</span> <span class="mf">1e-300</span>
+        <span class="n">var_dx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">var</span><span class="p">(</span><span class="n">dx</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span> <span class="o">+</span> <span class="mf">1e-300</span>
+        <span class="n">var_ddx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">var</span><span class="p">(</span><span class="n">ddx</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span> <span class="o">+</span> <span class="mf">1e-300</span>
+
+        <span class="n">mobility</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">var_dx</span> <span class="o">/</span> <span class="n">var_x</span><span class="p">)</span>
+        <span class="n">mobility_d</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">var_ddx</span> <span class="o">/</span> <span class="n">var_dx</span><span class="p">)</span>
+        <span class="n">complexity</span> <span class="o">=</span> <span class="n">mobility_d</span> <span class="o">/</span> <span class="n">mobility</span>
+
+        <span class="k">return</span> <span class="nb">float</span><span class="p">(</span><span class="mf">0.5</span> <span class="o">*</span> <span class="p">(</span><span class="n">mobility</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span> <span class="o">+</span> <span class="n">complexity</span><span class="o">.</span><span class="n">mean</span><span class="p">()))</span>
+
+    <span class="c1"># ------------------------------------------------------------------</span>
+    <span class="c1"># Spectral centroid</span>
+    <span class="c1"># ------------------------------------------------------------------</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_spectral_centroid_prep</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+        <span class="k">return</span> <span class="p">{</span>
+            <span class="s2">&quot;sfreq&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sfreq</span><span class="p">,</span>
+            <span class="s2">&quot;frange&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="p">[</span><span class="s2">&quot;frange&quot;</span><span class="p">],</span>
+        <span class="p">}</span>
+
+    <span class="nd">@timed</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_spectral_centroid</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">data</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
+        <span class="n">sfreq</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+        <span class="n">frange</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Frequency-weighted centre-of-mass of the PSD within a band (Hz).</span>
+
+<span class="sd">        High centroid → activity shifted towards the upper edge of the band</span>
+<span class="sd">        (useful for tracking alpha-peak drift or SMR centre-frequency).</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">n_samples</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+        <span class="n">freqs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">fft</span><span class="o">.</span><span class="n">rfftfreq</span><span class="p">(</span><span class="n">n_samples</span><span class="p">,</span> <span class="n">d</span><span class="o">=</span><span class="mf">1.0</span> <span class="o">/</span> <span class="n">sfreq</span><span class="p">)</span>
+        <span class="n">mask</span> <span class="o">=</span> <span class="p">(</span><span class="n">freqs</span> <span class="o">&gt;=</span> <span class="n">frange</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">freqs</span> <span class="o">&lt;=</span> <span class="n">frange</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+        <span class="n">freqs_band</span> <span class="o">=</span> <span class="n">freqs</span><span class="p">[</span><span class="n">mask</span><span class="p">]</span>
+
+        <span class="n">psd</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">fft</span><span class="o">.</span><span class="n">rfft</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">))</span> <span class="o">**</span> <span class="mi">2</span>  <span class="c1"># shape (n_ch, n_freqs)</span>
+        <span class="n">psd_band</span> <span class="o">=</span> <span class="n">psd</span><span class="p">[:,</span> <span class="n">mask</span><span class="p">]</span>
+
+        <span class="n">total</span> <span class="o">=</span> <span class="n">psd_band</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">keepdims</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span> <span class="o">+</span> <span class="mf">1e-300</span>
+        <span class="n">centroid_per_ch</span> <span class="o">=</span> <span class="p">(</span><span class="n">psd_band</span> <span class="o">*</span> <span class="n">freqs_band</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">newaxis</span><span class="p">,</span> <span class="p">:])</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span> <span class="o">/</span> <span class="n">total</span><span class="o">.</span><span class="n">squeeze</span><span class="p">()</span>
+        <span class="k">return</span> <span class="nb">float</span><span class="p">(</span><span class="n">centroid_per_ch</span><span class="o">.</span><span class="n">mean</span><span class="p">())</span>
+
+    <span class="c1"># ------------------------------------------------------------------</span>
+    <span class="c1"># ERD/ERS laterality index</span>
+    <span class="c1"># ------------------------------------------------------------------</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_laterality_erd_ers_prep</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Prep: detect hemispheric channel indices + compute baseline powers.&quot;&quot;&quot;</span>
+        <span class="c1"># requires raw_baseline</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;raw_baseline&quot;</span><span class="p">)</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">raw_baseline</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span>
+                <span class="s2">&quot;laterality_erd_ers requires a completed baseline recording. &quot;</span>
+                <span class="s2">&quot;Call record_baseline() first.&quot;</span>
+            <span class="p">)</span>
+        <span class="n">ch_names</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">rec_info</span><span class="p">[</span><span class="s2">&quot;ch_names&quot;</span><span class="p">]</span>
+
+        <span class="k">def</span><span class="w"> </span><span class="nf">_is_left</span><span class="p">(</span><span class="n">name</span><span class="p">):</span>
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">name</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">):</span>
+                <span class="k">if</span> <span class="n">name</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">isdigit</span><span class="p">():</span>
+                    <span class="k">return</span> <span class="nb">int</span><span class="p">(</span><span class="n">name</span><span class="p">[</span><span class="n">i</span><span class="p">])</span> <span class="o">%</span> <span class="mi">2</span> <span class="o">==</span> <span class="mi">1</span>
+            <span class="k">return</span> <span class="kc">False</span>
+
+        <span class="k">def</span><span class="w"> </span><span class="nf">_is_right</span><span class="p">(</span><span class="n">name</span><span class="p">):</span>
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">name</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">):</span>
+                <span class="k">if</span> <span class="n">name</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">isdigit</span><span class="p">():</span>
+                    <span class="k">return</span> <span class="nb">int</span><span class="p">(</span><span class="n">name</span><span class="p">[</span><span class="n">i</span><span class="p">])</span> <span class="o">%</span> <span class="mi">2</span> <span class="o">==</span> <span class="mi">0</span>
+            <span class="k">return</span> <span class="kc">False</span>
+
+        <span class="n">lh_idx</span> <span class="o">=</span> <span class="p">[</span><span class="n">i</span> <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">ch</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">ch_names</span><span class="p">)</span> <span class="k">if</span> <span class="n">_is_left</span><span class="p">(</span><span class="n">ch</span><span class="p">)]</span>
+        <span class="n">rh_idx</span> <span class="o">=</span> <span class="p">[</span><span class="n">i</span> <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">ch</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">ch_names</span><span class="p">)</span> <span class="k">if</span> <span class="n">_is_right</span><span class="p">(</span><span class="n">ch</span><span class="p">)]</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">lh_idx</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">rh_idx</span><span class="p">:</span>
+            <span class="n">warn</span><span class="p">(</span>
+                <span class="s2">&quot;laterality_erd_ers: hemispheric auto-detection failed; splitting by index.&quot;</span><span class="p">,</span>
+                <span class="ne">UserWarning</span><span class="p">,</span>
+                <span class="n">stacklevel</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+            <span class="p">)</span>
+            <span class="n">mid</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">ch_names</span><span class="p">)</span> <span class="o">//</span> <span class="mi">2</span>
+            <span class="n">lh_idx</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="n">mid</span><span class="p">))</span>
+            <span class="n">rh_idx</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="n">mid</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">ch_names</span><span class="p">)))</span>
+
+        <span class="n">baseline_data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">raw_baseline</span><span class="o">.</span><span class="n">get_data</span><span class="p">()</span>
+        <span class="n">frange</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="p">[</span><span class="s2">&quot;frange&quot;</span><span class="p">])</span>
+        <span class="n">method</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="p">[</span><span class="s2">&quot;method&quot;</span><span class="p">]</span>
+        <span class="n">baseline_lh</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span>
+            <span class="n">compute_bandpower</span><span class="p">(</span>
+                <span class="n">baseline_data</span><span class="p">[</span><span class="n">lh_idx</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sfreq</span><span class="p">,</span> <span class="n">frange</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="n">method</span><span class="p">,</span> <span class="n">relative</span><span class="o">=</span><span class="kc">False</span>
+            <span class="p">)</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span>
+        <span class="p">)</span>
+        <span class="n">baseline_rh</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span>
+            <span class="n">compute_bandpower</span><span class="p">(</span>
+                <span class="n">baseline_data</span><span class="p">[</span><span class="n">rh_idx</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sfreq</span><span class="p">,</span> <span class="n">frange</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="n">method</span><span class="p">,</span> <span class="n">relative</span><span class="o">=</span><span class="kc">False</span>
+            <span class="p">)</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span>
+        <span class="p">)</span>
+
+        <span class="k">return</span> <span class="p">{</span>
+            <span class="s2">&quot;sfreq&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sfreq</span><span class="p">,</span>
+            <span class="s2">&quot;frange&quot;</span><span class="p">:</span> <span class="n">frange</span><span class="p">,</span>
+            <span class="s2">&quot;method&quot;</span><span class="p">:</span> <span class="n">method</span><span class="p">,</span>
+            <span class="s2">&quot;lh_idx&quot;</span><span class="p">:</span> <span class="n">lh_idx</span><span class="p">,</span>
+            <span class="s2">&quot;rh_idx&quot;</span><span class="p">:</span> <span class="n">rh_idx</span><span class="p">,</span>
+            <span class="s2">&quot;baseline_lh&quot;</span><span class="p">:</span> <span class="n">baseline_lh</span><span class="p">,</span>
+            <span class="s2">&quot;baseline_rh&quot;</span><span class="p">:</span> <span class="n">baseline_rh</span><span class="p">,</span>
+        <span class="p">}</span>
+
+    <span class="nd">@timed</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_laterality_erd_ers</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">data</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
+        <span class="n">sfreq</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+        <span class="n">frange</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">,</span>
+        <span class="n">method</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">lh_idx</span><span class="p">:</span> <span class="nb">list</span><span class="p">,</span>
+        <span class="n">rh_idx</span><span class="p">:</span> <span class="nb">list</span><span class="p">,</span>
+        <span class="n">baseline_lh</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+        <span class="n">baseline_rh</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Baseline-normalised inter-hemispheric ERD/ERS asymmetry (%).</span>
+
+<span class="sd">        Computes the ERD/ERS ratio for each hemisphere separately</span>
+<span class="sd">        (normalised by its own baseline power) and returns the signed</span>
+<span class="sd">        difference:</span>
+
+<span class="sd">            feature = ERD_ERS_right − ERD_ERS_left</span>
+
+<span class="sd">        * Positive → right hemisphere more activated (ERS) or less suppressed.</span>
+<span class="sd">        * Negative → left hemisphere more activated (or right more suppressed).</span>
+
+<span class="sd">        Motor imagery example: right-hand imagery produces left-hemisphere</span>
+<span class="sd">        alpha ERD, so the feature becomes strongly negative during the task</span>
+<span class="sd">        and recovers toward zero at rest.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">lh_now</span> <span class="o">=</span> <span class="n">compute_bandpower</span><span class="p">(</span>
+            <span class="n">data</span><span class="p">[</span><span class="n">lh_idx</span><span class="p">],</span> <span class="n">sfreq</span><span class="p">,</span> <span class="n">frange</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="n">method</span><span class="p">,</span> <span class="n">relative</span><span class="o">=</span><span class="kc">False</span>
+        <span class="p">)</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span>
+        <span class="n">rh_now</span> <span class="o">=</span> <span class="n">compute_bandpower</span><span class="p">(</span>
+            <span class="n">data</span><span class="p">[</span><span class="n">rh_idx</span><span class="p">],</span> <span class="n">sfreq</span><span class="p">,</span> <span class="n">frange</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="n">method</span><span class="p">,</span> <span class="n">relative</span><span class="o">=</span><span class="kc">False</span>
+        <span class="p">)</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span>
+        <span class="n">erd_lh</span> <span class="o">=</span> <span class="p">(</span><span class="n">lh_now</span> <span class="o">-</span> <span class="n">baseline_lh</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="n">baseline_lh</span> <span class="o">+</span> <span class="mf">1e-300</span><span class="p">)</span> <span class="o">*</span> <span class="mf">100.0</span>
+        <span class="n">erd_rh</span> <span class="o">=</span> <span class="p">(</span><span class="n">rh_now</span> <span class="o">-</span> <span class="n">baseline_rh</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="n">baseline_rh</span> <span class="o">+</span> <span class="mf">1e-300</span><span class="p">)</span> <span class="o">*</span> <span class="mf">100.0</span>
+        <span class="k">return</span> <span class="nb">float</span><span class="p">(</span><span class="n">erd_rh</span> <span class="o">-</span> <span class="n">erd_lh</span><span class="p">)</span>
+
+    <span class="c1"># ------------------------------------------------------------------</span>
+    <span class="c1"># Slow Cortical Potentials (SCP)</span>
+    <span class="c1"># ------------------------------------------------------------------</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_scp_prep</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Prep: build SOS low-pass (and optional high-pass) Butterworth filters.&quot;&quot;&quot;</span>
+        <span class="n">sfreq</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">rec_info</span><span class="p">[</span><span class="s2">&quot;sfreq&quot;</span><span class="p">]</span>
+        <span class="n">lowpass</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="p">[</span><span class="s2">&quot;lowpass&quot;</span><span class="p">]</span>
+        <span class="n">highpass</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;highpass&quot;</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">)</span>
+        <span class="n">reference</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;reference&quot;</span><span class="p">,</span> <span class="s2">&quot;mean&quot;</span><span class="p">)</span>
+
+        <span class="n">nyq</span> <span class="o">=</span> <span class="n">sfreq</span> <span class="o">/</span> <span class="mf">2.0</span>
+        <span class="n">sos_lp</span> <span class="o">=</span> <span class="n">butter</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="n">lowpass</span> <span class="o">/</span> <span class="n">nyq</span><span class="p">,</span> <span class="n">btype</span><span class="o">=</span><span class="s2">&quot;low&quot;</span><span class="p">,</span> <span class="n">output</span><span class="o">=</span><span class="s2">&quot;sos&quot;</span><span class="p">)</span>
+
+        <span class="n">sos_hp</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">if</span> <span class="n">highpass</span> <span class="o">&gt;</span> <span class="mf">0.0</span><span class="p">:</span>
+            <span class="n">sos_hp</span> <span class="o">=</span> <span class="n">butter</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="n">highpass</span> <span class="o">/</span> <span class="n">nyq</span><span class="p">,</span> <span class="n">btype</span><span class="o">=</span><span class="s2">&quot;high&quot;</span><span class="p">,</span> <span class="n">output</span><span class="o">=</span><span class="s2">&quot;sos&quot;</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="p">{</span>
+            <span class="s2">&quot;sos_lp&quot;</span><span class="p">:</span> <span class="n">sos_lp</span><span class="p">,</span>
+            <span class="s2">&quot;sos_hp&quot;</span><span class="p">:</span> <span class="n">sos_hp</span><span class="p">,</span>
+            <span class="s2">&quot;reference&quot;</span><span class="p">:</span> <span class="n">reference</span><span class="p">,</span>
+        <span class="p">}</span>
+
+    <span class="nd">@timed</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_scp</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">data</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
+        <span class="n">sos_lp</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
+        <span class="n">sos_hp</span><span class="p">,</span>
+        <span class="n">reference</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Slow Cortical Potential: mean amplitude of the DC-coupled slow signal.</span>
+
+<span class="sd">        Applies a low-pass (and optional high-pass) zero-phase Butterworth</span>
+<span class="sd">        filter to extract the slow envelope, then collapses channels via</span>
+<span class="sd">        mean or median and returns the temporal mean of the resulting signal.</span>
+
+<span class="sd">        Positive SCP → cortical deactivation; negative SCP → activation.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">sig</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+
+        <span class="c1"># Optional high-pass first (removes very slow drifts if DC not coupled)</span>
+        <span class="k">if</span> <span class="n">sos_hp</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">sig</span> <span class="o">=</span> <span class="n">sosfiltfilt</span><span class="p">(</span><span class="n">sos_hp</span><span class="p">,</span> <span class="n">sig</span><span class="p">)</span>
+
+        <span class="c1"># Low-pass to extract the slow cortical potential</span>
+        <span class="n">sig</span> <span class="o">=</span> <span class="n">sosfiltfilt</span><span class="p">(</span><span class="n">sos_lp</span><span class="p">,</span> <span class="n">sig</span><span class="p">)</span>
+
+        <span class="c1"># Collapse channels</span>
+        <span class="k">if</span> <span class="n">reference</span> <span class="o">==</span> <span class="s2">&quot;median&quot;</span><span class="p">:</span>
+            <span class="n">channel_summary</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">median</span><span class="p">(</span><span class="n">sig</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>  <span class="c1"># shape: (n_samples,)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">channel_summary</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">sig</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>  <span class="c1"># shape: (n_samples,)</span>
+
+        <span class="k">return</span> <span class="nb">float</span><span class="p">(</span><span class="n">channel_summary</span><span class="o">.</span><span class="n">mean</span><span class="p">())</span>
+
+    <span class="c1"># ------------------------------------------------------------------</span>
+    <span class="c1"># Peak Alpha Frequency (PAF) tracker</span>
+    <span class="c1"># ------------------------------------------------------------------</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_peak_alpha_freq_prep</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Prep: initialise EMA state for the real-time PAF tracker.&quot;&quot;&quot;</span>
+        <span class="n">sfreq</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">rec_info</span><span class="p">[</span><span class="s2">&quot;sfreq&quot;</span><span class="p">]</span>
+        <span class="n">frange</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="p">[</span><span class="s2">&quot;frange&quot;</span><span class="p">]</span>
+        <span class="n">method</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;method&quot;</span><span class="p">,</span> <span class="s2">&quot;welch&quot;</span><span class="p">)</span>
+        <span class="n">smoothing</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;smoothing&quot;</span><span class="p">,</span> <span class="mf">0.85</span><span class="p">)</span>
+
+        <span class="c1"># Compute initial PAF from baseline if available; else use band midpoint</span>
+        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;raw_baseline&quot;</span><span class="p">)</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">raw_baseline</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">baseline_data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">raw_baseline</span><span class="o">.</span><span class="n">get_data</span><span class="p">()</span>  <span class="c1"># (n_ch, n_samples)</span>
+            <span class="n">mean_sig</span> <span class="o">=</span> <span class="n">baseline_data</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>  <span class="c1"># (n_samples,)</span>
+            <span class="k">if</span> <span class="n">method</span> <span class="o">==</span> <span class="s2">&quot;welch&quot;</span><span class="p">:</span>
+                <span class="n">freqs_bl</span><span class="p">,</span> <span class="n">psd_bl</span> <span class="o">=</span> <span class="n">welch</span><span class="p">(</span><span class="n">mean_sig</span><span class="p">,</span> <span class="n">fs</span><span class="o">=</span><span class="n">sfreq</span><span class="p">,</span> <span class="n">nperseg</span><span class="o">=</span><span class="nb">min</span><span class="p">(</span><span class="mi">256</span><span class="p">,</span> <span class="n">mean_sig</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]))</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">n</span> <span class="o">=</span> <span class="n">mean_sig</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+                <span class="n">fft_vals</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">fft</span><span class="o">.</span><span class="n">rfft</span><span class="p">(</span><span class="n">mean_sig</span><span class="p">))</span> <span class="o">**</span> <span class="mi">2</span>
+                <span class="n">freqs_bl</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">fft</span><span class="o">.</span><span class="n">rfftfreq</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">d</span><span class="o">=</span><span class="mf">1.0</span> <span class="o">/</span> <span class="n">sfreq</span><span class="p">)</span>
+                <span class="n">psd_bl</span> <span class="o">=</span> <span class="n">fft_vals</span>
+            <span class="n">mask_bl</span> <span class="o">=</span> <span class="p">(</span><span class="n">freqs_bl</span> <span class="o">&gt;=</span> <span class="n">frange</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">freqs_bl</span> <span class="o">&lt;=</span> <span class="n">frange</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+            <span class="k">if</span> <span class="n">mask_bl</span><span class="o">.</span><span class="n">any</span><span class="p">():</span>
+                <span class="n">initial_paf</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">freqs_bl</span><span class="p">[</span><span class="n">mask_bl</span><span class="p">][</span><span class="n">np</span><span class="o">.</span><span class="n">argmax</span><span class="p">(</span><span class="n">psd_bl</span><span class="p">[</span><span class="n">mask_bl</span><span class="p">])])</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">initial_paf</span> <span class="o">=</span> <span class="nb">float</span><span class="p">((</span><span class="n">frange</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="n">frange</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span> <span class="o">/</span> <span class="mf">2.0</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">initial_paf</span> <span class="o">=</span> <span class="nb">float</span><span class="p">((</span><span class="n">frange</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="n">frange</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span> <span class="o">/</span> <span class="mf">2.0</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="p">{</span>
+            <span class="s2">&quot;sfreq&quot;</span><span class="p">:</span> <span class="nb">float</span><span class="p">(</span><span class="n">sfreq</span><span class="p">),</span>
+            <span class="s2">&quot;frange&quot;</span><span class="p">:</span> <span class="nb">list</span><span class="p">(</span><span class="n">frange</span><span class="p">),</span>
+            <span class="s2">&quot;method&quot;</span><span class="p">:</span> <span class="n">method</span><span class="p">,</span>
+            <span class="s2">&quot;smoothing&quot;</span><span class="p">:</span> <span class="nb">float</span><span class="p">(</span><span class="n">smoothing</span><span class="p">),</span>
+            <span class="s2">&quot;_paf_state&quot;</span><span class="p">:</span> <span class="p">[</span><span class="n">initial_paf</span><span class="p">],</span>  <span class="c1"># mutable reference cell for EMA state</span>
+        <span class="p">}</span>
+
+    <span class="nd">@timed</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_peak_alpha_freq</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">data</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
+        <span class="n">sfreq</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+        <span class="n">frange</span><span class="p">:</span> <span class="nb">list</span><span class="p">,</span>
+        <span class="n">method</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">smoothing</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+        <span class="n">_paf_state</span><span class="p">:</span> <span class="nb">list</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Real-time peak alpha frequency (PAF) with exponential smoothing.</span>
+
+<span class="sd">        Computes the PSD of the current window (averaged across channels),</span>
+<span class="sd">        finds the dominant peak within *frange*, and updates an exponential</span>
+<span class="sd">        moving average (EMA) to suppress frame-to-frame jitter.</span>
+
+<span class="sd">        Returns the EMA-smoothed PAF in Hz.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Average across channels to get a single time series</span>
+        <span class="n">mean_sig</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>  <span class="c1"># shape: (n_samples,)</span>
+
+        <span class="c1"># Compute PSD</span>
+        <span class="k">if</span> <span class="n">method</span> <span class="o">==</span> <span class="s2">&quot;welch&quot;</span><span class="p">:</span>
+            <span class="n">freqs</span><span class="p">,</span> <span class="n">psd</span> <span class="o">=</span> <span class="n">welch</span><span class="p">(</span><span class="n">mean_sig</span><span class="p">,</span> <span class="n">fs</span><span class="o">=</span><span class="n">sfreq</span><span class="p">,</span> <span class="n">nperseg</span><span class="o">=</span><span class="nb">min</span><span class="p">(</span><span class="mi">256</span><span class="p">,</span> <span class="n">mean_sig</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]))</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">n</span> <span class="o">=</span> <span class="n">mean_sig</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+            <span class="n">psd</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">fft</span><span class="o">.</span><span class="n">rfft</span><span class="p">(</span><span class="n">mean_sig</span><span class="p">))</span> <span class="o">**</span> <span class="mi">2</span>
+            <span class="n">freqs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">fft</span><span class="o">.</span><span class="n">rfftfreq</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">d</span><span class="o">=</span><span class="mf">1.0</span> <span class="o">/</span> <span class="n">sfreq</span><span class="p">)</span>
+
+        <span class="c1"># Find peak within frange</span>
+        <span class="n">mask</span> <span class="o">=</span> <span class="p">(</span><span class="n">freqs</span> <span class="o">&gt;=</span> <span class="n">frange</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">freqs</span> <span class="o">&lt;=</span> <span class="n">frange</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+        <span class="k">if</span> <span class="n">mask</span><span class="o">.</span><span class="n">any</span><span class="p">():</span>
+            <span class="n">peak_freq</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">freqs</span><span class="p">[</span><span class="n">mask</span><span class="p">][</span><span class="n">np</span><span class="o">.</span><span class="n">argmax</span><span class="p">(</span><span class="n">psd</span><span class="p">[</span><span class="n">mask</span><span class="p">])])</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">peak_freq</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">_paf_state</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>  <span class="c1"># fallback: keep current estimate</span>
+
+        <span class="c1"># EMA update — mutate the state cell so state persists across windows</span>
+        <span class="n">new_paf</span> <span class="o">=</span> <span class="p">(</span><span class="mf">1.0</span> <span class="o">-</span> <span class="n">smoothing</span><span class="p">)</span> <span class="o">*</span> <span class="n">peak_freq</span> <span class="o">+</span> <span class="n">smoothing</span> <span class="o">*</span> <span class="n">_paf_state</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">_paf_state</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">new_paf</span>
+
+        <span class="k">return</span> <span class="nb">float</span><span class="p">(</span><span class="n">new_paf</span><span class="p">)</span>
+
+    <span class="c1"># ------------------------------------------------------------------</span>
+    <span class="c1"># Connectivity Ratio</span>
+    <span class="c1"># ------------------------------------------------------------------</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_connectivity_ratio_prep</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Prep: build connectivity indices for numerator and denominator pairs.&quot;&quot;&quot;</span>
+        <span class="n">ch_names</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">rec_info</span><span class="p">[</span><span class="s2">&quot;ch_names&quot;</span><span class="p">]</span>
+
+        <span class="k">def</span><span class="w"> </span><span class="nf">_pair_to_indices</span><span class="p">(</span><span class="n">pair</span><span class="p">):</span>
+            <span class="n">a</span><span class="p">,</span> <span class="n">b</span> <span class="o">=</span> <span class="n">pair</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">pair</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+            <span class="k">if</span> <span class="n">a</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">ch_names</span> <span class="ow">or</span> <span class="n">b</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">ch_names</span><span class="p">:</span>
+                <span class="n">missing</span> <span class="o">=</span> <span class="p">[</span><span class="n">c</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="p">[</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">]</span> <span class="k">if</span> <span class="n">c</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">ch_names</span><span class="p">]</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">&quot;connectivity_ratio: channels </span><span class="si">{</span><span class="n">missing</span><span class="si">}</span><span class="s2"> not found in recording. &quot;</span>
+                    <span class="sa">f</span><span class="s2">&quot;Available: </span><span class="si">{</span><span class="n">ch_names</span><span class="si">}</span><span class="s2">&quot;</span>
+                <span class="p">)</span>
+            <span class="k">return</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">ch_names</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">a</span><span class="p">)]),</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">ch_names</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">b</span><span class="p">)]))</span>
+
+        <span class="n">indices_num</span> <span class="o">=</span> <span class="n">_pair_to_indices</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="p">[</span><span class="s2">&quot;channels_num&quot;</span><span class="p">])</span>
+        <span class="n">indices_den</span> <span class="o">=</span> <span class="n">_pair_to_indices</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="p">[</span><span class="s2">&quot;channels_den&quot;</span><span class="p">])</span>
+
+        <span class="n">freqs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="p">[</span><span class="s2">&quot;frange&quot;</span><span class="p">][</span><span class="mi">0</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="p">[</span><span class="s2">&quot;frange&quot;</span><span class="p">][</span><span class="mi">1</span><span class="p">],</span> <span class="mi">6</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="p">{</span>
+            <span class="s2">&quot;indices_num&quot;</span><span class="p">:</span> <span class="n">indices_num</span><span class="p">,</span>
+            <span class="s2">&quot;indices_den&quot;</span><span class="p">:</span> <span class="n">indices_den</span><span class="p">,</span>
+            <span class="s2">&quot;freqs&quot;</span><span class="p">:</span> <span class="n">freqs</span><span class="p">,</span>
+            <span class="s2">&quot;fmin&quot;</span><span class="p">:</span> <span class="nb">float</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="p">[</span><span class="s2">&quot;frange&quot;</span><span class="p">][</span><span class="mi">0</span><span class="p">]),</span>
+            <span class="s2">&quot;fmax&quot;</span><span class="p">:</span> <span class="nb">float</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="p">[</span><span class="s2">&quot;frange&quot;</span><span class="p">][</span><span class="mi">1</span><span class="p">]),</span>
+            <span class="s2">&quot;mode&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="p">[</span><span class="s2">&quot;mode&quot;</span><span class="p">],</span>
+            <span class="s2">&quot;method&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="p">[</span><span class="s2">&quot;method&quot;</span><span class="p">],</span>
+        <span class="p">}</span>
+
+    <span class="nd">@timed</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_connectivity_ratio</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">data</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
+        <span class="n">indices_num</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">,</span>
+        <span class="n">indices_den</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">,</span>
+        <span class="n">freqs</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
+        <span class="n">fmin</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+        <span class="n">fmax</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+        <span class="n">mode</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">method</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Ratio of functional connectivity between two channel pairs (or groups).</span>
+
+<span class="sd">        Useful for laterality of connectivity, e.g. ipsilateral / contralateral.</span>
+<span class="sd">        Returns conn_pair1 / conn_pair2.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Numerator connectivity</span>
+        <span class="n">con_num</span> <span class="o">=</span> <span class="n">spectral_connectivity_time</span><span class="p">(</span>
+            <span class="n">data</span><span class="o">=</span><span class="n">data</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">newaxis</span><span class="p">,</span> <span class="p">:],</span>
+            <span class="n">freqs</span><span class="o">=</span><span class="n">freqs</span><span class="p">,</span>
+            <span class="n">indices</span><span class="o">=</span><span class="n">indices_num</span><span class="p">,</span>
+            <span class="n">average</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+            <span class="n">sfreq</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_sfreq</span><span class="p">,</span>
+            <span class="n">fmin</span><span class="o">=</span><span class="n">fmin</span><span class="p">,</span>
+            <span class="n">fmax</span><span class="o">=</span><span class="n">fmax</span><span class="p">,</span>
+            <span class="n">faverage</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+            <span class="n">mode</span><span class="o">=</span><span class="n">mode</span><span class="p">,</span>
+            <span class="n">method</span><span class="o">=</span><span class="n">method</span><span class="p">,</span>
+            <span class="n">n_cycles</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="n">conn_num</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">squeeze</span><span class="p">(</span><span class="n">con_num</span><span class="o">.</span><span class="n">get_data</span><span class="p">(</span><span class="n">output</span><span class="o">=</span><span class="s2">&quot;dense&quot;</span><span class="p">))[</span><span class="n">indices_num</span><span class="p">]</span><span class="o">.</span><span class="n">mean</span><span class="p">())</span>
+
+        <span class="c1"># Denominator connectivity</span>
+        <span class="n">con_den</span> <span class="o">=</span> <span class="n">spectral_connectivity_time</span><span class="p">(</span>
+            <span class="n">data</span><span class="o">=</span><span class="n">data</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">newaxis</span><span class="p">,</span> <span class="p">:],</span>
+            <span class="n">freqs</span><span class="o">=</span><span class="n">freqs</span><span class="p">,</span>
+            <span class="n">indices</span><span class="o">=</span><span class="n">indices_den</span><span class="p">,</span>
+            <span class="n">average</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+            <span class="n">sfreq</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_sfreq</span><span class="p">,</span>
+            <span class="n">fmin</span><span class="o">=</span><span class="n">fmin</span><span class="p">,</span>
+            <span class="n">fmax</span><span class="o">=</span><span class="n">fmax</span><span class="p">,</span>
+            <span class="n">faverage</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+            <span class="n">mode</span><span class="o">=</span><span class="n">mode</span><span class="p">,</span>
+            <span class="n">method</span><span class="o">=</span><span class="n">method</span><span class="p">,</span>
+            <span class="n">n_cycles</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="n">conn_den</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">squeeze</span><span class="p">(</span><span class="n">con_den</span><span class="o">.</span><span class="n">get_data</span><span class="p">(</span><span class="n">output</span><span class="o">=</span><span class="s2">&quot;dense&quot;</span><span class="p">))[</span><span class="n">indices_den</span><span class="p">]</span><span class="o">.</span><span class="n">mean</span><span class="p">())</span>
+
+        <span class="k">return</span> <span class="nb">float</span><span class="p">(</span><span class="n">conn_num</span> <span class="o">/</span> <span class="p">(</span><span class="n">conn_den</span> <span class="o">+</span> <span class="mf">1e-30</span><span class="p">))</span></div>
+
+</pre></div>
+
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../../_static/scripts/bootstrap.js?digest=90905a2f556bf617f1a9"></script>
+<script defer src="../../_static/scripts/pydata-sphinx-theme.js?digest=90905a2f556bf617f1a9"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright 2025, Payam S. Shabestari.
+      <br/>
+    
+  </p>
+</div>
+      
+        <div class="footer-item">
+
+  <p class="sphinx-version">
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 9.0.4.
+    <br/>
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
+<p class="theme-version">
+  <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.20.0.
+</p></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>

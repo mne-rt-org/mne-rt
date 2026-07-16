@@ -1,0 +1,825 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>mne_rt.ArrayStream &#8212; MNE-RT</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=90905a2f556bf617f1a9" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=90905a2f556bf617f1a9" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery.css?v=fd6457a4" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-binder.css?v=f4aeca0c" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-dataframe.css?v=2082cf3c" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-rendered-html.css?v=1277b6f3" />
+    <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=5bf657dd" />
+  
+  <!-- So that users can add custom icons -->
+  <script defer src="../_static/scripts/fontawesome.js?digest=90905a2f556bf617f1a9"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=90905a2f556bf617f1a9" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=90905a2f556bf617f1a9" />
+
+    <script src="../_static/documentation_options.js?v=8d563738"></script>
+    <script src="../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="../_static/sg-tags.js?v=d80f6fa4"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'generated/mne_rt.ArrayStream';</script>
+    <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="mne_rt.viz.NFPlot" href="mne_rt.viz.NFPlot.html" />
+    <link rel="prev" title="mne_rt.RTEpochs" href="mne_rt.RTEpochs.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="" />
+  
+    
+    <script src="../_static/searchtools.js"></script>
+    <script src="../_static/language_data.js"></script>
+    <script src="../searchindex.js"></script>
+  
+  </head>
+  <body data-default-mode="">
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+  
+  
+  
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header id="pst-header" class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../index.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../_static/mne_rt_logo.svg" class="logo__image only-light" alt="MNE-RT - Home"/>
+    <img src="../_static/mne_rt_logo.svg" class="logo__image only-dark pst-js-only" alt="MNE-RT - Home"/>
+  
+  
+</a></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../install.html">
+    Installation
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../tutorial.html">
+    User Guide
+  </a>
+</li>
+
+
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="../api.html">
+    API Reference
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../visualization.html">
+    Visualisation
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../cli.html">
+    CLI
+  </a>
+</li>
+
+            <li class="nav-item dropdown">
+                <button class="btn dropdown-toggle nav-item" type="button"
+                data-bs-toggle="dropdown" aria-expanded="false"
+                aria-controls="pst-nav-more-links">
+                    More
+                </button>
+                <ul id="pst-nav-more-links" class="dropdown-menu">
+                    
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../denoising.html">
+    Artifact Correction
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../modalities.html">
+    Real-time Feature Modalities
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../protocols.html">
+    NF Protocols
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../whats_new.html">
+    What’s new
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../auto_examples/index.html">
+    Examples Gallery
+  </a>
+</li>
+
+                </ul>
+            </li>
+            
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+        </div>
+      
+      
+        <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/payamsash/mne-rt" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-square-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
+        </li>
+</ul></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+    </div>
+  
+
+  
+    <button class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="On this page">
+      <span class="fa-solid fa-outdent"></span>
+    </button>
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../install.html">
+    Installation
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../tutorial.html">
+    User Guide
+  </a>
+</li>
+
+
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="../api.html">
+    API Reference
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../visualization.html">
+    Visualisation
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../cli.html">
+    CLI
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../denoising.html">
+    Artifact Correction
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../modalities.html">
+    Real-time Feature Modalities
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../protocols.html">
+    NF Protocols
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../whats_new.html">
+    What’s new
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../auto_examples/index.html">
+    Examples Gallery
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/payamsash/mne-rt" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-square-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
+        </li>
+</ul></div>
+        
+      </div>
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+
+<nav class="bd-docs-nav bd-links"
+     aria-label="Section Navigation">
+  <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
+  <div class="bd-toc-item navbar-nav"><ul class="current nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="mne_rt.RTStream.html">mne_rt.RTStream</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mne_rt.RTEpochs.html">mne_rt.RTEpochs</a></li>
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">mne_rt.ArrayStream</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="mne_rt.viz.NFPlot.html">mne_rt.viz.NFPlot</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mne_rt.viz.RawPlot.html">mne_rt.viz.RawPlot</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mne_rt.viz.EpochPlot.html">mne_rt.viz.EpochPlot</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mne_rt.viz.BrainPlot.html">mne_rt.viz.BrainPlot</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mne_rt.viz.TopomapPlot.html">mne_rt.viz.TopomapPlot</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mne_rt.viz.TopoPlot.html">mne_rt.viz.TopoPlot</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mne_rt.viz.ButterflyPlot.html">mne_rt.viz.ButterflyPlot</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mne_rt.viz.TFRPlot.html">mne_rt.viz.TFRPlot</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mne_rt.viz.CompareEvoked.html">mne_rt.viz.CompareEvoked</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="mne_rt.tools.AdaptiveLMSFilter.html">mne_rt.tools.AdaptiveLMSFilter</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mne_rt.tools.ORICA.html">mne_rt.tools.ORICA</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mne_rt.tools.GEDAIDenoiser.html">mne_rt.tools.GEDAIDenoiser</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mne_rt.tools.ASRDenoiser.html">mne_rt.tools.ASRDenoiser</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mne_rt.tools.RTMaxwellFilter.html">mne_rt.tools.RTMaxwellFilter</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="mne_rt.tools.BadChannelDetector.html">mne_rt.tools.BadChannelDetector</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mne_rt.tools.RiemannianPotatoDetector.html">mne_rt.tools.RiemannianPotatoDetector</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="mne_rt.protocols.ThresholdProtocol.html">mne_rt.protocols.ThresholdProtocol</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mne_rt.protocols.ZScoreProtocol.html">mne_rt.protocols.ZScoreProtocol</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mne_rt.protocols.PercentileProtocol.html">mne_rt.protocols.PercentileProtocol</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mne_rt.protocols.LinearTrendProtocol.html">mne_rt.protocols.LinearTrendProtocol</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mne_rt.protocols.ShamProtocol.html">mne_rt.protocols.ShamProtocol</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mne_rt.protocols.UpDownStaircaseProtocol.html">mne_rt.protocols.UpDownStaircaseProtocol</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mne_rt.protocols.MultiBandProtocol.html">mne_rt.protocols.MultiBandProtocol</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mne_rt.protocols.RLProtocol.html">mne_rt.protocols.RLProtocol</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mne_rt.protocols.OperantProtocol.html">mne_rt.protocols.OperantProtocol</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mne_rt.protocols.TransferProtocol.html">mne_rt.protocols.TransferProtocol</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="mne_rt.combiners.FeatureCombiner.html">mne_rt.combiners.FeatureCombiner</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mne_rt.combiners.WeightedSumCombiner.html">mne_rt.combiners.WeightedSumCombiner</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mne_rt.combiners.GeometricMeanCombiner.html">mne_rt.combiners.GeometricMeanCombiner</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mne_rt.combiners.ZScoredNormCombiner.html">mne_rt.combiners.ZScoredNormCombiner</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mne_rt.combiners.LearnedCombiner.html">mne_rt.combiners.LearnedCombiner</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="mne_rt.OSCSender.html">mne_rt.OSCSender</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mne_rt.LSLSender.html">mne_rt.LSLSender</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="mne_rt.tools.simulate_raw.html">mne_rt.tools.simulate_raw</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mne_rt.tools.simulate_nf_session.html">mne_rt.tools.simulate_nf_session</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mne_rt.modalities.ModalityMixin.html">mne_rt.modalities.ModalityMixin</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="mne_rt.tools.save_as_bids.html">mne_rt.tools.save_as_bids</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="mne_rt.set_log_level.html">mne_rt.set_log_level</a></li>
+</ul>
+</div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    
+    <li class="breadcrumb-item"><a href="../api.html" class="nav-link">API Reference</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">mne_rt.ArrayStream</span></li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section id="mne-rt-arraystream">
+<h1>mne_rt.ArrayStream<a class="headerlink" href="#mne-rt-arraystream" title="Link to this heading">#</a></h1>
+<dl class="py class">
+<dt class="sig sig-object py" id="mne_rt.ArrayStream">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">mne_rt.</span></span><span class="sig-name descname"><span class="pre">ArrayStream</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.5)"><span class="pre">ndarray</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">info</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://mne.tools/stable/generated/mne.Info.html#mne.Info" title="(in MNE v1.12)"><span class="pre">Info</span></a></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">bufsize</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">3.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">chunk_size</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">10</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_repeat</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mne_rt/rt_stream.html#ArrayStream"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mne_rt.ArrayStream" title="Link to this definition">#</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<p>Simulate a live LSL stream from an in-memory numpy array.</p>
+<p>Duck-types the subset of <a class="reference external" href="https://mne.tools/mne-lsl/stable/generated/api/mne_lsl.stream.StreamLSL.html#mne_lsl.stream.StreamLSL" title="(in MNE-LSL)"><code class="xref py py-class docutils literal notranslate"><span class="pre">mne_lsl.stream.StreamLSL</span></code></a>’s public
+interface that <a class="reference internal" href="mne_rt.RTStream.html#mne_rt.RTStream" title="mne_rt.RTStream"><code class="xref py py-class docutils literal notranslate"><span class="pre">RTStream</span></code></a> relies on (<code class="docutils literal notranslate"><span class="pre">get_data</span></code>,
+<code class="docutils literal notranslate"><span class="pre">n_new_samples</span></code>, <code class="docutils literal notranslate"><span class="pre">connected</span></code>, <code class="docutils literal notranslate"><span class="pre">info</span></code>, <code class="docutils literal notranslate"><span class="pre">disconnect</span></code>, <code class="docutils literal notranslate"><span class="pre">pick</span></code>,
+<code class="docutils literal notranslate"><span class="pre">filter</span></code>, <code class="docutils literal notranslate"><span class="pre">notch_filter</span></code>, <code class="docutils literal notranslate"><span class="pre">set_montage</span></code>, <code class="docutils literal notranslate"><span class="pre">set_meas_date</span></code>), so an
+<a class="reference internal" href="mne_rt.RTStream.html#mne_rt.RTStream" title="mne_rt.RTStream"><code class="xref py py-class docutils literal notranslate"><span class="pre">RTStream</span></code></a> session can be driven by a plain numpy array instead of
+live hardware or a recorded file replayed over LSL. Returned by
+<a class="reference internal" href="mne_rt.RTStream.html#mne_rt.RTStream.connect_to_array" title="mne_rt.RTStream.connect_to_array"><code class="xref py py-meth docutils literal notranslate"><span class="pre">RTStream.connect_to_array()</span></code></a> — not normally instantiated directly.</p>
+<dl class="field-list">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl>
+<dt><strong>data</strong><span class="classifier"><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.5)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">array</span></code></a> <code class="xref py py-obj docutils literal notranslate"><span class="pre">of</span></code> <code class="xref py py-obj docutils literal notranslate"><span class="pre">shape</span></code> (<code class="xref py py-obj docutils literal notranslate"><span class="pre">n_channels</span></code>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">n_samples</span></code>)</span></dt><dd><p>The full recording to stream.</p>
+</dd>
+<dt><strong>info</strong><span class="classifier"><a class="reference external" href="https://mne.tools/stable/generated/mne.Info.html#mne.Info" title="(in MNE v1.12)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mne.Info</span></code></a></span></dt><dd><p>Channel/sampling-rate metadata; <code class="docutils literal notranslate"><span class="pre">info[&quot;nchan&quot;]</span></code> must equal
+<code class="docutils literal notranslate"><span class="pre">data.shape[0]</span></code>.</p>
+</dd>
+<dt><strong>bufsize</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">float</span></code></a>, default 3.0</span></dt><dd><p>Ring-buffer size in seconds, mirroring <code class="docutils literal notranslate"><span class="pre">StreamLSL(bufsize=...)</span></code>.</p>
+</dd>
+<dt><strong>chunk_size</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">int</span></code></a>, default 10</span></dt><dd><p>Number of samples released into the buffer per acquisition tick,
+mirroring <a class="reference external" href="https://mne.tools/mne-lsl/stable/generated/api/mne_lsl.player.PlayerLSL.html#mne_lsl.player.PlayerLSL" title="(in MNE-LSL)"><code class="xref py py-class docutils literal notranslate"><span class="pre">mne_lsl.player.PlayerLSL</span></code></a>’s <code class="docutils literal notranslate"><span class="pre">chunk_size</span></code>.</p>
+</dd>
+<dt><strong>n_repeat</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">int</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">float</span></code></a>, default 1</span></dt><dd><p>Number of times to loop over <code class="docutils literal notranslate"><span class="pre">data</span></code> once exhausted. Use
+<code class="docutils literal notranslate"><span class="pre">np.inf</span></code> for an open-ended session.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>Because the entire recording is already available in memory,
+<a class="reference internal" href="#mne_rt.ArrayStream.filter" title="mne_rt.ArrayStream.filter"><code class="xref py py-meth docutils literal notranslate"><span class="pre">filter()</span></code></a> and <a class="reference internal" href="#mne_rt.ArrayStream.notch_filter" title="mne_rt.ArrayStream.notch_filter"><code class="xref py py-meth docutils literal notranslate"><span class="pre">notch_filter()</span></code></a> apply a single zero-phase FIR
+pass over the whole array (via <a class="reference external" href="https://mne.tools/stable/generated/mne.filter.filter_data.html#mne.filter.filter_data" title="(in MNE v1.12)"><code class="xref py py-func docutils literal notranslate"><span class="pre">mne.filter.filter_data()</span></code></a> /
+<a class="reference external" href="https://mne.tools/stable/generated/mne.filter.notch_filter.html#mne.filter.notch_filter" title="(in MNE v1.12)"><code class="xref py py-func docutils literal notranslate"><span class="pre">mne.filter.notch_filter()</span></code></a>) rather than a causal online filter —
+there is no “future data” constraint to respect as there would be for a
+genuinely live stream. If called while already streaming (as
+<a class="reference internal" href="mne_rt.RTStream.html#mne_rt.RTStream.record_main" title="mne_rt.RTStream.record_main"><code class="xref py py-meth docutils literal notranslate"><span class="pre">record_main()</span></code></a> does), samples already pushed into
+the ring buffer stay unfiltered until they age out — the buffer is fully
+refreshed, and the transient gone, within one <code class="docutils literal notranslate"><span class="pre">bufsize</span></code> window.</p>
+<p>If <code class="docutils literal notranslate"><span class="pre">n_repeat</span></code> is exhausted before the caller stops requesting data,
+streaming simply stops advancing: <a class="reference internal" href="#mne_rt.ArrayStream.n_new_samples" title="mne_rt.ArrayStream.n_new_samples"><code class="xref py py-attr docutils literal notranslate"><span class="pre">n_new_samples</span></code></a> stays at 0 and
+<a class="reference internal" href="#mne_rt.ArrayStream.get_data" title="mne_rt.ArrayStream.get_data"><code class="xref py py-meth docutils literal notranslate"><span class="pre">get_data()</span></code></a> keeps returning the final buffered window.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="mne_rt.ArrayStream.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.5)"><span class="pre">ndarray</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">info</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://mne.tools/stable/generated/mne.Info.html#mne.Info" title="(in MNE v1.12)"><span class="pre">Info</span></a></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">bufsize</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">3.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">chunk_size</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">10</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_repeat</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span></span><a class="reference internal" href="../_modules/mne_rt/rt_stream.html#ArrayStream.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mne_rt.ArrayStream.__init__" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<p class="rubric">Methods</p>
+<div class="pst-scrollable-table-container"><table class="autosummary longtable table">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#mne_rt.ArrayStream.__init__" title="mne_rt.ArrayStream.__init__"><code class="xref py py-obj docutils literal notranslate"><span class="pre">__init__</span></code></a>(data, info, *[, bufsize, ...])</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#mne_rt.ArrayStream.connect" title="mne_rt.ArrayStream.connect"><code class="xref py py-obj docutils literal notranslate"><span class="pre">connect</span></code></a>()</p></td>
+<td><p>Start the simulated real-time acquisition thread.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#mne_rt.ArrayStream.disconnect" title="mne_rt.ArrayStream.disconnect"><code class="xref py py-obj docutils literal notranslate"><span class="pre">disconnect</span></code></a>()</p></td>
+<td><p>Stop the acquisition thread.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#mne_rt.ArrayStream.filter" title="mne_rt.ArrayStream.filter"><code class="xref py py-obj docutils literal notranslate"><span class="pre">filter</span></code></a>(l_freq, h_freq)</p></td>
+<td><p>Zero-phase FIR band-pass over the entire underlying array.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#mne_rt.ArrayStream.get_data" title="mne_rt.ArrayStream.get_data"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_data</span></code></a>([winsize, picks, exclude])</p></td>
+<td><p>Retrieve the latest data from the buffer.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#mne_rt.ArrayStream.notch_filter" title="mne_rt.ArrayStream.notch_filter"><code class="xref py py-obj docutils literal notranslate"><span class="pre">notch_filter</span></code></a>(freqs)</p></td>
+<td><p>Zero-phase FIR notch filter over the entire underlying array.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#mne_rt.ArrayStream.pick" title="mne_rt.ArrayStream.pick"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pick</span></code></a>([picks, exclude])</p></td>
+<td><p>Restrict the stream to a subset of channels, in-place.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#mne_rt.ArrayStream.set_meas_date" title="mne_rt.ArrayStream.set_meas_date"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_meas_date</span></code></a>(meas_date)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#mne_rt.ArrayStream.set_montage" title="mne_rt.ArrayStream.set_montage"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_montage</span></code></a>(montage[, on_missing])</p></td>
+<td><p></p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p class="rubric">Attributes</p>
+<div class="pst-scrollable-table-container"><table class="autosummary longtable table">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#mne_rt.ArrayStream.connected" title="mne_rt.ArrayStream.connected"><code class="xref py py-obj docutils literal notranslate"><span class="pre">connected</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#mne_rt.ArrayStream.info" title="mne_rt.ArrayStream.info"><code class="xref py py-obj docutils literal notranslate"><span class="pre">info</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#mne_rt.ArrayStream.n_new_samples" title="mne_rt.ArrayStream.n_new_samples"><code class="xref py py-obj docutils literal notranslate"><span class="pre">n_new_samples</span></code></a></p></td>
+<td><p>Number of new samples available since the last <a class="reference internal" href="#mne_rt.ArrayStream.get_data" title="mne_rt.ArrayStream.get_data"><code class="xref py py-meth docutils literal notranslate"><span class="pre">get_data()</span></code></a> call.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<dl class="py method">
+<dt class="sig sig-object py" id="mne_rt.ArrayStream.connect">
+<span class="sig-name descname"><span class="pre">connect</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#mne_rt.ArrayStream" title="mne_rt.rt_stream.ArrayStream"><span class="pre">ArrayStream</span></a></span></span><a class="reference internal" href="../_modules/mne_rt/rt_stream.html#ArrayStream.connect"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mne_rt.ArrayStream.connect" title="Link to this definition">#</a></dt>
+<dd><p>Start the simulated real-time acquisition thread.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mne_rt.ArrayStream.disconnect">
+<span class="sig-name descname"><span class="pre">disconnect</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#mne_rt.ArrayStream" title="mne_rt.rt_stream.ArrayStream"><span class="pre">ArrayStream</span></a></span></span><a class="reference internal" href="../_modules/mne_rt/rt_stream.html#ArrayStream.disconnect"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mne_rt.ArrayStream.disconnect" title="Link to this definition">#</a></dt>
+<dd><p>Stop the acquisition thread.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="mne_rt.ArrayStream.connected">
+<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">connected</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><span class="pre">bool</span></a></span><a class="headerlink" href="#mne_rt.ArrayStream.connected" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="mne_rt.ArrayStream.info">
+<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">info</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://mne.tools/stable/generated/mne.Info.html#mne.Info" title="(in MNE v1.12)"><span class="pre">Info</span></a></span><a class="headerlink" href="#mne_rt.ArrayStream.info" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="mne_rt.ArrayStream.n_new_samples">
+<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">n_new_samples</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a></span><a class="headerlink" href="#mne_rt.ArrayStream.n_new_samples" title="Link to this definition">#</a></dt>
+<dd><p>Number of new samples available since the last <a class="reference internal" href="#mne_rt.ArrayStream.get_data" title="mne_rt.ArrayStream.get_data"><code class="xref py py-meth docutils literal notranslate"><span class="pre">get_data()</span></code></a> call.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mne_rt.ArrayStream.get_data">
+<span class="sig-name descname"><span class="pre">get_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">winsize</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">picks</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><span class="pre">list</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">exclude</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><span class="pre">list</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.14)"><span class="pre">tuple</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'bads'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.14)"><span class="pre">tuple</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.5)"><span class="pre">ndarray</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.5)"><span class="pre">ndarray</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/mne_rt/rt_stream.html#ArrayStream.get_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mne_rt.ArrayStream.get_data" title="Link to this definition">#</a></dt>
+<dd><p>Retrieve the latest data from the buffer.</p>
+<p>Mirrors <a class="reference external" href="https://mne.tools/mne-lsl/stable/generated/api/mne_lsl.stream.StreamLSL.html#mne_lsl.stream.StreamLSL.get_data" title="(in MNE-LSL)"><code class="xref py py-meth docutils literal notranslate"><span class="pre">mne_lsl.stream.StreamLSL.get_data()</span></code></a>: resets
+<a class="reference internal" href="#mne_rt.ArrayStream.n_new_samples" title="mne_rt.ArrayStream.n_new_samples"><code class="xref py py-attr docutils literal notranslate"><span class="pre">n_new_samples</span></code></a> to 0 on every call.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mne_rt.ArrayStream.set_montage">
+<span class="sig-name descname"><span class="pre">set_montage</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">montage</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.14)"><span class="pre">Any</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">on_missing</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'warn'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#mne_rt.ArrayStream" title="mne_rt.rt_stream.ArrayStream"><span class="pre">ArrayStream</span></a></span></span><a class="reference internal" href="../_modules/mne_rt/rt_stream.html#ArrayStream.set_montage"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mne_rt.ArrayStream.set_montage" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mne_rt.ArrayStream.set_meas_date">
+<span class="sig-name descname"><span class="pre">set_meas_date</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">meas_date</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.14)"><span class="pre">Any</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#mne_rt.ArrayStream" title="mne_rt.rt_stream.ArrayStream"><span class="pre">ArrayStream</span></a></span></span><a class="reference internal" href="../_modules/mne_rt/rt_stream.html#ArrayStream.set_meas_date"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mne_rt.ArrayStream.set_meas_date" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mne_rt.ArrayStream.pick">
+<span class="sig-name descname"><span class="pre">pick</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">picks</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.14)"><span class="pre">Any</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">exclude</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.14)"><span class="pre">Any</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">()</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#mne_rt.ArrayStream" title="mne_rt.rt_stream.ArrayStream"><span class="pre">ArrayStream</span></a></span></span><a class="reference internal" href="../_modules/mne_rt/rt_stream.html#ArrayStream.pick"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mne_rt.ArrayStream.pick" title="Link to this definition">#</a></dt>
+<dd><p>Restrict the stream to a subset of channels, in-place.</p>
+<p>Must be called before <a class="reference internal" href="#mne_rt.ArrayStream.connect" title="mne_rt.ArrayStream.connect"><code class="xref py py-meth docutils literal notranslate"><span class="pre">connect()</span></code></a> — picking after the
+acquisition thread has started would change the channel count out
+from under it mid-stream.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mne_rt.ArrayStream.filter">
+<span class="sig-name descname"><span class="pre">filter</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">l_freq</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">h_freq</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#mne_rt.ArrayStream" title="mne_rt.rt_stream.ArrayStream"><span class="pre">ArrayStream</span></a></span></span><a class="reference internal" href="../_modules/mne_rt/rt_stream.html#ArrayStream.filter"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mne_rt.ArrayStream.filter" title="Link to this definition">#</a></dt>
+<dd><p>Zero-phase FIR band-pass over the entire underlying array.</p>
+<p>Computed outside the buffer lock so the acquisition thread is only
+blocked for the final (near-instant) reference swap, not the full
+filtering pass.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mne_rt.ArrayStream.notch_filter">
+<span class="sig-name descname"><span class="pre">notch_filter</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">freqs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><span class="pre">list</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#mne_rt.ArrayStream" title="mne_rt.rt_stream.ArrayStream"><span class="pre">ArrayStream</span></a></span></span><a class="reference internal" href="../_modules/mne_rt/rt_stream.html#ArrayStream.notch_filter"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mne_rt.ArrayStream.notch_filter" title="Link to this definition">#</a></dt>
+<dd><p>Zero-phase FIR notch filter over the entire underlying array.</p>
+<p>See <a class="reference internal" href="#mne_rt.ArrayStream.filter" title="mne_rt.ArrayStream.filter"><code class="xref py py-meth docutils literal notranslate"><span class="pre">filter()</span></code></a> for why the computation happens outside the lock.</p>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+
+
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="mne_rt.RTEpochs.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">mne_rt.RTEpochs</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="mne_rt.viz.NFPlot.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">mne_rt.viz.NFPlot</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <dialog id="pst-secondary-sidebar-modal"></dialog>
+                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+<div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav id="pst-page-toc-nav" class="page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="pst-show_toc_level nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#mne_rt.ArrayStream"><code class="docutils literal notranslate"><span class="pre">ArrayStream</span></code></a><ul class="pst-show_toc_level nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#mne_rt.ArrayStream.__init__"><code class="docutils literal notranslate"><span class="pre">ArrayStream.__init__()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#mne_rt.ArrayStream.connect"><code class="docutils literal notranslate"><span class="pre">ArrayStream.connect()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#mne_rt.ArrayStream.disconnect"><code class="docutils literal notranslate"><span class="pre">ArrayStream.disconnect()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#mne_rt.ArrayStream.connected"><code class="docutils literal notranslate"><span class="pre">ArrayStream.connected</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#mne_rt.ArrayStream.info"><code class="docutils literal notranslate"><span class="pre">ArrayStream.info</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#mne_rt.ArrayStream.n_new_samples"><code class="docutils literal notranslate"><span class="pre">ArrayStream.n_new_samples</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#mne_rt.ArrayStream.get_data"><code class="docutils literal notranslate"><span class="pre">ArrayStream.get_data()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#mne_rt.ArrayStream.set_montage"><code class="docutils literal notranslate"><span class="pre">ArrayStream.set_montage()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#mne_rt.ArrayStream.set_meas_date"><code class="docutils literal notranslate"><span class="pre">ArrayStream.set_meas_date()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#mne_rt.ArrayStream.pick"><code class="docutils literal notranslate"><span class="pre">ArrayStream.pick()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#mne_rt.ArrayStream.filter"><code class="docutils literal notranslate"><span class="pre">ArrayStream.filter()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#mne_rt.ArrayStream.notch_filter"><code class="docutils literal notranslate"><span class="pre">ArrayStream.notch_filter()</span></code></a></li>
+</ul>
+</li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../_static/scripts/bootstrap.js?digest=90905a2f556bf617f1a9"></script>
+<script defer src="../_static/scripts/pydata-sphinx-theme.js?digest=90905a2f556bf617f1a9"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright 2025, Payam S. Shabestari.
+      <br/>
+    
+  </p>
+</div>
+      
+        <div class="footer-item">
+
+  <p class="sphinx-version">
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 9.0.4.
+    <br/>
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
+<p class="theme-version">
+  <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.20.0.
+</p></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>

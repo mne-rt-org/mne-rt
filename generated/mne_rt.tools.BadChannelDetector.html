@@ -1,0 +1,848 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>mne_rt.tools.BadChannelDetector &#8212; MNE-RT</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=90905a2f556bf617f1a9" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=90905a2f556bf617f1a9" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery.css?v=fd6457a4" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-binder.css?v=f4aeca0c" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-dataframe.css?v=2082cf3c" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-rendered-html.css?v=1277b6f3" />
+    <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=5bf657dd" />
+  
+  <!-- So that users can add custom icons -->
+  <script defer src="../_static/scripts/fontawesome.js?digest=90905a2f556bf617f1a9"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=90905a2f556bf617f1a9" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=90905a2f556bf617f1a9" />
+
+    <script src="../_static/documentation_options.js?v=8d563738"></script>
+    <script src="../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="../_static/sg-tags.js?v=d80f6fa4"></script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-mml-chtml.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'generated/mne_rt.tools.BadChannelDetector';</script>
+    <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="mne_rt.tools.RiemannianPotatoDetector" href="mne_rt.tools.RiemannianPotatoDetector.html" />
+    <link rel="prev" title="mne_rt.tools.RTMaxwellFilter" href="mne_rt.tools.RTMaxwellFilter.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="" />
+  
+    
+    <script src="../_static/searchtools.js"></script>
+    <script src="../_static/language_data.js"></script>
+    <script src="../searchindex.js"></script>
+  
+  </head>
+  <body data-default-mode="">
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+  
+  
+  
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header id="pst-header" class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../index.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../_static/mne_rt_logo.svg" class="logo__image only-light" alt="MNE-RT - Home"/>
+    <img src="../_static/mne_rt_logo.svg" class="logo__image only-dark pst-js-only" alt="MNE-RT - Home"/>
+  
+  
+</a></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../install.html">
+    Installation
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../tutorial.html">
+    User Guide
+  </a>
+</li>
+
+
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="../api.html">
+    API Reference
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../visualization.html">
+    Visualisation
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../cli.html">
+    CLI
+  </a>
+</li>
+
+            <li class="nav-item dropdown">
+                <button class="btn dropdown-toggle nav-item" type="button"
+                data-bs-toggle="dropdown" aria-expanded="false"
+                aria-controls="pst-nav-more-links">
+                    More
+                </button>
+                <ul id="pst-nav-more-links" class="dropdown-menu">
+                    
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../denoising.html">
+    Artifact Correction
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../modalities.html">
+    Real-time Feature Modalities
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../protocols.html">
+    NF Protocols
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../whats_new.html">
+    What’s new
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../auto_examples/index.html">
+    Examples Gallery
+  </a>
+</li>
+
+                </ul>
+            </li>
+            
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+        </div>
+      
+      
+        <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/payamsash/mne-rt" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-square-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
+        </li>
+</ul></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+    </div>
+  
+
+  
+    <button class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="On this page">
+      <span class="fa-solid fa-outdent"></span>
+    </button>
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../install.html">
+    Installation
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../tutorial.html">
+    User Guide
+  </a>
+</li>
+
+
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="../api.html">
+    API Reference
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../visualization.html">
+    Visualisation
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../cli.html">
+    CLI
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../denoising.html">
+    Artifact Correction
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../modalities.html">
+    Real-time Feature Modalities
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../protocols.html">
+    NF Protocols
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../whats_new.html">
+    What’s new
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../auto_examples/index.html">
+    Examples Gallery
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/payamsash/mne-rt" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-square-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
+        </li>
+</ul></div>
+        
+      </div>
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+
+<nav class="bd-docs-nav bd-links"
+     aria-label="Section Navigation">
+  <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
+  <div class="bd-toc-item navbar-nav"><ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="mne_rt.RTStream.html">mne_rt.RTStream</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mne_rt.RTEpochs.html">mne_rt.RTEpochs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mne_rt.ArrayStream.html">mne_rt.ArrayStream</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="mne_rt.viz.NFPlot.html">mne_rt.viz.NFPlot</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mne_rt.viz.RawPlot.html">mne_rt.viz.RawPlot</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mne_rt.viz.EpochPlot.html">mne_rt.viz.EpochPlot</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mne_rt.viz.BrainPlot.html">mne_rt.viz.BrainPlot</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mne_rt.viz.TopomapPlot.html">mne_rt.viz.TopomapPlot</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mne_rt.viz.TopoPlot.html">mne_rt.viz.TopoPlot</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mne_rt.viz.ButterflyPlot.html">mne_rt.viz.ButterflyPlot</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mne_rt.viz.TFRPlot.html">mne_rt.viz.TFRPlot</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mne_rt.viz.CompareEvoked.html">mne_rt.viz.CompareEvoked</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="mne_rt.tools.AdaptiveLMSFilter.html">mne_rt.tools.AdaptiveLMSFilter</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mne_rt.tools.ORICA.html">mne_rt.tools.ORICA</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mne_rt.tools.GEDAIDenoiser.html">mne_rt.tools.GEDAIDenoiser</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mne_rt.tools.ASRDenoiser.html">mne_rt.tools.ASRDenoiser</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mne_rt.tools.RTMaxwellFilter.html">mne_rt.tools.RTMaxwellFilter</a></li>
+</ul>
+<ul class="current nav bd-sidenav">
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">mne_rt.tools.BadChannelDetector</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mne_rt.tools.RiemannianPotatoDetector.html">mne_rt.tools.RiemannianPotatoDetector</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="mne_rt.protocols.ThresholdProtocol.html">mne_rt.protocols.ThresholdProtocol</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mne_rt.protocols.ZScoreProtocol.html">mne_rt.protocols.ZScoreProtocol</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mne_rt.protocols.PercentileProtocol.html">mne_rt.protocols.PercentileProtocol</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mne_rt.protocols.LinearTrendProtocol.html">mne_rt.protocols.LinearTrendProtocol</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mne_rt.protocols.ShamProtocol.html">mne_rt.protocols.ShamProtocol</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mne_rt.protocols.UpDownStaircaseProtocol.html">mne_rt.protocols.UpDownStaircaseProtocol</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mne_rt.protocols.MultiBandProtocol.html">mne_rt.protocols.MultiBandProtocol</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mne_rt.protocols.RLProtocol.html">mne_rt.protocols.RLProtocol</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mne_rt.protocols.OperantProtocol.html">mne_rt.protocols.OperantProtocol</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mne_rt.protocols.TransferProtocol.html">mne_rt.protocols.TransferProtocol</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="mne_rt.combiners.FeatureCombiner.html">mne_rt.combiners.FeatureCombiner</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mne_rt.combiners.WeightedSumCombiner.html">mne_rt.combiners.WeightedSumCombiner</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mne_rt.combiners.GeometricMeanCombiner.html">mne_rt.combiners.GeometricMeanCombiner</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mne_rt.combiners.ZScoredNormCombiner.html">mne_rt.combiners.ZScoredNormCombiner</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mne_rt.combiners.LearnedCombiner.html">mne_rt.combiners.LearnedCombiner</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="mne_rt.OSCSender.html">mne_rt.OSCSender</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mne_rt.LSLSender.html">mne_rt.LSLSender</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="mne_rt.tools.simulate_raw.html">mne_rt.tools.simulate_raw</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mne_rt.tools.simulate_nf_session.html">mne_rt.tools.simulate_nf_session</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mne_rt.modalities.ModalityMixin.html">mne_rt.modalities.ModalityMixin</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="mne_rt.tools.save_as_bids.html">mne_rt.tools.save_as_bids</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="mne_rt.set_log_level.html">mne_rt.set_log_level</a></li>
+</ul>
+</div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    
+    <li class="breadcrumb-item"><a href="../api.html" class="nav-link">API Reference</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">mne_rt.tools.BadChannelDetector</span></li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section id="mne-rt-tools-badchanneldetector">
+<h1>mne_rt.tools.BadChannelDetector<a class="headerlink" href="#mne-rt-tools-badchanneldetector" title="Link to this heading">#</a></h1>
+<dl class="py class">
+<dt class="sig sig-object py" id="mne_rt.tools.BadChannelDetector">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">mne_rt.tools.</span></span><span class="sig-name descname"><span class="pre">BadChannelDetector</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">info</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">method</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><span class="pre">list</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'all'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">flat_threshold</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1e-07</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">variance_threshold</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">5.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">corr_threshold</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.4</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">hf_threshold</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">5.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">hf_cutoff</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">40.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_neighbors</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">4</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">history_windows</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">30</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">min_bad_frac</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.5</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mne_rt/tools/bad_channel_detector.html#BadChannelDetector"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mne_rt.tools.BadChannelDetector" title="Link to this definition">#</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<p>Multi-criterion real-time bad channel detector for streaming M/EEG.</p>
+<p>Evaluates each incoming data window against up to four independent
+criteria.  A channel is flagged as bad only when it exceeds its criterion
+in at least <code class="docutils literal notranslate"><span class="pre">min_bad_frac</span></code> of the rolling window history — this voting
+mechanism avoids false positives from transient artifacts.</p>
+<p><strong>Criteria</strong></p>
+<dl class="simple">
+<dt><code class="docutils literal notranslate"><span class="pre">&quot;flat&quot;</span></code></dt><dd><p>Channels whose RMS amplitude falls below <code class="docutils literal notranslate"><span class="pre">flat_threshold</span></code> (dead
+electrode / disconnected lead).</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">&quot;variance&quot;</span></code></dt><dd><p>Channels whose RMS amplitude is a statistical outlier across all
+channels, measured by a robust z-score
+(<span class="math notranslate nohighlight">\(z = (\text{rms} - \text{median}) / (\text{MAD} \times 1.4826)\)</span>).
+Catches both excessively noisy channels and channels that have gone
+unusually quiet.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">&quot;correlation&quot;</span></code></dt><dd><p>Channels whose mean Pearson correlation with their <em>K</em> nearest
+spatial neighbours drops below <code class="docutils literal notranslate"><span class="pre">corr_threshold</span></code>.  A channel that
+has lost contact or broken its reference will de-correlate from
+its neighbours while the neighbours remain correlated with each other.
+Requires channel positions to be set in <code class="docutils literal notranslate"><span class="pre">info</span></code> (i.e. montage applied).</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">&quot;hf_noise&quot;</span></code></dt><dd><p>Channels with an abnormally high ratio of high-frequency power
+(&gt; <code class="docutils literal notranslate"><span class="pre">hf_cutoff</span></code> Hz) to broadband power.  Catches channels
+contaminated by EMG, electrode cable noise, or loose connections.
+Uses the same MAD-based robust z-score as <code class="docutils literal notranslate"><span class="pre">&quot;variance&quot;</span></code>.</p>
+</dd>
+</dl>
+<dl class="field-list">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl>
+<dt><strong>info</strong><span class="classifier"><a class="reference external" href="https://mne.tools/stable/generated/mne.Info.html#mne.Info" title="(in MNE v1.12)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mne.Info</span></code></a></span></dt><dd><p>MNE channel information.  Must contain <code class="docutils literal notranslate"><span class="pre">ch_names</span></code> and <code class="docutils literal notranslate"><span class="pre">sfreq</span></code>.
+For <code class="docutils literal notranslate"><span class="pre">&quot;correlation&quot;</span></code>, channel 3-D positions must be set
+(<code class="docutils literal notranslate"><span class="pre">set_montage</span></code> applied).</p>
+</dd>
+<dt><strong>method</strong><span class="classifier">{“all”, “flat”, “variance”, “correlation”, “hf_noise”} or <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">list</span></code></a></span></dt><dd><p>Criterion or list of criteria to evaluate.  <code class="docutils literal notranslate"><span class="pre">&quot;all&quot;</span></code> enables
+all four criteria.  Default is <code class="docutils literal notranslate"><span class="pre">&quot;all&quot;</span></code>.</p>
+</dd>
+<dt><strong>flat_threshold</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">float</span></code></a>, default 1e-7</span></dt><dd><p>Minimum RMS amplitude (in raw data units — V for EEG, T for MEG) for
+a channel not to be considered flat.  Channels below this value are
+dead.  Default 100 nV = <code class="docutils literal notranslate"><span class="pre">1e-7</span></code> V.</p>
+</dd>
+<dt><strong>variance_threshold</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">float</span></code></a>, default 5.0</span></dt><dd><p>Robust z-score cutoff for the variance criterion.  A channel whose
+RMS deviates by more than this many MAD-units from the channel median
+is flagged.  Default <code class="docutils literal notranslate"><span class="pre">5.0</span></code> (conservative; reduce to 3–4 to be more
+aggressive).</p>
+</dd>
+<dt><strong>corr_threshold</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">float</span></code></a>, default 0.4</span></dt><dd><p>Minimum mean Pearson correlation with spatial neighbours.  Channels
+below this value are poorly coupled to their surroundings.
+Default <code class="docutils literal notranslate"><span class="pre">0.4</span></code>.</p>
+</dd>
+<dt><strong>hf_threshold</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">float</span></code></a>, default 5.0</span></dt><dd><p>Robust z-score cutoff for the HF noise criterion.  Default <code class="docutils literal notranslate"><span class="pre">5.0</span></code>.</p>
+</dd>
+<dt><strong>hf_cutoff</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">float</span></code></a>, default 40.0</span></dt><dd><p>Frequency in Hz above which power is classified as <em>high-frequency</em>
+for the noise criterion.  Default <code class="docutils literal notranslate"><span class="pre">40.0</span></code> Hz.</p>
+</dd>
+<dt><strong>n_neighbors</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">int</span></code></a>, default 4</span></dt><dd><p>Number of nearest spatial neighbours used in the correlation criterion.
+Default <code class="docutils literal notranslate"><span class="pre">4</span></code>.</p>
+</dd>
+<dt><strong>history_windows</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">int</span></code></a>, default 30</span></dt><dd><p>Number of per-window bad-flags to retain in the rolling history.
+Combined with <code class="docutils literal notranslate"><span class="pre">min_bad_frac</span></code> this sets the effective time-scale for
+declaring a channel persistently bad.</p>
+</dd>
+<dt><strong>min_bad_frac</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">float</span></code></a>, default 0.5</span></dt><dd><p>Fraction of rolling-history windows in which a channel must be flagged
+before it is declared bad.  <code class="docutils literal notranslate"><span class="pre">0.5</span></code> = majority vote.
+<code class="docutils literal notranslate"><span class="pre">1.0</span></code> = must be bad in every recent window (very lenient).
+<code class="docutils literal notranslate"><span class="pre">0.1</span></code> = bad in any 10 % of windows (very strict).</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Attributes<span class="colon">:</span></dt>
+<dd class="field-even"><dl>
+<dt><strong>bad_channels_</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">list</span></code></a> <code class="xref py py-obj docutils literal notranslate"><span class="pre">of</span></code> <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a></span></dt><dd><p>Channel names currently declared bad.  Updated on every
+<a class="reference internal" href="#mne_rt.tools.BadChannelDetector.update" title="mne_rt.tools.BadChannelDetector.update"><code class="xref py py-meth docutils literal notranslate"><span class="pre">update()</span></code></a> call.</p>
+</dd>
+<dt><strong>scores_</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">dict</span></code></a> <code class="xref py py-obj docutils literal notranslate"><span class="pre">of</span></code> <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a> → <a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">float</span></code></a></span></dt><dd><p>Per-channel composite badness score in <code class="docutils literal notranslate"><span class="pre">[0,</span> <span class="pre">1]</span></code>: fraction of recent
+windows in which the channel was flagged by <em>any</em> active criterion.</p>
+</dd>
+<dt><strong>n_windows_</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">int</span></code></a></span></dt><dd><p>Total number of windows processed since initialisation or last
+<a class="reference internal" href="#mne_rt.tools.BadChannelDetector.reset" title="mne_rt.tools.BadChannelDetector.reset"><code class="xref py py-meth docutils literal notranslate"><span class="pre">reset()</span></code></a>.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<p>Basic usage — update once per NF window and pass bad channels to MNE:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">detector</span> <span class="o">=</span> <span class="n">BadChannelDetector</span><span class="p">(</span><span class="n">raw</span><span class="o">.</span><span class="n">info</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s2">&quot;all&quot;</span><span class="p">)</span>
+<span class="k">while</span> <span class="n">streaming</span><span class="p">:</span>
+    <span class="n">window</span> <span class="o">=</span> <span class="n">stream</span><span class="o">.</span><span class="n">get_data</span><span class="p">(</span><span class="mf">1.0</span><span class="p">)</span>   <span class="c1"># 1 s chunk</span>
+    <span class="n">bad</span> <span class="o">=</span> <span class="n">detector</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">window</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Bad channels:&quot;</span><span class="p">,</span> <span class="n">bad</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Use only the variance + flat criteria (no montage required):</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">detector</span> <span class="o">=</span> <span class="n">BadChannelDetector</span><span class="p">(</span>
+    <span class="n">info</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;flat&quot;</span><span class="p">,</span> <span class="s2">&quot;variance&quot;</span><span class="p">],</span> <span class="n">variance_threshold</span><span class="o">=</span><span class="mf">4.0</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<div class="versionadded">
+<p><span class="versionmodified added">Added in version 1.0.0.</span></p>
+</div>
+<dl class="py method">
+<dt class="sig sig-object py" id="mne_rt.tools.BadChannelDetector.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">info</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">method</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><span class="pre">list</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'all'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">flat_threshold</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1e-07</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">variance_threshold</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">5.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">corr_threshold</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.4</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">hf_threshold</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">5.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">hf_cutoff</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">40.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_neighbors</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">4</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">history_windows</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">30</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">min_bad_frac</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.5</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span></span><a class="reference internal" href="../_modules/mne_rt/tools/bad_channel_detector.html#BadChannelDetector.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mne_rt.tools.BadChannelDetector.__init__" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<p class="rubric">Methods</p>
+<div class="pst-scrollable-table-container"><table class="autosummary longtable table">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#mne_rt.tools.BadChannelDetector.__init__" title="mne_rt.tools.BadChannelDetector.__init__"><code class="xref py py-obj docutils literal notranslate"><span class="pre">__init__</span></code></a>(info[, method, flat_threshold, ...])</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#mne_rt.tools.BadChannelDetector.get_bad_channels" title="mne_rt.tools.BadChannelDetector.get_bad_channels"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_bad_channels</span></code></a>()</p></td>
+<td><p>Return the current list of declared bad channels.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#mne_rt.tools.BadChannelDetector.get_scores" title="mne_rt.tools.BadChannelDetector.get_scores"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_scores</span></code></a>()</p></td>
+<td><p>Return per-channel badness scores in the range [0, 1].</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#mne_rt.tools.BadChannelDetector.reset" title="mne_rt.tools.BadChannelDetector.reset"><code class="xref py py-obj docutils literal notranslate"><span class="pre">reset</span></code></a>()</p></td>
+<td><p>Clear rolling history and reset all counters.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#mne_rt.tools.BadChannelDetector.update" title="mne_rt.tools.BadChannelDetector.update"><code class="xref py py-obj docutils literal notranslate"><span class="pre">update</span></code></a>(data)</p></td>
+<td><p>Process one data window and return current bad-channel list.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<dl class="py method">
+<dt class="sig sig-object py" id="mne_rt.tools.BadChannelDetector.update">
+<span class="sig-name descname"><span class="pre">update</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.5)"><span class="pre">ndarray</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><span class="pre">list</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/mne_rt/tools/bad_channel_detector.html#BadChannelDetector.update"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mne_rt.tools.BadChannelDetector.update" title="Link to this definition">#</a></dt>
+<dd><p>Process one data window and return current bad-channel list.</p>
+<dl class="field-list">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl>
+<dt><strong>data</strong><span class="classifier"><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.5)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ndarray</span></code></a>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">shape</span></code> (<code class="xref py py-obj docutils literal notranslate"><span class="pre">n_channels</span></code>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">n_samples</span></code>)</span></dt><dd><p>One analysis window of raw M/EEG data.  The channel order must
+match <code class="docutils literal notranslate"><span class="pre">info[&quot;ch_names&quot;]</span></code>.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl>
+<dt><strong>bad_channels</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">list</span></code></a> <code class="xref py py-obj docutils literal notranslate"><span class="pre">of</span></code> <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a></span></dt><dd><p>Channel names currently declared bad (majority vote over recent
+history).</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#ValueError" title="(in Python v3.14)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ValueError</span></code></a></dt><dd><p>If <code class="docutils literal notranslate"><span class="pre">data.shape[0]</span> <span class="pre">!=</span> <span class="pre">n_channels</span></code>.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mne_rt.tools.BadChannelDetector.get_bad_channels">
+<span class="sig-name descname"><span class="pre">get_bad_channels</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><span class="pre">list</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/mne_rt/tools/bad_channel_detector.html#BadChannelDetector.get_bad_channels"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mne_rt.tools.BadChannelDetector.get_bad_channels" title="Link to this definition">#</a></dt>
+<dd><p>Return the current list of declared bad channels.</p>
+<dl class="field-list">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><dl>
+<dt><strong>bad_channels</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">list</span></code></a> <code class="xref py py-obj docutils literal notranslate"><span class="pre">of</span></code> <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a></span></dt><dd><p>Channel names that have been bad in ≥ <code class="docutils literal notranslate"><span class="pre">min_bad_frac</span></code> of
+the most recent <code class="docutils literal notranslate"><span class="pre">history_windows</span></code> windows.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mne_rt.tools.BadChannelDetector.get_scores">
+<span class="sig-name descname"><span class="pre">get_scores</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.14)"><span class="pre">dict</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/mne_rt/tools/bad_channel_detector.html#BadChannelDetector.get_scores"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mne_rt.tools.BadChannelDetector.get_scores" title="Link to this definition">#</a></dt>
+<dd><p>Return per-channel badness scores in the range [0, 1].</p>
+<p>A score of <code class="docutils literal notranslate"><span class="pre">1.0</span></code> means the channel was flagged in every recent
+window; <code class="docutils literal notranslate"><span class="pre">0.0</span></code> means it was never flagged.</p>
+<dl class="field-list">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><dl>
+<dt><strong>scores</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">dict</span></code></a> <code class="xref py py-obj docutils literal notranslate"><span class="pre">of</span></code> <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a> → <a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">float</span></code></a></span></dt><dd></dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mne_rt.tools.BadChannelDetector.reset">
+<span class="sig-name descname"><span class="pre">reset</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span></span><a class="reference internal" href="../_modules/mne_rt/tools/bad_channel_detector.html#BadChannelDetector.reset"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mne_rt.tools.BadChannelDetector.reset" title="Link to this definition">#</a></dt>
+<dd><p>Clear rolling history and reset all counters.</p>
+<p>Constructor parameters and neighbour indices are preserved.</p>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+
+
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="mne_rt.tools.RTMaxwellFilter.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">mne_rt.tools.RTMaxwellFilter</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="mne_rt.tools.RiemannianPotatoDetector.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">mne_rt.tools.RiemannianPotatoDetector</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <dialog id="pst-secondary-sidebar-modal"></dialog>
+                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+<div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav id="pst-page-toc-nav" class="page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="pst-show_toc_level nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#mne_rt.tools.BadChannelDetector"><code class="docutils literal notranslate"><span class="pre">BadChannelDetector</span></code></a><ul class="pst-show_toc_level nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#mne_rt.tools.BadChannelDetector.__init__"><code class="docutils literal notranslate"><span class="pre">BadChannelDetector.__init__()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#mne_rt.tools.BadChannelDetector.update"><code class="docutils literal notranslate"><span class="pre">BadChannelDetector.update()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#mne_rt.tools.BadChannelDetector.get_bad_channels"><code class="docutils literal notranslate"><span class="pre">BadChannelDetector.get_bad_channels()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#mne_rt.tools.BadChannelDetector.get_scores"><code class="docutils literal notranslate"><span class="pre">BadChannelDetector.get_scores()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#mne_rt.tools.BadChannelDetector.reset"><code class="docutils literal notranslate"><span class="pre">BadChannelDetector.reset()</span></code></a></li>
+</ul>
+</li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../_static/scripts/bootstrap.js?digest=90905a2f556bf617f1a9"></script>
+<script defer src="../_static/scripts/pydata-sphinx-theme.js?digest=90905a2f556bf617f1a9"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright 2025, Payam S. Shabestari.
+      <br/>
+    
+  </p>
+</div>
+      
+        <div class="footer-item">
+
+  <p class="sphinx-version">
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 9.0.4.
+    <br/>
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
+<p class="theme-version">
+  <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.20.0.
+</p></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>

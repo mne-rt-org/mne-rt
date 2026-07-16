@@ -1,0 +1,1061 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="./" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Artifact Correction &#8212; MNE-RT</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="_static/styles/theme.css?digest=90905a2f556bf617f1a9" rel="stylesheet" />
+<link href="_static/styles/pydata-sphinx-theme.css?digest=90905a2f556bf617f1a9" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="_static/sg_gallery.css?v=fd6457a4" />
+    <link rel="stylesheet" type="text/css" href="_static/sg_gallery-binder.css?v=f4aeca0c" />
+    <link rel="stylesheet" type="text/css" href="_static/sg_gallery-dataframe.css?v=2082cf3c" />
+    <link rel="stylesheet" type="text/css" href="_static/sg_gallery-rendered-html.css?v=1277b6f3" />
+    <link rel="stylesheet" type="text/css" href="_static/custom.css?v=5bf657dd" />
+  
+  <!-- So that users can add custom icons -->
+  <script defer src="_static/scripts/fontawesome.js?digest=90905a2f556bf617f1a9"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="_static/scripts/bootstrap.js?digest=90905a2f556bf617f1a9" />
+<link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=90905a2f556bf617f1a9" />
+
+    <script src="_static/documentation_options.js?v=8d563738"></script>
+    <script src="_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="_static/sg-tags.js?v=d80f6fa4"></script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-mml-chtml.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'denoising';</script>
+    <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Real-time Feature Modalities" href="modalities.html" />
+    <link rel="prev" title="CLI" href="cli.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="" />
+  
+    
+    <script src="_static/searchtools.js"></script>
+    <script src="_static/language_data.js"></script>
+    <script src="searchindex.js"></script>
+  
+  </head>
+  <body data-default-mode="">
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+  
+  
+  
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header id="pst-header" class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="index.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="_static/mne_rt_logo.svg" class="logo__image only-light" alt="MNE-RT - Home"/>
+    <img src="_static/mne_rt_logo.svg" class="logo__image only-dark pst-js-only" alt="MNE-RT - Home"/>
+  
+  
+</a></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="install.html">
+    Installation
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="tutorial.html">
+    User Guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="api.html">
+    API Reference
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="visualization.html">
+    Visualisation
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="cli.html">
+    CLI
+  </a>
+</li>
+
+            <li class="nav-item dropdown">
+                <button class="btn dropdown-toggle nav-item" type="button"
+                data-bs-toggle="dropdown" aria-expanded="false"
+                aria-controls="pst-nav-more-links">
+                    More
+                </button>
+                <ul id="pst-nav-more-links" class="dropdown-menu">
+                    
+<li class=" current active">
+  <a class="nav-link dropdown-item nav-internal" href="#">
+    Artifact Correction
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="modalities.html">
+    Real-time Feature Modalities
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="protocols.html">
+    NF Protocols
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="whats_new.html">
+    What’s new
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="auto_examples/index.html">
+    Examples Gallery
+  </a>
+</li>
+
+                </ul>
+            </li>
+            
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+        </div>
+      
+      
+        <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/payamsash/mne-rt" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-square-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
+        </li>
+</ul></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+    </div>
+  
+
+  
+    <button class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="On this page">
+      <span class="fa-solid fa-outdent"></span>
+    </button>
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="install.html">
+    Installation
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="tutorial.html">
+    User Guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="api.html">
+    API Reference
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="visualization.html">
+    Visualisation
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="cli.html">
+    CLI
+  </a>
+</li>
+
+
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="#">
+    Artifact Correction
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="modalities.html">
+    Real-time Feature Modalities
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="protocols.html">
+    NF Protocols
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="whats_new.html">
+    What’s new
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="auto_examples/index.html">
+    Examples Gallery
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/payamsash/mne-rt" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-square-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
+        </li>
+</ul></div>
+        
+      </div>
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+
+<nav class="bd-docs-nav bd-links"
+     aria-label="Section Navigation">
+  <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
+  <div class="bd-toc-item navbar-nav"></div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">Artifact Correction</span></li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section id="artifact-correction">
+<span id="denoising"></span><h1>Artifact Correction<a class="headerlink" href="#artifact-correction" title="Link to this heading">#</a></h1>
+<p>MNE-RT provides five real-time artifact correction methods that can be selected
+via <a class="reference internal" href="generated/mne_rt.RTStream.html#mne_rt.RTStream" title="mne_rt.RTStream"><code class="xref py py-class docutils literal notranslate"><span class="pre">RTStream</span></code></a> (<code class="docutils literal notranslate"><span class="pre">artifact_correction=</span></code> parameter) or the
+<a class="reference internal" href="cli.html"><span class="doc">CLI</span></a> (<code class="docutils literal notranslate"><span class="pre">--artifact-correction</span></code>).  All methods expose a common
+<code class="docutils literal notranslate"><span class="pre">fit</span></code> / <code class="docutils literal notranslate"><span class="pre">transform</span></code> interface and operate sample-by-sample (or
+chunk-by-chunk) during the closed-loop session.</p>
+<nav class="contents local" id="methods">
+<p class="topic-title">Methods</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="#adaptive-lms-filter" id="id14">Adaptive LMS filter</a></p></li>
+<li><p><a class="reference internal" href="#orica-online-recursive-ica" id="id15">ORICA — Online Recursive ICA</a></p></li>
+<li><p><a class="reference internal" href="#gedai-ged-based-artifact-isolation" id="id16">GEDAI — GED-based Artifact Isolation</a></p></li>
+<li><p><a class="reference internal" href="#asr-artifact-subspace-reconstruction" id="id17">ASR — Artifact Subspace Reconstruction</a></p></li>
+<li><p><a class="reference internal" href="#rtmaxwellfilter-real-time-sss-tsss" id="id18">RTMaxwellFilter — Real-Time SSS / tSSS</a></p></li>
+<li><p><a class="reference internal" href="#bad-channel-detection" id="id19">Bad Channel Detection</a></p></li>
+<li><p><a class="reference internal" href="#riemannian-potato-online-artifact-detection" id="id20">Riemannian Potato — Online Artifact Detection</a></p></li>
+<li><p><a class="reference internal" href="#method-comparison" id="id21">Method comparison</a></p></li>
+<li><p><a class="reference internal" href="#references" id="id22">References</a></p></li>
+</ul>
+</nav>
+<hr class="docutils" />
+<section id="adaptive-lms-filter">
+<span id="denoising-lms"></span><h2><a class="toc-backref" href="#id14" role="doc-backlink">Adaptive LMS filter</a><a class="headerlink" href="#adaptive-lms-filter" title="Link to this heading">#</a></h2>
+<p><strong>Class:</strong> <a class="reference internal" href="generated/mne_rt.tools.AdaptiveLMSFilter.html#mne_rt.tools.AdaptiveLMSFilter" title="mne_rt.tools.AdaptiveLMSFilter"><code class="xref py py-class docutils literal notranslate"><span class="pre">mne_rt.tools.AdaptiveLMSFilter</span></code></a></p>
+<p>The Least Mean Squares (LMS) algorithm
+<a class="footnote-reference brackets" href="#footcite-widrow1988adaptive" id="id1" role="doc-noteref"><span class="fn-bracket">[</span>1<span class="fn-bracket">]</span></a> is a stochastic gradient-descent adaptive filter
+designed to cancel a reference signal (e.g., an EOG or ECG channel) from
+the M/EEG data channels.</p>
+<p><strong>Model.</strong> For channel <span class="math notranslate nohighlight">\(i\)</span> at time <span class="math notranslate nohighlight">\(t\)</span>, the cleaned signal is:</p>
+<div class="math notranslate nohighlight">
+\[y_i(t) = x_i(t) - \mathbf{w}_i(t)^\top \mathbf{r}(t)\]</div>
+<p>where <span class="math notranslate nohighlight">\(x_i(t)\)</span> is the raw sample, <span class="math notranslate nohighlight">\(\mathbf{r}(t) \in \mathbb{R}^q\)</span>
+is the reference signal vector (possibly delayed copies of the artefact channel),
+and <span class="math notranslate nohighlight">\(\mathbf{w}_i(t)\)</span> is the adaptive weight vector.</p>
+<p><strong>Weight update</strong> (Widrow–Hoff rule):</p>
+<div class="math notranslate nohighlight">
+\[\mathbf{w}_i(t+1) = \mathbf{w}_i(t) + \mu\, y_i(t)\, \mathbf{r}(t)\]</div>
+<p>where <span class="math notranslate nohighlight">\(\mu &gt; 0\)</span> is the step size (learning rate).  The algorithm
+converges when the cross-correlation between <span class="math notranslate nohighlight">\(\mathbf{r}(t)\)</span> and the
+residual <span class="math notranslate nohighlight">\(y_i(t)\)</span> reaches zero — i.e., when the filter has learned to
+predict the artifact contribution in channel <span class="math notranslate nohighlight">\(i\)</span> from the reference.</p>
+<p><strong>Stability condition.</strong> The step size must satisfy
+<span class="math notranslate nohighlight">\(0 &lt; \mu &lt; 2/(\lambda_{\max}\, q)\)</span>, where <span class="math notranslate nohighlight">\(\lambda_{\max}\)</span> is the
+largest eigenvalue of the reference autocorrelation matrix.  MNE-RT uses a
+normalised variant (NLMS) that adapts <span class="math notranslate nohighlight">\(\mu\)</span> automatically:</p>
+<div class="math notranslate nohighlight">
+\[\mu_{\mathrm{norm}}(t) = \frac{\mu_0}{\epsilon + \|\mathbf{r}(t)\|^2}\]</div>
+<p><strong>When to use.</strong> Best suited for ocular (EOG) or cardiac (ECG) artifacts
+when a clean reference channel is available.  Requires no calibration
+baseline — the filter adapts online from sample 1.</p>
+<hr class="docutils" />
+</section>
+<section id="orica-online-recursive-ica">
+<span id="denoising-orica"></span><h2><a class="toc-backref" href="#id15" role="doc-backlink">ORICA — Online Recursive ICA</a><a class="headerlink" href="#orica-online-recursive-ica" title="Link to this heading">#</a></h2>
+<p><strong>Class:</strong> <a class="reference internal" href="generated/mne_rt.tools.ORICA.html#mne_rt.tools.ORICA" title="mne_rt.tools.ORICA"><code class="xref py py-class docutils literal notranslate"><span class="pre">mne_rt.tools.ORICA</span></code></a></p>
+<p>ORICA <a class="footnote-reference brackets" href="#footcite-choi2005blind" id="id2" role="doc-noteref"><span class="fn-bracket">[</span>2<span class="fn-bracket">]</span></a> is an online (sample-recursive) variant of
+Independent Component Analysis (ICA) <a class="footnote-reference brackets" href="#footcite-bell1995information" id="id3" role="doc-noteref"><span class="fn-bracket">[</span>3<span class="fn-bracket">]</span></a> that
+continuously updates the unmixing matrix <span class="math notranslate nohighlight">\(\mathbf{W}\)</span> as new data arrive.</p>
+<p><strong>ICA model.</strong> EEG is assumed to be a linear mixture of independent sources:</p>
+<div class="math notranslate nohighlight">
+\[\mathbf{x}(t) = \mathbf{A}\, \mathbf{s}(t),
+\quad \mathbf{s}(t) = \mathbf{W}\, \mathbf{x}(t)\]</div>
+<p>where <span class="math notranslate nohighlight">\(\mathbf{A} \in \mathbb{R}^{p \times p}\)</span> is the mixing matrix,
+<span class="math notranslate nohighlight">\(\mathbf{W} = \mathbf{A}^{-1}\)</span> is the unmixing matrix, and
+<span class="math notranslate nohighlight">\(\mathbf{s}(t)\)</span> are the independent components (ICs).</p>
+<p><strong>Recursive update.</strong> ORICA updates <span class="math notranslate nohighlight">\(\mathbf{W}\)</span> with each new sample
+using an exponentially weighted natural-gradient rule:</p>
+<div class="math notranslate nohighlight">
+\[\mathbf{W}(t) \leftarrow \mathbf{W}(t)
++ \lambda(t)\,
+\bigl[\mathbf{I} - \mathbf{f}\!\left(\mathbf{s}(t)\right)\mathbf{s}(t)^\top\bigr]\,
+\mathbf{W}(t)\]</div>
+<p>where <span class="math notranslate nohighlight">\(\mathbf{f}(\cdot)\)</span> is a nonlinear score function (e.g.,
+<span class="math notranslate nohighlight">\(f(s) = \tanh(s)\)</span> for super-Gaussian sources) and <span class="math notranslate nohighlight">\(\lambda(t)\)</span> is
+a decreasing forgetting factor that controls how fast old data are discarded.</p>
+<p><strong>Artifact removal.</strong> ICs whose kurtosis, focal power, or spatial map
+match known artifact signatures (blinks, muscle, ECG) are identified and
+zeroed before back-projection:</p>
+<div class="math notranslate nohighlight">
+\[\hat{\mathbf{x}}(t) = \mathbf{A}_{\text{clean}}\,
+\mathbf{W}_{\text{clean}}\, \mathbf{x}(t)\]</div>
+<p>where the subscript “clean” denotes the subsets of columns / rows with
+artifact ICs removed.</p>
+<p><strong>When to use.</strong> Suitable for EEG with diverse artifact types.  No reference
+channel is required.  Because <span class="math notranslate nohighlight">\(\mathbf{W}\)</span> adapts continuously, ORICA
+tracks slow non-stationarities (electrode drift, changing impedances).</p>
+<hr class="docutils" />
+</section>
+<section id="gedai-ged-based-artifact-isolation">
+<span id="denoising-gedai"></span><h2><a class="toc-backref" href="#id16" role="doc-backlink">GEDAI — GED-based Artifact Isolation</a><a class="headerlink" href="#gedai-ged-based-artifact-isolation" title="Link to this heading">#</a></h2>
+<p><strong>Class:</strong> <a class="reference internal" href="generated/mne_rt.tools.GEDAIDenoiser.html#mne_rt.tools.GEDAIDenoiser" title="mne_rt.tools.GEDAIDenoiser"><code class="xref py py-class docutils literal notranslate"><span class="pre">mne_rt.tools.GEDAIDenoiser</span></code></a></p>
+<p>GEDAI uses Generalized Eigendecomposition (GED) <a class="footnote-reference brackets" href="#footcite-cohen2022tutorial" id="id4" role="doc-noteref"><span class="fn-bracket">[</span>4<span class="fn-bracket">]</span></a> to find
+spatial filters that maximally separate brain signal from broadband activity,
+optionally anchored to a leadfield-derived forward model <a class="footnote-reference brackets" href="#footcite-ros2025return" id="id5" role="doc-noteref"><span class="fn-bracket">[</span>5<span class="fn-bracket">]</span></a>.</p>
+<p><strong>GED formulation.</strong> MNE-RT uses a <em>band-vs-broadband</em> formulation.
+Let <span class="math notranslate nohighlight">\(\mathbf{R}_\text{band}\)</span> be the covariance of the band-limited signal
+(e.g. 8–30 Hz for alpha/beta) and <span class="math notranslate nohighlight">\(\mathbf{R}_\text{broad}\)</span> be the
+broadband covariance.  The GED solves:</p>
+<div class="math notranslate nohighlight">
+\[\mathbf{R}_\text{band}\,\mathbf{W} =
+\mathbf{R}_\text{broad}\,\mathbf{W}\,\boldsymbol{\Lambda}\]</div>
+<p>The columns of <span class="math notranslate nohighlight">\(\mathbf{W}\)</span> are spatial filters and the eigenvalues
+<span class="math notranslate nohighlight">\(\lambda_k = \mathbf{w}_k^\top \mathbf{R}_\text{band}\, \mathbf{w}_k \;/\;
+\mathbf{w}_k^\top \mathbf{R}_\text{broad}\, \mathbf{w}_k\)</span>
+express the <em>band-to-broadband power ratio</em> along each filter direction.</p>
+<p><strong>Eigenvalue interpretation.</strong>  Filters are sorted by <span class="math notranslate nohighlight">\(\lambda_k\)</span>
+in <strong>descending</strong> order:</p>
+<ul class="simple">
+<li><p><strong>Large</strong> <span class="math notranslate nohighlight">\(\lambda_k\)</span> — high band/broadband ratio → <strong>brain-like</strong>
+(targeted oscillation dominant).</p></li>
+<li><p><strong>Small</strong> <span class="math notranslate nohighlight">\(\lambda_k\)</span> — low band/broadband ratio → <strong>non-brain</strong>
+(broadband, artifact-like).</p></li>
+</ul>
+<p><strong>Artifact isolation.</strong> <a class="reference internal" href="generated/mne_rt.tools.GEDAIDenoiser.html#mne_rt.tools.GEDAIDenoiser.find_noise_components" title="mne_rt.tools.GEDAIDenoiser.find_noise_components"><code class="xref py py-meth docutils literal notranslate"><span class="pre">find_noise_components()</span></code></a>
+returns the <span class="math notranslate nohighlight">\(n_\text{noise}\)</span> components with the <strong>smallest</strong> eigenvalues
+(least band-specific), which are then zeroed before back-projection:</p>
+<div class="math notranslate nohighlight">
+\[\hat{\mathbf{X}} = \mathbf{W}_{\text{brain}}\,
+\mathbf{W}_{\text{brain}}^\dagger\, \mathbf{X}\]</div>
+<p>where <span class="math notranslate nohighlight">\(\mathbf{W}_{\text{brain}}\)</span> is the subset of <span class="math notranslate nohighlight">\(\mathbf{W}\)</span>
+with the largest eigenvalues (brain-like directions retained).</p>
+<p><strong>Leadfield incorporation.</strong> When a forward model is available
+(<a class="reference internal" href="generated/mne_rt.tools.GEDAIDenoiser.html#mne_rt.tools.GEDAIDenoiser.fit_from_leadfield" title="mne_rt.tools.GEDAIDenoiser.fit_from_leadfield"><code class="xref py py-meth docutils literal notranslate"><span class="pre">fit_from_leadfield()</span></code></a>), GEDAI replaces
+<span class="math notranslate nohighlight">\(\mathbf{R}_\text{band}\)</span> with the leadfield outer product
+<span class="math notranslate nohighlight">\(\mathbf{L}\mathbf{L}^\top\)</span>, directly constraining filters to be
+consistent with neural generators.</p>
+<p><strong>When to use.</strong> Most powerful when a resting-state baseline is available
+and the artifact has a stable spatial signature (cardiac, powerline).
+Requires a calibration recording (<code class="docutils literal notranslate"><span class="pre">fit_from_raw()</span></code> uses the first N seconds).</p>
+<hr class="docutils" />
+</section>
+<section id="asr-artifact-subspace-reconstruction">
+<span id="denoising-asr"></span><h2><a class="toc-backref" href="#id17" role="doc-backlink">ASR — Artifact Subspace Reconstruction</a><a class="headerlink" href="#asr-artifact-subspace-reconstruction" title="Link to this heading">#</a></h2>
+<p><strong>Class:</strong> <a class="reference internal" href="generated/mne_rt.tools.ASRDenoiser.html#mne_rt.tools.ASRDenoiser" title="mne_rt.tools.ASRDenoiser"><code class="xref py py-class docutils literal notranslate"><span class="pre">mne_rt.tools.ASRDenoiser</span></code></a></p>
+<p>ASR <a class="footnote-reference brackets" href="#footcite-mullen2015real" id="id6" role="doc-noteref"><span class="fn-bracket">[</span>6<span class="fn-bracket">]</span></a> <a class="footnote-reference brackets" href="#footcite-de2018robust" id="id7" role="doc-noteref"><span class="fn-bracket">[</span>7<span class="fn-bracket">]</span></a> learns the
+covariance statistics of a clean baseline segment, then projects out
+components that deviate beyond a threshold in subsequent data windows.</p>
+<p><strong>Calibration.</strong> The baseline recording is divided into overlapping windows of
+length <span class="math notranslate nohighlight">\(T_{\mathrm{win}}\)</span>.  The sample covariance per window is:</p>
+<div class="math notranslate nohighlight">
+\[\mathbf{C}_j = \frac{1}{n_j} \mathbf{X}_j \mathbf{X}_j^\top\]</div>
+<p>Windows with the highest total power (top <code class="docutils literal notranslate"><span class="pre">max_dropout_fraction</span></code> fraction
+by <span class="math notranslate nohighlight">\(\operatorname{tr}(\mathbf{C}_j)\)</span>) are discarded as likely artifactual.
+The mean of the remaining <em>clean</em> covariances is eigendecomposed:</p>
+<div class="math notranslate nohighlight">
+\[\mathbf{C}_0 = \mathbf{U}\,\mathrm{diag}(d_1,\dots,d_p)\,\mathbf{U}^\top\]</div>
+<p>Per-component RMS thresholds are set as:</p>
+<div class="math notranslate nohighlight">
+\[T_k = \sigma \cdot \sqrt{d_k}, \qquad k = 1,\dots,p\]</div>
+<p>where <span class="math notranslate nohighlight">\(\sigma\)</span> = <code class="docutils literal notranslate"><span class="pre">cutoff</span></code> (default 5).</p>
+<p><strong>Cleaning (online).</strong> For each incoming window
+<span class="math notranslate nohighlight">\(\mathbf{X} \in \mathbb{R}^{p \times n}\)</span>:</p>
+<ol class="arabic simple">
+<li><p>Project to calibration-component space:
+<span class="math notranslate nohighlight">\(\mathbf{Z} = \mathbf{U}^\top(\mathbf{X} - \bar{\mathbf{x}})\)</span>.</p></li>
+<li><p>Compute per-component RMS:
+<span class="math notranslate nohighlight">\(r_k = \sqrt{\operatorname{mean}(Z_k^2)}\)</span>.</p></li>
+<li><p>Zero artifact-dominated components: <span class="math notranslate nohighlight">\(Z_k \leftarrow 0\)</span> if
+<span class="math notranslate nohighlight">\(r_k &gt; T_k\)</span>.</p></li>
+<li><p>Back-project and restore the mean:
+<span class="math notranslate nohighlight">\(\hat{\mathbf{X}} = \mathbf{U}\mathbf{Z} + \bar{\mathbf{x}}\)</span>.</p></li>
+</ol>
+<p>Because steps 1–4 reduce to two matrix multiplies, the per-chunk runtime is
+<span class="math notranslate nohighlight">\(\mathcal{O}(p^2 n)\)</span>.</p>
+<p><strong>When to use.</strong> General-purpose EEG artifact suppressor.  Robust to
+transient high-amplitude artifacts (muscle bursts, electrode pops).
+Requires a brief clean baseline (<code class="docutils literal notranslate"><span class="pre">fit_asr()</span></code> records 60 s by default).</p>
+<hr class="docutils" />
+</section>
+<section id="rtmaxwellfilter-real-time-sss-tsss">
+<span id="denoising-maxwell"></span><h2><a class="toc-backref" href="#id18" role="doc-backlink">RTMaxwellFilter — Real-Time SSS / tSSS</a><a class="headerlink" href="#rtmaxwellfilter-real-time-sss-tsss" title="Link to this heading">#</a></h2>
+<p><strong>Class:</strong> <a class="reference internal" href="generated/mne_rt.tools.RTMaxwellFilter.html#mne_rt.tools.RTMaxwellFilter" title="mne_rt.tools.RTMaxwellFilter"><code class="xref py py-class docutils literal notranslate"><span class="pre">mne_rt.tools.RTMaxwellFilter</span></code></a></p>
+<p>The Signal Space Separation (SSS) method <a class="footnote-reference brackets" href="#footcite-taulu2004suppression" id="id8" role="doc-noteref"><span class="fn-bracket">[</span>8<span class="fn-bracket">]</span></a> and its
+temporal extension (tSSS) <a class="footnote-reference brackets" href="#footcite-taulu2006spatiotemporal" id="id9" role="doc-noteref"><span class="fn-bracket">[</span>9<span class="fn-bracket">]</span></a> exploit the physics of
+quasi-static magnetic fields to separate brain-origin signals from external
+interference in MEG recordings.</p>
+<p><strong>Physical basis.</strong> Inside the sensor array the magnetic field satisfies the
+Laplace equation <span class="math notranslate nohighlight">\(\nabla^2 \phi = 0\)</span>.  Solutions are decomposed into a
+basis of <em>spherical harmonic multipoles</em>:</p>
+<div class="math notranslate nohighlight">
+\[\phi(\mathbf{r}) =
+\sum_{\ell=1}^{L_{\mathrm{in}}} \sum_{m=-\ell}^{\ell}
+\alpha_{\ell m}\, \phi_{\ell m}^{\mathrm{in}}(\mathbf{r})
+\;+\;
+\sum_{\ell=1}^{L_{\mathrm{ex}}} \sum_{m=-\ell}^{\ell}
+\beta_{\ell m}\, \phi_{\ell m}^{\mathrm{ex}}(\mathbf{r})\]</div>
+<p>where <span class="math notranslate nohighlight">\(\phi^{\mathrm{in}}_{\ell m}\)</span> are the <em>internal</em> basis functions
+(sources inside the array — brain signals) and
+<span class="math notranslate nohighlight">\(\phi^{\mathrm{ex}}_{\ell m}\)</span> are the <em>external</em> basis functions
+(sources outside — environmental noise).</p>
+<p><strong>SSS projector.</strong> Let <span class="math notranslate nohighlight">\(\mathbf{S}_{\mathrm{in}}\)</span> and
+<span class="math notranslate nohighlight">\(\mathbf{S}_{\mathrm{ex}}\)</span> be the basis matrices evaluated at all
+sensor positions.  The SSS projector onto the internal subspace is:</p>
+<div class="math notranslate nohighlight">
+\[\mathbf{P}_{\mathrm{SSS}} = \mathbf{S}_{\mathrm{in}}
+\mathbf{S}_{\mathrm{in}}^\dagger\]</div>
+<p>where <span class="math notranslate nohighlight">\((\cdot)^\dagger\)</span> denotes the Moore–Penrose pseudoinverse.
+Applied to raw MEG data <span class="math notranslate nohighlight">\(\mathbf{X}\)</span>:</p>
+<div class="math notranslate nohighlight">
+\[\hat{\mathbf{X}}_{\mathrm{SSS}} = \mathbf{P}_{\mathrm{SSS}}\, \mathbf{X}\]</div>
+<p>This single matrix multiply (cached at calibration time) suppresses all signal
+components that cannot originate inside the sensor array.</p>
+<p><strong>tSSS — temporal extension.</strong> Internal components that correlate with
+external ones over a sliding time window indicate that interference has
+“leaked” into the internal space (e.g., due to a nearby ferromagnetic object).
+tSSS <a class="footnote-reference brackets" href="#footcite-taulu2006spatiotemporal" id="id10" role="doc-noteref"><span class="fn-bracket">[</span>9<span class="fn-bracket">]</span></a> removes these correlated components by projecting
+the internal coefficients onto the subspace <em>orthogonal</em> to the external ones:</p>
+<div class="math notranslate nohighlight">
+\[\hat{\boldsymbol{\alpha}} = \bigl(\mathbf{I}
+- \Pi_{\mathrm{corr}}\bigr)\, \boldsymbol{\alpha}\]</div>
+<p>where <span class="math notranslate nohighlight">\(\Pi_{\mathrm{corr}}\)</span> is the projector onto the directions of
+<span class="math notranslate nohighlight">\(\boldsymbol{\alpha}\)</span> that correlate above threshold with the external
+coefficient matrix over the buffer.</p>
+<p><strong>Real-time implementation in MNE-RT.</strong>
+<a class="reference internal" href="generated/mne_rt.tools.RTMaxwellFilter.html#mne_rt.tools.RTMaxwellFilter" title="mne_rt.tools.RTMaxwellFilter"><code class="xref py py-class docutils literal notranslate"><span class="pre">RTMaxwellFilter</span></code></a> caches <span class="math notranslate nohighlight">\(\mathbf{P}_{\mathrm{SSS}}\)</span>
+once during <code class="docutils literal notranslate"><span class="pre">fit()</span></code> using <a class="reference external" href="https://mne.tools/stable/generated/mne.preprocessing.compute_maxwell_basis.html#mne.preprocessing.compute_maxwell_basis" title="(in MNE v1.12)"><code class="xref py py-func docutils literal notranslate"><span class="pre">mne.preprocessing.compute_maxwell_basis()</span></code></a>,
+then applies it as a matrix multiply per incoming chunk.  This gives:</p>
+<ul class="simple">
+<li><p>Zero additional latency beyond a matrix multiply per chunk.</p></li>
+<li><p>Numerical equivalence with offline MNE
+<a class="reference external" href="https://mne.tools/stable/generated/mne.preprocessing.maxwell_filter.html#mne.preprocessing.maxwell_filter" title="(in MNE v1.12)"><code class="xref py py-func docutils literal notranslate"><span class="pre">maxwell_filter()</span></code></a> (verified to machine-epsilon
+level).</p></li>
+</ul>
+<p>tSSS runs periodically on a rolling buffer with
+<a class="reference external" href="https://mne.tools/stable/generated/mne.preprocessing.maxwell_filter.html#mne.preprocessing.maxwell_filter" title="(in MNE v1.12)"><code class="xref py py-func docutils literal notranslate"><span class="pre">maxwell_filter()</span></code></a> (<code class="docutils literal notranslate"><span class="pre">st_only=True</span></code>, skipping the
+already-applied spatial step).</p>
+<p><strong>Empty-room noise covariance.</strong> When an empty-room recording is provided,
+<a class="reference internal" href="generated/mne_rt.tools.RTMaxwellFilter.html#mne_rt.tools.RTMaxwellFilter" title="mne_rt.tools.RTMaxwellFilter"><code class="xref py py-class docutils literal notranslate"><span class="pre">RTMaxwellFilter</span></code></a> uses a system-identification approach:
+MNE’s full Maxwell filter (with noise-informed regularisation) is applied to a
+Gaussian test signal, and the effective operator is recovered by least squares:</p>
+<div class="math notranslate nohighlight">
+\[\mathbf{P}_{\mathrm{SSS}}^{\mathrm{ER}} =
+\mathbf{Y}\, \mathbf{X}^\dagger\]</div>
+<p>where <span class="math notranslate nohighlight">\(\mathbf{X}\)</span> is the test input (good-channel MEG) and
+<span class="math notranslate nohighlight">\(\mathbf{Y}\)</span> is the filtered output.  This transparently incorporates
+fine calibration, cross-talk compensation, and noise-informed regularisation
+into the single cached matrix — no re-implementation of SSS is required.</p>
+<p><strong>Baseline requirement.</strong> Unlike ASR or GEDAI, <a class="reference internal" href="generated/mne_rt.tools.RTMaxwellFilter.html#mne_rt.tools.RTMaxwellFilter" title="mne_rt.tools.RTMaxwellFilter"><code class="xref py py-class docutils literal notranslate"><span class="pre">RTMaxwellFilter</span></code></a>
+requires <em>no</em> baseline recording — <span class="math notranslate nohighlight">\(\mathbf{P}_{\mathrm{SSS}}\)</span> depends
+only on sensor geometry, which is fixed at scanner installation.</p>
+<p><strong>When to use.</strong> MEG data only.  Mandatory first denoising step in any MEG
+pipeline.  Use SSS mode for environmental noise suppression; add tSSS when
+nearby ferromagnetic objects or implants are present.</p>
+<hr class="docutils" />
+</section>
+<section id="bad-channel-detection">
+<span id="denoising-bad-channel"></span><h2><a class="toc-backref" href="#id19" role="doc-backlink">Bad Channel Detection</a><a class="headerlink" href="#bad-channel-detection" title="Link to this heading">#</a></h2>
+<p><strong>Class:</strong> <a class="reference internal" href="generated/mne_rt.tools.BadChannelDetector.html#mne_rt.tools.BadChannelDetector" title="mne_rt.tools.BadChannelDetector"><code class="xref py py-class docutils literal notranslate"><span class="pre">mne_rt.tools.BadChannelDetector</span></code></a></p>
+<p>Artifact correction assumes all channels are functional.  A disconnected or
+noisy electrode contaminating adjacent channels can degrade every downstream
+method.  <a class="reference internal" href="generated/mne_rt.tools.BadChannelDetector.html#mne_rt.tools.BadChannelDetector" title="mne_rt.tools.BadChannelDetector"><code class="xref py py-class docutils literal notranslate"><span class="pre">BadChannelDetector</span></code></a> evaluates each incoming data
+window against up to four independent criteria and uses a rolling-window
+majority vote to flag persistently bad channels.</p>
+<p><strong>Criteria</strong></p>
+<dl class="simple">
+<dt><code class="docutils literal notranslate"><span class="pre">&quot;flat&quot;</span></code></dt><dd><p>Channels whose RMS amplitude falls below <code class="docutils literal notranslate"><span class="pre">flat_threshold</span></code>.  Catches
+disconnected leads and dead electrodes.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">&quot;variance&quot;</span></code></dt><dd><p>Channels whose RMS is a <em>robust</em> outlier across all channels, measured
+by a MAD-based z-score:
+<span class="math notranslate nohighlight">\(z = (\text{RMS} - \text{median})\;/\;(\text{MAD} \times 1.4826)\)</span>.
+Flags both excessively noisy and suspiciously quiet channels.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">&quot;correlation&quot;</span></code></dt><dd><p>Channels whose mean Pearson correlation with their <span class="math notranslate nohighlight">\(K\)</span> nearest
+spatial neighbours falls below <code class="docutils literal notranslate"><span class="pre">corr_threshold</span></code>.  Requires channel
+positions to be set in <code class="docutils literal notranslate"><span class="pre">info</span></code> (montage applied).</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">&quot;hf_noise&quot;</span></code></dt><dd><p>Channels with an abnormally high ratio of HF power (&gt; <code class="docutils literal notranslate"><span class="pre">hf_cutoff</span></code> Hz)
+to broadband power, using the same MAD z-score.  Catches EMG, loose
+cable noise, and intermittent contacts.</p>
+</dd>
+</dl>
+<p><strong>Rolling-window vote.</strong>  A channel is declared bad only when it is flagged
+by at least one criterion in ≥ <code class="docutils literal notranslate"><span class="pre">min_bad_frac</span></code> of the last
+<code class="docutils literal notranslate"><span class="pre">history_windows</span></code> windows.  With the default <code class="docutils literal notranslate"><span class="pre">min_bad_frac=0.5</span></code> this
+is a majority vote over the past 30 windows, suppressing false positives
+from transient artifacts.</p>
+<p><strong>Usage example</strong>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">detector</span> <span class="o">=</span> <span class="n">BadChannelDetector</span><span class="p">(</span><span class="n">raw</span><span class="o">.</span><span class="n">info</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s2">&quot;all&quot;</span><span class="p">)</span>
+<span class="k">while</span> <span class="n">streaming</span><span class="p">:</span>
+    <span class="n">window</span> <span class="o">=</span> <span class="n">stream</span><span class="o">.</span><span class="n">get_data</span><span class="p">(</span><span class="mf">1.0</span><span class="p">)</span>        <span class="c1"># 1-second chunk</span>
+    <span class="n">bad_channels</span> <span class="o">=</span> <span class="n">detector</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">window</span><span class="p">)</span>
+    <span class="n">raw</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="s2">&quot;bads&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">bad_channels</span>
+</pre></div>
+</div>
+<hr class="docutils" />
+</section>
+<section id="riemannian-potato-online-artifact-detection">
+<span id="denoising-riemannian-potato"></span><h2><a class="toc-backref" href="#id20" role="doc-backlink">Riemannian Potato — Online Artifact Detection</a><a class="headerlink" href="#riemannian-potato-online-artifact-detection" title="Link to this heading">#</a></h2>
+<p><strong>Class:</strong> <a class="reference internal" href="generated/mne_rt.tools.RiemannianPotatoDetector.html#mne_rt.tools.RiemannianPotatoDetector" title="mne_rt.tools.RiemannianPotatoDetector"><code class="xref py py-class docutils literal notranslate"><span class="pre">mne_rt.tools.RiemannianPotatoDetector</span></code></a></p>
+<p>The <em>Riemannian Potato</em> <a class="footnote-reference brackets" href="#footcite-barachant2014plug" id="id11" role="doc-noteref"><span class="fn-bracket">[</span>10<span class="fn-bracket">]</span></a><a class="footnote-reference brackets" href="#footcite-barthelemy2019riemannian" id="id12" role="doc-noteref"><span class="fn-bracket">[</span>11<span class="fn-bracket">]</span></a> is a
+covariance-based method for <strong>detecting</strong> — rather than correcting —
+artifactual data windows in real time.  It operates on the manifold of
+symmetric positive-definite (SPD) matrices by computing the Riemannian
+distance from each incoming covariance matrix to the geometric mean of a
+clean calibration set.  When this distance exceeds a z-score threshold,
+the window is flagged as an artifact and can be discarded or buffered for
+later ICA clean-up.</p>
+<p><strong>Why Riemannian geometry?</strong>  Standard Euclidean distances on covariance
+matrices are sensitive to the arbitrary scaling of individual channels.
+The Riemannian (affine-invariant) metric is scale-invariant: multiplying
+all channels by any positive constant leaves the distance unchanged.  This
+makes the potato robust to amplitude drift and electrode-impedance changes
+across sessions.</p>
+<p><strong>Algorithm.</strong>  Let <span class="math notranslate nohighlight">\(\Sigma_t\)</span> be the sample covariance matrix of
+window <span class="math notranslate nohighlight">\(t\)</span> and <span class="math notranslate nohighlight">\(\bar{\Sigma}\)</span> be the geometric mean of
+calibration covariances.  The z-score is:</p>
+<div class="math notranslate nohighlight">
+\[z_t = \frac{\delta(\Sigma_t, \bar{\Sigma}) - \mu_\delta}{\sigma_\delta}\]</div>
+<p>where <span class="math notranslate nohighlight">\(\delta\)</span> is the Riemannian distance and <span class="math notranslate nohighlight">\(\mu_\delta\)</span>,
+<span class="math notranslate nohighlight">\(\sigma_\delta\)</span> are the mean and standard deviation of distances
+computed over the calibration set.  Window <span class="math notranslate nohighlight">\(t\)</span> is declared an
+artifact when <span class="math notranslate nohighlight">\(z_t &gt; \theta\)</span> (default <span class="math notranslate nohighlight">\(\theta = 3\)</span>).</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The Riemannian Potato is a <strong>detection</strong> method, not a correction method.
+It identifies and rejects artifactual windows; it does not reconstruct
+clean signal from contaminated data.  Pair it with
+<a class="reference internal" href="generated/mne_rt.tools.ORICA.html#mne_rt.tools.ORICA" title="mne_rt.tools.ORICA"><code class="xref py py-class docutils literal notranslate"><span class="pre">ORICA</span></code></a> or <a class="reference internal" href="generated/mne_rt.tools.ASRDenoiser.html#mne_rt.tools.ASRDenoiser" title="mne_rt.tools.ASRDenoiser"><code class="xref py py-class docutils literal notranslate"><span class="pre">ASRDenoiser</span></code></a> when online
+<em>correction</em> is needed.</p>
+</div>
+<p><strong>Usage example</strong>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">mne_rt.tools</span><span class="w"> </span><span class="kn">import</span> <span class="n">RiemannianPotatoDetector</span>
+
+<span class="c1"># Calibrate on 60 clean 1-second windows</span>
+<span class="n">detector</span> <span class="o">=</span> <span class="n">RiemannianPotatoDetector</span><span class="p">(</span><span class="n">threshold</span><span class="o">=</span><span class="mf">3.0</span><span class="p">)</span>
+<span class="n">detector</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">clean_windows</span><span class="p">)</span>       <span class="c1"># shape (n_windows, n_ch, n_samples)</span>
+
+<span class="k">while</span> <span class="n">streaming</span><span class="p">:</span>
+    <span class="n">window</span> <span class="o">=</span> <span class="n">stream</span><span class="o">.</span><span class="n">get_data</span><span class="p">(</span><span class="mf">1.0</span><span class="p">)</span>
+    <span class="n">is_clean</span><span class="p">,</span> <span class="n">z_score</span> <span class="o">=</span> <span class="n">detector</span><span class="o">.</span><span class="n">detect</span><span class="p">(</span><span class="n">window</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">is_clean</span><span class="p">:</span>
+        <span class="n">compute_nf_feature</span><span class="p">(</span><span class="n">window</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Artifact detected (z=</span><span class="si">%.2f</span><span class="s2">) — window skipped&quot;</span><span class="p">,</span> <span class="n">z_score</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><strong>When to use.</strong>  Any EEG or MEG setup where transient artifacts (blinks,
+muscle bursts, electrode pops) need to be excluded from the feature
+computation.  Particularly effective when reliable reference channels for
+LMS are unavailable.  Requires a short clean calibration phase (≥ 30 windows
+recommended) before streaming begins.</p>
+<hr class="docutils" />
+</section>
+<section id="method-comparison">
+<span id="denoising-comparison"></span><h2><a class="toc-backref" href="#id21" role="doc-backlink">Method comparison</a><a class="headerlink" href="#method-comparison" title="Link to this heading">#</a></h2>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 20.9%" />
+<col style="width: 14.0%" />
+<col style="width: 16.3%" />
+<col style="width: 16.3%" />
+<col style="width: 16.3%" />
+<col style="width: 16.3%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Method</p></th>
+<th class="head"><p>Modality</p></th>
+<th class="head"><p>Baseline needed</p></th>
+<th class="head"><p>Reference ch.</p></th>
+<th class="head"><p>Adapts online</p></th>
+<th class="head"><p>Primary target</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>LMS</p></td>
+<td><p>EEG / MEG</p></td>
+<td><p>No</p></td>
+<td><p>Yes (EOG/ECG)</p></td>
+<td><p>Yes</p></td>
+<td><p>Ocular, cardiac</p></td>
+</tr>
+<tr class="row-odd"><td><p>ORICA</p></td>
+<td><p>EEG / MEG</p></td>
+<td><p>No</p></td>
+<td><p>No</p></td>
+<td><p>Yes</p></td>
+<td><p>Mixed artifacts</p></td>
+</tr>
+<tr class="row-even"><td><p>GEDAI</p></td>
+<td><p>EEG / MEG</p></td>
+<td><p>Yes (N s)</p></td>
+<td><p>No</p></td>
+<td><p>No</p></td>
+<td><p>Cardiac, powerline</p></td>
+</tr>
+<tr class="row-odd"><td><p>ASR</p></td>
+<td><p>EEG / MEG</p></td>
+<td><p>Yes (N s)</p></td>
+<td><p>No</p></td>
+<td><p>No</p></td>
+<td><p>Transient high-amplitude</p></td>
+</tr>
+<tr class="row-even"><td><p>RTMaxwellFilter</p></td>
+<td><p>MEG only</p></td>
+<td><p>No</p></td>
+<td><p>No</p></td>
+<td><p>No (periodic tSSS)</p></td>
+<td><p>Environmental noise</p></td>
+</tr>
+<tr class="row-odd"><td><p>BadChannelDetector</p></td>
+<td><p>EEG / MEG</p></td>
+<td><p>No</p></td>
+<td><p>No</p></td>
+<td><p>Yes (rolling)</p></td>
+<td><p>Disconnected / noisy channels</p></td>
+</tr>
+<tr class="row-even"><td><p>RiemannianPotatoDetector</p></td>
+<td><p>EEG / MEG</p></td>
+<td><p>Yes (N windows)</p></td>
+<td><p>No</p></td>
+<td><p>No (detection only)</p></td>
+<td><p>Transient artifacts (blinks, muscle, pops)</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<hr class="docutils" />
+<p>See also the <a class="reference internal" href="auto_examples/ex_artifact_comparison.html#sphx-glr-auto-examples-ex-artifact-comparison-py"><span class="std std-ref">artifact comparison example</span></a>
+for a quantitative benchmark of LMS, ASR, and GEDAI on simulated EEG, and the
+<a class="reference internal" href="auto_examples/ex_maxwell_realtime.html#sphx-glr-auto-examples-ex-maxwell-realtime-py"><span class="std std-ref">RTMaxwell example</span></a>
+for a demonstration of real-time SSS on the MNE sample MEG dataset.</p>
+</section>
+<hr class="docutils" />
+<section id="references">
+<h2><a class="toc-backref" href="#id22" role="doc-backlink">References</a><a class="headerlink" href="#references" title="Link to this heading">#</a></h2>
+<div class="docutils container" id="id13">
+<aside class="footnote-list brackets">
+<aside class="footnote brackets" id="footcite-widrow1988adaptive" role="doc-footnote">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id1">1</a><span class="fn-bracket">]</span></span>
+<p>Bernard Widrow and Marcian E Hoff. Adaptive switching circuits. In <em>Neurocomputing: foundations of research</em>, pages 123–134. 1988.</p>
+</aside>
+<aside class="footnote brackets" id="footcite-choi2005blind" role="doc-footnote">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id2">2</a><span class="fn-bracket">]</span></span>
+<p>Seungjin Choi, Andrzej Cichocki, Hyung-Min Park, and Soo-Young Lee. Blind source separation and independent component analysis: a review. <em>Neural Information Processing-Letters and Reviews</em>, 6(1):1–57, 2005.</p>
+</aside>
+<aside class="footnote brackets" id="footcite-bell1995information" role="doc-footnote">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id3">3</a><span class="fn-bracket">]</span></span>
+<p>Anthony J Bell and Terrence J Sejnowski. An information-maximization approach to blind separation and blind deconvolution. <em>Neural computation</em>, 7(6):1129–1159, 1995.</p>
+</aside>
+<aside class="footnote brackets" id="footcite-cohen2022tutorial" role="doc-footnote">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id4">4</a><span class="fn-bracket">]</span></span>
+<p>Michael X Cohen. A tutorial on generalized eigendecomposition for denoising, contrast enhancement, and dimension reduction in multichannel electrophysiology. <em>NeuroImage</em>, 247:118809, 2022.</p>
+</aside>
+<aside class="footnote brackets" id="footcite-ros2025return" role="doc-footnote">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id5">5</a><span class="fn-bracket">]</span></span>
+<p>Tomas Ros, Victor Férat, Yingqi Huang, Cristina Colangelo, Seyed Mostafa Kia, Thomas Wolfers, Serge Vulliemoz, and Abele Michela. Return of the gedai: unsupervised eeg denoising based on leadfield filtering. <em>bioRxiv</em>, pages 2025–10, 2025.</p>
+</aside>
+<aside class="footnote brackets" id="footcite-mullen2015real" role="doc-footnote">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id6">6</a><span class="fn-bracket">]</span></span>
+<p>Tim R Mullen, Christian AE Kothe, Yu Mike Chi, Alejandro Ojeda, Trevor Kerth, Scott Makeig, Tzyy-Ping Jung, and Gert Cauwenberghs. Real-time neuroimaging and cognitive monitoring using wearable dry eeg. <em>IEEE transactions on biomedical engineering</em>, 62(11):2553–2567, 2015.</p>
+</aside>
+<aside class="footnote brackets" id="footcite-de2018robust" role="doc-footnote">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id7">7</a><span class="fn-bracket">]</span></span>
+<p>Alain De Cheveigné and Dorothée Arzounian. Robust detrending, rereferencing, outlier detection, and inpainting for multichannel data. <em>NeuroImage</em>, 172:903–912, 2018.</p>
+</aside>
+<aside class="footnote brackets" id="footcite-taulu2004suppression" role="doc-footnote">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id8">8</a><span class="fn-bracket">]</span></span>
+<p>Samu Taulu, Matti Kajola, and Juha Simola. Suppression of interference and artifacts by the signal space separation method. <em>Brain topography</em>, 16(4):269–275, 2004.</p>
+</aside>
+<aside class="footnote brackets" id="footcite-taulu2006spatiotemporal" role="doc-footnote">
+<span class="label"><span class="fn-bracket">[</span>9<span class="fn-bracket">]</span></span>
+<span class="backrefs">(<a role="doc-backlink" href="#id9">1</a>,<a role="doc-backlink" href="#id10">2</a>)</span>
+<p>Samu Taulu and Juha Simola. Spatiotemporal signal space separation method for rejecting nearby interference in meg measurements. <em>Physics in Medicine &amp; Biology</em>, 51(7):1759–1768, 2006.</p>
+</aside>
+<aside class="footnote brackets" id="footcite-barachant2014plug" role="doc-footnote">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id11">10</a><span class="fn-bracket">]</span></span>
+<p>Alexandre Barachant and Marco Congedo. A plug&amp;play p300 bci using information geometry. <em>arXiv preprint arXiv:1409.0107</em>, 2014.</p>
+</aside>
+<aside class="footnote brackets" id="footcite-barthelemy2019riemannian" role="doc-footnote">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id12">11</a><span class="fn-bracket">]</span></span>
+<p>Quentin Barthélemy, Louis Mayaud, David Ojeda, and Marco Congedo. The riemannian potato field: a tool for online signal quality index of eeg. <em>IEEE Transactions on Neural Systems and Rehabilitation Engineering</em>, 27(2):244–255, 2019.</p>
+</aside>
+</aside>
+</div>
+</section>
+</section>
+
+
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="cli.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">CLI</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="modalities.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">Real-time Feature Modalities</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <dialog id="pst-secondary-sidebar-modal"></dialog>
+                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+<div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav id="pst-page-toc-nav" class="page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="pst-show_toc_level nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#adaptive-lms-filter">Adaptive LMS filter</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#orica-online-recursive-ica">ORICA — Online Recursive ICA</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#gedai-ged-based-artifact-isolation">GEDAI — GED-based Artifact Isolation</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#asr-artifact-subspace-reconstruction">ASR — Artifact Subspace Reconstruction</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#rtmaxwellfilter-real-time-sss-tsss">RTMaxwellFilter — Real-Time SSS / tSSS</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#bad-channel-detection">Bad Channel Detection</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#riemannian-potato-online-artifact-detection">Riemannian Potato — Online Artifact Detection</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#method-comparison">Method comparison</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#references">References</a></li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="_static/scripts/bootstrap.js?digest=90905a2f556bf617f1a9"></script>
+<script defer src="_static/scripts/pydata-sphinx-theme.js?digest=90905a2f556bf617f1a9"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright 2025, Payam S. Shabestari.
+      <br/>
+    
+  </p>
+</div>
+      
+        <div class="footer-item">
+
+  <p class="sphinx-version">
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 9.0.4.
+    <br/>
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
+<p class="theme-version">
+  <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.20.0.
+</p></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>

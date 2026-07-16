@@ -1,0 +1,944 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../../../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>mne_rt.tools.bad_channel_detector &#8212; MNE-RT</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../../_static/styles/theme.css?digest=90905a2f556bf617f1a9" rel="stylesheet" />
+<link href="../../../_static/styles/pydata-sphinx-theme.css?digest=90905a2f556bf617f1a9" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/sg_gallery.css?v=fd6457a4" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/sg_gallery-binder.css?v=f4aeca0c" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/sg_gallery-dataframe.css?v=2082cf3c" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/sg_gallery-rendered-html.css?v=1277b6f3" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/custom.css?v=5bf657dd" />
+  
+  <!-- So that users can add custom icons -->
+  <script defer src="../../../_static/scripts/fontawesome.js?digest=90905a2f556bf617f1a9"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../../_static/scripts/bootstrap.js?digest=90905a2f556bf617f1a9" />
+<link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=90905a2f556bf617f1a9" />
+
+    <script src="../../../_static/documentation_options.js?v=8d563738"></script>
+    <script src="../../../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="../../../_static/sg-tags.js?v=d80f6fa4"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = '_modules/mne_rt/tools/bad_channel_detector';</script>
+    <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="" />
+  
+    
+    <script src="../../../_static/searchtools.js"></script>
+    <script src="../../../_static/language_data.js"></script>
+    <script src="../../../searchindex.js"></script>
+  
+  </head>
+  <body data-default-mode="">
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+  
+  
+  
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../../../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header id="pst-header" class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../../../index.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../../../_static/mne_rt_logo.svg" class="logo__image only-light" alt="MNE-RT - Home"/>
+    <img src="../../../_static/mne_rt_logo.svg" class="logo__image only-dark pst-js-only" alt="MNE-RT - Home"/>
+  
+  
+</a></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../install.html">
+    Installation
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../tutorial.html">
+    User Guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../api.html">
+    API Reference
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../visualization.html">
+    Visualisation
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../cli.html">
+    CLI
+  </a>
+</li>
+
+            <li class="nav-item dropdown">
+                <button class="btn dropdown-toggle nav-item" type="button"
+                data-bs-toggle="dropdown" aria-expanded="false"
+                aria-controls="pst-nav-more-links">
+                    More
+                </button>
+                <ul id="pst-nav-more-links" class="dropdown-menu">
+                    
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../../../denoising.html">
+    Artifact Correction
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../../../modalities.html">
+    Real-time Feature Modalities
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../../../protocols.html">
+    NF Protocols
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../../../whats_new.html">
+    What’s new
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../../../auto_examples/index.html">
+    Examples Gallery
+  </a>
+</li>
+
+                </ul>
+            </li>
+            
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+        </div>
+      
+      
+        <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/payamsash/mne-rt" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-square-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
+        </li>
+</ul></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+    </div>
+  
+
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+        
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar hide-on-wide">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../install.html">
+    Installation
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../tutorial.html">
+    User Guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../api.html">
+    API Reference
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../visualization.html">
+    Visualisation
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../cli.html">
+    CLI
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../denoising.html">
+    Artifact Correction
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../modalities.html">
+    Real-time Feature Modalities
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../protocols.html">
+    NF Protocols
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../whats_new.html">
+    What’s new
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../auto_examples/index.html">
+    Examples Gallery
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/payamsash/mne-rt" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-square-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
+        </li>
+</ul></div>
+        
+      </div>
+    
+  </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../../../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    
+    <li class="breadcrumb-item"><a href="../../index.html" class="nav-link">Module code</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">mne_rt.tools.bad_channel_detector</span></li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <h1>Source code for mne_rt.tools.bad_channel_detector</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;Real-time bad channel detection for streaming M/EEG.</span>
+
+<span class="sd">Classes</span>
+<span class="sd">-------</span>
+<span class="sd">BadChannelDetector</span>
+<span class="sd">    Multi-criterion online bad channel monitor with rolling-window voting.</span>
+
+<span class="sd">Notes</span>
+<span class="sd">-----</span>
+<span class="sd">The approach follows the methods used in EEGLAB&#39;s ``clean_rawdata`` plugin</span>
+<span class="sd">:footcite:p:`mullen2015real` and MNE&#39;s automated quality checks, adapted for</span>
+<span class="sd">chunk-by-chunk streaming data with no look-ahead.</span>
+
+<span class="sd">References</span>
+<span class="sd">----------</span>
+<span class="sd">Mullen, T. R., et al. (2015). Real-time neuroimaging and cognitive monitoring</span>
+<span class="sd">using wearable dry EEG. *IEEE Trans. Biomed. Eng.*, 62(11), 2553–2567.</span>
+<span class="sd">https://doi.org/10.1109/TBME.2015.2481482</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">collections</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">warnings</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Union</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+
+
+<div class="viewcode-block" id="BadChannelDetector">
+<a class="viewcode-back" href="../../../generated/mne_rt.tools.BadChannelDetector.html#mne_rt.tools.BadChannelDetector">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">BadChannelDetector</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Multi-criterion real-time bad channel detector for streaming M/EEG.</span>
+
+<span class="sd">    Evaluates each incoming data window against up to four independent</span>
+<span class="sd">    criteria.  A channel is flagged as bad only when it exceeds its criterion</span>
+<span class="sd">    in at least ``min_bad_frac`` of the rolling window history — this voting</span>
+<span class="sd">    mechanism avoids false positives from transient artifacts.</span>
+
+<span class="sd">    **Criteria**</span>
+
+<span class="sd">    ``&quot;flat&quot;``</span>
+<span class="sd">        Channels whose RMS amplitude falls below ``flat_threshold`` (dead</span>
+<span class="sd">        electrode / disconnected lead).</span>
+
+<span class="sd">    ``&quot;variance&quot;``</span>
+<span class="sd">        Channels whose RMS amplitude is a statistical outlier across all</span>
+<span class="sd">        channels, measured by a robust z-score</span>
+<span class="sd">        (:math:`z = (\\text{rms} - \\text{median}) / (\\text{MAD} \\times 1.4826)`).</span>
+<span class="sd">        Catches both excessively noisy channels and channels that have gone</span>
+<span class="sd">        unusually quiet.</span>
+
+<span class="sd">    ``&quot;correlation&quot;``</span>
+<span class="sd">        Channels whose mean Pearson correlation with their *K* nearest</span>
+<span class="sd">        spatial neighbours drops below ``corr_threshold``.  A channel that</span>
+<span class="sd">        has lost contact or broken its reference will de-correlate from</span>
+<span class="sd">        its neighbours while the neighbours remain correlated with each other.</span>
+<span class="sd">        Requires channel positions to be set in ``info`` (i.e. montage applied).</span>
+
+<span class="sd">    ``&quot;hf_noise&quot;``</span>
+<span class="sd">        Channels with an abnormally high ratio of high-frequency power</span>
+<span class="sd">        (&gt; ``hf_cutoff`` Hz) to broadband power.  Catches channels</span>
+<span class="sd">        contaminated by EMG, electrode cable noise, or loose connections.</span>
+<span class="sd">        Uses the same MAD-based robust z-score as ``&quot;variance&quot;``.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    info : mne.Info</span>
+<span class="sd">        MNE channel information.  Must contain ``ch_names`` and ``sfreq``.</span>
+<span class="sd">        For ``&quot;correlation&quot;``, channel 3-D positions must be set</span>
+<span class="sd">        (``set_montage`` applied).</span>
+<span class="sd">    method : {&quot;all&quot;, &quot;flat&quot;, &quot;variance&quot;, &quot;correlation&quot;, &quot;hf_noise&quot;} or list</span>
+<span class="sd">        Criterion or list of criteria to evaluate.  ``&quot;all&quot;`` enables</span>
+<span class="sd">        all four criteria.  Default is ``&quot;all&quot;``.</span>
+<span class="sd">    flat_threshold : float, default 1e-7</span>
+<span class="sd">        Minimum RMS amplitude (in raw data units — V for EEG, T for MEG) for</span>
+<span class="sd">        a channel not to be considered flat.  Channels below this value are</span>
+<span class="sd">        dead.  Default 100 nV = ``1e-7`` V.</span>
+<span class="sd">    variance_threshold : float, default 5.0</span>
+<span class="sd">        Robust z-score cutoff for the variance criterion.  A channel whose</span>
+<span class="sd">        RMS deviates by more than this many MAD-units from the channel median</span>
+<span class="sd">        is flagged.  Default ``5.0`` (conservative; reduce to 3–4 to be more</span>
+<span class="sd">        aggressive).</span>
+<span class="sd">    corr_threshold : float, default 0.4</span>
+<span class="sd">        Minimum mean Pearson correlation with spatial neighbours.  Channels</span>
+<span class="sd">        below this value are poorly coupled to their surroundings.</span>
+<span class="sd">        Default ``0.4``.</span>
+<span class="sd">    hf_threshold : float, default 5.0</span>
+<span class="sd">        Robust z-score cutoff for the HF noise criterion.  Default ``5.0``.</span>
+<span class="sd">    hf_cutoff : float, default 40.0</span>
+<span class="sd">        Frequency in Hz above which power is classified as *high-frequency*</span>
+<span class="sd">        for the noise criterion.  Default ``40.0`` Hz.</span>
+<span class="sd">    n_neighbors : int, default 4</span>
+<span class="sd">        Number of nearest spatial neighbours used in the correlation criterion.</span>
+<span class="sd">        Default ``4``.</span>
+<span class="sd">    history_windows : int, default 30</span>
+<span class="sd">        Number of per-window bad-flags to retain in the rolling history.</span>
+<span class="sd">        Combined with ``min_bad_frac`` this sets the effective time-scale for</span>
+<span class="sd">        declaring a channel persistently bad.</span>
+<span class="sd">    min_bad_frac : float, default 0.5</span>
+<span class="sd">        Fraction of rolling-history windows in which a channel must be flagged</span>
+<span class="sd">        before it is declared bad.  ``0.5`` = majority vote.</span>
+<span class="sd">        ``1.0`` = must be bad in every recent window (very lenient).</span>
+<span class="sd">        ``0.1`` = bad in any 10 % of windows (very strict).</span>
+
+<span class="sd">    Attributes</span>
+<span class="sd">    ----------</span>
+<span class="sd">    bad_channels_ : list of str</span>
+<span class="sd">        Channel names currently declared bad.  Updated on every</span>
+<span class="sd">        :meth:`update` call.</span>
+<span class="sd">    scores_ : dict of str → float</span>
+<span class="sd">        Per-channel composite badness score in ``[0, 1]``: fraction of recent</span>
+<span class="sd">        windows in which the channel was flagged by *any* active criterion.</span>
+<span class="sd">    n_windows_ : int</span>
+<span class="sd">        Total number of windows processed since initialisation or last</span>
+<span class="sd">        :meth:`reset`.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    Basic usage — update once per NF window and pass bad channels to MNE::</span>
+
+<span class="sd">        detector = BadChannelDetector(raw.info, method=&quot;all&quot;)</span>
+<span class="sd">        while streaming:</span>
+<span class="sd">            window = stream.get_data(1.0)   # 1 s chunk</span>
+<span class="sd">            bad = detector.update(window)</span>
+<span class="sd">            print(&quot;Bad channels:&quot;, bad)</span>
+
+<span class="sd">    Use only the variance + flat criteria (no montage required)::</span>
+
+<span class="sd">        detector = BadChannelDetector(</span>
+<span class="sd">            info, method=[&quot;flat&quot;, &quot;variance&quot;], variance_threshold=4.0</span>
+<span class="sd">        )</span>
+
+<span class="sd">    .. versionadded:: 1.0.0</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># ------------------------------------------------------------------</span>
+    <span class="c1"># Construction</span>
+    <span class="c1"># ------------------------------------------------------------------</span>
+
+<div class="viewcode-block" id="BadChannelDetector.__init__">
+<a class="viewcode-back" href="../../../generated/mne_rt.tools.BadChannelDetector.html#mne_rt.tools.BadChannelDetector.__init__">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">info</span><span class="p">,</span>
+        <span class="n">method</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="s2">&quot;all&quot;</span><span class="p">,</span>
+        <span class="n">flat_threshold</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1e-7</span><span class="p">,</span>
+        <span class="n">variance_threshold</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">5.0</span><span class="p">,</span>
+        <span class="n">corr_threshold</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.4</span><span class="p">,</span>
+        <span class="n">hf_threshold</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">5.0</span><span class="p">,</span>
+        <span class="n">hf_cutoff</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">40.0</span><span class="p">,</span>
+        <span class="n">n_neighbors</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">4</span><span class="p">,</span>
+        <span class="n">history_windows</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">30</span><span class="p">,</span>
+        <span class="n">min_bad_frac</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.5</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_info</span> <span class="o">=</span> <span class="n">info</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_ch_names</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">info</span><span class="p">[</span><span class="s2">&quot;ch_names&quot;</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_sfreq</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">info</span><span class="p">[</span><span class="s2">&quot;sfreq&quot;</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_n_ch</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_ch_names</span><span class="p">)</span>
+
+        <span class="n">_valid</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;all&quot;</span><span class="p">,</span> <span class="s2">&quot;flat&quot;</span><span class="p">,</span> <span class="s2">&quot;variance&quot;</span><span class="p">,</span> <span class="s2">&quot;correlation&quot;</span><span class="p">,</span> <span class="s2">&quot;hf_noise&quot;</span><span class="p">}</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">method</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+            <span class="n">method</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">_valid</span> <span class="o">-</span> <span class="p">{</span><span class="s2">&quot;all&quot;</span><span class="p">})</span> <span class="k">if</span> <span class="n">method</span> <span class="o">==</span> <span class="s2">&quot;all&quot;</span> <span class="k">else</span> <span class="p">[</span><span class="n">method</span><span class="p">]</span>
+        <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="n">method</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">m</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">_valid</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Unknown method </span><span class="si">{</span><span class="n">m</span><span class="si">!r}</span><span class="s2">. Choose from </span><span class="si">{</span><span class="n">_valid</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_methods</span><span class="p">:</span> <span class="nb">set</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">method</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">flat_threshold</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;flat_threshold must be &gt; 0&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="mi">0</span> <span class="o">&lt;</span> <span class="n">min_bad_frac</span> <span class="o">&lt;=</span> <span class="mi">1</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;min_bad_frac must be in (0, 1]&quot;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">flat_threshold</span> <span class="o">=</span> <span class="n">flat_threshold</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">variance_threshold</span> <span class="o">=</span> <span class="n">variance_threshold</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">corr_threshold</span> <span class="o">=</span> <span class="n">corr_threshold</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">hf_threshold</span> <span class="o">=</span> <span class="n">hf_threshold</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">hf_cutoff</span> <span class="o">=</span> <span class="n">hf_cutoff</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">n_neighbors</span> <span class="o">=</span> <span class="n">n_neighbors</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">history_windows</span> <span class="o">=</span> <span class="n">history_windows</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">min_bad_frac</span> <span class="o">=</span> <span class="n">min_bad_frac</span>
+
+        <span class="c1"># Rolling history: per-channel deque of bool (True = bad in that window)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_history</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">collections</span><span class="o">.</span><span class="n">deque</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="n">ch</span><span class="p">:</span> <span class="n">collections</span><span class="o">.</span><span class="n">deque</span><span class="p">(</span><span class="n">maxlen</span><span class="o">=</span><span class="n">history_windows</span><span class="p">)</span> <span class="k">for</span> <span class="n">ch</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ch_names</span>
+        <span class="p">}</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">bad_channels_</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">scores_</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="n">ch</span><span class="p">:</span> <span class="mf">0.0</span> <span class="k">for</span> <span class="n">ch</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ch_names</span><span class="p">}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">n_windows_</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span>
+
+        <span class="c1"># Pre-compute neighbour indices (may be empty if no positions)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_neighbor_idx</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">list</span><span class="p">[</span><span class="nb">int</span><span class="p">]]]</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">if</span> <span class="s2">&quot;correlation&quot;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_methods</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_neighbor_idx</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_build_neighbor_index</span><span class="p">()</span></div>
+
+
+    <span class="c1"># ------------------------------------------------------------------</span>
+    <span class="c1"># Public API</span>
+    <span class="c1"># ------------------------------------------------------------------</span>
+
+<div class="viewcode-block" id="BadChannelDetector.update">
+<a class="viewcode-back" href="../../../generated/mne_rt.tools.BadChannelDetector.html#mne_rt.tools.BadChannelDetector.update">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">update</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Process one data window and return current bad-channel list.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        data : ndarray, shape (n_channels, n_samples)</span>
+<span class="sd">            One analysis window of raw M/EEG data.  The channel order must</span>
+<span class="sd">            match ``info[&quot;ch_names&quot;]``.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        bad_channels : list of str</span>
+<span class="sd">            Channel names currently declared bad (majority vote over recent</span>
+<span class="sd">            history).</span>
+
+<span class="sd">        Raises</span>
+<span class="sd">        ------</span>
+<span class="sd">        ValueError</span>
+<span class="sd">            If ``data.shape[0] != n_channels``.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_n_ch</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Expected </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_n_ch</span><span class="si">}</span><span class="s2"> channels, got </span><span class="si">{</span><span class="n">data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
+
+        <span class="n">flagged</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_n_ch</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">bool</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="s2">&quot;flat&quot;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_methods</span><span class="p">:</span>
+            <span class="n">flagged</span> <span class="o">|=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_criterion_flat</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="s2">&quot;variance&quot;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_methods</span><span class="p">:</span>
+            <span class="n">flagged</span> <span class="o">|=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_criterion_variance</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="s2">&quot;correlation&quot;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_methods</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_neighbor_idx</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">flagged</span> <span class="o">|=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_criterion_correlation</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="s2">&quot;hf_noise&quot;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_methods</span><span class="p">:</span>
+            <span class="n">flagged</span> <span class="o">|=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_criterion_hf_noise</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+
+        <span class="c1"># Update rolling history</span>
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">ch</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_ch_names</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_history</span><span class="p">[</span><span class="n">ch</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">bool</span><span class="p">(</span><span class="n">flagged</span><span class="p">[</span><span class="n">i</span><span class="p">]))</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">n_windows_</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_update_bad_list</span><span class="p">()</span>
+        <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">bad_channels_</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="BadChannelDetector.get_bad_channels">
+<a class="viewcode-back" href="../../../generated/mne_rt.tools.BadChannelDetector.html#mne_rt.tools.BadChannelDetector.get_bad_channels">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_bad_channels</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return the current list of declared bad channels.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        bad_channels : list of str</span>
+<span class="sd">            Channel names that have been bad in ≥ ``min_bad_frac`` of</span>
+<span class="sd">            the most recent ``history_windows`` windows.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">bad_channels_</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="BadChannelDetector.get_scores">
+<a class="viewcode-back" href="../../../generated/mne_rt.tools.BadChannelDetector.html#mne_rt.tools.BadChannelDetector.get_scores">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_scores</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">float</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return per-channel badness scores in the range [0, 1].</span>
+
+<span class="sd">        A score of ``1.0`` means the channel was flagged in every recent</span>
+<span class="sd">        window; ``0.0`` means it was never flagged.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        scores : dict of str → float</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="nb">dict</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">scores_</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="BadChannelDetector.reset">
+<a class="viewcode-back" href="../../../generated/mne_rt.tools.BadChannelDetector.html#mne_rt.tools.BadChannelDetector.reset">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">reset</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Clear rolling history and reset all counters.</span>
+
+<span class="sd">        Constructor parameters and neighbour indices are preserved.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">dq</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_history</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+            <span class="n">dq</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">bad_channels_</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">scores_</span> <span class="o">=</span> <span class="p">{</span><span class="n">ch</span><span class="p">:</span> <span class="mf">0.0</span> <span class="k">for</span> <span class="n">ch</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ch_names</span><span class="p">}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">n_windows_</span> <span class="o">=</span> <span class="mi">0</span></div>
+
+
+    <span class="c1"># ------------------------------------------------------------------</span>
+    <span class="c1"># Criteria</span>
+    <span class="c1"># ------------------------------------------------------------------</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_criterion_flat</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Flag channels whose RMS is below flat_threshold.&quot;&quot;&quot;</span>
+        <span class="n">rms</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">data</span><span class="o">**</span><span class="mi">2</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">rms</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">flat_threshold</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_criterion_variance</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Flag channels whose RMS is a robust outlier across channels.&quot;&quot;&quot;</span>
+        <span class="n">rms</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">data</span><span class="o">**</span><span class="mi">2</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">))</span>
+        <span class="n">median</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">median</span><span class="p">(</span><span class="n">rms</span><span class="p">)</span>
+        <span class="n">mad</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">median</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">rms</span> <span class="o">-</span> <span class="n">median</span><span class="p">))</span> <span class="o">*</span> <span class="mf">1.4826</span> <span class="o">+</span> <span class="mf">1e-30</span>
+        <span class="n">z</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">((</span><span class="n">rms</span> <span class="o">-</span> <span class="n">median</span><span class="p">)</span> <span class="o">/</span> <span class="n">mad</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">z</span> <span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">variance_threshold</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_criterion_correlation</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Flag channels whose mean correlation with neighbours is low.&quot;&quot;&quot;</span>
+        <span class="n">flagged</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_n_ch</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">bool</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_neighbor_idx</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">flagged</span>
+
+        <span class="c1"># Demean channels (required for valid Pearson correlation)</span>
+        <span class="n">dm</span> <span class="o">=</span> <span class="n">data</span> <span class="o">-</span> <span class="n">data</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">keepdims</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">norms</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">dm</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">keepdims</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span> <span class="o">+</span> <span class="mf">1e-30</span>
+        <span class="n">dm_norm</span> <span class="o">=</span> <span class="n">dm</span> <span class="o">/</span> <span class="n">norms</span>
+
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">nbrs</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_neighbor_idx</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">nbrs</span><span class="p">:</span>
+                <span class="k">continue</span>
+            <span class="n">corrs</span> <span class="o">=</span> <span class="n">dm_norm</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">@</span> <span class="n">dm_norm</span><span class="p">[</span><span class="n">nbrs</span><span class="p">]</span><span class="o">.</span><span class="n">T</span> <span class="o">/</span> <span class="n">data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+            <span class="n">mean_corr</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">corrs</span><span class="p">)))</span>
+            <span class="k">if</span> <span class="n">mean_corr</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">corr_threshold</span><span class="p">:</span>
+                <span class="n">flagged</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
+
+        <span class="k">return</span> <span class="n">flagged</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_criterion_hf_noise</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Flag channels with abnormally high HF power fraction.&quot;&quot;&quot;</span>
+        <span class="n">n</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+        <span class="n">freqs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">fft</span><span class="o">.</span><span class="n">rfftfreq</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">d</span><span class="o">=</span><span class="mf">1.0</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sfreq</span><span class="p">)</span>
+        <span class="n">fft_amp</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">fft</span><span class="o">.</span><span class="n">rfft</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">))</span> <span class="o">**</span> <span class="mi">2</span>
+
+        <span class="n">total_power</span> <span class="o">=</span> <span class="n">fft_amp</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span> <span class="o">+</span> <span class="mf">1e-30</span>
+        <span class="n">hf_mask</span> <span class="o">=</span> <span class="n">freqs</span> <span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">hf_cutoff</span>
+        <span class="n">hf_power</span> <span class="o">=</span> <span class="n">fft_amp</span><span class="p">[:,</span> <span class="n">hf_mask</span><span class="p">]</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">hf_ratio</span> <span class="o">=</span> <span class="n">hf_power</span> <span class="o">/</span> <span class="n">total_power</span>
+
+        <span class="n">median</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">median</span><span class="p">(</span><span class="n">hf_ratio</span><span class="p">)</span>
+        <span class="n">mad</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">median</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">hf_ratio</span> <span class="o">-</span> <span class="n">median</span><span class="p">))</span> <span class="o">*</span> <span class="mf">1.4826</span> <span class="o">+</span> <span class="mf">1e-30</span>
+        <span class="n">z</span> <span class="o">=</span> <span class="p">(</span><span class="n">hf_ratio</span> <span class="o">-</span> <span class="n">median</span><span class="p">)</span> <span class="o">/</span> <span class="n">mad</span>
+        <span class="k">return</span> <span class="n">z</span> <span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">hf_threshold</span>
+
+    <span class="c1"># ------------------------------------------------------------------</span>
+    <span class="c1"># Internals</span>
+    <span class="c1"># ------------------------------------------------------------------</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_update_bad_list</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Recompute bad_channels_ and scores_ from current rolling history.&quot;&quot;&quot;</span>
+        <span class="n">bad</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">ch</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ch_names</span><span class="p">:</span>
+            <span class="n">history</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_history</span><span class="p">[</span><span class="n">ch</span><span class="p">]</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">history</span><span class="p">:</span>
+                <span class="n">score</span> <span class="o">=</span> <span class="mf">0.0</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">score</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="n">history</span><span class="p">)</span> <span class="o">/</span> <span class="nb">len</span><span class="p">(</span><span class="n">history</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">scores_</span><span class="p">[</span><span class="n">ch</span><span class="p">]</span> <span class="o">=</span> <span class="n">score</span>
+            <span class="k">if</span> <span class="n">score</span> <span class="o">&gt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">min_bad_frac</span><span class="p">:</span>
+                <span class="n">bad</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ch</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">bad_channels_</span> <span class="o">=</span> <span class="n">bad</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_build_neighbor_index</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">list</span><span class="p">[</span><span class="nb">int</span><span class="p">]]]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Build a mapping from channel index to K nearest neighbours.</span>
+
+<span class="sd">        Uses the 3-D electrode positions stored in ``info[&#39;chs&#39;][k][&#39;loc&#39;][:3]``.</span>
+<span class="sd">        Returns ``None`` when positions are not available.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">positions</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">ch</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_info</span><span class="p">[</span><span class="s2">&quot;chs&quot;</span><span class="p">]:</span>
+            <span class="n">loc</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">ch</span><span class="p">[</span><span class="s2">&quot;loc&quot;</span><span class="p">][:</span><span class="mi">3</span><span class="p">])</span>
+            <span class="n">positions</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">loc</span><span class="p">)</span>
+
+        <span class="n">positions</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">positions</span><span class="p">)</span>
+        <span class="c1"># Check for channels with no valid position</span>
+        <span class="n">valid</span> <span class="o">=</span> <span class="o">~</span><span class="n">np</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">positions</span><span class="p">),</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span> <span class="o">&amp;</span> <span class="o">~</span><span class="p">(</span><span class="n">positions</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">valid</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span> <span class="o">&lt;</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
+                <span class="s2">&quot;BadChannelDetector: fewer than 2 channels have valid positions; &quot;</span>
+                <span class="s2">&quot;skipping the correlation criterion.&quot;</span><span class="p">,</span>
+                <span class="ne">RuntimeWarning</span><span class="p">,</span>
+                <span class="n">stacklevel</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span>
+            <span class="p">)</span>
+            <span class="k">return</span> <span class="kc">None</span>
+
+        <span class="n">neighbor_idx</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">list</span><span class="p">[</span><span class="nb">int</span><span class="p">]]</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_n_ch</span><span class="p">):</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">valid</span><span class="p">[</span><span class="n">i</span><span class="p">]:</span>
+                <span class="n">neighbor_idx</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+                <span class="k">continue</span>
+            <span class="c1"># Euclidean distances to all other valid channels</span>
+            <span class="n">diffs</span> <span class="o">=</span> <span class="n">positions</span> <span class="o">-</span> <span class="n">positions</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+            <span class="n">dists</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">diffs</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+            <span class="n">dists</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">inf</span>  <span class="c1"># exclude self</span>
+            <span class="n">dists</span><span class="p">[</span><span class="o">~</span><span class="n">valid</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">inf</span>  <span class="c1"># exclude invalid channels</span>
+            <span class="n">k</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n_neighbors</span><span class="p">,</span> <span class="nb">int</span><span class="p">(</span><span class="n">valid</span><span class="o">.</span><span class="n">sum</span><span class="p">())</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
+            <span class="n">nbrs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">argsort</span><span class="p">(</span><span class="n">dists</span><span class="p">)[:</span><span class="n">k</span><span class="p">]</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
+            <span class="n">neighbor_idx</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">nbrs</span>
+
+        <span class="k">return</span> <span class="n">neighbor_idx</span>
+
+    <span class="c1"># ------------------------------------------------------------------</span>
+    <span class="c1"># Dunder</span>
+    <span class="c1"># ------------------------------------------------------------------</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="k">return</span> <span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;BadChannelDetector(&quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;n_channels=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_n_ch</span><span class="si">}</span><span class="s2">, &quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;methods=</span><span class="si">{</span><span class="nb">sorted</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_methods</span><span class="p">)</span><span class="si">}</span><span class="s2">, &quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;bad=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">bad_channels_</span><span class="si">}</span><span class="s2">, &quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;n_windows=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">n_windows_</span><span class="si">}</span><span class="s2">)&quot;</span>
+        <span class="p">)</span></div>
+
+</pre></div>
+
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../../../_static/scripts/bootstrap.js?digest=90905a2f556bf617f1a9"></script>
+<script defer src="../../../_static/scripts/pydata-sphinx-theme.js?digest=90905a2f556bf617f1a9"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright 2025, Payam S. Shabestari.
+      <br/>
+    
+  </p>
+</div>
+      
+        <div class="footer-item">
+
+  <p class="sphinx-version">
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 9.0.4.
+    <br/>
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
+<p class="theme-version">
+  <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.20.0.
+</p></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>

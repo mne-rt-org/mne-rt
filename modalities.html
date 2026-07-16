@@ -1,0 +1,1046 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="./" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Real-time Feature Modalities &#8212; MNE-RT</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="_static/styles/theme.css?digest=90905a2f556bf617f1a9" rel="stylesheet" />
+<link href="_static/styles/pydata-sphinx-theme.css?digest=90905a2f556bf617f1a9" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="_static/sg_gallery.css?v=fd6457a4" />
+    <link rel="stylesheet" type="text/css" href="_static/sg_gallery-binder.css?v=f4aeca0c" />
+    <link rel="stylesheet" type="text/css" href="_static/sg_gallery-dataframe.css?v=2082cf3c" />
+    <link rel="stylesheet" type="text/css" href="_static/sg_gallery-rendered-html.css?v=1277b6f3" />
+    <link rel="stylesheet" type="text/css" href="_static/custom.css?v=5bf657dd" />
+  
+  <!-- So that users can add custom icons -->
+  <script defer src="_static/scripts/fontawesome.js?digest=90905a2f556bf617f1a9"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="_static/scripts/bootstrap.js?digest=90905a2f556bf617f1a9" />
+<link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=90905a2f556bf617f1a9" />
+
+    <script src="_static/documentation_options.js?v=8d563738"></script>
+    <script src="_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="_static/sg-tags.js?v=d80f6fa4"></script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-mml-chtml.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'modalities';</script>
+    <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="NF Protocols" href="protocols.html" />
+    <link rel="prev" title="Artifact Correction" href="denoising.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="" />
+  
+    
+    <script src="_static/searchtools.js"></script>
+    <script src="_static/language_data.js"></script>
+    <script src="searchindex.js"></script>
+  
+  </head>
+  <body data-default-mode="">
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+  
+  
+  
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header id="pst-header" class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="index.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="_static/mne_rt_logo.svg" class="logo__image only-light" alt="MNE-RT - Home"/>
+    <img src="_static/mne_rt_logo.svg" class="logo__image only-dark pst-js-only" alt="MNE-RT - Home"/>
+  
+  
+</a></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="install.html">
+    Installation
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="tutorial.html">
+    User Guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="api.html">
+    API Reference
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="visualization.html">
+    Visualisation
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="cli.html">
+    CLI
+  </a>
+</li>
+
+            <li class="nav-item dropdown">
+                <button class="btn dropdown-toggle nav-item" type="button"
+                data-bs-toggle="dropdown" aria-expanded="false"
+                aria-controls="pst-nav-more-links">
+                    More
+                </button>
+                <ul id="pst-nav-more-links" class="dropdown-menu">
+                    
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="denoising.html">
+    Artifact Correction
+  </a>
+</li>
+
+
+<li class=" current active">
+  <a class="nav-link dropdown-item nav-internal" href="#">
+    Real-time Feature Modalities
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="protocols.html">
+    NF Protocols
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="whats_new.html">
+    What’s new
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="auto_examples/index.html">
+    Examples Gallery
+  </a>
+</li>
+
+                </ul>
+            </li>
+            
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+        </div>
+      
+      
+        <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/payamsash/mne-rt" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-square-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
+        </li>
+</ul></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+    </div>
+  
+
+  
+    <button class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="On this page">
+      <span class="fa-solid fa-outdent"></span>
+    </button>
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="install.html">
+    Installation
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="tutorial.html">
+    User Guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="api.html">
+    API Reference
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="visualization.html">
+    Visualisation
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="cli.html">
+    CLI
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="denoising.html">
+    Artifact Correction
+  </a>
+</li>
+
+
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="#">
+    Real-time Feature Modalities
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="protocols.html">
+    NF Protocols
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="whats_new.html">
+    What’s new
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="auto_examples/index.html">
+    Examples Gallery
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/payamsash/mne-rt" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-square-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
+        </li>
+</ul></div>
+        
+      </div>
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+
+<nav class="bd-docs-nav bd-links"
+     aria-label="Section Navigation">
+  <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
+  <div class="bd-toc-item navbar-nav"></div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">Real-time Feature Modalities</span></li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section id="real-time-feature-modalities">
+<span id="modalities"></span><h1>Real-time Feature Modalities<a class="headerlink" href="#real-time-feature-modalities" title="Link to this heading">#</a></h1>
+<p>MNE-RT implements 20 real-time feature modalities spanning sensor-space and
+source-space features, from simple band-power estimates to graph-theoretic
+functional connectivity measures.  Each modality can be used as a feedback
+signal, a monitoring metric, or an input to an offline analysis pipeline.
+Select a modality via the <code class="docutils literal notranslate"><span class="pre">--modality</span></code> flag of <a class="reference internal" href="cli.html"><span class="doc">CLI</span></a> or programmatically
+via <a class="reference internal" href="generated/mne_rt.RTStream.html#mne_rt.RTStream" title="mne_rt.RTStream"><code class="xref py py-class docutils literal notranslate"><span class="pre">RTStream</span></code></a>; each is identified by the config key listed below.</p>
+<nav class="contents local" id="contents">
+<ul class="simple">
+<li><p><a class="reference internal" href="#sensor-power" id="id15">Sensor Power</a></p></li>
+<li><p><a class="reference internal" href="#band-ratio" id="id16">Band Ratio</a></p></li>
+<li><p><a class="reference internal" href="#erd-ers" id="id17">ERD / ERS</a></p></li>
+<li><p><a class="reference internal" href="#laterality" id="id18">Laterality</a></p></li>
+<li><p><a class="reference internal" href="#laterality-erd-ers" id="id19">Laterality ERD/ERS</a></p></li>
+<li><p><a class="reference internal" href="#instantaneous-phase" id="id20">Instantaneous Phase</a></p></li>
+<li><p><a class="reference internal" href="#slow-cortical-potentials" id="id21">Slow Cortical Potentials</a></p></li>
+<li><p><a class="reference internal" href="#peak-alpha-frequency" id="id22">Peak Alpha Frequency</a></p></li>
+<li><p><a class="reference internal" href="#hjorth-parameters" id="id23">Hjorth Parameters</a></p></li>
+<li><p><a class="reference internal" href="#spectral-centroid" id="id24">Spectral Centroid</a></p></li>
+<li><p><a class="reference internal" href="#entropy" id="id25">Entropy</a></p></li>
+<li><p><a class="reference internal" href="#argmax-frequency" id="id26">Argmax Frequency</a></p></li>
+<li><p><a class="reference internal" href="#individual-peak-power" id="id27">Individual Peak Power</a></p></li>
+<li><p><a class="reference internal" href="#cross-frequency-coupling-sensor" id="id28">Cross-Frequency Coupling (Sensor)</a></p></li>
+<li><p><a class="reference internal" href="#sensor-connectivity" id="id29">Sensor Connectivity</a></p></li>
+<li><p><a class="reference internal" href="#connectivity-ratio" id="id30">Connectivity Ratio</a></p></li>
+<li><p><a class="reference internal" href="#sensor-graph" id="id31">Sensor Graph</a></p></li>
+<li><p><a class="reference internal" href="#source-power" id="id32">Source Power</a></p></li>
+<li><p><a class="reference internal" href="#source-connectivity" id="id33">Source Connectivity</a></p></li>
+<li><p><a class="reference internal" href="#source-graph" id="id34">Source Graph</a></p></li>
+</ul>
+</nav>
+<hr class="docutils" />
+<section id="sensor-power">
+<span id="modality-sensor-power"></span><h2><a class="toc-backref" href="#id15" role="doc-backlink">Sensor Power</a><a class="headerlink" href="#sensor-power" title="Link to this heading">#</a></h2>
+<p><strong>Config key:</strong> <code class="docutils literal notranslate"><span class="pre">sensor_power</span></code></p>
+<p>Mean spectral power across selected channels within a target frequency band.
+For each channel <span class="math notranslate nohighlight">\(i\)</span>, the one-sided power spectral density
+<span class="math notranslate nohighlight">\(S_i(f)\)</span> is estimated via Welch’s method.
+The per-channel band power is averaged over the target band
+<span class="math notranslate nohighlight">\([f_1, f_2]\)</span> and then averaged across all <span class="math notranslate nohighlight">\(N_\mathrm{ch}\)</span> channels
+in the electrode set:</p>
+<div class="math notranslate nohighlight">
+\[P = \frac{1}{N_\mathrm{ch}} \sum_{i=1}^{N_\mathrm{ch}}
+    \frac{1}{|\mathcal{F}|} \sum_{f \,\in\, [f_1,\, f_2]} S_i(f)\]</div>
+<p>where <span class="math notranslate nohighlight">\(\mathcal{F}\)</span> is the set of discrete frequency bins in the band.</p>
+<hr class="docutils" />
+</section>
+<section id="band-ratio">
+<span id="modality-band-ratio"></span><h2><a class="toc-backref" href="#id16" role="doc-backlink">Band Ratio</a><a class="headerlink" href="#band-ratio" title="Link to this heading">#</a></h2>
+<p><strong>Config key:</strong> <code class="docutils literal notranslate"><span class="pre">band_ratio</span></code></p>
+<p>Ratio of mean band power in two frequency bands.
+Let <span class="math notranslate nohighlight">\(P_1\)</span> and <span class="math notranslate nohighlight">\(P_2\)</span> denote the mean band powers (computed as in
+<a class="reference internal" href="#modality-sensor-power"><span class="std std-ref">Sensor Power</span></a>) for bands <span class="math notranslate nohighlight">\([f_{1a}, f_{1b}]\)</span> and
+<span class="math notranslate nohighlight">\([f_{2a}, f_{2b}]\)</span>, respectively:</p>
+<div class="math notranslate nohighlight">
+\[R = \frac{P_1}{P_2}\]</div>
+<p>A common example is the theta/beta ratio used as an index of attentional
+engagement.</p>
+<hr class="docutils" />
+</section>
+<section id="erd-ers">
+<span id="modality-erd-ers"></span><h2><a class="toc-backref" href="#id17" role="doc-backlink">ERD / ERS</a><a class="headerlink" href="#erd-ers" title="Link to this heading">#</a></h2>
+<p><strong>Config key:</strong> <code class="docutils literal notranslate"><span class="pre">erd_ers</span></code></p>
+<p>Event-related desynchronisation (ERD) and event-related synchronisation (ERS)
+quantify power changes relative to a resting-state baseline
+<a class="footnote-reference brackets" href="#footcite-pfurtscheller1999event" id="id1" role="doc-noteref"><span class="fn-bracket">[</span>1<span class="fn-bracket">]</span></a>.
+Let <span class="math notranslate nohighlight">\(B\)</span> be the mean band power computed from the baseline recording and
+<span class="math notranslate nohighlight">\(P\)</span> the mean band power in the current analysis window:</p>
+<div class="math notranslate nohighlight">
+\[\mathrm{ERD/ERS} = \frac{P - B}{B} \times 100\;\%\]</div>
+<p>Negative values indicate desynchronisation (power decrease); positive values
+indicate synchronisation (power increase).</p>
+<hr class="docutils" />
+</section>
+<section id="laterality">
+<span id="modality-laterality"></span><h2><a class="toc-backref" href="#id18" role="doc-backlink">Laterality</a><a class="headerlink" href="#laterality" title="Link to this heading">#</a></h2>
+<p><strong>Config key:</strong> <code class="docutils literal notranslate"><span class="pre">laterality</span></code></p>
+<p>Inter-hemispheric log power asymmetry between right and left electrode sets.
+Let <span class="math notranslate nohighlight">\(P_R\)</span> and <span class="math notranslate nohighlight">\(P_L\)</span> be the mean band powers of the right- and
+left-hemisphere channels, respectively:</p>
+<div class="math notranslate nohighlight">
+\[\mathrm{LAT} = \log\!\left(\frac{P_R}{P_L}\right)\]</div>
+<p>Positive values reflect greater right-hemisphere power; negative values
+reflect greater left-hemisphere power.
+The logarithmic transformation renders the index symmetric around zero.</p>
+<hr class="docutils" />
+</section>
+<section id="laterality-erd-ers">
+<span id="modality-laterality-erd-ers"></span><h2><a class="toc-backref" href="#id19" role="doc-backlink">Laterality ERD/ERS</a><a class="headerlink" href="#laterality-erd-ers" title="Link to this heading">#</a></h2>
+<p><strong>Config key:</strong> <code class="docutils literal notranslate"><span class="pre">laterality_erd_ers</span></code></p>
+<p>ERD/ERS-based laterality index — the difference of the ERD/ERS values
+computed separately for the right and left hemisphere electrode sets:</p>
+<div class="math notranslate nohighlight">
+\[\mathrm{LAT}_{\mathrm{ERD/ERS}} =
+    \mathrm{ERD/ERS}_\mathrm{right} - \mathrm{ERD/ERS}_\mathrm{left}\]</div>
+<p>This measure combines baseline normalisation (from ERD/ERS) with hemispheric
+asymmetry (from laterality) and is particularly useful for motor-imagery
+neurofeedback and BCI applications.</p>
+<hr class="docutils" />
+</section>
+<section id="instantaneous-phase">
+<span id="modality-instantaneous-phase"></span><h2><a class="toc-backref" href="#id20" role="doc-backlink">Instantaneous Phase</a><a class="headerlink" href="#instantaneous-phase" title="Link to this heading">#</a></h2>
+<p><strong>Config key:</strong> <code class="docutils literal notranslate"><span class="pre">instantaneous_phase</span></code></p>
+<p>The instantaneous phase and amplitude of the analytic signal in a target
+frequency band, estimated via the Hilbert transform
+<a class="footnote-reference brackets" href="#footcite-le2001comparison" id="id2" role="doc-noteref"><span class="fn-bracket">[</span>2<span class="fn-bracket">]</span></a>.</p>
+<p>The channel time series <span class="math notranslate nohighlight">\(x(t)\)</span> is first zero-phase bandpass-filtered
+(4th-order Butterworth, via <code class="docutils literal notranslate"><span class="pre">sosfiltfilt</span></code>) to isolate the target band
+<span class="math notranslate nohighlight">\([f_1, f_2]\)</span>, then extended to the analytic signal
+<span class="math notranslate nohighlight">\(z(t) = x(t) + i\,\hat{x}(t)\)</span>, where <span class="math notranslate nohighlight">\(\hat{x}(t)\)</span> is the
+Hilbert transform of the filtered signal:</p>
+<div class="math notranslate nohighlight">
+\[\phi(t) = \angle\, z(t), \qquad A(t) = |z(t)|\]</div>
+<p>The feature value is the instantaneous phase <span class="math notranslate nohighlight">\(\phi \in (-\pi, \pi]\)</span>
+at the <em>last sample</em> of the current analysis window, averaged across the
+selected channels.  The amplitude envelope <span class="math notranslate nohighlight">\(A\)</span> is returned as a
+secondary output and can be used as a gating signal (e.g. stimulate only
+when amplitude is high).</p>
+<p>Instantaneous phase is particularly useful for:</p>
+<ul class="simple">
+<li><p><strong>Phase-triggered stimulation</strong> — close the feedback loop at a target
+phase angle (e.g., trough of the alpha cycle)</p></li>
+<li><p><strong>Cross-frequency coupling analysis</strong> — use as the phase-providing
+input to the CFC modality</p></li>
+<li><p><strong>Phase synchrony feedback</strong> — reward or monitor convergence of phase
+between two electrode pairs</p></li>
+</ul>
+<hr class="docutils" />
+</section>
+<section id="slow-cortical-potentials">
+<span id="modality-scp"></span><h2><a class="toc-backref" href="#id21" role="doc-backlink">Slow Cortical Potentials</a><a class="headerlink" href="#slow-cortical-potentials" title="Link to this heading">#</a></h2>
+<p><strong>Config key:</strong> <code class="docutils literal notranslate"><span class="pre">scp</span></code></p>
+<p>Slow cortical potentials (SCP) are ultra-low-frequency shifts in cortical
+excitability with time constants of 0.5 – 10 seconds
+<a class="footnote-reference brackets" href="#footcite-birbaumer1990slow" id="id3" role="doc-noteref"><span class="fn-bracket">[</span>3<span class="fn-bracket">]</span></a>.  The signal is extracted via low-pass
+filtering and channel averaging:</p>
+<ol class="arabic simple">
+<li><p>Apply an optional high-pass filter at <code class="docutils literal notranslate"><span class="pre">highpass</span></code> Hz (set to 0 for
+DC-coupled acquisition).</p></li>
+<li><p>Apply a low-pass filter at <code class="docutils literal notranslate"><span class="pre">lowpass</span></code> Hz (typically 1 Hz) using a
+4th-order Butterworth filter via <code class="docutils literal notranslate"><span class="pre">sosfilt</span></code>.</p></li>
+<li><p>Collapse channels using the selected <code class="docutils literal notranslate"><span class="pre">reference</span></code> (<code class="docutils literal notranslate"><span class="pre">&quot;mean&quot;</span></code> or
+<code class="docutils literal notranslate"><span class="pre">&quot;median&quot;</span></code>).</p></li>
+<li><p>Return the mean amplitude of the filtered signal across the window.</p></li>
+</ol>
+<div class="math notranslate nohighlight">
+\[\mathrm{SCP} = \operatorname{mean}\!\bigl(\mathrm{LP}_{f_\mathrm{low}}\{x(t)\}\bigr)\]</div>
+<p>Positive SCP values reflect cortical deactivation (slow positive shift);
+negative SCP values reflect activation (slow negative shift).</p>
+<hr class="docutils" />
+</section>
+<section id="peak-alpha-frequency">
+<span id="modality-peak-alpha-freq"></span><h2><a class="toc-backref" href="#id22" role="doc-backlink">Peak Alpha Frequency</a><a class="headerlink" href="#peak-alpha-frequency" title="Link to this heading">#</a></h2>
+<p><strong>Config key:</strong> <code class="docutils literal notranslate"><span class="pre">peak_alpha_freq</span></code></p>
+<p>Real-time tracker of the individual peak alpha frequency (PAF), smoothed
+with an exponential moving average (EMA) across consecutive analysis windows.</p>
+<p>For each window, the Welch PSD is computed and the frequency with maximum
+power within the search band <span class="math notranslate nohighlight">\([f_1, f_2]\)</span> is identified:</p>
+<div class="math notranslate nohighlight">
+\[f^*_t = \operatorname*{argmax}_{f \in [f_1, f_2]}\;
+        \frac{1}{N_\mathrm{ch}} \sum_{i=1}^{N_\mathrm{ch}} S_i(f)\]</div>
+<p>The instantaneous estimate is smoothed by an EMA with coefficient
+<span class="math notranslate nohighlight">\(\alpha \in [0, 1)\)</span>:</p>
+<div class="math notranslate nohighlight">
+\[\widehat{f}^\mathrm{PAF}_t =
+    \alpha\,\widehat{f}^\mathrm{PAF}_{t-1}
+    + (1 - \alpha)\,f^*_t\]</div>
+<p>At <span class="math notranslate nohighlight">\(\alpha = 0\)</span> the output is the raw instantaneous peak; at
+<span class="math notranslate nohighlight">\(\alpha = 0.99\)</span> the estimate changes very slowly, acting as a
+long-term personalised frequency anchor.</p>
+<p>The EMA state is carried across windows via a shared mutable reference, so
+the tracker persists correctly over the full session.</p>
+<hr class="docutils" />
+</section>
+<section id="hjorth-parameters">
+<span id="modality-hjorth"></span><h2><a class="toc-backref" href="#id23" role="doc-backlink">Hjorth Parameters</a><a class="headerlink" href="#hjorth-parameters" title="Link to this heading">#</a></h2>
+<p><strong>Config key:</strong> <code class="docutils literal notranslate"><span class="pre">hjorth</span></code></p>
+<p>Hjorth parameters are pure time-domain descriptors computed from the variance
+of a signal <span class="math notranslate nohighlight">\(x(t)\)</span> and its successive derivatives. <a class="footnote-reference brackets" href="#footcite-hjorth1970eeg" id="id4" role="doc-noteref"><span class="fn-bracket">[</span>4<span class="fn-bracket">]</span></a></p>
+<p>Let <span class="math notranslate nohighlight">\(x_i\)</span> denote channel <span class="math notranslate nohighlight">\(i\)</span> after bandpass filtering.
+Define sample variances:</p>
+<div class="math notranslate nohighlight">
+\[\sigma^2_x = \operatorname{Var}(x), \quad
+\sigma^2_{x'} = \operatorname{Var}\!\left(\tfrac{dx}{dt}\right), \quad
+\sigma^2_{x''} = \operatorname{Var}\!\left(\tfrac{d^2x}{dt^2}\right).\]</div>
+<p>The three Hjorth parameters are:</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}\text{Activity}  &amp;= \sigma^2_x \\[4pt]
+\text{Mobility}  &amp;= \sqrt{\frac{\sigma^2_{x'}}{\sigma^2_x}} \\[4pt]
+\text{Complexity}&amp;= \frac{\sqrt{\sigma^2_{x''}/\sigma^2_{x'}}}
+                          {\sqrt{\sigma^2_{x'}/\sigma^2_x}}\end{split}\]</div>
+<p><strong>Mobility</strong> approximates the dominant frequency of the signal (in units of
+rad/sample); <strong>Complexity</strong> quantifies how closely the signal resembles a pure
+sine wave — a pure oscillation has Complexity ≈ 1.</p>
+<p>MNE-RT reports the mean of Mobility and Complexity averaged across all channels
+in the selected electrode set.</p>
+<hr class="docutils" />
+</section>
+<section id="spectral-centroid">
+<span id="modality-spectral-centroid"></span><h2><a class="toc-backref" href="#id24" role="doc-backlink">Spectral Centroid</a><a class="headerlink" href="#spectral-centroid" title="Link to this heading">#</a></h2>
+<p><strong>Config key:</strong> <code class="docutils literal notranslate"><span class="pre">spectral_centroid</span></code></p>
+<p>The spectral centroid estimates the <em>centre of mass</em> of the power spectrum
+within a frequency band, giving a single-number proxy for the dominant
+frequency of the signal at any given moment.</p>
+<p>Given channel data <span class="math notranslate nohighlight">\(x_i(t)\)</span> and its one-sided power spectral density
+<span class="math notranslate nohighlight">\(S_i(f)\)</span> (estimated via Welch’s method), the spectral centroid for
+channel <span class="math notranslate nohighlight">\(i\)</span> is:</p>
+<div class="math notranslate nohighlight">
+\[f_{\mathrm{centroid},i} =
+\frac{\displaystyle\sum_{f \,\in\, [f_1,\, f_2]} f\; S_i(f)}
+     {\displaystyle\sum_{f \,\in\, [f_1,\, f_2]} S_i(f)}\]</div>
+<p>MNE-RT reports the <strong>mean centroid across channels</strong> in the selected electrode
+set as the feature value:</p>
+<div class="math notranslate nohighlight">
+\[SC = \frac{1}{N_{\mathrm{ch}}} \sum_{i=1}^{N_{\mathrm{ch}}}
+     f_{\mathrm{centroid},i}\]</div>
+<p><span class="math notranslate nohighlight">\(SC\)</span> shifts upward when neural activity moves toward the upper edge of
+the band (e.g., during cognitive load in the alpha band) and downward when
+activity consolidates near the lower edge.</p>
+<hr class="docutils" />
+</section>
+<section id="entropy">
+<span id="modality-entropy"></span><h2><a class="toc-backref" href="#id25" role="doc-backlink">Entropy</a><a class="headerlink" href="#entropy" title="Link to this heading">#</a></h2>
+<p><strong>Config key:</strong> <code class="docutils literal notranslate"><span class="pre">entropy</span></code></p>
+<p>MNE-RT supports three entropy variants that capture different aspects of signal
+complexity.</p>
+<p><strong>Spectral entropy</strong> — normalised Shannon entropy of the power spectral density:</p>
+<div class="math notranslate nohighlight">
+\[H_\mathrm{spec} = -\sum_{f} \tilde{S}(f)\,\log\!\bigl(\tilde{S}(f)\bigr)\]</div>
+<p>where <span class="math notranslate nohighlight">\(\tilde{S}(f) = S(f) / \sum_{f'} S(f')\)</span> is the normalised PSD
+(treated as a probability distribution over frequencies).</p>
+<p><strong>Approximate entropy</strong> (ApEn) — regularity statistic for a time series of
+length <span class="math notranslate nohighlight">\(N\)</span> with embedding dimension <span class="math notranslate nohighlight">\(m\)</span> and tolerance <span class="math notranslate nohighlight">\(r\)</span> <a class="footnote-reference brackets" href="#footcite-pincus1991approximate" id="id5" role="doc-noteref"><span class="fn-bracket">[</span>5<span class="fn-bracket">]</span></a>:</p>
+<div class="math notranslate nohighlight">
+\[\operatorname{ApEn}(m, r) =
+    \phi^{(m)}(r) - \phi^{(m+1)}(r)\]</div>
+<p>where <span class="math notranslate nohighlight">\(\phi^{(m)}(r) = \frac{1}{N - m + 1} \sum_{i} \log C_i^{(m)}(r)\)</span>
+and <span class="math notranslate nohighlight">\(C_i^{(m)}(r)\)</span> is the fraction of <span class="math notranslate nohighlight">\(m\)</span>-length template vectors
+within Chebyshev distance <span class="math notranslate nohighlight">\(r\)</span> of the <span class="math notranslate nohighlight">\(i\)</span>-th template.</p>
+<p><strong>Sample entropy</strong> (SampEn) — a bias-corrected alternative that excludes
+self-matches <a class="footnote-reference brackets" href="#footcite-richman2000physiological" id="id6" role="doc-noteref"><span class="fn-bracket">[</span>6<span class="fn-bracket">]</span></a>:</p>
+<div class="math notranslate nohighlight">
+\[\operatorname{SampEn}(m, r) =
+    -\log\!\left(\frac{B^{(m+1)}}{A^{(m)}}\right)\]</div>
+<p>where <span class="math notranslate nohighlight">\(A^{(m)}\)</span> counts matching <span class="math notranslate nohighlight">\(m\)</span>-length template pairs and
+<span class="math notranslate nohighlight">\(B^{(m+1)}\)</span> counts matching <span class="math notranslate nohighlight">\((m+1)\)</span>-length template pairs
+(self-matches excluded from both).</p>
+<hr class="docutils" />
+</section>
+<section id="argmax-frequency">
+<span id="modality-argmax-freq"></span><h2><a class="toc-backref" href="#id26" role="doc-backlink">Argmax Frequency</a><a class="headerlink" href="#argmax-frequency" title="Link to this heading">#</a></h2>
+<p><strong>Config key:</strong> <code class="docutils literal notranslate"><span class="pre">argmax_freq</span></code></p>
+<p>The dominant frequency is the frequency bin with maximum power within the
+target band.
+Given the Welch PSD <span class="math notranslate nohighlight">\(S(f)\)</span> averaged across channels, the feature value is:</p>
+<div class="math notranslate nohighlight">
+\[f^* = \operatorname*{argmax}_{f \,\in\, [f_1,\, f_2]}\; S(f)\]</div>
+<p>This feature tracks slow shifts in the dominant oscillatory peak, for example
+the individual alpha frequency (IAF) during rest or task conditions.</p>
+<hr class="docutils" />
+</section>
+<section id="individual-peak-power">
+<span id="modality-individual-peak-power"></span><h2><a class="toc-backref" href="#id27" role="doc-backlink">Individual Peak Power</a><a class="headerlink" href="#individual-peak-power" title="Link to this heading">#</a></h2>
+<p><strong>Config key:</strong> <code class="docutils literal notranslate"><span class="pre">individual_peak_power</span></code></p>
+<p>Power at the subject’s individual spectral peak, estimated using the
+<a class="reference external" href="https://fooof-tools.github.io/fooof">FOOOF / specparam</a> parametric spectral model <a class="footnote-reference brackets" href="#footcite-donoghue2020parameterizing" id="id7" role="doc-noteref"><span class="fn-bracket">[</span>7<span class="fn-bracket">]</span></a>.
+The model decomposes the PSD into an aperiodic (1/f) component and a
+superimposed set of Gaussian peaks:</p>
+<div class="math notranslate nohighlight">
+\[\log S(f) = L(f) + \sum_{k} G_k(f)\]</div>
+<p>where <span class="math notranslate nohighlight">\(L(f) = b - \log(k + f^{\chi})\)</span> is the aperiodic component
+(offset <span class="math notranslate nohighlight">\(b\)</span>, knee <span class="math notranslate nohighlight">\(k\)</span>, exponent <span class="math notranslate nohighlight">\(\chi\)</span>) and
+<span class="math notranslate nohighlight">\(G_k(f) = a_k \exp\!\left(-\tfrac{(f - \mu_k)^2}{2\sigma_k^2}\right)\)</span>
+are Gaussian peaks with centre <span class="math notranslate nohighlight">\(\mu_k\)</span>, height <span class="math notranslate nohighlight">\(a_k\)</span>, and width
+<span class="math notranslate nohighlight">\(\sigma_k\)</span>.</p>
+<p>The individual alpha frequency (IAF) is identified as the peak centre
+<span class="math notranslate nohighlight">\(\mu_k\)</span> closest to the canonical alpha band, and the feature value is the
+aperiodic-corrected power <span class="math notranslate nohighlight">\(a_k\)</span> at that peak.</p>
+<hr class="docutils" />
+</section>
+<section id="cross-frequency-coupling-sensor">
+<span id="modality-cfc-sensor"></span><h2><a class="toc-backref" href="#id28" role="doc-backlink">Cross-Frequency Coupling (Sensor)</a><a class="headerlink" href="#cross-frequency-coupling-sensor" title="Link to this heading">#</a></h2>
+<p><strong>Config key:</strong> <code class="docutils literal notranslate"><span class="pre">cfc_sensor</span></code></p>
+<p>Cross-frequency coupling (CFC) quantifies interactions between the phase of a
+slow oscillation and the amplitude of a faster oscillation.
+MNE-RT uses Phase-Amplitude Coupling (PAC) via the <strong>Modulation Index</strong> (MI),
+which measures the Kullback–Leibler divergence between the observed amplitude
+distribution <span class="math notranslate nohighlight">\(p(\theta)\)</span> (mean amplitude as a function of phase bin
+<span class="math notranslate nohighlight">\(\theta\)</span>) and a uniform distribution <a class="footnote-reference brackets" href="#footcite-tort2010measuring" id="id8" role="doc-noteref"><span class="fn-bracket">[</span>8<span class="fn-bracket">]</span></a>:</p>
+<div class="math notranslate nohighlight">
+\[\mathrm{MI} =
+    \frac{D_\mathrm{KL}\bigl(p(\theta) \,\|\, \mathcal{U}\bigr)}{\log N}\]</div>
+<p>where <span class="math notranslate nohighlight">\(N\)</span> is the number of phase bins and <span class="math notranslate nohighlight">\(\mathcal{U}\)</span> is the
+uniform distribution.
+A value of <span class="math notranslate nohighlight">\(\mathrm{MI} = 0\)</span> indicates no coupling; larger values
+indicate stronger modulation of high-frequency amplitude by low-frequency
+phase.</p>
+<p>MNE-RT can also produce a <strong>comodulogram</strong> — a two-dimensional map of MI values
+over a grid of phase-frequency / amplitude-frequency pairs — to identify
+which frequency combinations exhibit significant coupling.</p>
+<hr class="docutils" />
+</section>
+<section id="sensor-connectivity">
+<span id="modality-sensor-connectivity"></span><h2><a class="toc-backref" href="#id29" role="doc-backlink">Sensor Connectivity</a><a class="headerlink" href="#sensor-connectivity" title="Link to this heading">#</a></h2>
+<p><strong>Config key:</strong> <code class="docutils literal notranslate"><span class="pre">sensor_connectivity</span></code></p>
+<p>Pairwise functional connectivity between sensor channels.
+MNE-RT directly calls the measures implemented in <a class="reference external" href="https://mne.tools/mne-connectivity/stable/index.html">MNE-Connectivity</a>.</p>
+<p>See <a class="reference external" href="https://mne.tools/mne-connectivity/stable/generated/mne_connectivity.spectral_connectivity_time.html#mne_connectivity.spectral_connectivity_time">MNE-Connectivity</a>
+for the detailed list of supported methods. The feature value is the connectivity between a specified pair of channels
+or the mean connectivity across a set of channel pairs.</p>
+<hr class="docutils" />
+</section>
+<section id="connectivity-ratio">
+<span id="modality-connectivity-ratio"></span><h2><a class="toc-backref" href="#id30" role="doc-backlink">Connectivity Ratio</a><a class="headerlink" href="#connectivity-ratio" title="Link to this heading">#</a></h2>
+<p><strong>Config key:</strong> <code class="docutils literal notranslate"><span class="pre">connectivity_ratio</span></code></p>
+<p>Ratio of functional connectivity between two channel pairs:</p>
+<div class="math notranslate nohighlight">
+\[R = \frac{\mathrm{conn}(A_1, B_1)}{\mathrm{conn}(A_2, B_2)}\]</div>
+<p>where each connectivity value is computed using the same spectral measure
+as <a class="reference internal" href="#modality-sensor-connectivity"><span class="std std-ref">Sensor Connectivity</span></a> (e.g. coherence, PLV, imaginary
+coherence).  A common use is laterality of interhemispheric connectivity
+(e.g. <span class="math notranslate nohighlight">\(\mathrm{coh}(C3, C4) / \mathrm{coh}(F3, F4)\)</span>).</p>
+<hr class="docutils" />
+</section>
+<section id="sensor-graph">
+<span id="modality-sensor-graph"></span><h2><a class="toc-backref" href="#id31" role="doc-backlink">Sensor Graph</a><a class="headerlink" href="#sensor-graph" title="Link to this heading">#</a></h2>
+<p><strong>Config key:</strong> <code class="docutils literal notranslate"><span class="pre">sensor_graph</span></code></p>
+<p>Graph-Laplacian learning from sensor-space signals estimates a sparse
+functional connectivity graph <span class="math notranslate nohighlight">\(\mathcal{G} = (\mathcal{V}, \mathbf{W})\)</span>
+<a class="footnote-reference brackets" href="#footcite-kalofolias2016learn" id="id10" role="doc-noteref"><span class="fn-bracket">[</span>9<span class="fn-bracket">]</span></a> <a class="footnote-reference brackets" href="#footcite-shabestari2026shared" id="id11" role="doc-noteref"><span class="fn-bracket">[</span>10<span class="fn-bracket">]</span></a>.</p>
+<p>Given a signal matrix <span class="math notranslate nohighlight">\(\mathbf{X} \in \mathbb{R}^{p \times n}\)</span>
+(<span class="math notranslate nohighlight">\(p\)</span> sensor channels, <span class="math notranslate nohighlight">\(n\)</span> samples), MNE-RT solves the
+<strong>log-degree barrier</strong> optimisation problem:</p>
+<div class="math notranslate nohighlight">
+\[\min_{\mathbf{W} \geq 0,\,\mathbf{W} = \mathbf{W}^\top}
+\;\alpha \operatorname{tr}(\mathbf{X}^\top \mathbf{L} \mathbf{X})
+\;-\; \beta \mathbf{1}^\top \log(\mathbf{W}\mathbf{1})
+\;+\; \tfrac{1}{2}\|\mathbf{W}\|_F^2\]</div>
+<p>where <span class="math notranslate nohighlight">\(\mathbf{L} = \operatorname{Diag}(\mathbf{W}\mathbf{1}) - \mathbf{W}\)</span>
+is the combinatorial graph Laplacian and the log-degree term prevents
+degenerate (all-zero) solutions.</p>
+<ul class="simple">
+<li><p><span class="math notranslate nohighlight">\(\alpha\)</span> — data-fidelity weight (larger → smoother, more connected graph)</p></li>
+<li><p><span class="math notranslate nohighlight">\(\beta\)</span> — log-degree regularisation (larger → more uniform node degrees)</p></li>
+</ul>
+<p>The feature value is the edge weight <span class="math notranslate nohighlight">\(W_{ij}\)</span> between two specified sensor
+nodes (e.g. a left–right electrode pair), centred by subtracting a small
+offset so that values oscillate around zero.
+The optimisation is solved via the proximal splitting scheme of
+<a class="reference external" href="https://pyunlocbox.readthedocs.io/en/stable/">pyunlocbox</a>.</p>
+<hr class="docutils" />
+</section>
+<section id="source-power">
+<span id="modality-source-power"></span><h2><a class="toc-backref" href="#id32" role="doc-backlink">Source Power</a><a class="headerlink" href="#source-power" title="Link to this heading">#</a></h2>
+<p><strong>Config key:</strong> <code class="docutils literal notranslate"><span class="pre">source_power</span></code></p>
+<p>Band power in source space, requiring a pre-computed inverse operator
+(MNE minimum-norm or beamformer).
+The inverse operator <span class="math notranslate nohighlight">\(\mathbf{M}\)</span> projects sensor data
+<span class="math notranslate nohighlight">\(\mathbf{X} \in \mathbb{R}^{p \times n}\)</span> to source estimates
+<span class="math notranslate nohighlight">\(\hat{\mathbf{J}} = \mathbf{M}\mathbf{X} \in \mathbb{R}^{q \times n}\)</span>:</p>
+<div class="math notranslate nohighlight">
+\[P_\mathrm{source} = \frac{1}{N_\mathrm{src}}
+    \sum_{s=1}^{N_\mathrm{src}}
+    \frac{1}{|\mathcal{F}|} \sum_{f \,\in\, [f_1,\, f_2]} S_s(f)\]</div>
+<p>where <span class="math notranslate nohighlight">\(S_s(f)\)</span> is the Welch PSD of source <span class="math notranslate nohighlight">\(s\)</span> and
+<span class="math notranslate nohighlight">\(N_\mathrm{src}\)</span> is the number of source vertices in the region of
+interest.
+Baseline recording (<code class="docutils literal notranslate"><span class="pre">mne-rt</span> <span class="pre">baseline</span></code>) is required to compute the inverse
+operator before running this modality.</p>
+<hr class="docutils" />
+</section>
+<section id="source-connectivity">
+<span id="modality-source-connectivity"></span><h2><a class="toc-backref" href="#id33" role="doc-backlink">Source Connectivity</a><a class="headerlink" href="#source-connectivity" title="Link to this heading">#</a></h2>
+<p><strong>Config key:</strong> <code class="docutils literal notranslate"><span class="pre">source_connectivity</span></code></p>
+<p>Functional connectivity computed on source-space time series rather than
+sensor signals, reducing the influence of field spread and volume conduction.
+After projecting sensor data to source estimates with the inverse operator,
+the same measures as <a class="reference internal" href="#modality-sensor-connectivity"><span class="std std-ref">Sensor Connectivity</span></a> are applied.</p>
+<p>Source connectivity is more anatomically interpretable than sensor
+connectivity and is recommended when an MRI and FreeSurfer reconstruction are
+available.</p>
+<hr class="docutils" />
+</section>
+<section id="source-graph">
+<span id="modality-source-graph"></span><h2><a class="toc-backref" href="#id34" role="doc-backlink">Source Graph</a><a class="headerlink" href="#source-graph" title="Link to this heading">#</a></h2>
+<p><strong>Config key:</strong> <code class="docutils literal notranslate"><span class="pre">source_graph</span></code></p>
+<p>Graph-Laplacian learning applied to source-space signals.
+After projecting sensor data to source estimates with the inverse operator,
+the same optimisation as <a class="reference internal" href="#modality-sensor-graph"><span class="std std-ref">Sensor Graph</span></a> is solved on the
+source time-series matrix <span class="math notranslate nohighlight">\(\hat{\mathbf{J}} \in \mathbb{R}^{q \times n}\)</span>
+<a class="footnote-reference brackets" href="#footcite-kalofolias2016learn" id="id12" role="doc-noteref"><span class="fn-bracket">[</span>9<span class="fn-bracket">]</span></a> <a class="footnote-reference brackets" href="#footcite-shabestari2026shared" id="id13" role="doc-noteref"><span class="fn-bracket">[</span>10<span class="fn-bracket">]</span></a>:</p>
+<div class="math notranslate nohighlight">
+\[\min_{\mathbf{W} \geq 0,\,\mathbf{W} = \mathbf{W}^\top}
+\;\alpha \operatorname{tr}(\hat{\mathbf{J}}^\top \mathbf{L} \hat{\mathbf{J}})
+\;-\; \beta \mathbf{1}^\top \log(\mathbf{W}\mathbf{1})
+\;+\; \tfrac{1}{2}\|\mathbf{W}\|_F^2\]</div>
+<p>The feature value is the learned edge weight <span class="math notranslate nohighlight">\(W_{ij}\)</span> between two specified
+brain atlas parcels or source vertices.
+Anatomical accuracy is improved relative to sensor-space graph learning
+because volume conduction is partially mitigated by the inverse solution.</p>
+<hr class="docutils" />
+<p>See <a class="reference internal" href="cli.html"><span class="doc">CLI</span></a> for the full list of command-line options and flags used to
+configure these modalities.</p>
+<div class="docutils container" id="id14">
+<aside class="footnote-list brackets">
+<aside class="footnote brackets" id="footcite-pfurtscheller1999event" role="doc-footnote">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id1">1</a><span class="fn-bracket">]</span></span>
+<p>Gert Pfurtscheller and FH Lopes Da Silva. Event-related eeg/meg synchronization and desynchronization: basic principles. <em>Clinical neurophysiology</em>, 110(11):1842–1857, 1999.</p>
+</aside>
+<aside class="footnote brackets" id="footcite-le2001comparison" role="doc-footnote">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id2">2</a><span class="fn-bracket">]</span></span>
+<p>Michel Le Van Quyen, Jack Foucher, Jean-Philippe Lachaux, Eugenio Rodriguez, Antoine Lutz, Jacques Martinerie, and Francisco J Varela. Comparison of hilbert transform and wavelet methods for the analysis of neuronal synchrony. <em>Journal of neuroscience methods</em>, 111(2):83–98, 2001.</p>
+</aside>
+<aside class="footnote brackets" id="footcite-birbaumer1990slow" role="doc-footnote">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id3">3</a><span class="fn-bracket">]</span></span>
+<p>Niels Birbaumer, Thomas Elbert, Anthony G Canavan, and Brigitte Rockstroh. Slow potentials of the cerebral cortex and behavior. <em>Physiological reviews</em>, 70(1):1–41, 1990.</p>
+</aside>
+<aside class="footnote brackets" id="footcite-hjorth1970eeg" role="doc-footnote">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id4">4</a><span class="fn-bracket">]</span></span>
+<p>Bo Hjorth. Eeg analysis based on time domain properties. <em>Electroencephalography and clinical neurophysiology</em>, 29(3):306–310, 1970.</p>
+</aside>
+<aside class="footnote brackets" id="footcite-pincus1991approximate" role="doc-footnote">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id5">5</a><span class="fn-bracket">]</span></span>
+<p>Steven M Pincus. Approximate entropy as a measure of system complexity. <em>Proceedings of the national academy of sciences</em>, 88(6):2297–2301, 1991.</p>
+</aside>
+<aside class="footnote brackets" id="footcite-richman2000physiological" role="doc-footnote">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id6">6</a><span class="fn-bracket">]</span></span>
+<p>Joshua S Richman and J Randall Moorman. Physiological time-series analysis using approximate entropy and sample entropy. <em>American journal of physiology-heart and circulatory physiology</em>, 278(6):H2039–H2049, 2000.</p>
+</aside>
+<aside class="footnote brackets" id="footcite-donoghue2020parameterizing" role="doc-footnote">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id7">7</a><span class="fn-bracket">]</span></span>
+<p>Thomas Donoghue, Matar Haller, Erik J Peterson, Paroma Varma, Priyadarshini Sebastian, Richard Gao, Torben Noto, Antonio H Lara, Joni D Wallis, Robert T Knight, and others. Parameterizing neural power spectra into periodic and aperiodic components. <em>Nature neuroscience</em>, 23(12):1655–1665, 2020.</p>
+</aside>
+<aside class="footnote brackets" id="footcite-tort2010measuring" role="doc-footnote">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id8">8</a><span class="fn-bracket">]</span></span>
+<p>Adriano BL Tort, Robert Komorowski, Howard Eichenbaum, and Nancy Kopell. Measuring phase-amplitude coupling between neuronal oscillations of different frequencies. <em>Journal of neurophysiology</em>, 104(2):1195–1210, 2010.</p>
+</aside>
+<aside class="footnote brackets" id="footcite-kalofolias2016learn" role="doc-footnote">
+<span class="label"><span class="fn-bracket">[</span>9<span class="fn-bracket">]</span></span>
+<span class="backrefs">(<a role="doc-backlink" href="#id10">1</a>,<a role="doc-backlink" href="#id12">2</a>)</span>
+<p>Vassilis Kalofolias. How to learn a graph from smooth signals. In <em>Artificial intelligence and statistics</em>, 920–929. PMLR, 2016.</p>
+</aside>
+<aside class="footnote brackets" id="footcite-shabestari2026shared" role="doc-footnote">
+<span class="label"><span class="fn-bracket">[</span>10<span class="fn-bracket">]</span></span>
+<span class="backrefs">(<a role="doc-backlink" href="#id11">1</a>,<a role="doc-backlink" href="#id13">2</a>)</span>
+<p>Payam S Shabestari, Harry H Behjat, Dimitri Van De Ville, Christopher R Cederroth, Niklas K Edvall, Adrian Naas, Tobias Kleinjung, and Patrick Neff. Shared and individual resting-state meg network signatures of tinnitus revealed by holistic graph learning. <em>IEEE Open Journal of Engineering in Medicine and Biology</em>, 2026.</p>
+</aside>
+</aside>
+</div>
+</section>
+</section>
+
+
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="denoising.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">Artifact Correction</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="protocols.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">NF Protocols</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <dialog id="pst-secondary-sidebar-modal"></dialog>
+                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+<div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav id="pst-page-toc-nav" class="page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="pst-show_toc_level nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#sensor-power">Sensor Power</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#band-ratio">Band Ratio</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#erd-ers">ERD / ERS</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#laterality">Laterality</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#laterality-erd-ers">Laterality ERD/ERS</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#instantaneous-phase">Instantaneous Phase</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#slow-cortical-potentials">Slow Cortical Potentials</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#peak-alpha-frequency">Peak Alpha Frequency</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#hjorth-parameters">Hjorth Parameters</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#spectral-centroid">Spectral Centroid</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#entropy">Entropy</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#argmax-frequency">Argmax Frequency</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#individual-peak-power">Individual Peak Power</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#cross-frequency-coupling-sensor">Cross-Frequency Coupling (Sensor)</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#sensor-connectivity">Sensor Connectivity</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#connectivity-ratio">Connectivity Ratio</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#sensor-graph">Sensor Graph</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#source-power">Source Power</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#source-connectivity">Source Connectivity</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#source-graph">Source Graph</a></li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="_static/scripts/bootstrap.js?digest=90905a2f556bf617f1a9"></script>
+<script defer src="_static/scripts/pydata-sphinx-theme.js?digest=90905a2f556bf617f1a9"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright 2025, Payam S. Shabestari.
+      <br/>
+    
+  </p>
+</div>
+      
+        <div class="footer-item">
+
+  <p class="sphinx-version">
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 9.0.4.
+    <br/>
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
+<p class="theme-version">
+  <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.20.0.
+</p></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>

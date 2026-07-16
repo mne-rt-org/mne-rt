@@ -1,0 +1,1034 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../../../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>mne_rt.tools.simulation &#8212; MNE-RT</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../../_static/styles/theme.css?digest=90905a2f556bf617f1a9" rel="stylesheet" />
+<link href="../../../_static/styles/pydata-sphinx-theme.css?digest=90905a2f556bf617f1a9" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/sg_gallery.css?v=fd6457a4" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/sg_gallery-binder.css?v=f4aeca0c" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/sg_gallery-dataframe.css?v=2082cf3c" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/sg_gallery-rendered-html.css?v=1277b6f3" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/custom.css?v=5bf657dd" />
+  
+  <!-- So that users can add custom icons -->
+  <script defer src="../../../_static/scripts/fontawesome.js?digest=90905a2f556bf617f1a9"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../../_static/scripts/bootstrap.js?digest=90905a2f556bf617f1a9" />
+<link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=90905a2f556bf617f1a9" />
+
+    <script src="../../../_static/documentation_options.js?v=8d563738"></script>
+    <script src="../../../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="../../../_static/sg-tags.js?v=d80f6fa4"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = '_modules/mne_rt/tools/simulation';</script>
+    <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="" />
+  
+    
+    <script src="../../../_static/searchtools.js"></script>
+    <script src="../../../_static/language_data.js"></script>
+    <script src="../../../searchindex.js"></script>
+  
+  </head>
+  <body data-default-mode="">
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+  
+  
+  
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../../../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header id="pst-header" class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../../../index.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../../../_static/mne_rt_logo.svg" class="logo__image only-light" alt="MNE-RT - Home"/>
+    <img src="../../../_static/mne_rt_logo.svg" class="logo__image only-dark pst-js-only" alt="MNE-RT - Home"/>
+  
+  
+</a></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../install.html">
+    Installation
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../tutorial.html">
+    User Guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../api.html">
+    API Reference
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../visualization.html">
+    Visualisation
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../cli.html">
+    CLI
+  </a>
+</li>
+
+            <li class="nav-item dropdown">
+                <button class="btn dropdown-toggle nav-item" type="button"
+                data-bs-toggle="dropdown" aria-expanded="false"
+                aria-controls="pst-nav-more-links">
+                    More
+                </button>
+                <ul id="pst-nav-more-links" class="dropdown-menu">
+                    
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../../../denoising.html">
+    Artifact Correction
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../../../modalities.html">
+    Real-time Feature Modalities
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../../../protocols.html">
+    NF Protocols
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../../../whats_new.html">
+    What’s new
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../../../auto_examples/index.html">
+    Examples Gallery
+  </a>
+</li>
+
+                </ul>
+            </li>
+            
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+        </div>
+      
+      
+        <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/payamsash/mne-rt" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-square-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
+        </li>
+</ul></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+    </div>
+  
+
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+        
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar hide-on-wide">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../install.html">
+    Installation
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../tutorial.html">
+    User Guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../api.html">
+    API Reference
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../visualization.html">
+    Visualisation
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../cli.html">
+    CLI
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../denoising.html">
+    Artifact Correction
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../modalities.html">
+    Real-time Feature Modalities
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../protocols.html">
+    NF Protocols
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../whats_new.html">
+    What’s new
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../auto_examples/index.html">
+    Examples Gallery
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/payamsash/mne-rt" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-square-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
+        </li>
+</ul></div>
+        
+      </div>
+    
+  </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../../../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    
+    <li class="breadcrumb-item"><a href="../../index.html" class="nav-link">Module code</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">mne_rt.tools.simulation</span></li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <h1>Source code for mne_rt.tools.simulation</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;Simulated M/EEG data generation for offline testing and demos.</span>
+
+<span class="sd">This module provides two simulation functions:</span>
+
+<span class="sd">* :func:`simulate_raw` — physics-based EEG/MEG via the MNE fsaverage source</span>
+<span class="sd">  space and forward model (slow; requires the MNE sample dataset).</span>
+<span class="sd">* :func:`simulate_nf_session` — fast parametric EEG with realistic 1/f</span>
+<span class="sd">  background, alpha oscillations, eye blinks, muscle bursts, and slow drift</span>
+<span class="sd">  (no MRI data required; useful for unit tests and NF algorithm development).</span>
+
+<span class="sd">Functions</span>
+<span class="sd">---------</span>
+<span class="sd">simulate_raw</span>
+<span class="sd">    Generate a synthetic EEG or MEG Raw object with a dipolar source.</span>
+<span class="sd">simulate_nf_session</span>
+<span class="sd">    Generate a realistic multi-artifact EEG simulation for NF testing.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Union</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">mne</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">mne.datasets</span><span class="w"> </span><span class="kn">import</span> <span class="n">fetch_fsaverage</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">mne.label</span><span class="w"> </span><span class="kn">import</span> <span class="n">select_sources</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">mne.simulation</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">SourceSimulator</span><span class="p">,</span>
+    <span class="n">add_eog</span><span class="p">,</span>
+    <span class="n">add_noise</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">mne.simulation</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">simulate_raw</span> <span class="k">as</span> <span class="n">_mne_simulate_raw</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="n">_MEG_AMPLITUDE_SCALE</span> <span class="o">=</span> <span class="mf">1e-12</span>  <span class="c1"># 1 pT — typical MEG dipole projection amplitude</span>
+<span class="n">_EEG_AMPLITUDE_SCALE</span> <span class="o">=</span> <span class="mf">10e-9</span>  <span class="c1"># 10 nV scaling factor (matches original code)</span>
+
+
+<div class="viewcode-block" id="simulate_raw">
+<a class="viewcode-back" href="../../../generated/mne_rt.tools.simulate_raw.html#mne_rt.tools.simulate_raw">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">simulate_raw</span><span class="p">(</span>
+    <span class="n">brain_label</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="n">frequency</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+    <span class="n">amplitude</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+    <span class="n">duration</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+    <span class="n">gap_duration</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+    <span class="n">n_repetition</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+    <span class="n">start</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+    <span class="n">data_type</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;eeg&quot;</span><span class="p">,</span>
+    <span class="n">sfreq</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">256.0</span><span class="p">,</span>
+    <span class="n">n_eeg_channels</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">64</span><span class="p">,</span>
+    <span class="n">iir_filter</span><span class="p">:</span> <span class="nb">list</span> <span class="o">=</span> <span class="p">[</span><span class="mf">0.2</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.2</span><span class="p">,</span> <span class="mf">0.04</span><span class="p">],</span>
+    <span class="n">add_eog_artifacts</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+    <span class="n">fname_save</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Path</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">verbose</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">bool</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="kc">None</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">mne</span><span class="o">.</span><span class="n">io</span><span class="o">.</span><span class="n">RawArray</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Generate a synthetic EEG or MEG recording with a sinusoidal source.</span>
+
+<span class="sd">    A forward solution is created for the ``fsaverage`` template brain and a</span>
+<span class="sd">    sinusoidal dipole is injected into the specified cortical label.  The</span>
+<span class="sd">    signal is projected to sensor space, optionally repeated with inter-epoch</span>
+<span class="sd">    gaps, sensor noise is added, and the result is returned (and optionally</span>
+<span class="sd">    saved) as an :class:`mne.io.RawArray`.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    brain_label : str</span>
+<span class="sd">        Regexp matching a cortical label in the fsaverage parcellation (e.g.</span>
+<span class="sd">        ``&quot;bankssts-lh&quot;`` for alpha, ``&quot;precentral-lh&quot;`` for motor).</span>
+<span class="sd">    frequency : float</span>
+<span class="sd">        Frequency of the simulated sine wave (Hz).</span>
+<span class="sd">    amplitude : float</span>
+<span class="sd">        Amplitude scaling factor.  Multiplied by ``10e-9`` for EEG or</span>
+<span class="sd">        ``1e-12`` for MEG; pass ``1.0`` for a standard physiological signal.</span>
+<span class="sd">    duration : float</span>
+<span class="sd">        Duration of each signal epoch (seconds).</span>
+<span class="sd">    gap_duration : float</span>
+<span class="sd">        Silence gap between consecutive epochs (seconds).</span>
+<span class="sd">    n_repetition : int</span>
+<span class="sd">        Number of epochs to simulate.</span>
+<span class="sd">    start : float</span>
+<span class="sd">        Start time of the first epoch (seconds from recording start).</span>
+<span class="sd">    data_type : {&quot;eeg&quot;, &quot;meg&quot;}, default &quot;eeg&quot;</span>
+<span class="sd">        Sensor modality to simulate.  ``&quot;meg&quot;`` creates a magnetometer</span>
+<span class="sd">        (gradiometer-free) sensor layout using the ``Vectorview-all`` template.</span>
+<span class="sd">    sfreq : float, default 256.0</span>
+<span class="sd">        Sampling frequency (Hz).  Used only when ``data_type=&quot;eeg&quot;`` to build</span>
+<span class="sd">        the synthetic sensor layout.</span>
+<span class="sd">    n_eeg_channels : int, default 64</span>
+<span class="sd">        Number of EEG channels.  Must be one of the standard MNE montage</span>
+<span class="sd">        channel counts (32, 64, 128, or 256 channels of ``biosemi*``/``easycap*``</span>
+<span class="sd">        montages).  Ignored when ``data_type=&quot;meg&quot;``.</span>
+<span class="sd">    iir_filter : array_like, default [0.2, -0.2, 0.04]</span>
+<span class="sd">        IIR denominator coefficients passed to :func:`mne.simulation.add_noise`.</span>
+<span class="sd">    add_eog_artifacts : bool, default True</span>
+<span class="sd">        If ``True``, add simulated EOG blink artefacts.</span>
+<span class="sd">    fname_save : str | Path | None, default None</span>
+<span class="sd">        Path to write the output ``.fif`` file.  If ``None``, the file is</span>
+<span class="sd">        saved to ``data/simulated/&lt;label&gt;_&lt;freq&gt;Hz_&lt;data_type&gt;-raw.fif``</span>
+<span class="sd">        relative to the repository root (or current working directory).</span>
+<span class="sd">    verbose : bool | str | int | None, default None</span>
+<span class="sd">        MNE verbosity level.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    raw : mne.io.Raw</span>
+<span class="sd">        The simulated raw recording.</span>
+
+<span class="sd">    Raises</span>
+<span class="sd">    ------</span>
+<span class="sd">    ValueError</span>
+<span class="sd">        If ``data_type`` is not ``&quot;eeg&quot;`` or ``&quot;meg&quot;``.</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    The function requires the MNE ``fsaverage`` dataset which is downloaded</span>
+<span class="sd">    automatically on first call via :func:`mne.datasets.fetch_fsaverage`.</span>
+
+<span class="sd">    For MEG, a Vectorview-all info template is used (magnetometers + planar</span>
+<span class="sd">    gradiometers).  For EEG, a ``biosemi64`` (or ``biosemi32``/``biosemi128``</span>
+<span class="sd">    for other channel counts) standard layout is created programmatically.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    Simulate alpha-band EEG in the left parieto-occipital region::</span>
+
+<span class="sd">        from mne_rt.tools.simulation import simulate_raw</span>
+<span class="sd">        raw = simulate_raw(</span>
+<span class="sd">            brain_label=&quot;bankssts-lh&quot;,</span>
+<span class="sd">            frequency=10.0,</span>
+<span class="sd">            amplitude=1.0,</span>
+<span class="sd">            duration=2.0,</span>
+<span class="sd">            gap_duration=1.0,</span>
+<span class="sd">            n_repetition=5,</span>
+<span class="sd">            start=0.0,</span>
+<span class="sd">            data_type=&quot;eeg&quot;,</span>
+<span class="sd">        )</span>
+
+<span class="sd">    Simulate beta-band MEG over left motor cortex::</span>
+
+<span class="sd">        raw = simulate_raw(</span>
+<span class="sd">            brain_label=&quot;precentral-lh&quot;,</span>
+<span class="sd">            frequency=20.0,</span>
+<span class="sd">            amplitude=1.0,</span>
+<span class="sd">            duration=2.0,</span>
+<span class="sd">            gap_duration=1.0,</span>
+<span class="sd">            n_repetition=5,</span>
+<span class="sd">            start=0.0,</span>
+<span class="sd">            data_type=&quot;meg&quot;,</span>
+<span class="sd">        )</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">data_type</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;eeg&quot;</span><span class="p">,</span> <span class="s2">&quot;meg&quot;</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;data_type must be &#39;eeg&#39; or &#39;meg&#39;, got </span><span class="si">{</span><span class="n">data_type</span><span class="si">!r}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="n">mne</span><span class="o">.</span><span class="n">set_log_level</span><span class="p">(</span><span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">)</span>
+
+    <span class="c1"># ------------------------------------------------------------------</span>
+    <span class="c1"># Build sensor info</span>
+    <span class="c1"># ------------------------------------------------------------------</span>
+    <span class="n">raw_info</span> <span class="o">=</span> <span class="n">_make_sensor_info</span><span class="p">(</span><span class="n">data_type</span><span class="p">,</span> <span class="n">sfreq</span><span class="p">,</span> <span class="n">n_eeg_channels</span><span class="p">)</span>
+
+    <span class="c1"># ------------------------------------------------------------------</span>
+    <span class="c1"># fsaverage source space + forward solution</span>
+    <span class="c1"># ------------------------------------------------------------------</span>
+    <span class="n">fs_dir</span> <span class="o">=</span> <span class="n">fetch_fsaverage</span><span class="p">(</span><span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">)</span>
+    <span class="n">subjects_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">fs_dir</span><span class="p">)</span>
+    <span class="n">subject</span> <span class="o">=</span> <span class="s2">&quot;fsaverage&quot;</span>
+    <span class="n">trans</span> <span class="o">=</span> <span class="s2">&quot;fsaverage&quot;</span>
+    <span class="n">src_fif</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">fs_dir</span><span class="p">,</span> <span class="s2">&quot;bem&quot;</span><span class="p">,</span> <span class="s2">&quot;fsaverage-ico-5-src.fif&quot;</span><span class="p">)</span>
+    <span class="n">bem_fif</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">fs_dir</span><span class="p">,</span> <span class="s2">&quot;bem&quot;</span><span class="p">,</span> <span class="s2">&quot;fsaverage-5120-5120-5120-bem-sol.fif&quot;</span><span class="p">)</span>
+
+    <span class="n">fwd</span> <span class="o">=</span> <span class="n">mne</span><span class="o">.</span><span class="n">make_forward_solution</span><span class="p">(</span>
+        <span class="n">raw_info</span><span class="p">,</span>
+        <span class="n">trans</span><span class="o">=</span><span class="n">trans</span><span class="p">,</span>
+        <span class="n">src</span><span class="o">=</span><span class="n">src_fif</span><span class="p">,</span>
+        <span class="n">bem</span><span class="o">=</span><span class="n">bem_fif</span><span class="p">,</span>
+        <span class="n">meg</span><span class="o">=</span><span class="p">(</span><span class="n">data_type</span> <span class="o">==</span> <span class="s2">&quot;meg&quot;</span><span class="p">),</span>
+        <span class="n">eeg</span><span class="o">=</span><span class="p">(</span><span class="n">data_type</span> <span class="o">==</span> <span class="s2">&quot;eeg&quot;</span><span class="p">),</span>
+        <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">src</span> <span class="o">=</span> <span class="n">fwd</span><span class="p">[</span><span class="s2">&quot;src&quot;</span><span class="p">]</span>
+
+    <span class="c1"># ------------------------------------------------------------------</span>
+    <span class="c1"># Source time series</span>
+    <span class="c1"># ------------------------------------------------------------------</span>
+    <span class="n">tstep</span> <span class="o">=</span> <span class="mf">1.0</span> <span class="o">/</span> <span class="n">raw_info</span><span class="p">[</span><span class="s2">&quot;sfreq&quot;</span><span class="p">]</span>
+    <span class="n">n_samples</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">duration</span> <span class="o">*</span> <span class="n">raw_info</span><span class="p">[</span><span class="s2">&quot;sfreq&quot;</span><span class="p">])</span>
+    <span class="n">t</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">n_samples</span><span class="p">)</span> <span class="o">*</span> <span class="n">tstep</span>
+
+    <span class="n">amp_scale</span> <span class="o">=</span> <span class="n">_MEG_AMPLITUDE_SCALE</span> <span class="k">if</span> <span class="n">data_type</span> <span class="o">==</span> <span class="s2">&quot;meg&quot;</span> <span class="k">else</span> <span class="n">_EEG_AMPLITUDE_SCALE</span>
+    <span class="n">source_time_series</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="mf">2.0</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="n">frequency</span> <span class="o">*</span> <span class="n">t</span><span class="p">)</span> <span class="o">*</span> <span class="n">amp_scale</span> <span class="o">*</span> <span class="n">amplitude</span>
+
+    <span class="c1"># Pick a single central vertex in the target label</span>
+    <span class="n">selected_label</span> <span class="o">=</span> <span class="n">mne</span><span class="o">.</span><span class="n">read_labels_from_annot</span><span class="p">(</span>
+        <span class="n">subject</span><span class="p">,</span> <span class="n">regexp</span><span class="o">=</span><span class="n">brain_label</span><span class="p">,</span> <span class="n">subjects_dir</span><span class="o">=</span><span class="n">subjects_dir</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span>
+    <span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">label</span> <span class="o">=</span> <span class="n">select_sources</span><span class="p">(</span>
+        <span class="n">subject</span><span class="p">,</span>
+        <span class="n">selected_label</span><span class="p">,</span>
+        <span class="n">location</span><span class="o">=</span><span class="s2">&quot;center&quot;</span><span class="p">,</span>
+        <span class="n">extent</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+        <span class="n">grow_outside</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">subjects_dir</span><span class="o">=</span><span class="n">subjects_dir</span><span class="p">,</span>
+    <span class="p">)</span>
+
+    <span class="c1"># Build events: one onset per epoch, separated by gap_duration samples</span>
+    <span class="n">gap_samples</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">gap_duration</span> <span class="o">*</span> <span class="n">raw_info</span><span class="p">[</span><span class="s2">&quot;sfreq&quot;</span><span class="p">])</span>
+    <span class="n">start_samples</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">start</span> <span class="o">*</span> <span class="n">raw_info</span><span class="p">[</span><span class="s2">&quot;sfreq&quot;</span><span class="p">])</span>
+    <span class="n">events</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">n_repetition</span><span class="p">,</span> <span class="mi">3</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">int</span><span class="p">)</span>
+    <span class="n">events</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">start_samples</span> <span class="o">+</span> <span class="n">gap_samples</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">n_repetition</span><span class="p">)</span>
+    <span class="n">events</span><span class="p">[:,</span> <span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
+
+    <span class="n">source_sim</span> <span class="o">=</span> <span class="n">SourceSimulator</span><span class="p">(</span><span class="n">src</span><span class="p">,</span> <span class="n">tstep</span><span class="o">=</span><span class="n">tstep</span><span class="p">)</span>
+    <span class="n">source_sim</span><span class="o">.</span><span class="n">add_data</span><span class="p">(</span><span class="n">label</span><span class="p">,</span> <span class="n">source_time_series</span><span class="p">,</span> <span class="n">events</span><span class="p">)</span>
+
+    <span class="c1"># ------------------------------------------------------------------</span>
+    <span class="c1"># Project to sensors and add noise</span>
+    <span class="c1"># ------------------------------------------------------------------</span>
+    <span class="n">raw</span> <span class="o">=</span> <span class="n">_mne_simulate_raw</span><span class="p">(</span><span class="n">raw_info</span><span class="p">,</span> <span class="n">source_sim</span><span class="p">,</span> <span class="n">forward</span><span class="o">=</span><span class="n">fwd</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">)</span>
+    <span class="n">cov</span> <span class="o">=</span> <span class="n">mne</span><span class="o">.</span><span class="n">make_ad_hoc_cov</span><span class="p">(</span><span class="n">raw</span><span class="o">.</span><span class="n">info</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">)</span>
+    <span class="n">add_noise</span><span class="p">(</span><span class="n">raw</span><span class="p">,</span> <span class="n">cov</span><span class="p">,</span> <span class="n">iir_filter</span><span class="o">=</span><span class="n">iir_filter</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">add_eog_artifacts</span><span class="p">:</span>
+        <span class="n">add_eog</span><span class="p">(</span><span class="n">raw</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">)</span>
+
+    <span class="c1"># ------------------------------------------------------------------</span>
+    <span class="c1"># Save</span>
+    <span class="c1"># ------------------------------------------------------------------</span>
+    <span class="k">if</span> <span class="n">fname_save</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">sim_dir</span> <span class="o">=</span> <span class="n">Path</span><span class="o">.</span><span class="n">cwd</span><span class="p">()</span> <span class="o">/</span> <span class="s2">&quot;data&quot;</span> <span class="o">/</span> <span class="s2">&quot;simulated&quot;</span>
+        <span class="n">sim_dir</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">parents</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">fname_save</span> <span class="o">=</span> <span class="n">sim_dir</span> <span class="o">/</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">brain_label</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">frequency</span><span class="si">}</span><span class="s2">Hz_</span><span class="si">{</span><span class="n">data_type</span><span class="si">}</span><span class="s2">-raw.fif&quot;</span>
+    <span class="n">raw</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">fname</span><span class="o">=</span><span class="n">Path</span><span class="p">(</span><span class="n">fname_save</span><span class="p">),</span> <span class="n">overwrite</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">raw</span></div>
+
+
+
+<div class="viewcode-block" id="simulate_nf_session">
+<a class="viewcode-back" href="../../../generated/mne_rt.tools.simulate_nf_session.html#mne_rt.tools.simulate_nf_session">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">simulate_nf_session</span><span class="p">(</span>
+    <span class="n">duration</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">120.0</span><span class="p">,</span>
+    <span class="n">sfreq</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">256.0</span><span class="p">,</span>
+    <span class="n">n_channels</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">64</span><span class="p">,</span>
+    <span class="n">alpha_frange</span><span class="p">:</span> <span class="nb">tuple</span> <span class="o">=</span> <span class="p">(</span><span class="mf">8.0</span><span class="p">,</span> <span class="mf">13.0</span><span class="p">),</span>
+    <span class="n">alpha_amplitude</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">15e-6</span><span class="p">,</span>
+    <span class="n">background_amplitude</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">5e-6</span><span class="p">,</span>
+    <span class="n">n_blinks</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">15</span><span class="p">,</span>
+    <span class="n">blink_amplitude</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">150e-6</span><span class="p">,</span>
+    <span class="n">muscle_rate</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.05</span><span class="p">,</span>
+    <span class="n">muscle_amplitude</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">30e-6</span><span class="p">,</span>
+    <span class="n">drift_amplitude</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">20e-6</span><span class="p">,</span>
+    <span class="n">alpha_reactivity</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+    <span class="n">nf_epoch_fraction</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.5</span><span class="p">,</span>
+    <span class="n">rng_seed</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="kc">None</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">verbose</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">bool</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="kc">None</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Generate a realistic multi-artifact EEG simulation for NF testing.</span>
+
+<span class="sd">    Produces synthetic EEG with:</span>
+
+<span class="sd">    * **1/f background noise** (pink noise) on all channels</span>
+<span class="sd">    * **Alpha-band oscillations** with realistic spatial topography</span>
+<span class="sd">      (occipital channels have strongest alpha)</span>
+<span class="sd">    * **Alpha reactivity**: alpha power is reduced during simulated NF</span>
+<span class="sd">      &quot;active&quot; epochs (mimics ERD during cognitive effort)</span>
+<span class="sd">    * **Eye-blink artefacts** at realistic rate (≈15/min) with frontal</span>
+<span class="sd">      topography</span>
+<span class="sd">    * **Muscle noise bursts** as short high-frequency transients</span>
+<span class="sd">    * **Slow electrode drift** (low-frequency random walk)</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    duration : float, default 120.0</span>
+<span class="sd">        Total recording duration in seconds.</span>
+<span class="sd">    sfreq : float, default 256.0</span>
+<span class="sd">        Sampling rate in Hz.</span>
+<span class="sd">    n_channels : int, default 64</span>
+<span class="sd">        Number of EEG channels (must be 32, 64, 128, or 256 for standard</span>
+<span class="sd">        biosemi/easycap montages).</span>
+<span class="sd">    alpha_frange : tuple, default (8.0, 13.0)</span>
+<span class="sd">        Alpha-band frequency range (Hz).</span>
+<span class="sd">    alpha_amplitude : float, default 15e-6</span>
+<span class="sd">        Peak alpha oscillation amplitude at occipital electrodes (V).</span>
+<span class="sd">    background_amplitude : float, default 5e-6</span>
+<span class="sd">        Broadband 1/f noise amplitude (V).</span>
+<span class="sd">    n_blinks : int, default 15</span>
+<span class="sd">        Number of blink artefacts to inject.</span>
+<span class="sd">    blink_amplitude : float, default 150e-6</span>
+<span class="sd">        Peak blink amplitude (V) at Fp1/Fp2.</span>
+<span class="sd">    muscle_rate : float, default 0.05</span>
+<span class="sd">        Fraction of windows contaminated with muscle bursts (0–1).</span>
+<span class="sd">    muscle_amplitude : float, default 30e-6</span>
+<span class="sd">        Peak muscle burst amplitude (V).</span>
+<span class="sd">    drift_amplitude : float, default 20e-6</span>
+<span class="sd">        Peak slow-drift amplitude (V).</span>
+<span class="sd">    alpha_reactivity : bool, default True</span>
+<span class="sd">        If True, alpha power is reduced by ~50% during NF epochs.</span>
+<span class="sd">    nf_epoch_fraction : float, default 0.5</span>
+<span class="sd">        Fraction of total duration where NF-state (reduced alpha) applies.</span>
+<span class="sd">    rng_seed : int | None, default None</span>
+<span class="sd">        Random seed for reproducibility.</span>
+<span class="sd">    verbose : bool | str | None, default None</span>
+<span class="sd">        MNE verbosity.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    raw : mne.io.RawArray</span>
+<span class="sd">        Simulated raw EEG.</span>
+<span class="sd">    nf_state : ndarray, shape (n_samples,)</span>
+<span class="sd">        Boolean mask: True where simulated NF-state (reduced alpha) is active.</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    The function uses a standard biosemi64 montage channel layout. Channels</span>
+<span class="sd">    are sorted into occipital (O1, Oz, O2, POz, PO3, PO4, PO7, PO8),</span>
+<span class="sd">    frontal (Fp1, Fp2, AF7, AF8), and remaining groups to assign</span>
+<span class="sd">    spatially realistic source weights.</span>
+
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
+<span class="sd">    Niedermeyer, E., &amp; da Silva, F. L. (2005). Electroencephalography:</span>
+<span class="sd">    Basic Principles, Clinical Applications, and Related Fields. LWW.</span>
+
+<span class="sd">    Pfurtscheller, G., &amp; Aranibar, A. (1977). Event-related cortical</span>
+<span class="sd">    desynchronisation detected by power measurements of scalp EEG.</span>
+<span class="sd">    Electroencephalography and clinical Neurophysiology, 42(6), 817–826.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">scipy.signal</span><span class="w"> </span><span class="kn">import</span> <span class="n">butter</span><span class="p">,</span> <span class="n">sosfiltfilt</span>
+
+    <span class="n">mne</span><span class="o">.</span><span class="n">set_log_level</span><span class="p">(</span><span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">)</span>
+    <span class="n">rng</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">default_rng</span><span class="p">(</span><span class="n">rng_seed</span><span class="p">)</span>
+
+    <span class="n">n_samples</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">duration</span> <span class="o">*</span> <span class="n">sfreq</span><span class="p">)</span>
+    <span class="n">info</span> <span class="o">=</span> <span class="n">_make_sensor_info</span><span class="p">(</span><span class="s2">&quot;eeg&quot;</span><span class="p">,</span> <span class="n">sfreq</span><span class="p">,</span> <span class="n">n_channels</span><span class="p">)</span>
+    <span class="n">ch_names</span> <span class="o">=</span> <span class="n">info</span><span class="p">[</span><span class="s2">&quot;ch_names&quot;</span><span class="p">]</span>
+
+    <span class="c1"># ── Spatial weight vectors ─────────────────────────────────────────────</span>
+    <span class="n">occipital_names</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;O1&quot;</span><span class="p">,</span> <span class="s2">&quot;Oz&quot;</span><span class="p">,</span> <span class="s2">&quot;O2&quot;</span><span class="p">,</span> <span class="s2">&quot;POz&quot;</span><span class="p">,</span> <span class="s2">&quot;PO3&quot;</span><span class="p">,</span> <span class="s2">&quot;PO4&quot;</span><span class="p">,</span> <span class="s2">&quot;PO7&quot;</span><span class="p">,</span> <span class="s2">&quot;PO8&quot;</span><span class="p">}</span>
+    <span class="n">frontal_names</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;Fp1&quot;</span><span class="p">,</span> <span class="s2">&quot;Fp2&quot;</span><span class="p">,</span> <span class="s2">&quot;AF7&quot;</span><span class="p">,</span> <span class="s2">&quot;AF8&quot;</span><span class="p">}</span>
+
+    <span class="n">alpha_weights</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">n_channels</span><span class="p">)</span>
+    <span class="n">blink_weights</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">n_channels</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">ch</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">ch_names</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">ch</span> <span class="ow">in</span> <span class="n">occipital_names</span><span class="p">:</span>
+            <span class="n">alpha_weights</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="mf">1.0</span>
+        <span class="k">elif</span> <span class="n">ch</span> <span class="ow">in</span> <span class="n">frontal_names</span><span class="p">:</span>
+            <span class="n">alpha_weights</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.1</span>
+            <span class="n">blink_weights</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="mf">1.0</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">alpha_weights</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.3</span>
+            <span class="n">blink_weights</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.05</span>
+
+    <span class="c1"># Normalise weights so they sum to 1 (max-normalise for spatial realism)</span>
+    <span class="k">if</span> <span class="n">alpha_weights</span><span class="o">.</span><span class="n">max</span><span class="p">()</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">alpha_weights</span> <span class="o">/=</span> <span class="n">alpha_weights</span><span class="o">.</span><span class="n">max</span><span class="p">()</span>
+    <span class="k">if</span> <span class="n">blink_weights</span><span class="o">.</span><span class="n">max</span><span class="p">()</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">blink_weights</span> <span class="o">/=</span> <span class="n">blink_weights</span><span class="o">.</span><span class="n">max</span><span class="p">()</span>
+
+    <span class="c1"># ── NF state mask (consecutive block in the middle of the recording) ──</span>
+    <span class="n">nf_state</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">n_samples</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">bool</span><span class="p">)</span>
+    <span class="n">nf_n</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">nf_epoch_fraction</span> <span class="o">*</span> <span class="n">n_samples</span><span class="p">)</span>
+    <span class="n">nf_start</span> <span class="o">=</span> <span class="p">(</span><span class="n">n_samples</span> <span class="o">-</span> <span class="n">nf_n</span><span class="p">)</span> <span class="o">//</span> <span class="mi">2</span>
+    <span class="n">nf_state</span><span class="p">[</span><span class="n">nf_start</span> <span class="p">:</span> <span class="n">nf_start</span> <span class="o">+</span> <span class="n">nf_n</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
+
+    <span class="c1"># ── 1. Pink noise (all channels) ──────────────────────────────────────</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_pink_noise</span><span class="p">(</span><span class="n">n</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+        <span class="n">white</span> <span class="o">=</span> <span class="n">rng</span><span class="o">.</span><span class="n">standard_normal</span><span class="p">(</span><span class="n">n</span><span class="p">)</span>
+        <span class="n">fft_vals</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">fft</span><span class="o">.</span><span class="n">rfft</span><span class="p">(</span><span class="n">white</span><span class="p">)</span>
+        <span class="n">freqs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">fft</span><span class="o">.</span><span class="n">rfftfreq</span><span class="p">(</span><span class="n">n</span><span class="p">)</span>
+        <span class="c1"># Avoid division by zero at DC; set DC to 0.</span>
+        <span class="k">with</span> <span class="n">np</span><span class="o">.</span><span class="n">errstate</span><span class="p">(</span><span class="n">divide</span><span class="o">=</span><span class="s2">&quot;ignore&quot;</span><span class="p">,</span> <span class="n">invalid</span><span class="o">=</span><span class="s2">&quot;ignore&quot;</span><span class="p">):</span>
+            <span class="n">scale</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">freqs</span> <span class="o">==</span> <span class="mi">0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">1.0</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">freqs</span><span class="p">))</span>
+        <span class="n">fft_vals</span> <span class="o">*=</span> <span class="n">scale</span>
+        <span class="n">pink</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">fft</span><span class="o">.</span><span class="n">irfft</span><span class="p">(</span><span class="n">fft_vals</span><span class="p">,</span> <span class="n">n</span><span class="o">=</span><span class="n">n</span><span class="p">)</span>
+        <span class="c1"># Normalise to unit RMS</span>
+        <span class="n">rms</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">pink</span><span class="o">**</span><span class="mi">2</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">pink</span> <span class="o">/</span> <span class="p">(</span><span class="n">rms</span> <span class="o">+</span> <span class="mf">1e-30</span><span class="p">)</span>
+
+    <span class="n">data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">n_channels</span><span class="p">,</span> <span class="n">n_samples</span><span class="p">))</span>
+    <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_channels</span><span class="p">):</span>
+        <span class="n">data</span><span class="p">[</span><span class="n">c</span><span class="p">]</span> <span class="o">=</span> <span class="n">_pink_noise</span><span class="p">(</span><span class="n">n_samples</span><span class="p">)</span> <span class="o">*</span> <span class="n">background_amplitude</span>
+
+    <span class="c1"># ── 2. Alpha oscillations ──────────────────────────────────────────────</span>
+    <span class="n">iaf</span> <span class="o">=</span> <span class="p">(</span><span class="n">alpha_frange</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="n">alpha_frange</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span> <span class="o">/</span> <span class="mf">2.0</span>  <span class="c1"># individual alpha frequency</span>
+    <span class="n">t</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">n_samples</span><span class="p">)</span> <span class="o">/</span> <span class="n">sfreq</span>
+    <span class="c1"># Random phase offset per channel to avoid perfectly synchronous oscillations</span>
+    <span class="n">phase_offsets</span> <span class="o">=</span> <span class="n">rng</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">,</span> <span class="n">n_channels</span><span class="p">)</span>
+
+    <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_channels</span><span class="p">):</span>
+        <span class="n">alpha_signal</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="mf">2.0</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="n">iaf</span> <span class="o">*</span> <span class="n">t</span> <span class="o">+</span> <span class="n">phase_offsets</span><span class="p">[</span><span class="n">c</span><span class="p">])</span>
+        <span class="k">if</span> <span class="n">alpha_reactivity</span><span class="p">:</span>
+            <span class="c1"># Reduce alpha amplitude by 50% during NF state</span>
+            <span class="n">amplitude_mod</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">nf_state</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">)</span>
+            <span class="n">alpha_signal</span> <span class="o">=</span> <span class="n">alpha_signal</span> <span class="o">*</span> <span class="n">amplitude_mod</span>
+        <span class="n">data</span><span class="p">[</span><span class="n">c</span><span class="p">]</span> <span class="o">+=</span> <span class="n">alpha_weights</span><span class="p">[</span><span class="n">c</span><span class="p">]</span> <span class="o">*</span> <span class="n">alpha_amplitude</span> <span class="o">*</span> <span class="n">alpha_signal</span>
+
+    <span class="c1"># ── 3. Eye blink artefacts ────────────────────────────────────────────</span>
+    <span class="k">if</span> <span class="n">n_blinks</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">blink_duration_s</span> <span class="o">=</span> <span class="mf">0.2</span>  <span class="c1"># 200 ms Gaussian envelope</span>
+        <span class="n">blink_sigma_samples</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">blink_duration_s</span> <span class="o">/</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">sfreq</span><span class="p">)</span>
+        <span class="n">blink_half_width</span> <span class="o">=</span> <span class="mi">3</span> <span class="o">*</span> <span class="n">blink_sigma_samples</span>
+        <span class="n">blink_t</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="o">-</span><span class="n">blink_half_width</span><span class="p">,</span> <span class="n">blink_half_width</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="n">blink_template</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="p">(</span><span class="n">blink_t</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">blink_sigma_samples</span><span class="o">**</span><span class="mi">2</span><span class="p">))</span>
+
+        <span class="n">blink_times</span> <span class="o">=</span> <span class="n">rng</span><span class="o">.</span><span class="n">integers</span><span class="p">(</span><span class="n">blink_half_width</span><span class="p">,</span> <span class="n">n_samples</span> <span class="o">-</span> <span class="n">blink_half_width</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="n">n_blinks</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">bt</span> <span class="ow">in</span> <span class="n">blink_times</span><span class="p">:</span>
+            <span class="n">start</span> <span class="o">=</span> <span class="n">bt</span> <span class="o">-</span> <span class="n">blink_half_width</span>
+            <span class="n">end</span> <span class="o">=</span> <span class="n">bt</span> <span class="o">+</span> <span class="n">blink_half_width</span> <span class="o">+</span> <span class="mi">1</span>
+            <span class="n">actual_len</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">end</span><span class="p">,</span> <span class="n">n_samples</span><span class="p">)</span> <span class="o">-</span> <span class="nb">max</span><span class="p">(</span><span class="n">start</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+            <span class="n">tmpl_start</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="o">-</span><span class="n">start</span><span class="p">)</span>
+            <span class="n">tmpl_end</span> <span class="o">=</span> <span class="n">tmpl_start</span> <span class="o">+</span> <span class="n">actual_len</span>
+            <span class="n">data_start</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">start</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_channels</span><span class="p">):</span>
+                <span class="n">data</span><span class="p">[</span><span class="n">c</span><span class="p">,</span> <span class="n">data_start</span> <span class="p">:</span> <span class="n">data_start</span> <span class="o">+</span> <span class="n">actual_len</span><span class="p">]</span> <span class="o">+=</span> <span class="p">(</span>
+                    <span class="n">blink_weights</span><span class="p">[</span><span class="n">c</span><span class="p">]</span> <span class="o">*</span> <span class="n">blink_amplitude</span> <span class="o">*</span> <span class="n">blink_template</span><span class="p">[</span><span class="n">tmpl_start</span><span class="p">:</span><span class="n">tmpl_end</span><span class="p">]</span>
+                <span class="p">)</span>
+
+    <span class="c1"># ── 4. Muscle bursts ──────────────────────────────────────────────────</span>
+    <span class="n">window_size</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">sfreq</span><span class="p">)</span>  <span class="c1"># 1-second windows</span>
+    <span class="n">n_windows</span> <span class="o">=</span> <span class="n">n_samples</span> <span class="o">//</span> <span class="n">window_size</span>
+    <span class="n">n_muscle_windows</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">muscle_rate</span> <span class="o">*</span> <span class="n">n_windows</span><span class="p">)</span>
+    <span class="n">muscle_window_indices</span> <span class="o">=</span> <span class="n">rng</span><span class="o">.</span><span class="n">choice</span><span class="p">(</span><span class="n">n_windows</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="n">n_muscle_windows</span><span class="p">,</span> <span class="n">replace</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+    <span class="k">for</span> <span class="n">wi</span> <span class="ow">in</span> <span class="n">muscle_window_indices</span><span class="p">:</span>
+        <span class="n">ws</span> <span class="o">=</span> <span class="n">wi</span> <span class="o">*</span> <span class="n">window_size</span>
+        <span class="n">we</span> <span class="o">=</span> <span class="n">ws</span> <span class="o">+</span> <span class="n">window_size</span>
+        <span class="c1"># Band-limited high-frequency noise (30–150 Hz)</span>
+        <span class="n">burst</span> <span class="o">=</span> <span class="n">rng</span><span class="o">.</span><span class="n">standard_normal</span><span class="p">((</span><span class="n">n_channels</span><span class="p">,</span> <span class="n">window_size</span><span class="p">))</span>
+        <span class="n">sos</span> <span class="o">=</span> <span class="n">butter</span><span class="p">(</span>
+            <span class="mi">4</span><span class="p">,</span>
+            <span class="p">[</span><span class="mf">30.0</span> <span class="o">/</span> <span class="p">(</span><span class="n">sfreq</span> <span class="o">/</span> <span class="mi">2</span><span class="p">),</span> <span class="nb">min</span><span class="p">(</span><span class="mf">150.0</span><span class="p">,</span> <span class="n">sfreq</span> <span class="o">/</span> <span class="mi">2</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="n">sfreq</span> <span class="o">/</span> <span class="mi">2</span><span class="p">)],</span>
+            <span class="n">btype</span><span class="o">=</span><span class="s2">&quot;bandpass&quot;</span><span class="p">,</span>
+            <span class="n">output</span><span class="o">=</span><span class="s2">&quot;sos&quot;</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_channels</span><span class="p">):</span>
+            <span class="n">burst</span><span class="p">[</span><span class="n">c</span><span class="p">]</span> <span class="o">=</span> <span class="n">sosfiltfilt</span><span class="p">(</span><span class="n">sos</span><span class="p">,</span> <span class="n">burst</span><span class="p">[</span><span class="n">c</span><span class="p">])</span>
+        <span class="c1"># Normalise burst to unit RMS then scale</span>
+        <span class="n">rms_burst</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">burst</span><span class="o">**</span><span class="mi">2</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">keepdims</span><span class="o">=</span><span class="kc">True</span><span class="p">))</span>
+        <span class="n">burst</span> <span class="o">/=</span> <span class="n">rms_burst</span> <span class="o">+</span> <span class="mf">1e-30</span>
+        <span class="n">data</span><span class="p">[:,</span> <span class="n">ws</span><span class="p">:</span><span class="n">we</span><span class="p">]</span> <span class="o">+=</span> <span class="n">muscle_amplitude</span> <span class="o">*</span> <span class="n">burst</span>
+
+    <span class="c1"># ── 5. Slow electrode drift ───────────────────────────────────────────</span>
+    <span class="n">drift_raw</span> <span class="o">=</span> <span class="n">rng</span><span class="o">.</span><span class="n">standard_normal</span><span class="p">((</span><span class="n">n_channels</span><span class="p">,</span> <span class="n">n_samples</span><span class="p">))</span>
+    <span class="n">sos_drift</span> <span class="o">=</span> <span class="n">butter</span><span class="p">(</span>
+        <span class="mi">2</span><span class="p">,</span>
+        <span class="mf">0.5</span> <span class="o">/</span> <span class="p">(</span><span class="n">sfreq</span> <span class="o">/</span> <span class="mi">2</span><span class="p">),</span>
+        <span class="n">btype</span><span class="o">=</span><span class="s2">&quot;low&quot;</span><span class="p">,</span>
+        <span class="n">output</span><span class="o">=</span><span class="s2">&quot;sos&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_channels</span><span class="p">):</span>
+        <span class="n">drift_filtered</span> <span class="o">=</span> <span class="n">sosfiltfilt</span><span class="p">(</span><span class="n">sos_drift</span><span class="p">,</span> <span class="n">drift_raw</span><span class="p">[</span><span class="n">c</span><span class="p">])</span>
+        <span class="n">max_drift</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">drift_filtered</span><span class="p">)</span><span class="o">.</span><span class="n">max</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">max_drift</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">drift_filtered</span> <span class="o">/=</span> <span class="n">max_drift</span>
+        <span class="n">data</span><span class="p">[</span><span class="n">c</span><span class="p">]</span> <span class="o">+=</span> <span class="n">drift_amplitude</span> <span class="o">*</span> <span class="n">drift_filtered</span>
+
+    <span class="n">raw</span> <span class="o">=</span> <span class="n">mne</span><span class="o">.</span><span class="n">io</span><span class="o">.</span><span class="n">RawArray</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">info</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">raw</span><span class="p">,</span> <span class="n">nf_state</span></div>
+
+
+
+<span class="c1"># ---------------------------------------------------------------------------</span>
+<span class="c1"># Internal helpers</span>
+<span class="c1"># ---------------------------------------------------------------------------</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_make_sensor_info</span><span class="p">(</span><span class="n">data_type</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">sfreq</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">n_eeg_channels</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">mne</span><span class="o">.</span><span class="n">Info</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Build an :class:`mne.Info` object for the requested modality.</span>
+
+<span class="sd">    For EEG a standard montage is used; for MEG the MNE sample dataset</span>
+<span class="sd">    Vectorview info is used as template (magnetometers + gradiometers).</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">data_type</span> <span class="o">==</span> <span class="s2">&quot;meg&quot;</span><span class="p">:</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">sample_dir</span> <span class="o">=</span> <span class="n">mne</span><span class="o">.</span><span class="n">datasets</span><span class="o">.</span><span class="n">sample</span><span class="o">.</span><span class="n">data_path</span><span class="p">(</span><span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">exc</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span>
+                <span class="s2">&quot;MEG simulation requires the MNE sample dataset. &quot;</span>
+                <span class="s2">&quot;Install it with: mne.datasets.sample.data_path()&quot;</span>
+            <span class="p">)</span> <span class="kn">from</span><span class="w"> </span><span class="nn">exc</span>
+        <span class="n">raw_fname</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">sample_dir</span><span class="p">,</span> <span class="s2">&quot;MEG&quot;</span><span class="p">,</span> <span class="s2">&quot;sample&quot;</span><span class="p">,</span> <span class="s2">&quot;sample_audvis_raw.fif&quot;</span><span class="p">)</span>
+        <span class="n">info</span> <span class="o">=</span> <span class="n">mne</span><span class="o">.</span><span class="n">io</span><span class="o">.</span><span class="n">read_info</span><span class="p">(</span><span class="n">raw_fname</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="c1"># Keep only MEG channels; resample info sfreq if different</span>
+        <span class="n">meg_picks</span> <span class="o">=</span> <span class="n">mne</span><span class="o">.</span><span class="n">pick_types</span><span class="p">(</span><span class="n">info</span><span class="p">,</span> <span class="n">meg</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">eeg</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">stim</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">exclude</span><span class="o">=</span><span class="s2">&quot;bads&quot;</span><span class="p">)</span>
+        <span class="n">info</span> <span class="o">=</span> <span class="n">mne</span><span class="o">.</span><span class="n">pick_info</span><span class="p">(</span><span class="n">info</span><span class="p">,</span> <span class="n">sel</span><span class="o">=</span><span class="n">meg_picks</span><span class="p">)</span>
+        <span class="n">info</span><span class="p">[</span><span class="s2">&quot;sfreq&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">sfreq</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">info</span>
+
+    <span class="c1"># EEG — use a standard biosemi/easycap montage</span>
+    <span class="n">montage_map</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="mi">32</span><span class="p">:</span> <span class="s2">&quot;easycap-M10&quot;</span><span class="p">,</span>
+        <span class="mi">64</span><span class="p">:</span> <span class="s2">&quot;biosemi64&quot;</span><span class="p">,</span>
+        <span class="mi">128</span><span class="p">:</span> <span class="s2">&quot;biosemi128&quot;</span><span class="p">,</span>
+        <span class="mi">256</span><span class="p">:</span> <span class="s2">&quot;biosemi256&quot;</span><span class="p">,</span>
+    <span class="p">}</span>
+    <span class="n">montage_name</span> <span class="o">=</span> <span class="n">montage_map</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">n_eeg_channels</span><span class="p">,</span> <span class="s2">&quot;biosemi64&quot;</span><span class="p">)</span>
+    <span class="n">montage</span> <span class="o">=</span> <span class="n">mne</span><span class="o">.</span><span class="n">channels</span><span class="o">.</span><span class="n">make_standard_montage</span><span class="p">(</span><span class="n">montage_name</span><span class="p">)</span>
+    <span class="n">info</span> <span class="o">=</span> <span class="n">mne</span><span class="o">.</span><span class="n">create_info</span><span class="p">(</span>
+        <span class="n">ch_names</span><span class="o">=</span><span class="n">montage</span><span class="o">.</span><span class="n">ch_names</span><span class="p">,</span>
+        <span class="n">sfreq</span><span class="o">=</span><span class="nb">float</span><span class="p">(</span><span class="n">sfreq</span><span class="p">),</span>
+        <span class="n">ch_types</span><span class="o">=</span><span class="s2">&quot;eeg&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">info</span><span class="o">.</span><span class="n">set_montage</span><span class="p">(</span><span class="n">montage</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">info</span>
+</pre></div>
+
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../../../_static/scripts/bootstrap.js?digest=90905a2f556bf617f1a9"></script>
+<script defer src="../../../_static/scripts/pydata-sphinx-theme.js?digest=90905a2f556bf617f1a9"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright 2025, Payam S. Shabestari.
+      <br/>
+    
+  </p>
+</div>
+      
+        <div class="footer-item">
+
+  <p class="sphinx-version">
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 9.0.4.
+    <br/>
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
+<p class="theme-version">
+  <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.20.0.
+</p></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>
