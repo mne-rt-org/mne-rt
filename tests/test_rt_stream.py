@@ -341,3 +341,206 @@ def test_connect_to_lsl_and_record_baseline(tmp_path, short_mock_fif):
         assert nf.raw_baseline.n_times >= int(1.0 * 256.0)
     finally:
         nf.save()  # disconnects the stream / mock player
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# connect_to_array (plain numpy-array input, no LSL required)
+# ─────────────────────────────────────────────────────────────────────────────
+
+
+@pytest.fixture()
+def array_info():
+    import mne
+
+    montage = mne.channels.make_standard_montage("easycap-M1")
+    ch_names = montage.ch_names[:8]
+    info = mne.create_info(ch_names=ch_names, sfreq=256.0, ch_types="eeg")
+    info.set_montage(montage)
+    return info
+
+
+def _make_array_data(info, duration=8.0):
+    rng = np.random.default_rng(0)
+    n_samples = int(duration * info["sfreq"])
+    return rng.standard_normal((len(info["ch_names"]), n_samples)) * 1e-6
+
+
+def test_connect_to_array_invalid_shape(tmp_path, array_info):
+    nf = _make_rt_stream(tmp_path, montage="easycap-M1")
+    with pytest.raises(ValueError, match="2D"):
+        nf.connect_to_array(np.zeros((8, 10, 2)), array_info)
+
+
+def test_connect_to_array_channel_mismatch(tmp_path, array_info):
+    nf = _make_rt_stream(tmp_path, montage="easycap-M1")
+    with pytest.raises(ValueError, match="channels"):
+        nf.connect_to_array(np.zeros((4, 100)), array_info)
+
+
+def test_connect_to_array_and_record_baseline(tmp_path, array_info):
+    nf = _make_rt_stream(tmp_path, montage="easycap-M1")
+    data = _make_array_data(array_info)
+    try:
+        nf.connect_to_array(data, array_info)
+        assert nf.sfreq == pytest.approx(256.0)
+        assert len(nf.rec_info["ch_names"]) == 8
+        assert nf.stream.connected
+
+        nf.record_baseline(baseline_duration=1.0, winsize=0.5)
+        assert nf.raw_baseline is not None
+        assert nf.raw_baseline.info["sfreq"] == pytest.approx(256.0)
+        assert nf.raw_baseline.n_times >= int(1.0 * 256.0)
+    finally:
+        nf.save()  # disconnects the stream
+
+
+def test_connect_to_array_record_main_end_to_end(tmp_path, array_info):
+    nf = _make_rt_stream(tmp_path, montage="easycap-M1", bandpass_freq=(1.0, 40.0), notch_freq=50.0)
+    data = _make_array_data(array_info, duration=20.0)
+    try:
+        nf.connect_to_array(data, array_info, n_repeat=np.inf)
+        nf.record_baseline(baseline_duration=1.0, winsize=0.5)
+        nf.record_main(
+            duration=2.0,
+            modality="sensor_power",
+            show_raw_signal=False,
+            show_nf_signal=False,
+        )
+        assert len(nf.nf_data["sensor_power"]) > 0
+    finally:
+        nf.save()
+
+
+def test_connect_to_array_pick_types(tmp_path):
+    import mne
+
+    ch_names = [f"EEG{i:03d}" for i in range(4)] + ["EOG001"]
+    ch_types = ["eeg"] * 4 + ["eog"]
+    info = mne.create_info(ch_names=ch_names, sfreq=128.0, ch_types=ch_types)
+    data = np.random.default_rng(0).standard_normal((5, 256)) * 1e-6
+
+    nf = _make_rt_stream(tmp_path, montage=None)
+    try:
+        nf.connect_to_array(data, info, pick_types="eeg")
+        assert nf.rec_info["ch_names"] == ch_names[:4]
+    finally:
+        nf.save()
+
+
+def test_connect_to_array_open_stream_viewer_raises(tmp_path, array_info):
+    nf = _make_rt_stream(tmp_path, montage="easycap-M1")
+    data = _make_array_data(array_info)
+    try:
+        nf.connect_to_array(data, array_info)
+        with pytest.raises(RuntimeError, match="connect_to_array"):
+            nf.open_stream_viewer()
+    finally:
+        nf.save()
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# ArrayStream (standalone duck-typed LSL-stream shim behind connect_to_array)
+# ─────────────────────────────────────────────────────────────────────────────
+
+
+def _make_array_stream(n_channels=4, sfreq=100.0, n_samples=500, **kwargs):
+    import mne
+
+    from mne_rt.rt_stream import ArrayStream
+
+    info = mne.create_info(
+        ch_names=[f"EEG{i:03d}" for i in range(n_channels)], sfreq=sfreq, ch_types="eeg"
+    )
+    data = np.random.default_rng(0).standard_normal((n_channels, n_samples)) * 1e-6
+    return ArrayStream(data, info, **kwargs)
+
+
+class TestArrayStream:
+    def test_not_connected_raises(self):
+        stream = _make_array_stream()
+        assert not stream.connected
+        with pytest.raises(RuntimeError, match="not connected"):
+            stream.get_data()
+        with pytest.raises(RuntimeError, match="connect"):
+            _ = stream.info
+
+    def test_connect_get_data_resets_n_new_samples(self):
+        import time
+
+        stream = _make_array_stream(sfreq=200.0, bufsize=1.0, chunk_size=10, n_repeat=np.inf)
+        stream.connect()
+        try:
+            time.sleep(0.3)
+            data, ts = stream.get_data(0.2)
+            assert data.shape == (4, 40)
+            assert ts.shape == (40,)
+            assert stream.n_new_samples == 0
+            time.sleep(0.2)
+            assert stream.n_new_samples > 0
+        finally:
+            stream.disconnect()
+        assert not stream.connected
+
+    def test_pick_reduces_channels_before_connect(self):
+        stream = _make_array_stream(n_channels=4)
+        stream.pick(["EEG000", "EEG002"])
+        assert stream._info["ch_names"] == ["EEG000", "EEG002"]
+        stream.connect()
+        try:
+            data, _ = stream.get_data(0.1)
+            assert data.shape[0] == 2
+        finally:
+            stream.disconnect()
+
+    def test_pick_preserves_requested_order(self):
+        stream = _make_array_stream(n_channels=4)
+        stream.pick(["EEG002", "EEG000"])
+        assert stream._info["ch_names"] == ["EEG002", "EEG000"]
+
+    def test_pick_after_connect_raises(self):
+        stream = _make_array_stream()
+        stream.connect()
+        try:
+            with pytest.raises(RuntimeError, match="before connect"):
+                stream.pick("eeg")
+        finally:
+            stream.disconnect()
+
+    def test_get_data_excludes_bads(self):
+        stream = _make_array_stream(n_channels=4)
+        stream._info["bads"] = ["EEG001"]
+        stream.connect()
+        try:
+            data, _ = stream.get_data(0.1)
+            assert data.shape[0] == 3
+        finally:
+            stream.disconnect()
+
+    def test_connect_twice_does_not_leak_thread(self):
+        stream = _make_array_stream(sfreq=200.0, n_repeat=np.inf)
+        stream.connect()
+        first_thread = stream._thread
+        stream.connect()
+        try:
+            assert not first_thread.is_alive()
+            assert stream.connected
+        finally:
+            stream.disconnect()
+
+    def test_filter_and_notch_filter_return_self(self):
+        stream = _make_array_stream(sfreq=256.0, n_samples=2560)
+        assert stream.filter(1.0, 40.0) is stream
+        assert stream.notch_filter(50.0) is stream
+
+    def test_n_repeat_stops_advancing(self):
+        import time
+
+        stream = _make_array_stream(
+            sfreq=100.0, n_samples=20, chunk_size=5, n_repeat=1, bufsize=0.5
+        )
+        stream.connect()
+        try:
+            time.sleep(0.5)  # long enough to exhaust the 20-sample array once
+            assert stream.n_new_samples == 20
+        finally:
+            stream.disconnect()

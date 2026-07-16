@@ -110,6 +110,266 @@ def _make_demo_raw_fif(
     return fif_path
 
 
+class ArrayStream:
+    """Simulate a live LSL stream from an in-memory numpy array.
+
+    Duck-types the subset of :class:`mne_lsl.stream.StreamLSL`'s public
+    interface that :class:`RTStream` relies on (``get_data``,
+    ``n_new_samples``, ``connected``, ``info``, ``disconnect``, ``pick``,
+    ``filter``, ``notch_filter``, ``set_montage``, ``set_meas_date``), so an
+    :class:`RTStream` session can be driven by a plain numpy array instead of
+    live hardware or a recorded file replayed over LSL. Returned by
+    :meth:`RTStream.connect_to_array` — not normally instantiated directly.
+
+    Parameters
+    ----------
+    data : array of shape (n_channels, n_samples)
+        The full recording to stream.
+    info : mne.Info
+        Channel/sampling-rate metadata; ``info["nchan"]`` must equal
+        ``data.shape[0]``.
+    bufsize : float, default 3.0
+        Ring-buffer size in seconds, mirroring ``StreamLSL(bufsize=...)``.
+    chunk_size : int, default 10
+        Number of samples released into the buffer per acquisition tick,
+        mirroring :class:`mne_lsl.player.PlayerLSL`'s ``chunk_size``.
+    n_repeat : int | float, default 1
+        Number of times to loop over ``data`` once exhausted. Use
+        ``np.inf`` for an open-ended session.
+
+    Notes
+    -----
+    Because the entire recording is already available in memory,
+    :meth:`filter` and :meth:`notch_filter` apply a single zero-phase FIR
+    pass over the whole array (via :func:`mne.filter.filter_data` /
+    :func:`mne.filter.notch_filter`) rather than a causal online filter —
+    there is no "future data" constraint to respect as there would be for a
+    genuinely live stream. If called while already streaming (as
+    :meth:`~mne_rt.RTStream.record_main` does), samples already pushed into
+    the ring buffer stay unfiltered until they age out — the buffer is fully
+    refreshed, and the transient gone, within one ``bufsize`` window.
+
+    If ``n_repeat`` is exhausted before the caller stops requesting data,
+    streaming simply stops advancing: :attr:`n_new_samples` stays at 0 and
+    :meth:`get_data` keeps returning the final buffered window.
+    """
+
+    def __init__(
+        self,
+        data: np.ndarray,
+        info: mne.Info,
+        *,
+        bufsize: float = 3.0,
+        chunk_size: int = 10,
+        n_repeat: Union[int, float] = 1,
+    ) -> None:
+        self._source = np.ascontiguousarray(data, dtype=np.float64)
+        self._info = info.copy()
+        self._bufsize = bufsize
+        self._chunk_size = chunk_size
+        self._n_repeat = n_repeat
+
+        self._lock = threading.Lock()
+        self._stop_event = threading.Event()
+        self._thread: Optional[threading.Thread] = None
+        self._connected = False
+        self._buffer = np.empty((0, 0))
+        self._timestamps = np.empty(0)
+        self._n_new_samples = 0
+
+    def __repr__(self) -> str:
+        state = "connected" if self._connected else "disconnected"
+        return f"<ArrayStream | {self._info['nchan']} channels, {state}>"
+
+    # ------------------------------------------------------------------
+    # Connection lifecycle
+    # ------------------------------------------------------------------
+
+    def connect(self) -> "ArrayStream":
+        """Start the simulated real-time acquisition thread."""
+        if self._connected:
+            self.disconnect()
+        sfreq = self._info["sfreq"]
+        n_buf = max(1, int(np.ceil(self._bufsize * sfreq)))
+        self._buffer = np.zeros((self._info["nchan"], n_buf))
+        self._timestamps = np.zeros(n_buf)
+        self._n_new_samples = 0
+        self._stop_event.clear()
+        self._connected = True
+        self._thread = threading.Thread(target=self._stream_loop, daemon=True)
+        self._thread.start()
+        return self
+
+    def disconnect(self) -> "ArrayStream":
+        """Stop the acquisition thread."""
+        self._stop_event.set()
+        if self._thread is not None:
+            self._thread.join(timeout=2.0)
+            self._thread = None
+        self._connected = False
+        return self
+
+    @property
+    def connected(self) -> bool:
+        return self._connected
+
+    @property
+    def info(self) -> mne.Info:
+        if not self._connected:
+            raise RuntimeError(
+                "The stream information is available once connected. "
+                "Please connect to the stream first."
+            )
+        return self._info
+
+    @property
+    def n_new_samples(self) -> int:
+        """Number of new samples available since the last :meth:`get_data` call."""
+        return self._n_new_samples
+
+    # ------------------------------------------------------------------
+    # Acquisition thread
+    # ------------------------------------------------------------------
+
+    def _stream_loop(self) -> None:
+        sfreq = self._info["sfreq"]
+        chunk_dur = self._chunk_size / sfreq
+        n_total = self._source.shape[1]
+        cursor = 0
+        n_done = 0
+        while not self._stop_event.is_set():
+            tic = time.time()
+            with self._lock:
+                source = self._source
+            end = min(cursor + self._chunk_size, n_total)
+            chunk = source[:, cursor:end]
+            self._push(chunk)
+            cursor = end
+            if cursor >= n_total:
+                n_done += 1
+                if n_done >= self._n_repeat:
+                    break
+                cursor = 0
+            self._stop_event.wait(max(0.0, chunk_dur - (time.time() - tic)))
+
+    def _push(self, chunk: np.ndarray) -> None:
+        k = chunk.shape[1]
+        if k == 0:
+            return
+        now = time.time()
+        with self._lock:
+            n_buf = self._buffer.shape[1]
+            if k >= n_buf:
+                self._buffer[:] = chunk[:, -n_buf:]
+                self._timestamps[:] = now
+            else:
+                self._buffer[:, :-k] = self._buffer[:, k:]
+                self._buffer[:, -k:] = chunk
+                self._timestamps[:-k] = self._timestamps[k:]
+                self._timestamps[-k:] = now
+            self._n_new_samples = min(self._n_new_samples + k, n_buf)
+
+    # ------------------------------------------------------------------
+    # Data access
+    # ------------------------------------------------------------------
+
+    def get_data(
+        self,
+        winsize: Optional[float] = None,
+        picks: Optional[Union[str, list]] = None,
+        exclude: Union[str, list, tuple] = "bads",
+    ) -> tuple[np.ndarray, np.ndarray]:
+        """Retrieve the latest data from the buffer.
+
+        Mirrors :meth:`mne_lsl.stream.StreamLSL.get_data`: resets
+        :attr:`n_new_samples` to 0 on every call.
+        """
+        if not self._connected:
+            raise RuntimeError(
+                "The Stream is not connected. Please connect to the stream before "
+                "retrieving data from the buffer."
+            )
+        sfreq = self._info["sfreq"]
+        idx = self._resolve_picks(picks, exclude)
+        with self._lock:
+            n_buf = self._buffer.shape[1]
+            n_samples = n_buf if winsize is None else min(n_buf, int(np.ceil(winsize * sfreq)))
+            data = self._buffer[idx, -n_samples:].copy()
+            ts = self._timestamps[-n_samples:].copy()
+            self._n_new_samples = 0
+        return data, ts
+
+    def _resolve_picks(self, picks: Any, exclude: Any = ()) -> np.ndarray:
+        ch_names = self._info["ch_names"]
+        exclude_names = set(self._info["bads"]) if exclude == "bads" else set(exclude or ())
+        if picks is None:
+            return np.array(
+                [i for i, ch in enumerate(ch_names) if ch not in exclude_names], dtype=int
+            )
+        if isinstance(picks, (str, int, np.integer)):
+            picks = [picks]
+        idx: list[int] = []
+        for p in picks:
+            if isinstance(p, str) and p in ch_names:
+                if p not in exclude_names:
+                    idx.append(ch_names.index(p))
+            elif isinstance(p, str):
+                idx.extend(mne.pick_types(self._info, exclude=exclude, **{p: True}).tolist())
+            else:
+                idx.append(int(p))
+        return np.array(idx, dtype=int)
+
+    # ------------------------------------------------------------------
+    # In-place channel / signal operations
+    # ------------------------------------------------------------------
+
+    def set_montage(self, montage: Any, on_missing: str = "warn") -> "ArrayStream":
+        self._info.set_montage(montage, on_missing=on_missing, verbose=False)
+        return self
+
+    def set_meas_date(self, meas_date: Any) -> "ArrayStream":
+        self._info.set_meas_date(meas_date)
+        return self
+
+    def pick(self, picks: Any = None, exclude: Any = ()) -> "ArrayStream":
+        """Restrict the stream to a subset of channels, in-place.
+
+        Must be called before :meth:`connect` — picking after the
+        acquisition thread has started would change the channel count out
+        from under it mid-stream.
+        """
+        if self._connected:
+            raise RuntimeError("pick() must be called before connect().")
+        idx = self._resolve_picks(picks, exclude)
+        self._source = self._source[idx]
+        self._info = mne.pick_info(self._info, idx, copy=True, verbose=False)
+        return self
+
+    def filter(self, l_freq: Optional[float], h_freq: Optional[float]) -> "ArrayStream":
+        """Zero-phase FIR band-pass over the entire underlying array.
+
+        Computed outside the buffer lock so the acquisition thread is only
+        blocked for the final (near-instant) reference swap, not the full
+        filtering pass.
+        """
+        filtered = mne.filter.filter_data(
+            self._source, self._info["sfreq"], l_freq, h_freq, verbose=False
+        )
+        with self._lock:
+            self._source = filtered
+        return self
+
+    def notch_filter(self, freqs: Union[float, list]) -> "ArrayStream":
+        """Zero-phase FIR notch filter over the entire underlying array.
+
+        See :meth:`filter` for why the computation happens outside the lock.
+        """
+        filtered = mne.filter.notch_filter(self._source, self._info["sfreq"], freqs, verbose=False)
+        with self._lock:
+            self._source = filtered
+        return self
+
+
 class RTStream(ModalityMixin):
     """Real-time Real-time M/EEG session controller.
 
@@ -316,6 +576,31 @@ class RTStream(ModalityMixin):
     # LSL connection
     # ------------------------------------------------------------------
 
+    def _teardown_existing_stream(self) -> None:
+        """Disconnect any previously-connected stream/mock player, if present."""
+        if hasattr(self, "stream") and getattr(self.stream, "connected", False):
+            self.stream.disconnect()
+        if getattr(self, "_mock_player", None) is not None:
+            try:
+                self._mock_player.stop()
+            except Exception:
+                pass
+            self._mock_player = None
+
+    def _finalize_stream(self, stream: Any) -> None:
+        """Store the connected stream and expose its public methods on self."""
+        self.stream = stream
+        self.sfreq = stream.info["sfreq"]
+        self.rec_info = stream.info
+        self.rec_info["subject_info"] = {"his_id": self.subject_id}
+
+        # Expose stream methods directly on self
+        for name in dir(self.stream):
+            if not name.startswith("__"):
+                attr = getattr(self.stream, name)
+                if callable(attr):
+                    setattr(self, name, attr)
+
     @verbose
     def connect_to_lsl(
         self,
@@ -388,15 +673,7 @@ class RTStream(ModalityMixin):
             nf.connect_to_lsl(mock_lsl=True, fname="path/to/data.fif")
             nf.connect_to_lsl(mock_lsl=True, fname="path/to/data.edf")
         """
-        if hasattr(self, "stream") and getattr(self.stream, "connected", False):
-            self.stream.disconnect()
-
-        if getattr(self, "_mock_player", None) is not None:
-            try:
-                self._mock_player.stop()
-            except Exception:
-                pass
-            self._mock_player = None
+        self._teardown_existing_stream()
 
         if mock_lsl and fname is None:
             _bundled = _REPO_ROOT / "data" / "sample" / "sample_data.vhdr"
@@ -437,17 +714,109 @@ class RTStream(ModalityMixin):
             stream.pick(pick_types)
 
         stream.set_meas_date(datetime.datetime.now().replace(tzinfo=datetime.timezone.utc))
-        self.stream = stream
-        self.sfreq = stream.info["sfreq"]
-        self.rec_info = stream.info
-        self.rec_info["subject_info"] = {"his_id": self.subject_id}
+        self._finalize_stream(stream)
 
-        # Expose stream methods directly on self
-        for name in dir(self.stream):
-            if not name.startswith("__"):
-                attr = getattr(self.stream, name)
-                if callable(attr):
-                    setattr(self, name, attr)
+    @verbose
+    def connect_to_array(
+        self,
+        data: np.ndarray,
+        info: mne.Info,
+        chunk_size: int = 10,
+        n_repeat: Union[int, float] = 1,
+        bufsize_main: float = 3.0,
+        pick_types: Optional[str] = None,
+        verbose: Union[bool, str, None] = None,
+    ) -> None:
+        """Connect to a plain numpy array instead of an LSL stream.
+
+        Drives the exact same acquisition/feature-extraction pipeline as
+        :meth:`connect_to_lsl`, backed by :class:`ArrayStream` — no LSL
+        networking or recorded file is required. Useful for offline
+        analysis, unit tests, and demos, e.g. feeding synthetic data or an
+        already-loaded recording straight through :meth:`record_baseline` /
+        :meth:`record_main`.
+
+        Parameters
+        ----------
+        data : array of shape (n_channels, n_samples)
+            The full recording to stream.
+        info : mne.Info
+            Channel/sampling-rate metadata; ``info["nchan"]`` must equal
+            ``data.shape[0]``.
+        chunk_size : int, default 10
+            Samples released into the buffer per acquisition tick.
+        n_repeat : int | float, default 1
+            Number of times to loop over ``data`` once exhausted. Use
+            ``np.inf`` to loop indefinitely for open-ended sessions.
+        bufsize_main : float, default 3.0
+            Ring-buffer size in seconds.
+        pick_types : str | None, default None
+            Channel type to keep (e.g. ``"eeg"``, ``"mag"``).
+            ``None`` keeps all available channels.
+        verbose : bool | str | None, default None
+            Override the instance-level verbosity for this call.
+
+        Raises
+        ------
+        ValueError
+            If ``data`` is not 2D, or its channel count does not match
+            ``info["nchan"]``.
+
+        Notes
+        -----
+        All public methods of :class:`ArrayStream` are also exposed
+        directly on the :class:`RTStream` instance after connection — a
+        narrower surface than :meth:`connect_to_lsl` exposes, since
+        :class:`ArrayStream` has no LSL-specific extras (e.g. ``name``,
+        used by :meth:`open_stream_viewer`, which is unavailable for
+        array-backed sessions).
+
+        See Also
+        --------
+        connect_to_lsl : Connect to a live or mock-replayed LSL stream.
+
+        Examples
+        --------
+        Stream a synthetic recording end-to-end without any LSL infra::
+
+            info = mne.create_info(ch_names, sfreq=256.0, ch_types="eeg")
+            nf.connect_to_array(data, info)
+            nf.record_baseline(baseline_duration=60)
+            nf.record_main(duration=300, modality="sensor_power")
+        """
+        self._teardown_existing_stream()
+
+        data = np.asarray(data, dtype=np.float64)
+        if data.ndim != 2:
+            raise ValueError(
+                f"`data` must be a 2D (n_channels, n_samples) array, got shape {data.shape}."
+            )
+        if data.shape[0] != info["nchan"]:
+            raise ValueError(
+                f"`data` has {data.shape[0]} channels but `info` describes "
+                f"{info['nchan']} channels."
+            )
+
+        self.bufsize = bufsize_main
+
+        if self.montage is not None and Path(str(self.montage)).is_file():
+            self.montage = read_dig_captrak(self.montage)
+
+        self.source_id = uuid.uuid4().hex
+        stream = ArrayStream(
+            data, info, bufsize=self.bufsize, chunk_size=chunk_size, n_repeat=n_repeat
+        )
+
+        # Apply montage/picks/meas-date before starting the acquisition thread
+        # so ArrayStream.pick()'s channel-count change can never race with it.
+        if self.montage is not None:
+            stream.set_montage(self.montage, on_missing="warn")
+        if pick_types is not None:
+            stream.pick(pick_types)
+        stream.set_meas_date(datetime.datetime.now().replace(tzinfo=datetime.timezone.utc))
+
+        stream.connect()
+        self._finalize_stream(stream)
 
     # ------------------------------------------------------------------
     # Directory helpers
@@ -1980,8 +2349,8 @@ class RTStream(ModalityMixin):
         """
         if not hasattr(self, "rec_info") or self.rec_info is None:
             raise RuntimeError(
-                "connect_to_lsl() must be called before fit_maxwell() "
-                "so that sensor info is available."
+                "connect_to_lsl() or connect_to_array() must be called before "
+                "fit_maxwell() so that sensor info is available."
             )
 
         self.maxwell_filter = RTMaxwellFilter(
@@ -2100,7 +2469,21 @@ class RTStream(ModalityMixin):
         ----------
         bufsize : float, default 0.2
             Display window size (s).
+
+        Raises
+        ------
+        RuntimeError
+            If the session was connected via :meth:`connect_to_array` — the
+            StreamViewer connects over real LSL, which an array-backed
+            session never publishes to.
         """
+        if isinstance(self.stream, ArrayStream):
+            raise RuntimeError(
+                "open_stream_viewer() requires a live/mock LSL stream "
+                "(connect_to_lsl); it is not available for sessions "
+                "connected via connect_to_array()."
+            )
+
         import subprocess
         import sys
 
