@@ -31,6 +31,12 @@ New features
   flags when omitted; new ``--zscore-min-std`` option avoids the default
   standard-deviation floor swamping small-magnitude features (e.g.
   ``sensor_power``).
+- New :meth:`~mne_rt.RTStream.connect_to_array` connects a session to a
+  plain in-memory numpy array instead of an LSL stream, driving the exact
+  same :meth:`~mne_rt.RTStream.record_baseline` /
+  :meth:`~mne_rt.RTStream.record_main` pipeline with no LSL networking or
+  recorded file required — useful for offline analysis, unit tests, and
+  demos. Backed by the new :class:`~mne_rt.ArrayStream`.
 
 Bug fixes
 ^^^^^^^^^
