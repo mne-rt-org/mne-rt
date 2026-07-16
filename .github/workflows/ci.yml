@@ -55,6 +55,12 @@ jobs:
           activate-environment: true
       - run: uv pip install -e ".[dev,pyqt6]"
       - run: pytest --cov=mne_rt --cov-report=xml
+        env:
+          # coverage.py defaults to the sys.monitoring ("sysmon") tracer on
+          # Python 3.12+, which has crashed (SIGABRT) under this job's
+          # Qt/PyQt6 + numba jitclass code paths on py3.13. Force the legacy
+          # C tracer to sidestep the sysmon interaction.
+          COVERAGE_CORE: ctrace
       - uses: codecov/codecov-action@v5
         with:
           token: ${{ secrets.CODECOV_TOKEN }}

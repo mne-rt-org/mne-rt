@@ -2404,6 +2404,7 @@ class RTStream(ModalityMixin):
         RuntimeError
             If :meth:`record_baseline` has not been called yet.
         """
+        self._ensure_dirs()
         modalities = [self.modality] if isinstance(self.modality, str) else list(self.modality)
         report = Report(title=f"Neurofeedback Session — {', '.join(modalities)}")
 

@@ -231,7 +231,7 @@ def compute_bandpower(
         freqs, psd = welch(data, sfreq, axis=1, **kwargs)
 
     elif method == "multitaper":
-        psd, freqs = psd_array_multitaper(data, sfreq, axis=1, verbose="ERROR", **kwargs)
+        psd, freqs = psd_array_multitaper(data, sfreq, verbose="ERROR", **kwargs)
 
     else:
         raise ValueError(f"Unsupported method '{method}'.")
