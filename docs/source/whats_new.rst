@@ -13,6 +13,42 @@ Version 1.2.0
 New features
 ^^^^^^^^^^^^
 
+- **The session report now describes the session.**
+  :meth:`~mne_rt.RTStream.create_report` produced four blocks — the baseline
+  recording, a PSD, the feature traces plotted against *window index*, and a
+  five-row table — and knew nothing about anything added since 1.1.0. It now
+  renders sections for the session summary, the neurofeedback traces, markers
+  and gating, data quality, the source-space configuration, the baseline, and a
+  dictionary of every saved column.
+
+  The traces are drawn on a **real time axis** from the recorded window onsets,
+  with the gated conditions shaded and the rewarded windows marked, so a trace
+  can be read against a stimulus log. When no onsets were recorded the report
+  falls back to the nominal ``index × hop`` grid and *says so* in the caption —
+  the acquisition loop drifts away from that grid, which is why the onsets are
+  recorded in the first place.
+
+  Two failures the old report could not show are now called out in the report
+  itself. **A session where the gate never opened** rendered identically to a
+  healthy one, even though the subject received nothing for the entire run; it
+  now carries a red callout naming the likely causes. And a run whose feature
+  computation **exceeds the hop** — so the loop cannot keep up and feedback lags
+  the subject — is flagged against the measured latency.
+
+  The summary is rendered from the same ``meta`` block
+  :meth:`~mne_rt.RTStream.save` writes into the JSON, so the report and the
+  saved record cannot disagree. Axis labels come from the same tables the live
+  :class:`~mne_rt.NFPlot` window uses, for the same reason.
+
+  The filename now carries the BIDS ``run-`` entity, so the blocks of a
+  :meth:`~mne_rt.RTStream.run_blocks` session each get their own report instead
+  of overwriting one another; pass ``run=`` to name one explicitly. The
+  combined trace — the signal the subject actually saw when a combiner is used —
+  is plotted, having previously been dropped.
+
+  Sections whose data a session does not have are omitted, so a plain
+  sensor-space run produces a shorter report rather than empty panels.
+
 - **The neurofeedback loop can now read an experiment's markers, and gate
   feedback on them.** :meth:`~mne_rt.RTStream.record_main` had no event
   awareness at all: a saved session could not say which windows were task and
@@ -156,6 +192,26 @@ Bug fixes
   outlet's own dtype. The tests mocked the LSL backend, and a mock accepts a
   list, so nothing caught it; they now assert the type of the pushed sample,
   and one test pushes through a real outlet.
+- **:meth:`~mne_rt.RTStream.create_report` raised on a baseline-only session.**
+  It read ``self.modality``, which is assigned only inside
+  :meth:`~mne_rt.RTStream.record_main`, so building a report after recording
+  just a baseline died with ``AttributeError`` — despite the docstring and the
+  1.0.2 changelog entry both promising a ``RuntimeError``. It now raises the
+  documented error, naming ``record_baseline``. The CLI had been hiding this
+  behind a bare ``except Exception``.
+- **:meth:`~mne_rt.RTStream.create_report` raised for MEG sessions.**
+  ``include_psd=True`` passed a single Matplotlib axes to the spectrum plot,
+  which needs one per channel type — so any MEG session, with both
+  magnetometers and gradiometers, failed with ``axes must be an array-like of
+  length 2``.
+- **Fifty lines of :meth:`~mne_rt.RTStream.create_report` were dead code.** The
+  sensor-layout and glass-brain block sat inside a bare triple-quoted string, so
+  it never ran, while the docstring advertised exactly that content — and a
+  1.2.0 instanced-naming fix was applied inside it. It referenced the
+  ``brain_label_1``/``brain_label_2`` keys deprecated in 1.2.0 and could not
+  render the ROI lists ``source_connectivity`` now accepts. The source-space
+  configuration is now reported as a table, which also means the report no
+  longer needs the optional 3-D visualisation dependencies.
 - **Every :class:`~mne_rt.RTEpochs` epoch carried a trailing all-zero sample.**
   The epoch buffer was sized as ``round((tmax - tmin) * sfreq) + 1``, but
   mne-lsl produces ``ceil((tmax - tmin) * sfreq)`` samples with

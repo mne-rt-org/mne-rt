@@ -366,6 +366,66 @@ boundary here since ``proto`` is a :class:`~mne_rt.protocols.ZScoreProtocol`
 
 ----
 
+The Session Report
+------------------
+
+:meth:`~mne_rt.RTStream.create_report` writes a self-contained HTML file under
+``<subject_dir>/reports/``, meant to be read after the participant has gone
+home::
+
+    nf.create_report(open_browser=True)
+
+It is organised into sections, and a section whose data the session does not
+have is simply omitted:
+
+.. list-table::
+   :header-rows: 1
+   :widths: 22 78
+
+   * - Section
+     - What it answers
+   * - **Summary**
+     - Who, when, how long, which modalities, which window and hop, how much
+       was dropped. Rendered from the same ``meta`` block
+       :meth:`~mne_rt.RTStream.save` writes into the JSON, so the report and
+       the saved record cannot disagree.
+   * - **Neurofeedback**
+     - The feature traces on a real time axis, with the gated conditions
+       shaded and the rewarded windows marked. This is where you see whether
+       the participant's signal actually moved.
+   * - **Markers**
+     - Every marker as received, plus how the windows split across conditions.
+   * - **Quality**
+     - Artifact rate, dropped windows, SNR, and per-window latency against the
+       hop — the "is this session usable?" panel.
+   * - **Source space**
+     - Which ROIs, atlas and inverse method each source modality ran with.
+   * - **Baseline**
+     - The resting recording and its spectrum.
+   * - **Data dictionary**
+     - Every saved column, described.
+
+Two things the report will tell you loudly, because neither is visible from
+the traces alone. If **the gate never opened** — every window fell outside
+``gate_conditions``, so the participant received no feedback for the whole run
+— the report says so in red rather than looking like a healthy session. And if
+**feature computation exceeded the hop**, so the loop could not keep up and the
+feedback lagged behind the participant, the latency panel flags it.
+
+The x-axis comes from the recorded window onsets, which is what makes a trace
+alignable against a stimulus log. If a session has no onsets, the report falls
+back to the nominal ``index × hop`` grid and says so in the caption — the
+acquisition loop drifts away from that grid, so the two are not interchangeable.
+
+For a :meth:`~mne_rt.RTStream.run_blocks` session, call ``create_report`` after
+each block, or pass ``run=`` to name one:
+
+.. code-block:: python
+
+    nf.create_report(run=2)      # -> ..._task-neurofeedback_run-02_report.html
+
+----
+
 Multi-Session Protocols
 -----------------------
 

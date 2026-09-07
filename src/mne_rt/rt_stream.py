@@ -66,7 +66,6 @@ from mne_rt.tools import (
     _compute_inv_operator,
     create_blink_template,
     get_params,
-    plot_glass_brain,
     remove_blinks_lms,
 )
 from mne_rt.tools.asr import ASRDenoiser
@@ -75,6 +74,10 @@ from mne_rt.tools.gedai import GEDAIDenoiser
 from mne_rt.tools.maxwell import RTMaxwellFilter
 from mne_rt.tools.orica import ORICA
 from mne_rt.viz import BrainPlot, NFPlot, RawPlot, TopomapPlot
+
+# The report's axis labels come from the same tables the live NF window uses, so
+# the two cannot describe the same modality differently.
+from mne_rt.viz.nf_plot import _label_for, _unit_for
 
 # Package root — resolves correctly both in editable installs and installed wheels
 _PKG_DIR = Path(__file__).resolve().parent
@@ -2820,6 +2823,11 @@ class RTStream(ModalityMixin):
         self.nf_data = nf_data
         self.reward_data = reward_data
         self._zscore_normalize = zscore_normalize
+        # The protocol objects themselves, not just their rewards: `create_report`
+        # needs `current_threshold` to say what the rewards were judged against,
+        # and it is unrecoverable once this frame goes away.
+        self._protocols = _proto_map
+        self._combined_name = combined_name if combiner is not None else None
         # Absolute LSL-clock onsets; `save()` converts to session-relative.
         self.window_onsets = _win_onsets
         self.window_durations = _win_durations
@@ -3828,6 +3836,95 @@ class RTStream(ModalityMixin):
     # Data I/O
     # ------------------------------------------------------------------
 
+    def _session_windows(self, *, with_t0: bool = False):
+        """The per-window table: onsets, durations, and the marker columns.
+
+        The counterpart of :meth:`_session_meta`, and shared for the same
+        reason: :meth:`save` writes this into the JSON and the TSV, and
+        :meth:`create_report` renders the column dictionary from it.  Building
+        it twice is how the two come to describe different tables.
+
+        Kept out of ``data``: everything there is treated as a modality — by
+        ``meta["modalities"]``, ``meta["n_windows"]``, the TSV columns and
+        ``TransferProtocol`` alike.
+        """
+        nf_data = getattr(self, "nf_data", {}) or {}
+        # Truncated to the rows already snapshotted into `data`: the acquisition
+        # thread is a daemon and keeps appending if the Qt window is closed
+        # early, which would otherwise leave onset rows with no features beside
+        # them.
+        n_rows = max((len(v) for v in nf_data.values()), default=0)
+
+        def _take(name):
+            return list(getattr(self, name, []) or [])[:n_rows]
+
+        onsets = _take("window_onsets")
+        finite = [t for t in onsets if np.isfinite(t)]
+        t0 = float(finite[0]) if finite else None
+        windows: dict = {}
+        if t0 is not None:
+            windows = {
+                # Session-relative, so the first window is exactly 0.0.
+                # `None` where the stream had not timestamped the window yet.
+                "onset": [None if not np.isfinite(t) else float(t - t0) for t in onsets],
+                "duration": [float(d) for d in _take("window_durations")],
+                # Absolute, for alignment against a stimulus log without
+                # having to reapply the offset.
+                "onset_lsl": [None if not np.isfinite(t) else float(t) for t in onsets],
+            }
+        # Independent of onset finiteness: a session whose onsets are all
+        # unknown still ran its gate, and losing that record would hide why
+        # the subject received nothing.
+        conditions = _take("window_conditions")
+        if conditions:
+            windows["condition"] = conditions
+            windows["n_markers"] = [int(v) for v in _take("window_marker_counts")]
+            windows["gated"] = [int(v) for v in _take("window_gated")]
+        return (windows, t0) if with_t0 else windows
+
+    def _session_meta(self, *, start_iso: Optional[str] = None) -> dict:
+        """Describe the session that just ran.
+
+        The single source of truth for the ``meta`` block: :meth:`save` writes it
+        into the JSON and :meth:`create_report` renders it into the HTML.  They
+        used to be written independently, which is how a report can end up
+        claiming something the saved record contradicts.
+
+        Every field is read defensively, so this is also callable after a
+        baseline-only session, where most of them do not exist yet.
+        """
+        nf_data = getattr(self, "nf_data", {}) or {}
+        if start_iso is None and hasattr(self, "_session_start_time"):
+            start_iso = self._session_start_time.isoformat()
+        return {
+            "subject_id": self.subject_id,
+            "session": self.session,
+            "data_type": self.data_type,
+            "modalities": list(nf_data.keys()),
+            # Instance name -> base modality, so a reader can group the
+            # bands of one measure without knowing the separator.
+            "modality_bases": {s.name: s.base for s in getattr(self, "_mod_specs", []) or []},
+            "sfreq_hz": float(getattr(self, "_sfreq", 0)),
+            "winsize_s": float(getattr(self, "winsize", 0)),
+            "duration_s": float(getattr(self, "duration", 0)),
+            "n_windows": {m: len(v) for m, v in nf_data.items()},
+            "artifact_correction": str(self.artifact_correction),
+            "artifact_rate": getattr(self, "artifact_rate", None),
+            "hop_s": float(getattr(self, "winsize", 0)) / 2.0,
+            "zscore_normalize": bool(getattr(self, "_zscore_normalize", False)),
+            # Unconditional: when every window is dropped this is the
+            # only durable record of why the session came out empty.
+            "n_short_windows": int(getattr(self, "n_short_windows", 0)),
+            # Same argument as n_short_windows: when the gate never
+            # opened, this is the only durable record of why the subject
+            # received nothing.
+            "gate_conditions": getattr(self, "gate_conditions", None),
+            "n_gated_windows": int(getattr(self, "n_gated_windows", 0)),
+            "marker_id": dict(getattr(self, "marker_id", {}) or {}),
+            "start_time": start_iso,
+            "end_time": datetime.datetime.now(datetime.timezone.utc).isoformat(),
+        }
+
     def save(
         self,
         nf_data: bool = True,
@@ -3961,36 +4058,7 @@ class RTStream(ModalityMixin):
                 else None
             )
             payload: dict = {
-                "meta": {
-                    "subject_id": self.subject_id,
-                    "session": self.session,
-                    "data_type": self.data_type,
-                    "modalities": list(self.nf_data.keys()),
-                    # Instance name -> base modality, so a reader can group the
-                    # bands of one measure without knowing the separator.
-                    "modality_bases": {
-                        s.name: s.base for s in getattr(self, "_mod_specs", []) or []
-                    },
-                    "sfreq_hz": float(getattr(self, "_sfreq", 0)),
-                    "winsize_s": float(getattr(self, "winsize", 0)),
-                    "duration_s": float(getattr(self, "duration", 0)),
-                    "n_windows": {m: len(v) for m, v in self.nf_data.items()},
-                    "artifact_correction": str(self.artifact_correction),
-                    "artifact_rate": getattr(self, "artifact_rate", None),
-                    "hop_s": float(getattr(self, "winsize", 0)) / 2.0,
-                    "zscore_normalize": bool(getattr(self, "_zscore_normalize", False)),
-                    # Unconditional: when every window is dropped this is the
-                    # only durable record of why the session came out empty.
-                    "n_short_windows": int(getattr(self, "n_short_windows", 0)),
-                    # Same argument as n_short_windows: when the gate never
-                    # opened, this is the only durable record of why the subject
-                    # received nothing.
-                    "gate_conditions": getattr(self, "gate_conditions", None),
-                    "n_gated_windows": int(getattr(self, "n_gated_windows", 0)),
-                    "marker_id": dict(getattr(self, "marker_id", {}) or {}),
-                    "start_time": start_iso,
-                    "end_time": datetime.datetime.now(datetime.timezone.utc).isoformat(),
-                },
+                "meta": self._session_meta(start_iso=start_iso),
                 "data": {m: [_ser(v) for v in vals] for m, vals in self.nf_data.items()},
             }
             # Per-window timing, kept out of `data`: everything there is treated
@@ -4000,36 +4068,12 @@ class RTStream(ModalityMixin):
             # acquisition thread is a daemon and keeps appending if the Qt window
             # is closed early, which would otherwise leave onset rows with no
             # feature values beside them.
-            _n_rows = max((len(v) for v in self.nf_data.values()), default=0)
-            _onsets = list(getattr(self, "window_onsets", []) or [])[:_n_rows]
-            _durations = list(getattr(self, "window_durations", []) or [])[:_n_rows]
-            _conditions = list(getattr(self, "window_conditions", []) or [])[:_n_rows]
-            _marker_counts = list(getattr(self, "window_marker_counts", []) or [])[:_n_rows]
-            _gated = list(getattr(self, "window_gated", []) or [])[:_n_rows]
-            _finite = [t for t in _onsets if np.isfinite(t)]
-            _windows: dict = {}
-            if _finite:
-                _t0 = _finite[0]
+            _windows, _t0 = self._session_windows(with_t0=True)
+            if _t0 is not None:
                 payload["meta"]["t0_lsl"] = _t0
                 # The acquisition stream's own LSL clock. With a remote sender and
                 # no clocksync this is the sender's, not this host's.
                 payload["meta"]["clock"] = "lsl_stream_clock"
-                _windows = {
-                    # Session-relative, so the first window is exactly 0.0.
-                    # `None` where the stream had not timestamped the window yet.
-                    "onset": [None if not np.isfinite(t) else _ser(t - _t0) for t in _onsets],
-                    "duration": [_ser(d) for d in _durations],
-                    # Absolute, for alignment against a stimulus log without
-                    # having to reapply the offset.
-                    "onset_lsl": [None if not np.isfinite(t) else _ser(t) for t in _onsets],
-                }
-            # Independent of onset finiteness: a session whose onsets are all
-            # unknown still ran its gate, and losing that record would hide why
-            # the subject received nothing.
-            if _conditions:
-                _windows["condition"] = _conditions
-                _windows["n_markers"] = [int(v) for v in _marker_counts]
-                _windows["gated"] = [int(v) for v in _gated]
             if _windows:
                 payload["windows"] = _windows
             # The markers themselves, as received. Every per-window column above
@@ -4154,33 +4198,284 @@ class RTStream(ModalityMixin):
     # Reporting
     # ------------------------------------------------------------------
 
+    # ── report helpers ───────────────────────────────────────────────────
+
+    @staticmethod
+    def _html_table(rows: list, *, header: Optional[tuple] = None) -> str:
+        """Render ``[(label, value), ...]`` as a plain, readable HTML table."""
+        style = "border-collapse:collapse;margin:0.5em 0;font-size:0.95em"
+        cell = "border:1px solid #ccc;padding:4px 10px"
+        out = [f"<table style='{style}'>"]
+        if header is not None:
+            out.append(
+                "<tr>"
+                + "".join(f"<th style='{cell};text-align:left'>{h}</th>" for h in header)
+                + "</tr>"
+            )
+        for row in rows:
+            out.append(
+                "<tr>"
+                + "".join(f"<td style='{cell}'>{'' if v is None else v}</td>" for v in row)
+                + "</tr>"
+            )
+        out.append("</table>")
+        return "".join(out)
+
+    @staticmethod
+    def _report_note(text: str, *, level: str = "info") -> str:
+        """A coloured callout.  ``level`` is ``"info"``, ``"warn"`` or ``"bad"``."""
+        colours = {
+            "info": ("#eef4fb", "#2f6fad"),
+            "warn": ("#fdf5e3", "#b8860b"),
+            "bad": ("#fdecea", "#c0392b"),
+        }
+        bg, fg = colours.get(level, colours["info"])
+        return (
+            f"<div style='background:{bg};border-left:4px solid {fg};"
+            f"padding:8px 12px;margin:0.6em 0'>{text}</div>"
+        )
+
+    def _report_times(self, n_rows: int) -> tuple:
+        """Session-relative window onsets in seconds, and whether they are real.
+
+        Returns ``(times, is_measured)``.  Real onsets come from
+        :attr:`window_onsets`; the fallback is the nominal ``index * hop`` grid,
+        which the acquisition loop is known to drift away from — so the caption
+        has to say which one the reader is looking at.
+        """
+        onsets = list(getattr(self, "window_onsets", []) or [])[:n_rows]
+        finite = [t for t in onsets if np.isfinite(t)]
+        if finite:
+            # Any finite onset is enough, and individual unknown ones stay NaN
+            # rather than discarding the rest — a window whose onset the stream
+            # had not timestamped yet is routine at session start, and `save()`
+            # keeps the same origin and writes `None` for just that row.
+            t0 = finite[0]
+            return np.asarray([t - t0 for t in onsets], dtype=float), True
+        hop = float(getattr(self, "winsize", 1.0)) / 2.0
+        return np.arange(n_rows, dtype=float) * hop, False
+
+    def _report_condition_spans(self, times: np.ndarray) -> dict:
+        """Contiguous ``{condition: [(start, stop), ...]}`` runs over the session."""
+        conditions = list(getattr(self, "window_conditions", []) or [])[: len(times)]
+        if not conditions or len(times) == 0:
+            return {}
+        # From the configured hop, not from the first two onsets: either of those
+        # may be NaN, which would make every span NaN-wide and silently vanish.
+        hop = float(getattr(self, "winsize", 1.0)) / 2.0 or 1.0
+        spans: dict = {}
+        run_start, run_label = times[0], conditions[0]
+        for i in range(1, len(conditions) + 1):
+            label = conditions[i] if i < len(conditions) else object()
+            if label != run_label:
+                stop = times[i - 1] + hop
+                # A run bounded by a window whose onset is unknown cannot be
+                # drawn; skip it rather than emitting a NaN-wide span.
+                if run_label is not None and np.isfinite(run_start) and np.isfinite(stop):
+                    spans.setdefault(str(run_label), []).append((float(run_start), float(stop)))
+                if i < len(conditions):
+                    run_start, run_label = times[i], label
+        return spans
+
+    def _report_nf_figure(self, modalities: list):
+        """Per-modality traces on a real time axis, with conditions and rewards."""
+        n_rows = max((len(self.nf_data.get(m, [])) for m in modalities), default=0)
+        times, measured = self._report_times(n_rows)
+        spans = self._report_condition_spans(times)
+        gate = getattr(self, "gate_conditions", None) or []
+        rewards = getattr(self, "reward_data", {}) or {}
+        protocols = getattr(self, "_protocols", {}) or {}
+        combined = getattr(self, "_combined_name", None)
+
+        # Shade the gated conditions when there is a gate; otherwise every named
+        # condition, so an ungated but marked session still shows its structure.
+        shade = [c for c in spans if not gate or c in gate]
+        palette = ["#9ecae1", "#a1d99b", "#fdd0a2", "#dadaeb", "#c7e9c0"]
+
+        fig, axes = plt.subplots(
+            len(modalities), 1, figsize=(12, 2.4 * len(modalities)), sharex=True, squeeze=False
+        )
+        for i, mod in enumerate(modalities):
+            ax = axes[i, 0]
+            vals = np.asarray(self.nf_data.get(mod, []), dtype=float)
+            t = times[: len(vals)]
+            for j, condition in enumerate(shade):
+                for k, (lo, hi) in enumerate(spans[condition]):
+                    ax.axvspan(
+                        lo,
+                        hi,
+                        color=palette[j % len(palette)],
+                        alpha=0.35,
+                        lw=0,
+                        label=condition if (j == k == 0 or k == 0) else None,
+                    )
+            ax.plot(t, vals, lw=1.4, color="#31424e", zorder=3)
+
+            # Rewarded windows, from the protocol's own record rather than a
+            # threshold re-applied here — those can disagree for an adaptive one.
+            reward = np.asarray(rewards.get(mod, []), dtype=float)[: len(vals)]
+            if reward.size and np.any(reward > 0):
+                hit = reward > 0
+                ax.plot(
+                    t[: len(hit)][hit],
+                    vals[: len(hit)][hit],
+                    ".",
+                    ms=5,
+                    color="#c0392b",
+                    zorder=4,
+                    label=f"rewarded ({int(hit.sum())}/{len(hit)})",
+                )
+            threshold = getattr(protocols.get(mod), "current_threshold", None)
+            if threshold is not None and np.isfinite(threshold):
+                # A snapshot, not a trace: an adaptive protocol moved during the
+                # run and only its final value survives.
+                ax.axhline(
+                    float(threshold),
+                    ls="--",
+                    lw=1.0,
+                    color="#c0392b",
+                    alpha=0.7,
+                    label="final threshold",
+                )
+
+            # _label_for already appends the instance label, so adding it again
+            # renders "Power (alpha)\n(alpha)".
+            ylabel = _label_for(mod)
+            unit = _unit_for(mod)
+            ax.set_ylabel(f"{ylabel}\n{unit}" if unit else ylabel, fontsize=8)
+            if mod == combined:
+                ax.set_facecolor("#fbfbfd")
+            ax.grid(True, alpha=0.25)
+            handles, labels = ax.get_legend_handles_labels()
+            if handles:
+                seen: dict = {}
+                for h, lbl in zip(handles, labels):
+                    seen.setdefault(lbl, h)
+                ax.legend(seen.values(), seen.keys(), fontsize=7, loc="upper right", ncol=3)
+        axes[-1, 0].set_xlabel("Time from first window (s)" if measured else "Nominal time (s)")
+        fig.tight_layout()
+        return fig, measured
+
+    def _report_marker_figure(self):
+        """Marker raster on the same session-relative axis as the traces."""
+        markers = list(getattr(self, "markers", []) or [])
+        if not markers:
+            return None
+        n_rows = max((len(v) for v in getattr(self, "nf_data", {}).values()), default=0)
+        onsets = [t for t in (getattr(self, "window_onsets", []) or [])[:n_rows] if np.isfinite(t)]
+        if not onsets:
+            # The traces fell back to the nominal grid, which has no relation to
+            # the marker clock. Two axes labelled the same way but anchored
+            # differently is worse than no raster.
+            return None
+        t0 = onsets[0]
+        inverse = {v: k for k, v in (getattr(self, "marker_id", {}) or {}).items()}
+        codes = sorted({int(c) for _, c in markers})
+
+        fig, ax = plt.subplots(figsize=(12, 1.0 + 0.35 * len(codes)))
+        for row, code in enumerate(codes):
+            times = [float(t) - t0 for t, c in markers if int(c) == code]
+            ax.plot(times, [row] * len(times), "|", ms=14, mew=1.6, color="#2f6fad")
+        ax.set_yticks(range(len(codes)))
+        ax.set_yticklabels([f"{inverse.get(c, c)} ({c})" for c in codes], fontsize=8)
+        ax.set_xlabel("Time from first window (s)")
+        ax.set_ylim(-0.6, len(codes) - 0.4)
+        ax.grid(True, axis="x", alpha=0.25)
+        fig.tight_layout()
+        return fig
+
+    def _report_quality_figure(self):
+        """SNR over the session, when it was tracked."""
+        snr = list(getattr(self, "snr_data", []) or [])
+        if not snr:
+            return None
+        times, measured = self._report_times(len(snr))
+        fig, ax = plt.subplots(figsize=(12, 2.4))
+        ax.plot(times[: len(snr)], snr, lw=1.2, color="#2f6fad")
+        ax.set_ylabel("SNR (dB)", fontsize=9)
+        ax.set_xlabel("Time from first window (s)" if measured else "Nominal time (s)")
+        ax.grid(True, alpha=0.25)
+        fig.tight_layout()
+        return fig
+
+    def _report_source_rows(self, modalities: list) -> list:
+        """One row per source-space instance: ROIs, pairs, band, inverse method."""
+        params = getattr(self, "mod_params_dict", {}) or {}
+        rows = []
+        for mod in modalities:
+            base = split_modality(mod)[0]
+            if not base.startswith("source"):
+                continue
+            entry = params.get(mod, {}) or {}
+            rois = entry.get("rois")
+            if isinstance(rois, (list, tuple)):
+                names = []
+                for roi in rois:
+                    names.extend(roi.keys()) if isinstance(roi, dict) else names.append(str(roi))
+                rois = ", ".join(names)
+            pairs = entry.get("pairs") or ([entry["pair"]] if entry.get("pair") else None)
+            frange = entry.get("frange")
+            rows.append(
+                (
+                    mod,
+                    entry.get("atlas") or getattr(self, "source_atlas", None),
+                    entry.get("inverse_method") or entry.get("method"),
+                    f"{frange[0]}–{frange[1]} Hz" if frange else None,
+                    rois,
+                    " ; ".join("↔".join(map(str, p)) for p in pairs) if pairs else None,
+                )
+            )
+        return rows
+
     def create_report(
         self,
         overwrite: bool = True,
         include_psd: bool = True,
         include_nf_signal: bool = True,
         open_browser: bool = False,
+        *,
+        run: Optional[int] = None,
+        include_markers: bool = True,
+        include_quality: bool = True,
+        include_source: bool = True,
+        include_columns: bool = True,
     ) -> Path:
-        """Generate an HTML MNE report for the session.
+        """Generate a self-contained HTML report for the session.
 
-        Produces a self-contained HTML file containing baseline recording
-        info, sensor layouts, optional PSD, feature time-series, and
-        brain-label diagrams for source-space modalities.
+        The report is organised into sections: a session summary, the
+        neurofeedback traces, markers and gating, data quality, the source-space
+        configuration, the baseline recording, and the column dictionary.
+        Sections whose data the session does not have are omitted, so a plain
+        sensor-space run produces a shorter report rather than empty panels.
+
+        The summary is rendered from the same ``meta`` block :meth:`save` writes
+        into the JSON, so the two cannot disagree.
 
         Parameters
         ----------
         overwrite : bool, default True
             Overwrite an existing report file with the same name.
         include_psd : bool, default True
-            If ``True``, add a baseline power-spectral-density plot
-            (1–40 Hz) to the report.
+            Add a baseline power-spectral-density plot (1–40 Hz).
         include_nf_signal : bool, default True
-            If ``True`` and :attr:`nf_data` is populated (i.e.,
-            :meth:`record_main` has been run), add a time-series plot
-            of the NF feature values for each modality.
+            Add the feature time-series, with task-condition shading and the
+            windows that were rewarded.
         open_browser : bool, default False
-            If ``True``, open the saved report in the default web browser
-            immediately after saving.
+            Open the saved report in the default web browser.
+        run : int | None
+            BIDS ``run-`` entity.  Defaults to the run :meth:`record_main`
+            recorded, so the blocks of a :meth:`run_blocks` session each get
+            their own report instead of overwriting one another.
+        include_markers : bool, default True
+            Add the marker raster and the gating summary, if a marker stream was
+            attached.
+        include_quality : bool, default True
+            Add SNR, artifact rate, dropped windows, and the latency summary.
+        include_source : bool, default True
+            Add the ROIs, atlas and inverse method of each source-space
+            modality.
+        include_columns : bool, default True
+            Add the data dictionary describing every saved column.
 
         Returns
         -------
@@ -4192,105 +4487,315 @@ class RTStream(ModalityMixin):
         RuntimeError
             If :meth:`record_baseline` has not been called yet.
         """
+        if getattr(self, "raw_baseline", None) is None:
+            raise RuntimeError(
+                "create_report() needs a baseline recording. Call record_baseline() first."
+            )
         self._ensure_dirs()
+
         # Prefer the parsed specs so the report can never disagree with what
         # the loop actually ran; fall back for a report built without one.
-        modalities = [s.name for s in getattr(self, "_mod_specs", []) or []] or (
-            [self.modality] if isinstance(self.modality, str) else list(self.modality)
-        )
-        report = Report(title=f"Neurofeedback Session — {', '.join(modalities)}")
+        modalities = [s.name for s in getattr(self, "_mod_specs", []) or []] or [
+            m for m in (getattr(self, "nf_data", {}) or {})
+        ]
+        combined = getattr(self, "_combined_name", None)
+        if (
+            combined
+            and combined in (getattr(self, "nf_data", {}) or {})
+            and combined not in modalities
+        ):
+            # The trace the subject actually saw when a combiner is used; it is
+            # not in `_mod_specs`, and leaving it out omits the feedback itself.
+            modalities = modalities + [combined]
+        meta = self._session_meta()
+        title = f"Neurofeedback — sub-{self.subject_id} ses-{self.session}"
+        report = Report(title=title, image_format="png")
 
-        # ── Baseline recording ────────────────────────────────────────────
+        # ── Session summary ──────────────────────────────────────────────
+        gate = meta["gate_conditions"]
+        n_total = int(getattr(self, "n_total_windows", 0))
+        # `n_gated_windows` counts the windows that were gated *out* -- the ones
+        # where feedback was withheld. Reporting it as "in gate" inverts the
+        # headline number, so the split is named once, here.
+        n_withheld = int(meta["n_gated_windows"])
+        n_delivered = max(0, n_total - n_withheld) if n_total else 0
+        summary = [
+            ("Subject", f"sub-{meta['subject_id']}"),
+            ("Session", f"ses-{meta['session']}"),
+            ("Data type", meta["data_type"]),
+            ("Modalities", ", ".join(meta["modalities"]) or "—"),
+            ("Sampling rate", f"{meta['sfreq_hz']:.1f} Hz" if meta["sfreq_hz"] else "—"),
+            (
+                "Window / hop",
+                f"{meta['winsize_s']:.2f} s / {meta['hop_s']:.2f} s" if meta["winsize_s"] else "—",
+            ),
+            ("Duration", f"{meta['duration_s']:.1f} s" if meta["duration_s"] else "—"),
+            ("Windows analysed", n_total or "—"),
+            ("Windows dropped (short)", meta["n_short_windows"]),
+            ("Artifact correction", meta["artifact_correction"]),
+            (
+                "Artifact rate",
+                f"{meta['artifact_rate']:.1%}" if meta["artifact_rate"] is not None else "—",
+            ),
+            ("Z-score normalised", "yes" if meta["zscore_normalize"] else "no"),
+            ("Gate conditions", ", ".join(gate) if gate else "none (ungated)"),
+            ("Windows with feedback", f"{n_delivered} of {n_total}" if gate and n_total else "—"),
+            ("Windows withheld", n_withheld if gate else "—"),
+            ("Started", meta["start_time"] or "—"),
+            ("Ended", meta["end_time"]),
+        ]
+        report.add_html(
+            self._html_table(summary), title="Session summary", section="Summary", tags=("summary",)
+        )
+
+        # ── Neurofeedback traces ─────────────────────────────────────────
+        if include_nf_signal and (getattr(self, "nf_data", None) or None) and modalities:
+            fig_nf, measured = self._report_nf_figure(modalities)
+            caption = (
+                "Time axis from the recorded window onsets."
+                if measured
+                else "No window onsets were recorded, so the time axis is the nominal "
+                "index × hop grid and drifts from real time."
+            )
+            if gate:
+                caption += f" Shaded spans are the gated condition(s): {', '.join(gate)}."
+            report.add_figure(
+                fig=fig_nf,
+                title="Feature time-series",
+                caption=caption,
+                section="Neurofeedback",
+                tags=("neurofeedback",),
+            )
+            plt.close(fig_nf)
+
+        # ── Markers and gating ───────────────────────────────────────────
+        if include_markers and (getattr(self, "markers", None) or meta["gate_conditions"]):
+            notes = []
+            if gate and n_total and n_delivered == 0:
+                notes.append(
+                    self._report_note(
+                        f"<b>No feedback was delivered.</b> Every one of the {n_total} "
+                        f"windows fell outside <code>gate_conditions={gate}</code>. Check "
+                        "that the paradigm publishes the expected codes, and that both "
+                        "streams are clock-synchronised if they come from different hosts.",
+                        level="bad",
+                    )
+                )
+            elif gate and n_total and n_withheld == 0:
+                notes.append(
+                    self._report_note(
+                        "Every window was inside the gate, so gating never suppressed "
+                        "feedback. That is expected only if the task ran continuously.",
+                        level="warn",
+                    )
+                )
+            counts: dict = {}
+            for condition in getattr(self, "window_conditions", []) or []:
+                counts[str(condition)] = counts.get(str(condition), 0) + 1
+            rows = [
+                (
+                    name,
+                    meta["marker_id"].get(name, "—"),
+                    n,
+                    f"{n / max(1, sum(counts.values())):.1%}",
+                    "yes" if (not gate or name in gate) else "no",
+                )
+                for name, n in sorted(counts.items(), key=lambda kv: -kv[1])
+            ]
+            html = "".join(notes)
+            if rows:
+                html += self._html_table(
+                    rows, header=("Condition", "Code", "Windows", "Share", "In gate")
+                )
+            html += self._html_table(
+                [
+                    ("Markers received", len(getattr(self, "markers", []) or [])),
+                    ("Marker codes", ", ".join(f"{k}={v}" for k, v in meta["marker_id"].items())),
+                    ("Windows with feedback", f"{n_delivered} of {n_total or '?'}"),
+                    ("Windows withheld by the gate", n_withheld),
+                ]
+            )
+            report.add_html(html, title="Gating", section="Markers", tags=("markers",))
+            fig_markers = self._report_marker_figure()
+            if fig_markers is not None:
+                report.add_figure(
+                    fig=fig_markers,
+                    title="Marker raster",
+                    caption="Every marker as received, on the analysis time axis.",
+                    section="Markers",
+                    tags=("markers",),
+                )
+                plt.close(fig_markers)
+
+        # ── Data quality ─────────────────────────────────────────────────
+        if include_quality:
+            rows = [
+                ("Windows analysed", n_total or "—"),
+                (
+                    "Artifact-flagged windows",
+                    f"{getattr(self, 'n_artifact_windows', 0)}"
+                    + (f" ({meta['artifact_rate']:.1%})" if meta["artifact_rate"] else ""),
+                ),
+                ("Windows dropped (short)", meta["n_short_windows"]),
+            ]
+            notes = []
+            if meta["n_short_windows"]:
+                notes.append(
+                    self._report_note(
+                        f"{meta['n_short_windows']} window(s) were discarded for arriving "
+                        "short. A non-integral <code>winsize × sfreq</code> drops every "
+                        "window; a few scattered drops are normal.",
+                        level="warn" if n_total else "bad",
+                    )
+                )
+            hop_ms = meta["hop_s"] * 1e3
+            delays = getattr(self, "method_delays", {}) or {}
+            for name, vals in delays.items():
+                if not vals:
+                    continue
+                arr = np.asarray(vals, dtype=float) * 1e3
+                rows.append(
+                    (
+                        f"Latency — {name}",
+                        f"mean {arr.mean():.1f} ms, p95 {np.percentile(arr, 95):.1f} ms",
+                    )
+                )
+            if delays and hop_ms:
+                # p95 of the summed per-window cost. Summing each method's own
+                # p95 assumes they all peak on the same window, which would
+                # raise the alarm on runs that are comfortably inside the hop.
+                traces = [np.asarray(v, dtype=float) for v in delays.values() if v]
+                width = min(len(t) for t in traces)
+                total_p95 = float(
+                    np.percentile(np.sum([t[:width] for t in traces], axis=0) * 1e3, 95)
+                )
+                rows.append(("Latency — total p95", f"{total_p95:.1f} ms of a {hop_ms:.0f} ms hop"))
+                if total_p95 > hop_ms:
+                    notes.append(
+                        self._report_note(
+                            f"Feature computation (p95 {total_p95:.0f} ms) exceeds the "
+                            f"{hop_ms:.0f} ms hop, so the loop cannot keep up and feedback "
+                            "lags behind the subject.",
+                            level="bad",
+                        )
+                    )
+            report.add_html(
+                "".join(notes) + self._html_table(rows),
+                title="Data quality",
+                section="Quality",
+                tags=("quality",),
+            )
+            fig_snr = self._report_quality_figure()
+            if fig_snr is not None:
+                report.add_figure(fig=fig_snr, title="SNR", section="Quality", tags=("quality",))
+                plt.close(fig_snr)
+
+        # ── Source space ─────────────────────────────────────────────────
+        # Tables, not renderings: a 3-D view needs pyvista/vtk, which is an
+        # optional extra, and would make the whole report fail to build without it.
+        if include_source:
+            rows = self._report_source_rows(modalities)
+            if rows:
+                report.add_html(
+                    self._html_table(
+                        rows,
+                        header=("Modality", "Atlas", "Inverse", "Band", "ROIs", "Pairs"),
+                    ),
+                    title="Source-space configuration",
+                    section="Source space",
+                    tags=("source",),
+                )
+
+        # ── Baseline ─────────────────────────────────────────────────────
         report.add_raw(
             self.raw_baseline,
             title="Baseline recording",
             psd=False,
             butterfly=False,
+            tags=("baseline",),
         )
-
-        # ── Baseline PSD ─────────────────────────────────────────────────
         if include_psd:
-            fig_psd, ax_psd = plt.subplots(figsize=(10, 4))
-            self.raw_baseline.compute_psd(fmax=40.0).plot(axes=ax_psd, show=False)
-            ax_psd.set_title("Baseline PSD (1–40 Hz)")
-            report.add_figure(fig=fig_psd, title="Baseline PSD")
+            spectrum = self.raw_baseline.compute_psd(fmax=40.0)
+            # One axes per channel type, counted from the spectrum rather than
+            # from the raw: compute_psd drops ECG, EMG, misc and bad channels,
+            # so deriving the count from the raw over-counts and the plot then
+            # refuses the axes list. MEG legitimately needs two (mag + grad).
+            n_axes = max(1, len(set(spectrum.info.get_channel_types(unique=True))))
+            # constrained_layout, not tight_layout: MNE's PSD plot adds an inset
+            # axes that tight_layout cannot place, and warns about it every time.
+            fig_psd, ax_psd = plt.subplots(
+                n_axes, 1, figsize=(10, 4 * n_axes), layout="constrained"
+            )
+            axes = list(np.atleast_1d(ax_psd))
+            spectrum.plot(axes=axes, show=False)
+            # On the figure, not on the first axes: MNE titles each panel with
+            # its channel type, and overwriting the first leaves an MEG report
+            # with an unlabelled magnetometer panel beside a labelled gradiometer
+            # one. The upper bound is the only one compute_psd was given.
+            fig_psd.suptitle("Baseline PSD (up to 40 Hz)")
+            report.add_figure(
+                fig=fig_psd, title="Baseline PSD", section="Baseline", tags=("baseline",)
+            )
             plt.close(fig_psd)
 
-        # ── Sensor layouts & brain labels per modality ────────────────────
-
-        """
-        source_modalities = {"source_power", "source_connectivity", "source_graph"}
-
-        for mod in modalities:
-            params = self.mod_params_dict.get(mod, {})
-            if split_modality(mod)[0] not in source_modalities:
-                bads = self.picks if self.picks is not None else self.rec_info["ch_names"]
-                self.rec_info["bads"].extend(bads)
-
-                fig = plt.figure(figsize=(10, 5))
-                ax1 = fig.add_subplot(121)
-                ax2 = fig.add_subplot(122, projection="3d")
-                mne.viz.plot_sensors(info=self.rec_info, kind="topomap", axes=ax1, show=False)
-                mne.viz.plot_sensors(info=self.rec_info, kind="3d", axes=ax2, show=False)
-                ax2.axis("off")
-                self.rec_info["bads"] = []
-                report.add_figure(fig=fig, title=f"Sensors — {mod}")
-                plt.close(fig)
-            else:
-                if mod == "source_power":
-                    fig_brain = plot_glass_brain(bl1=params.get("brain_label"))
-                else:
-                    fig_brain = plot_glass_brain(
-                        bl1=params.get("brain_label_1"),
-                        bl2=params.get("brain_label_2"),
-                    )
-                report.add_figure(fig=fig_brain, title=f"Brain labels — {mod}")
-                plt.close(fig_brain)
-        """
-
-        # ── signal time-series ─────────────────────────────────────────
-        if include_nf_signal and hasattr(self, "nf_data") and self.nf_data:
-            fig_nf, axes_nf = plt.subplots(
-                len(modalities),
-                1,
-                figsize=(12, 2.5 * len(modalities)),
-                sharex=True,
-                squeeze=False,
+        # ── Column dictionary ────────────────────────────────────────────
+        if include_columns and (getattr(self, "nf_data", None) or None):
+            columns = describe_nf_columns(
+                nf_data=self.nf_data,
+                # Without `windows`, onset/duration/condition/n_markers/gated are
+                # all absent -- the six columns a reader most needs explained,
+                # and the ones save() does describe in the same sidecar.
+                windows=self._session_windows(),
+                reward=getattr(self, "reward_data", {}) or {},
+                snr=getattr(self, "snr_data", []) or [],
+                meta=meta,
             )
-            for i, mod in enumerate(modalities):
-                vals = self.nf_data.get(mod, [])
-                ax = axes_nf[i, 0]
-                ax.plot(vals, lw=1.5)
-                ax.set_ylabel(mod, fontsize=9)
-                ax.grid(True, alpha=0.3)
-            axes_nf[-1, 0].set_xlabel("Window index")
-            fig_nf.suptitle("feature time-series", fontsize=11)
-            fig_nf.tight_layout()
-            report.add_figure(fig=fig_nf, title="signal")
-            plt.close(fig_nf)
-
-        # ── Summary table ─────────────────────────────────────────────────
-        n_windows = (
-            max(
-                (len(v) for v in self.nf_data.values() if isinstance(v, list)),
-                default=0,
+            # The sidecar also carries scalar session metadata (sfreq_hz and
+            # friends) beside the per-column dicts; only the dicts are columns.
+            rows = [
+                (
+                    name,
+                    entry.get("LongName", ""),
+                    entry.get("Units", ""),
+                    entry.get("Description", ""),
+                )
+                for name, entry in columns.items()
+                if isinstance(entry, dict)
+            ]
+            report.add_html(
+                self._html_table(rows, header=("Column", "Long name", "Units", "Description")),
+                title="Saved columns",
+                section="Data dictionary",
+                tags=("columns",),
             )
-            if hasattr(self, "nf_data")
-            else 0
-        )
-        summary_html = (
-            "<table border='1' cellpadding='4' style='border-collapse:collapse'>"
-            f"<tr><th>Subject</th><td>{self.subject_id}</td></tr>"
-            f"<tr><th>Session</th><td>{self.session}</td></tr>"
-            f"<tr><th>Modalities</th><td>{', '.join(modalities)}</td></tr>"
-            f"<tr><th>NF windows</th><td>{n_windows}</td></tr>"
-            f"<tr><th>Artifact correction</th><td>{self.artifact_correction}</td></tr>"
-            "</table>"
-        )
-        report.add_html(html=summary_html, title="Session summary")
 
-        fname = f"sub-{self.subject_id}_ses-{self.session}_report.html"
-        report_path = self.subject_dir / "reports" / fname
+        # BIDS order puts `run-` after `task-`, and the stem record_main built
+        # already has it — without one, block 2 overwrites block 1's report.
+        if run is not None:
+            # Zero-padded, matching the stem record_main builds, so a report
+            # asked for by number sits beside the beh files of the same run.
+            stem = _build_bids_stem(
+                self.subject_id, self.session, "neurofeedback", f"{int(run):02d}"
+            )
+            # `run_blocks` rebinds nf_data, the onsets and the window counts on
+            # every block, so this object only ever holds the *last* one. Naming
+            # an earlier run would write that block's data under another block's
+            # filename, which is worse than refusing.
+            current = getattr(self, "_session_stem", None)
+            if current is not None and current != stem:
+                raise ValueError(
+                    f"run={run} does not match the run this session last recorded "
+                    f"({current!r}). The stream holds only the most recent run's data, so "
+                    "a report for an earlier one would carry the wrong traces. Call "
+                    "create_report() with no run= for the run just recorded."
+                )
+        else:
+            stem = getattr(
+                self,
+                "_session_stem",
+                _build_bids_stem(self.subject_id, self.session, "neurofeedback", None),
+            )
+        report_path = self.subject_dir / "reports" / f"{stem}_report.html"
         report.save(report_path, overwrite=overwrite, open_browser=open_browser)
         return report_path
 
