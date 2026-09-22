@@ -1,0 +1,54 @@
+name: Bug report
+description: Something in MNE-RT does not work as documented
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for reporting. Please check
+        [SUPPORT.md](https://github.com/mne-rt-org/mne-rt/blob/main/SUPPORT.md)
+        first — `mne-rt demo` answers a lot of installation questions.
+
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: What happened?
+      description: What did you expect, and what did you get instead?
+    validations:
+      required: true
+
+  - type: textarea
+    id: repro
+    attributes:
+      label: Minimal reproducing example
+      description: >-
+        Ideally a script that runs without your hardware, using
+        `connect_to_lsl(mock_lsl=True)` or `connect_to_array(...)`.
+      render: python
+    validations:
+      required: true
+
+  - type: textarea
+    id: traceback
+    attributes:
+      label: Traceback or log output
+      description: >-
+        Paste the full traceback. For non-crashing problems, set
+        `mne_rt.set_log_level("DEBUG")` and paste the relevant log.
+      render: shell
+
+  - type: textarea
+    id: versions
+    attributes:
+      label: Output of `mne-rt info`
+      render: shell
+    validations:
+      required: true
+
+  - type: input
+    id: platform
+    attributes:
+      label: Operating system and Qt binding
+      placeholder: "macOS 15.5, PyQt6"
+    validations:
+      required: true

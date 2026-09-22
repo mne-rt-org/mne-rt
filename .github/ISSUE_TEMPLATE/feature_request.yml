@@ -1,0 +1,48 @@
+name: Feature request
+description: Suggest a modality, protocol, artifact method, display, or other improvement
+labels: ["enhancement"]
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: What problem would this solve?
+      description: >-
+        Describe the experiment or workflow you are trying to run and where
+        MNE-RT gets in the way.
+    validations:
+      required: true
+
+  - type: dropdown
+    id: area
+    attributes:
+      label: Which part of MNE-RT?
+      options:
+        - Feature modality
+        - Reward protocol
+        - Artifact correction
+        - Visualisation window
+        - Source space / anatomy
+        - Acquisition or streaming
+        - Feedback output (LSL / OSC)
+        - Session saving / BIDS
+        - CLI
+        - Documentation
+        - Other / not sure
+    validations:
+      required: true
+
+  - type: textarea
+    id: proposal
+    attributes:
+      label: What would it look like?
+      description: >-
+        A sketch of the API, a reference to a paper or an existing
+        implementation, or just a description — whatever you have.
+
+  - type: textarea
+    id: realtime
+    attributes:
+      label: Real-time constraints
+      description: >-
+        If this runs inside the online loop, roughly how much time per window can
+        it take? Can any of it be precomputed during the baseline phase?

@@ -1,0 +1,11 @@
+blank_issues_enabled: true
+contact_links:
+  - name: Usage question or experiment design
+    url: https://github.com/mne-rt-org/mne-rt/discussions
+    about: Ask here rather than opening an issue.
+  - name: Documentation
+    url: https://mne-rt-org.github.io/mne-rt/
+    about: Tutorials, API reference and the example gallery.
+  - name: General M/EEG analysis questions
+    url: https://mne.discourse.group
+    about: Questions about MNE-Python itself are better answered on the MNE forum.
