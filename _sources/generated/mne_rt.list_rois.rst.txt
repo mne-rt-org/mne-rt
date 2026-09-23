@@ -1,0 +1,6 @@
+﻿mne\_rt.list\_rois
+==================
+
+.. currentmodule:: mne_rt
+
+.. autofunction:: list_rois

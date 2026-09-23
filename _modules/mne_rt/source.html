@@ -1,0 +1,1332 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>mne_rt.source &#8212; MNE-RT</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../_static/styles/theme.css?digest=cb8930eaaf36d9849b67" rel="stylesheet" />
+<link href="../../_static/styles/pydata-sphinx-theme.css?digest=cb8930eaaf36d9849b67" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery.css?v=c83e6b79" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery-binder.css?v=f4aeca0c" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery-dataframe.css?v=2082cf3c" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery-rendered-html.css?v=1277b6f3" />
+    <link rel="stylesheet" type="text/css" href="../../_static/custom.css?v=5bf657dd" />
+  
+  <!-- So that users can add custom icons -->
+  <script defer src="../../_static/scripts/fontawesome.js?digest=cb8930eaaf36d9849b67"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=cb8930eaaf36d9849b67" />
+<link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=cb8930eaaf36d9849b67" />
+
+    <script src="../../_static/documentation_options.js?v=6efca38a"></script>
+    <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="../../_static/sg-tags.js?v=d80f6fa4"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = '_modules/mne_rt/source';</script>
+    <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="" />
+  
+    
+    <script src="../../_static/searchtools.js"></script>
+    <script src="../../_static/language_data.js"></script>
+    <script src="../../searchindex.js"></script>
+  
+  </head>
+  <body data-default-mode="">
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+  
+  
+  
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header id="pst-header" class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../../index.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../../_static/mne_rt_logo.svg" class="logo__image only-light" alt="MNE-RT - Home"/>
+    <img src="../../_static/mne_rt_logo.svg" class="logo__image only-dark pst-js-only" alt="MNE-RT - Home"/>
+  
+  
+</a></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../install.html">
+    Installation
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../tutorial.html">
+    User Guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../api.html">
+    API Reference
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../visualization.html">
+    Visualisation
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../cli.html">
+    CLI
+  </a>
+</li>
+
+            <li class="nav-item dropdown">
+                <button class="btn dropdown-toggle nav-item" type="button"
+                data-bs-toggle="dropdown" aria-expanded="false"
+                aria-controls="pst-nav-more-links">
+                    More
+                </button>
+                <ul id="pst-nav-more-links" class="dropdown-menu">
+                    
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../../denoising.html">
+    Artifact Correction
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../../modalities.html">
+    Real-time Feature Modalities
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../../decoding.html">
+    Real-time Decoding
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../../protocols.html">
+    NF Protocols
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../../whats_new.html">
+    What’s new
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../../auto_examples/index.html">
+    Examples Gallery
+  </a>
+</li>
+
+                </ul>
+            </li>
+            
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+        </div>
+      
+      
+        <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/mne-rt-org/mne-rt" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-square-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
+        </li>
+</ul></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+    </div>
+  
+
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+        
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar hide-on-wide">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../install.html">
+    Installation
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../tutorial.html">
+    User Guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../api.html">
+    API Reference
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../visualization.html">
+    Visualisation
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../cli.html">
+    CLI
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../denoising.html">
+    Artifact Correction
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../modalities.html">
+    Real-time Feature Modalities
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../decoding.html">
+    Real-time Decoding
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../protocols.html">
+    NF Protocols
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../whats_new.html">
+    What’s new
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../auto_examples/index.html">
+    Examples Gallery
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/mne-rt-org/mne-rt" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-square-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
+        </li>
+</ul></div>
+        
+      </div>
+    
+  </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    
+    <li class="breadcrumb-item"><a href="../index.html" class="nav-link">Module code</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">mne_rt.source</span></li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <h1>Source code for mne_rt.source</h1><div class="highlight"><pre>
+<span></span><span class="sd">"""Source-space modelling: ROIs, head models, and cached linear operators.</span>
+
+<span class="sd">This module turns a sensor-space data window into **ROI time courses** in one</span>
+<span class="sd">matrix multiplication.</span>
+
+<span class="sd">The naive route — :func:`~mne.beamformer.apply_lcmv_raw` followed by</span>
+<span class="sd">:func:`~mne.extract_label_time_course` — is far too slow for a closed loop: on a</span>
+<span class="sd">5 mm whole-brain volume source space (14 629 points) the label extraction alone</span>
+<span class="sd">costs 650–800 ms per window, against a typical 500 ms hop. But with</span>
+<span class="sd">``pick_ori="max-power"`` the beamformer is a fixed linear map, and</span>
+<span class="sd">``mode="mean"`` / ``"mean_flip"`` label extraction is a fixed sparse average, so</span>
+<span class="sd">the whole chain collapses to a single ``(n_roi, n_channels)`` matrix that can be</span>
+<span class="sd">built once and applied with a ``~1 ms`` matmul::</span>
+
+<span class="sd">    R = A @ W @ whitener        # built once, in _prep</span>
+<span class="sd">    roi_tc = R @ data           # per window</span>
+
+<span class="sd">:meth:`SourceModel.roi_kernel` builds ``R``; the result is numerically identical</span>
+<span class="sd">to the MNE path (verified to ~1e-15 relative error in the test suite).</span>
+
+<span class="sd">Regions of interest</span>
+<span class="sd">-------------------</span>
+<span class="sd">ROIs are named groups of atlas labels.  A single volumetric atlas —</span>
+<span class="sd">FreeSurfer's ``aparc+aseg`` — carries both cortical parcels</span>
+<span class="sd">(``ctx-lh-parsopercularis``) and subcortical structures (``Left-Hippocampus``),</span>
+<span class="sd">so cortical and subcortical ROIs can live in one volume source space without</span>
+<span class="sd">needing a mixed (surface + volume) model.</span>
+
+<span class="sd">:data:`ROI_ALIASES` gives friendly names for a few common language ROIs; any</span>
+<span class="sd">atlas label name is also accepted directly.</span>
+<span class="sd">"""</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">dataclasses</span><span class="w"> </span><span class="kn">import</span> <span class="n">dataclass</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Sequence</span><span class="p">,</span> <span class="n">Union</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">warnings</span><span class="w"> </span><span class="kn">import</span> <span class="n">warn</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">mne</span><span class="w"> </span><span class="kn">import</span> <span class="n">read_labels_from_annot</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">mne.label</span><span class="w"> </span><span class="kn">import</span> <span class="n">label_sign_flip</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">mne_rt._logging</span><span class="w"> </span><span class="kn">import</span> <span class="n">logger</span>
+
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="s2">"ROI"</span><span class="p">,</span>
+    <span class="s2">"ROI_ALIASES"</span><span class="p">,</span>
+    <span class="s2">"SourceModel"</span><span class="p">,</span>
+    <span class="s2">"list_rois"</span><span class="p">,</span>
+    <span class="s2">"resolve_rois"</span><span class="p">,</span>
+<span class="p">]</span>
+
+
+<span class="c1"># ---------------------------------------------------------------------------</span>
+<span class="c1"># ROI aliases</span>
+<span class="c1"># ---------------------------------------------------------------------------</span>
+
+<span class="c1">#: Friendly ROI names → the atlas labels they are composed of.</span>
+<span class="c1">#:</span>
+<span class="c1">#: These are *conventions*, not settled anatomy — the boundaries of "Broca's</span>
+<span class="c1">#: area" in particular are contested.  Pass explicit atlas label names instead</span>
+<span class="c1">#: if your protocol defines them differently.</span>
+<span class="n">ROI_ALIASES</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="o">...</span><span class="p">]]]</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">"aparc+aseg"</span><span class="p">:</span> <span class="p">{</span>
+        <span class="c1"># Broca ≈ BA44 + BA45 (pars opercularis + pars triangularis)</span>
+        <span class="s2">"Broca"</span><span class="p">:</span> <span class="p">(</span><span class="s2">"ctx-lh-parsopercularis"</span><span class="p">,</span> <span class="s2">"ctx-lh-parstriangularis"</span><span class="p">),</span>
+        <span class="s2">"Broca-rh"</span><span class="p">:</span> <span class="p">(</span><span class="s2">"ctx-rh-parsopercularis"</span><span class="p">,</span> <span class="s2">"ctx-rh-parstriangularis"</span><span class="p">),</span>
+        <span class="c1"># Wernicke ≈ posterior superior temporal / supramarginal</span>
+        <span class="s2">"Wernicke"</span><span class="p">:</span> <span class="p">(</span><span class="s2">"ctx-lh-superiortemporal"</span><span class="p">,</span> <span class="s2">"ctx-lh-supramarginal"</span><span class="p">),</span>
+        <span class="s2">"Wernicke-rh"</span><span class="p">:</span> <span class="p">(</span><span class="s2">"ctx-rh-superiortemporal"</span><span class="p">,</span> <span class="s2">"ctx-rh-supramarginal"</span><span class="p">),</span>
+        <span class="s2">"Hippocampus-lh"</span><span class="p">:</span> <span class="p">(</span><span class="s2">"Left-Hippocampus"</span><span class="p">,),</span>
+        <span class="s2">"Hippocampus-rh"</span><span class="p">:</span> <span class="p">(</span><span class="s2">"Right-Hippocampus"</span><span class="p">,),</span>
+    <span class="p">},</span>
+    <span class="s2">"aparc"</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s2">"Broca"</span><span class="p">:</span> <span class="p">(</span><span class="s2">"parsopercularis-lh"</span><span class="p">,</span> <span class="s2">"parstriangularis-lh"</span><span class="p">),</span>
+        <span class="s2">"Broca-rh"</span><span class="p">:</span> <span class="p">(</span><span class="s2">"parsopercularis-rh"</span><span class="p">,</span> <span class="s2">"parstriangularis-rh"</span><span class="p">),</span>
+        <span class="s2">"Wernicke"</span><span class="p">:</span> <span class="p">(</span><span class="s2">"superiortemporal-lh"</span><span class="p">,</span> <span class="s2">"supramarginal-lh"</span><span class="p">),</span>
+        <span class="s2">"Wernicke-rh"</span><span class="p">:</span> <span class="p">(</span><span class="s2">"superiortemporal-rh"</span><span class="p">,</span> <span class="s2">"supramarginal-rh"</span><span class="p">),</span>
+    <span class="p">},</span>
+<span class="p">}</span>
+
+
+<div class="viewcode-block" id="ROI">
+<a class="viewcode-back" href="../../generated/mne_rt.ROI.html#mne_rt.ROI">[docs]</a>
+<span class="nd">@dataclass</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">ROI</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""A named region of interest, possibly spanning several atlas labels.</span>
+
+<span class="sd">    Attributes</span>
+<span class="sd">    ----------</span>
+<span class="sd">    name : str</span>
+<span class="sd">        User-facing name, e.g. ``"Broca"``.</span>
+<span class="sd">    members : tuple of str</span>
+<span class="sd">        Atlas label names merged into this ROI.</span>
+<span class="sd">    kind : {"volume", "surface"}</span>
+<span class="sd">        Which kind of source space the labels are defined on.</span>
+<span class="sd">    """</span>
+
+    <span class="n">name</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="n">members</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="o">...</span><span class="p">]</span>
+    <span class="n">kind</span><span class="p">:</span> <span class="nb">str</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>  <span class="c1"># pragma: no cover - cosmetic</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">"&lt;ROI </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">!r}</span><span class="s2"> (</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">kind</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">members</span><span class="p">)</span><span class="si">}</span><span class="s2"> label(s))&gt;"</span></div>
+
+
+
+<span class="c1"># ---------------------------------------------------------------------------</span>
+<span class="c1"># Atlas helpers</span>
+<span class="c1"># ---------------------------------------------------------------------------</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_row_supports</span><span class="p">(</span><span class="n">rows</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""Number of source points each label row actually draws on.</span>
+
+<span class="sd">    Counting *source points* rather than atlas voxels matters for multi-label</span>
+<span class="sd">    ROIs: a label whose voxels all fall outside the source space contributes an</span>
+<span class="sd">    all-zero row, and weighting it by its voxel count would both suppress the</span>
+<span class="sd">    "no source points" warning and scale down the labels that do contribute.</span>
+<span class="sd">    """</span>
+    <span class="k">return</span> <span class="p">{</span><span class="n">name</span><span class="p">:</span> <span class="nb">int</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">count_nonzero</span><span class="p">(</span><span class="n">row</span><span class="p">))</span> <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">rows</span><span class="o">.</span><span class="n">items</span><span class="p">()}</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_with_average_reference</span><span class="p">(</span><span class="n">info</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""Return ``info`` with an average-EEG-reference projection attached.</span>
+
+<span class="sd">    :meth:`~mne_rt.RTStream._prepare_raw_array` applies this projection to every</span>
+<span class="sd">    analysis window, and :func:`~mne.minimum_norm.apply_inverse_raw` requires it</span>
+<span class="sd">    outright. Building the inverse or the beamformer from an ``info`` without it</span>
+<span class="sd">    makes MNE warn that the covariance is adversely affected, and leaves the</span>
+<span class="sd">    whitener inconsistent with the data it is later applied to.</span>
+
+<span class="sd">    Returns the input unchanged when there are no EEG channels, or when the</span>
+<span class="sd">    projection is already present.</span>
+<span class="sd">    """</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">mne.io</span><span class="w"> </span><span class="kn">import</span> <span class="n">RawArray</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">any</span><span class="p">(</span><span class="n">ch</span><span class="p">[</span><span class="s2">"kind"</span><span class="p">]</span> <span class="o">==</span> <span class="mi">2</span> <span class="k">for</span> <span class="n">ch</span> <span class="ow">in</span> <span class="n">info</span><span class="p">[</span><span class="s2">"chs"</span><span class="p">]):</span>  <span class="c1"># 2 = FIFFV_EEG_CH</span>
+        <span class="k">return</span> <span class="n">info</span>
+    <span class="k">if</span> <span class="nb">any</span><span class="p">(</span><span class="n">proj</span><span class="p">[</span><span class="s2">"desc"</span><span class="p">]</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">"Average EEG"</span><span class="p">)</span> <span class="k">for</span> <span class="n">proj</span> <span class="ow">in</span> <span class="n">info</span><span class="p">[</span><span class="s2">"projs"</span><span class="p">]):</span>
+        <span class="k">return</span> <span class="n">info</span>
+    <span class="n">raw</span> <span class="o">=</span> <span class="n">RawArray</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">info</span><span class="p">[</span><span class="s2">"nchan"</span><span class="p">],</span> <span class="mi">1</span><span class="p">)),</span> <span class="n">info</span><span class="o">.</span><span class="n">copy</span><span class="p">(),</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">raw</span><span class="o">.</span><span class="n">set_eeg_reference</span><span class="p">(</span><span class="s2">"average"</span><span class="p">,</span> <span class="n">projection</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">raw</span><span class="o">.</span><span class="n">info</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_is_volume_atlas</span><span class="p">(</span><span class="n">atlas</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""Volumetric atlases are ``.mgz`` volumes; surface ones are annot names."""</span>
+    <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="n">atlas</span><span class="p">)</span><span class="o">.</span><span class="n">endswith</span><span class="p">((</span><span class="s2">".mgz"</span><span class="p">,</span> <span class="s2">".mgh"</span><span class="p">))</span> <span class="ow">or</span> <span class="s2">"aseg"</span> <span class="ow">in</span> <span class="nb">str</span><span class="p">(</span><span class="n">atlas</span><span class="p">)</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_volume_atlas_path</span><span class="p">(</span><span class="n">atlas</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">subject</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">subjects_dir</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Path</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""Resolve a volumetric atlas name to a file under ``&lt;subject&gt;/mri/``."""</span>
+    <span class="n">atlas</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">atlas</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">atlas</span><span class="o">.</span><span class="n">endswith</span><span class="p">((</span><span class="s2">".mgz"</span><span class="p">,</span> <span class="s2">".mgh"</span><span class="p">))</span> <span class="ow">and</span> <span class="n">Path</span><span class="p">(</span><span class="n">atlas</span><span class="p">)</span><span class="o">.</span><span class="n">is_file</span><span class="p">():</span>
+        <span class="k">return</span> <span class="n">Path</span><span class="p">(</span><span class="n">atlas</span><span class="p">)</span>
+    <span class="n">stem</span> <span class="o">=</span> <span class="n">atlas</span><span class="p">[:</span><span class="o">-</span><span class="mi">4</span><span class="p">]</span> <span class="k">if</span> <span class="n">atlas</span><span class="o">.</span><span class="n">endswith</span><span class="p">((</span><span class="s2">".mgz"</span><span class="p">,</span> <span class="s2">".mgh"</span><span class="p">))</span> <span class="k">else</span> <span class="n">atlas</span>
+    <span class="k">if</span> <span class="n">subjects_dir</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">"`subjects_dir` is required to locate the volumetric atlas </span><span class="si">{</span><span class="n">atlas</span><span class="si">!r}</span><span class="s2">. "</span>
+            <span class="s2">"Pass subjects_fs_dir=... (or an absolute path to the .mgz)."</span>
+        <span class="p">)</span>
+    <span class="n">path</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">subjects_dir</span><span class="p">)</span> <span class="o">/</span> <span class="n">subject</span> <span class="o">/</span> <span class="s2">"mri"</span> <span class="o">/</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">stem</span><span class="si">}</span><span class="s2">.mgz"</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">path</span><span class="o">.</span><span class="n">is_file</span><span class="p">():</span>
+        <span class="k">raise</span> <span class="ne">FileNotFoundError</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">"Volumetric atlas </span><span class="si">{</span><span class="n">stem</span><span class="si">!r}</span><span class="s2"> not found for subject </span><span class="si">{</span><span class="n">subject</span><span class="si">!r}</span><span class="s2">: </span><span class="si">{</span><span class="n">path</span><span class="si">}</span><span class="s2"> "</span>
+            <span class="s2">"does not exist. FreeSurfer ships 'aseg' and 'aparc+aseg'."</span>
+        <span class="p">)</span>
+    <span class="k">return</span> <span class="n">path</span>
+
+
+<div class="viewcode-block" id="list_rois">
+<a class="viewcode-back" href="../../generated/mne_rt.list_rois.html#mne_rt.list_rois">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">list_rois</span><span class="p">(</span><span class="o">*</span><span class="p">,</span> <span class="n">atlas</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">subject</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">"fsaverage"</span><span class="p">,</span> <span class="n">subjects_dir</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">"""List every label name available in an atlas, plus any aliases.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    atlas : str</span>
+<span class="sd">        Volumetric atlas stem (e.g. ``"aparc+aseg"``) or surface annotation</span>
+<span class="sd">        name (e.g. ``"aparc"``).</span>
+<span class="sd">    subject : str</span>
+<span class="sd">        FreeSurfer subject identifier.</span>
+<span class="sd">    subjects_dir : path-like | None</span>
+<span class="sd">        FreeSurfer subjects directory.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    names : list of str</span>
+<span class="sd">        Sorted label names.  Alias names from :data:`ROI_ALIASES` are listed</span>
+<span class="sd">        first so they are easy to spot.</span>
+<span class="sd">    """</span>
+    <span class="n">aliases</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">ROI_ALIASES</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">atlas</span><span class="p">),</span> <span class="p">{}))</span>
+    <span class="k">return</span> <span class="n">aliases</span> <span class="o">+</span> <span class="nb">sorted</span><span class="p">(</span>
+        <span class="n">_atlas_label_names</span><span class="p">(</span><span class="n">atlas</span><span class="o">=</span><span class="n">atlas</span><span class="p">,</span> <span class="n">subject</span><span class="o">=</span><span class="n">subject</span><span class="p">,</span> <span class="n">subjects_dir</span><span class="o">=</span><span class="n">subjects_dir</span><span class="p">)</span>
+    <span class="p">)</span></div>
+
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_atlas_label_names</span><span class="p">(</span><span class="o">*</span><span class="p">,</span> <span class="n">atlas</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">subject</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">subjects_dir</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">"""The atlas's own label names, without the convenience aliases."""</span>
+    <span class="k">if</span> <span class="n">_is_volume_atlas</span><span class="p">(</span><span class="n">atlas</span><span class="p">):</span>
+        <span class="kn">import</span><span class="w"> </span><span class="nn">mne</span>
+
+        <span class="n">path</span> <span class="o">=</span> <span class="n">_volume_atlas_path</span><span class="p">(</span><span class="n">atlas</span><span class="p">,</span> <span class="n">subject</span><span class="p">,</span> <span class="n">subjects_dir</span><span class="p">)</span>
+        <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="n">mne</span><span class="o">.</span><span class="n">get_volume_labels_from_aseg</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">path</span><span class="p">)))</span>
+    <span class="k">return</span> <span class="p">[</span>
+        <span class="n">label</span><span class="o">.</span><span class="n">name</span>
+        <span class="k">for</span> <span class="n">label</span> <span class="ow">in</span> <span class="n">read_labels_from_annot</span><span class="p">(</span>
+            <span class="n">subject</span><span class="o">=</span><span class="n">subject</span><span class="p">,</span> <span class="n">parc</span><span class="o">=</span><span class="n">atlas</span><span class="p">,</span> <span class="n">subjects_dir</span><span class="o">=</span><span class="n">subjects_dir</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span>
+        <span class="p">)</span>
+    <span class="p">]</span>
+
+
+<div class="viewcode-block" id="resolve_rois">
+<a class="viewcode-back" href="../../generated/mne_rt.resolve_rois.html#mne_rt.resolve_rois">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">resolve_rois</span><span class="p">(</span>
+    <span class="n">names</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Sequence</span><span class="p">],</span>
+    <span class="o">*</span><span class="p">,</span>
+    <span class="n">atlas</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="n">subject</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">"fsaverage"</span><span class="p">,</span>
+    <span class="n">subjects_dir</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">ROI</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">"""Resolve ROI names (or aliases, or explicit label groups) into :class:`ROI` objects.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    names : str | sequence</span>
+<span class="sd">        Each entry may be:</span>
+
+<span class="sd">        * an alias from :data:`ROI_ALIASES` (e.g. ``"Broca"``),</span>
+<span class="sd">        * a bare atlas label name (e.g. ``"Left-Hippocampus"``),</span>
+<span class="sd">        * a ``{name: [label, ...]}`` mapping, or a ``(name, [label, ...])``</span>
+<span class="sd">          pair, to define an ROI explicitly.</span>
+<span class="sd">    atlas : str</span>
+<span class="sd">        Volumetric atlas stem or surface annotation name.</span>
+<span class="sd">    subject : str</span>
+<span class="sd">        FreeSurfer subject identifier.</span>
+<span class="sd">    subjects_dir : path-like | None</span>
+<span class="sd">        FreeSurfer subjects directory.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    rois : list of ROI</span>
+
+<span class="sd">    Raises</span>
+<span class="sd">    ------</span>
+<span class="sd">    ValueError</span>
+<span class="sd">        If a label name is not present in the atlas.  The message lists close</span>
+<span class="sd">        matches to make typos easy to spot.</span>
+<span class="sd">    """</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">names</span><span class="p">,</span> <span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="nb">dict</span><span class="p">)):</span>
+        <span class="n">names</span> <span class="o">=</span> <span class="p">[</span><span class="n">names</span><span class="p">]</span>
+
+    <span class="n">kind</span> <span class="o">=</span> <span class="s2">"volume"</span> <span class="k">if</span> <span class="n">_is_volume_atlas</span><span class="p">(</span><span class="n">atlas</span><span class="p">)</span> <span class="k">else</span> <span class="s2">"surface"</span>
+    <span class="c1"># Validate against the atlas's own labels, not list_rois() — that also</span>
+    <span class="c1"># includes the alias names, which are not labels and would let an alias</span>
+    <span class="c1"># used inside an explicit mapping pass here and fail later in the label</span>
+    <span class="c1"># operator with a bare KeyError.</span>
+    <span class="n">available</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">_atlas_label_names</span><span class="p">(</span><span class="n">atlas</span><span class="o">=</span><span class="n">atlas</span><span class="p">,</span> <span class="n">subject</span><span class="o">=</span><span class="n">subject</span><span class="p">,</span> <span class="n">subjects_dir</span><span class="o">=</span><span class="n">subjects_dir</span><span class="p">))</span>
+    <span class="n">alias_table</span> <span class="o">=</span> <span class="n">ROI_ALIASES</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">atlas</span><span class="p">),</span> <span class="p">{})</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_expand</span><span class="p">(</span><span class="n">member</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""Aliases are usable wherever a label name is, including in mappings."""</span>
+        <span class="k">return</span> <span class="n">alias_table</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">member</span><span class="p">),</span> <span class="p">(</span><span class="n">member</span><span class="p">,))</span>
+
+    <span class="n">rois</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">ROI</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">entry</span> <span class="ow">in</span> <span class="n">names</span><span class="p">:</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">entry</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
+            <span class="n">items</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">entry</span><span class="o">.</span><span class="n">items</span><span class="p">())</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">entry</span><span class="p">,</span> <span class="p">(</span><span class="nb">tuple</span><span class="p">,</span> <span class="nb">list</span><span class="p">))</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">entry</span><span class="p">)</span> <span class="o">==</span> <span class="mi">2</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">entry</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="nb">str</span><span class="p">):</span>
+            <span class="n">items</span> <span class="o">=</span> <span class="p">[(</span><span class="n">entry</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">entry</span><span class="p">[</span><span class="mi">1</span><span class="p">])]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">name</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">entry</span><span class="p">)</span>
+            <span class="n">items</span> <span class="o">=</span> <span class="p">[(</span><span class="n">name</span><span class="p">,</span> <span class="n">alias_table</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="p">(</span><span class="n">name</span><span class="p">,)))]</span>
+
+        <span class="k">for</span> <span class="n">roi_name</span><span class="p">,</span> <span class="n">members</span> <span class="ow">in</span> <span class="n">items</span><span class="p">:</span>
+            <span class="n">members</span> <span class="o">=</span> <span class="p">(</span><span class="n">members</span><span class="p">,)</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">members</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="k">else</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">members</span><span class="p">)</span>
+            <span class="n">members</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">label</span> <span class="k">for</span> <span class="n">member</span> <span class="ow">in</span> <span class="n">members</span> <span class="k">for</span> <span class="n">label</span> <span class="ow">in</span> <span class="n">_expand</span><span class="p">(</span><span class="n">member</span><span class="p">))</span>
+            <span class="n">missing</span> <span class="o">=</span> <span class="p">[</span><span class="n">m</span> <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="n">members</span> <span class="k">if</span> <span class="n">m</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">available</span><span class="p">]</span>
+            <span class="k">if</span> <span class="n">missing</span><span class="p">:</span>
+                <span class="n">hints</span> <span class="o">=</span> <span class="p">[</span>
+                    <span class="n">a</span> <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">available</span><span class="p">)</span> <span class="k">if</span> <span class="nb">any</span><span class="p">(</span><span class="n">m</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="ow">in</span> <span class="n">a</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="n">missing</span><span class="p">)</span>
+                <span class="p">]</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">"ROI </span><span class="si">{</span><span class="n">roi_name</span><span class="si">!r}</span><span class="s2">: label(s) </span><span class="si">{</span><span class="n">missing</span><span class="si">}</span><span class="s2"> not found in atlas </span><span class="si">{</span><span class="n">atlas</span><span class="si">!r}</span><span class="s2"> "</span>
+                    <span class="sa">f</span><span class="s2">"for subject </span><span class="si">{</span><span class="n">subject</span><span class="si">!r}</span><span class="s2">."</span>
+                    <span class="o">+</span> <span class="p">(</span><span class="sa">f</span><span class="s2">" Did you mean any of </span><span class="si">{</span><span class="n">hints</span><span class="p">[:</span><span class="mi">5</span><span class="p">]</span><span class="si">}</span><span class="s2">?"</span> <span class="k">if</span> <span class="n">hints</span> <span class="k">else</span> <span class="s2">""</span><span class="p">)</span>
+                    <span class="o">+</span> <span class="s2">" Use mne_rt.source.list_rois() to see what is available."</span>
+                <span class="p">)</span>
+            <span class="n">rois</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ROI</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">roi_name</span><span class="p">),</span> <span class="n">members</span><span class="o">=</span><span class="n">members</span><span class="p">,</span> <span class="n">kind</span><span class="o">=</span><span class="n">kind</span><span class="p">))</span>
+
+    <span class="n">seen</span> <span class="o">=</span> <span class="p">[</span><span class="n">r</span><span class="o">.</span><span class="n">name</span> <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">rois</span><span class="p">]</span>
+    <span class="n">duplicates</span> <span class="o">=</span> <span class="p">{</span><span class="n">n</span> <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">seen</span> <span class="k">if</span> <span class="n">seen</span><span class="o">.</span><span class="n">count</span><span class="p">(</span><span class="n">n</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">}</span>
+    <span class="k">if</span> <span class="n">duplicates</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Duplicate ROI name(s): </span><span class="si">{</span><span class="nb">sorted</span><span class="p">(</span><span class="n">duplicates</span><span class="p">)</span><span class="si">}</span><span class="s2">."</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">rois</span></div>
+
+
+
+<span class="c1"># ---------------------------------------------------------------------------</span>
+<span class="c1"># SourceModel</span>
+<span class="c1"># ---------------------------------------------------------------------------</span>
+
+
+<div class="viewcode-block" id="SourceModel">
+<a class="viewcode-back" href="../../generated/mne_rt.SourceModel.html#mne_rt.SourceModel">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">SourceModel</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""Sensor data → ROI time courses, via one cached linear operator.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    src : instance of SourceSpaces</span>
+<span class="sd">        The source space the inverse/beamformer was built on.  Needed to map</span>
+<span class="sd">        atlas labels onto source-estimate rows.</span>
+<span class="sd">    atlas : str</span>
+<span class="sd">        Volumetric atlas stem (``"aparc+aseg"``) or surface annotation name</span>
+<span class="sd">        (``"aparc"``).</span>
+<span class="sd">    subject : str</span>
+<span class="sd">        FreeSurfer subject identifier.</span>
+<span class="sd">    subjects_dir : path-like | None</span>
+<span class="sd">        FreeSurfer subjects directory.</span>
+<span class="sd">    filters : instance of Beamformer | None</span>
+<span class="sd">        Fitted LCMV spatial filter.  Required for the fast kernel path.</span>
+<span class="sd">    inverse : instance of InverseOperator | None</span>
+<span class="sd">        Minimum-norm inverse operator.</span>
+<span class="sd">    inverse_method : str</span>
+<span class="sd">        Minimum-norm method: ``"MNE"``, ``"dSPM"``, ``"sLORETA"`` or</span>
+<span class="sd">        ``"eLORETA"``.</span>
+<span class="sd">    info : instance of Info | None</span>
+<span class="sd">        Measurement info, required to build a cached kernel for the</span>
+<span class="sd">        minimum-norm path (see :meth:`source_operator`).</span>
+<span class="sd">    lambda2 : float</span>
+<span class="sd">        Regularisation for the minimum-norm inverse.</span>
+<span class="sd">    pick_ori : str | None</span>
+<span class="sd">        Source orientation. ``"normal"`` on a surface source space keeps the</span>
+<span class="sd">        solution linear; ``None`` on a volume source space yields a magnitude,</span>
+<span class="sd">        which is *not* linear (see Notes).</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    Both supported inverses are **linear** in the sensor data as long as the</span>
+<span class="sd">    orientation is fixed, which is what makes the cached kernel exact:</span>
+
+<span class="sd">    * LCMV with ``pick_ori="max-power"`` reduces to ``weights @ whitener``.</span>
+<span class="sd">    * A minimum-norm operator with ``pick_ori="normal"`` is recovered by</span>
+<span class="sd">      pushing an identity "recording" through</span>
+<span class="sd">      :func:`~mne.minimum_norm.apply_inverse_raw` — the result *is* the</span>
+<span class="sd">      operator matrix, using only public API.</span>
+
+<span class="sd">    Free-orientation solutions (LCMV with ``pick_ori=None``/``"vector"``, or a</span>
+<span class="sd">    minimum-norm estimate on a volume source space) combine three orientations</span>
+<span class="sd">    by norm. That is non-linear and discards phase, which would make imaginary</span>
+<span class="sd">    coherence meaningless, so those configurations report</span>
+<span class="sd">    ``supports_kernel = False`` and refuse the kernel rather than silently</span>
+<span class="sd">    returning a plausible-looking number.</span>
+<span class="sd">    """</span>
+
+<div class="viewcode-block" id="SourceModel.__init__">
+<a class="viewcode-back" href="../../generated/mne_rt.SourceModel.html#mne_rt.SourceModel.__init__">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="o">*</span><span class="p">,</span>
+        <span class="n">src</span><span class="p">,</span>
+        <span class="n">atlas</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">subject</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">"fsaverage"</span><span class="p">,</span>
+        <span class="n">subjects_dir</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">filters</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">inverse</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">inverse_method</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">"dSPM"</span><span class="p">,</span>
+        <span class="n">info</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">lambda2</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1.0</span> <span class="o">/</span> <span class="mf">9.0</span><span class="p">,</span>
+        <span class="n">pick_ori</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s2">"normal"</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">src</span> <span class="o">=</span> <span class="n">src</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">atlas</span> <span class="o">=</span> <span class="n">atlas</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">subject</span> <span class="o">=</span> <span class="n">subject</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">subjects_dir</span> <span class="o">=</span> <span class="n">subjects_dir</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">filters</span> <span class="o">=</span> <span class="n">filters</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">inverse</span> <span class="o">=</span> <span class="n">inverse</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">inverse_method</span> <span class="o">=</span> <span class="n">inverse_method</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">info</span> <span class="o">=</span> <span class="n">info</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">lambda2</span> <span class="o">=</span> <span class="n">lambda2</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pick_ori</span> <span class="o">=</span> <span class="n">pick_ori</span>
+
+        <span class="k">if</span> <span class="n">filters</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">inverse</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"SourceModel needs either `filters` (LCMV) or `inverse` (min-norm)."</span><span class="p">)</span></div>
+
+
+    <span class="c1"># -- introspection --------------------------------------------------</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">kind</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""``"volume"`` or ``"surface"``, taken from the source space."""</span>
+        <span class="k">return</span> <span class="s2">"volume"</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">src</span><span class="o">.</span><span class="n">kind</span> <span class="o">==</span> <span class="s2">"volume"</span> <span class="k">else</span> <span class="s2">"surface"</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">n_sources</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+        <span class="k">return</span> <span class="nb">int</span><span class="p">(</span><span class="nb">sum</span><span class="p">(</span><span class="n">s</span><span class="p">[</span><span class="s2">"nuse"</span><span class="p">]</span> <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">src</span><span class="p">))</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">channel_names</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Channels the operator expects, in the order its columns are in.</span>
+
+<span class="sd">        This is **not** necessarily the recording's channel list: building a</span>
+<span class="sd">        forward model drops EEG channels with no digitised position, and</span>
+<span class="sd">        ``make_lcmv``/``make_inverse_operator`` additionally drop</span>
+<span class="sd">        ``info["bads"]``.  :func:`~mne.beamformer.apply_lcmv_raw` handles this</span>
+<span class="sd">        internally by selecting channels from the data; the cached-kernel path</span>
+<span class="sd">        must do the same, or a single bad channel makes every ``kernel @ data``</span>
+<span class="sd">        fail on a shape mismatch — and a same-count reordering would silently</span>
+<span class="sd">        produce wrong ROI time courses.</span>
+<span class="sd">        """</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">filters</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">filters</span><span class="p">[</span><span class="s2">"ch_names"</span><span class="p">])</span>
+        <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">inverse</span><span class="p">[</span><span class="s2">"info"</span><span class="p">][</span><span class="s2">"ch_names"</span><span class="p">])</span>
+
+<div class="viewcode-block" id="SourceModel.channel_picks">
+<a class="viewcode-back" href="../../generated/mne_rt.SourceModel.html#mne_rt.SourceModel.channel_picks">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">channel_picks</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ch_names</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Row indices selecting/reordering ``ch_names`` into operator order."""</span>
+        <span class="n">lookup</span> <span class="o">=</span> <span class="p">{</span><span class="n">name</span><span class="p">:</span> <span class="n">i</span> <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">name</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">ch_names</span><span class="p">)}</span>
+        <span class="n">missing</span> <span class="o">=</span> <span class="p">[</span><span class="n">name</span> <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">channel_names</span> <span class="k">if</span> <span class="n">name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">lookup</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">missing</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">"The source operator expects channel(s) </span><span class="si">{</span><span class="n">missing</span><span class="si">}</span><span class="s2">, which the data does "</span>
+                <span class="s2">"not provide. The recording must contain every channel the forward model "</span>
+                <span class="s2">"was built from."</span>
+            <span class="p">)</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">lookup</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">channel_names</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">int</span><span class="p">)</span></div>
+
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">supports_kernel</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Whether the fast cached-kernel path is available.</span>
+
+<span class="sd">        True when the source estimate is a *linear* function of the sensor data:</span>
+<span class="sd">        an LCMV beamformer with a fixed orientation, or a minimum-norm operator</span>
+<span class="sd">        with ``pick_ori="normal"``. Free-orientation solutions combine three</span>
+<span class="sd">        orientations by norm and are excluded.</span>
+<span class="sd">        """</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">filters</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">filters</span><span class="p">[</span><span class="s2">"is_free_ori"</span><span class="p">]</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">inverse</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">pick_ori</span> <span class="o">==</span> <span class="s2">"normal"</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">info</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>  <span class="c1"># pragma: no cover - cosmetic</span>
+        <span class="n">how</span> <span class="o">=</span> <span class="s2">"LCMV"</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">filters</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">inverse_method</span>
+        <span class="n">fast</span> <span class="o">=</span> <span class="s2">"kernel"</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">supports_kernel</span> <span class="k">else</span> <span class="s2">"fallback"</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">"&lt;SourceModel | </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">kind</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">n_sources</span><span class="si">}</span><span class="s2"> sources, </span><span class="si">{</span><span class="n">how</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="n">fast</span><span class="si">}</span><span class="s2">&gt;"</span>
+
+    <span class="c1"># -- operators ------------------------------------------------------</span>
+
+<div class="viewcode-block" id="SourceModel.source_operator">
+<a class="viewcode-back" href="../../generated/mne_rt.SourceModel.html#mne_rt.SourceModel.source_operator">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">source_operator</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Linear map from sensor data to source time courses, shape ``(n_src, n_ch)``.</span>
+
+<span class="sd">        For LCMV this mirrors what :func:`~mne.beamformer.apply_lcmv_raw` does</span>
+<span class="sd">        internally: whiten (or project) the data, then apply the beamformer</span>
+<span class="sd">        weights.</span>
+
+<span class="sd">        For a minimum-norm operator it recovers the same matrix by pushing an</span>
+<span class="sd">        identity "recording" through :func:`~mne.minimum_norm.apply_inverse_raw`</span>
+<span class="sd">        — the columns of the result are the response to a unit signal on each</span>
+<span class="sd">        channel, i.e. the operator itself. This uses only public API and is</span>
+<span class="sd">        exact for ``"MNE"`` and to floating-point for the noise-normalised</span>
+<span class="sd">        methods.</span>
+<span class="sd">        """</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">supports_kernel</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span>
+                <span class="s2">"A cached source operator requires a source estimate that is linear "</span>
+                <span class="s2">"in the sensor data: an LCMV beamformer with pick_ori='max-power', "</span>
+                <span class="s2">"or a minimum-norm operator with pick_ori='normal' (and `info` set). "</span>
+                <span class="sa">f</span><span class="s2">"This model is </span><span class="si">{</span><span class="bp">self</span><span class="si">!r}</span><span class="s2">. Free-orientation solutions combine three "</span>
+                <span class="s2">"orientations by norm, which discards phase."</span>
+            <span class="p">)</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">filters</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">weights</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">filters</span><span class="p">[</span><span class="s2">"weights"</span><span class="p">]</span>
+            <span class="n">whitener</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">filters</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"whitener"</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">whitener</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">weights</span> <span class="o">@</span> <span class="n">whitener</span>
+            <span class="k">return</span> <span class="n">weights</span> <span class="o">@</span> <span class="bp">self</span><span class="o">.</span><span class="n">filters</span><span class="p">[</span><span class="s2">"proj"</span><span class="p">]</span>
+
+        <span class="kn">import</span><span class="w"> </span><span class="nn">mne</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">mne.io</span><span class="w"> </span><span class="kn">import</span> <span class="n">RawArray</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">mne.minimum_norm</span><span class="w"> </span><span class="kn">import</span> <span class="n">apply_inverse_raw</span>
+
+        <span class="c1"># Restrict to the channels the operator was built on, in its own order.</span>
+        <span class="n">ch_names</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">inverse</span><span class="p">[</span><span class="s2">"info"</span><span class="p">][</span><span class="s2">"ch_names"</span><span class="p">])</span>
+        <span class="n">info</span> <span class="o">=</span> <span class="n">mne</span><span class="o">.</span><span class="n">pick_info</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">info</span><span class="p">,</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="s2">"ch_names"</span><span class="p">]</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">ch</span><span class="p">)</span> <span class="k">for</span> <span class="n">ch</span> <span class="ow">in</span> <span class="n">ch_names</span><span class="p">],</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span>
+        <span class="p">)</span>
+        <span class="n">eye</span> <span class="o">=</span> <span class="n">RawArray</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">eye</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">ch_names</span><span class="p">)),</span> <span class="n">info</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">any</span><span class="p">(</span><span class="n">p</span><span class="p">[</span><span class="s2">"desc"</span><span class="p">]</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">"Average EEG"</span><span class="p">)</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">info</span><span class="p">[</span><span class="s2">"projs"</span><span class="p">]):</span>
+            <span class="c1"># apply_inverse_raw requires an average reference for EEG; the same</span>
+            <span class="c1"># projection is applied to every real window by _prepare_raw_array.</span>
+            <span class="n">eye</span><span class="o">.</span><span class="n">set_eeg_reference</span><span class="p">(</span><span class="s2">"average"</span><span class="p">,</span> <span class="n">projection</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">apply_inverse_raw</span><span class="p">(</span>
+            <span class="n">eye</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">inverse</span><span class="p">,</span>
+            <span class="n">lambda2</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">lambda2</span><span class="p">,</span>
+            <span class="n">method</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">inverse_method</span><span class="p">,</span>
+            <span class="n">pick_ori</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">pick_ori</span><span class="p">,</span>
+            <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="p">)</span><span class="o">.</span><span class="n">data</span></div>
+
+
+<div class="viewcode-block" id="SourceModel.label_operator">
+<a class="viewcode-back" href="../../generated/mne_rt.SourceModel.html#mne_rt.SourceModel.label_operator">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">label_operator</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">rois</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">ROI</span><span class="p">],</span> <span class="o">*</span><span class="p">,</span> <span class="n">mri_resolution</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Sparse-average matrix mapping source points to ROIs, shape ``(n_roi, n_src)``.</span>
+
+<span class="sd">        Equivalent to :func:`~mne.extract_label_time_course` with</span>
+<span class="sd">        ``mode="mean"`` (volume) or ``"mean_flip"`` (surface), but built once</span>
+<span class="sd">        rather than recomputed every window.</span>
+<span class="sd">        """</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">kind</span> <span class="o">==</span> <span class="s2">"volume"</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_volume_label_operator</span><span class="p">(</span><span class="n">rois</span><span class="p">,</span> <span class="n">mri_resolution</span><span class="o">=</span><span class="n">mri_resolution</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_surface_label_operator</span><span class="p">(</span><span class="n">rois</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="SourceModel.roi_kernel">
+<a class="viewcode-back" href="../../generated/mne_rt.SourceModel.html#mne_rt.SourceModel.roi_kernel">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">roi_kernel</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">rois</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">ROI</span><span class="p">],</span> <span class="o">*</span><span class="p">,</span> <span class="n">mri_resolution</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""The full sensor → ROI operator, shape ``(n_roi, n_channels)``.</span>
+
+<span class="sd">        Apply it to a data window with :meth:`apply`, or simply ``kernel @ data``.</span>
+<span class="sd">        """</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">label_operator</span><span class="p">(</span><span class="n">rois</span><span class="p">,</span> <span class="n">mri_resolution</span><span class="o">=</span><span class="n">mri_resolution</span><span class="p">)</span> <span class="o">@</span> <span class="bp">self</span><span class="o">.</span><span class="n">source_operator</span><span class="p">()</span></div>
+
+
+    <span class="c1"># -- application ----------------------------------------------------</span>
+
+<div class="viewcode-block" id="SourceModel.apply">
+<a class="viewcode-back" href="../../generated/mne_rt.SourceModel.html#mne_rt.SourceModel.apply">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">apply</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">data</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
+        <span class="o">*</span><span class="p">,</span>
+        <span class="n">kernel</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">ch_picks</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">label_operator</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">info</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">pick_ori</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Return ROI time courses ``(n_roi, n_times)`` for one data window.</span>
+
+<span class="sd">        Uses ``kernel`` when given — one matmul, and the whole point of this</span>
+<span class="sd">        class.  Otherwise applies the source estimate the slow way and reduces</span>
+<span class="sd">        it with ``label_operator``; correct, but ~two orders of magnitude</span>
+<span class="sd">        slower and unsuitable for a closed loop.</span>
+
+<span class="sd">        Note the label reduction is the *same* matrix either way, so the two</span>
+<span class="sd">        paths agree exactly; only the source step differs.</span>
+<span class="sd">        """</span>
+        <span class="k">if</span> <span class="n">kernel</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">ch_picks</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                    <span class="s2">"`ch_picks` is required with `kernel`, to select the channels the "</span>
+                    <span class="s2">"operator was built from (see SourceModel.channel_picks)."</span>
+                <span class="p">)</span>
+            <span class="k">return</span> <span class="n">kernel</span> <span class="o">@</span> <span class="n">data</span><span class="p">[</span><span class="n">ch_picks</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">label_operator</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"Provide either `kernel` (fast path) or `label_operator`."</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">label_operator</span> <span class="o">@</span> <span class="bp">self</span><span class="o">.</span><span class="n">source_estimate</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">info</span><span class="o">=</span><span class="n">info</span><span class="p">,</span> <span class="n">pick_ori</span><span class="o">=</span><span class="n">pick_ori</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="SourceModel.source_estimate">
+<a class="viewcode-back" href="../../generated/mne_rt.SourceModel.html#mne_rt.SourceModel.source_estimate">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">source_estimate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">info</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">pick_ori</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Source time courses ``(n_src, n_times)`` via the full MNE route."""</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">mne.beamformer</span><span class="w"> </span><span class="kn">import</span> <span class="n">apply_lcmv_raw</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">mne.io</span><span class="w"> </span><span class="kn">import</span> <span class="n">RawArray</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">mne.minimum_norm</span><span class="w"> </span><span class="kn">import</span> <span class="n">apply_inverse_raw</span>
+
+        <span class="n">info</span> <span class="o">=</span> <span class="n">info</span> <span class="k">if</span> <span class="n">info</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">info</span>
+        <span class="k">if</span> <span class="n">info</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"The fallback path needs `info` to wrap the window as a Raw."</span><span class="p">)</span>
+        <span class="n">raw</span> <span class="o">=</span> <span class="n">RawArray</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">info</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="c1"># apply_inverse_raw requires an average EEG reference; this mirrors what</span>
+        <span class="c1"># RTStream._prepare_raw_array applies to every analysis window.</span>
+        <span class="k">if</span> <span class="nb">any</span><span class="p">(</span><span class="n">ch</span><span class="p">[</span><span class="s2">"kind"</span><span class="p">]</span> <span class="o">==</span> <span class="mi">2</span> <span class="k">for</span> <span class="n">ch</span> <span class="ow">in</span> <span class="n">info</span><span class="p">[</span><span class="s2">"chs"</span><span class="p">])</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">any</span><span class="p">(</span>
+            <span class="n">proj</span><span class="p">[</span><span class="s2">"desc"</span><span class="p">]</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">"Average EEG"</span><span class="p">)</span> <span class="k">for</span> <span class="n">proj</span> <span class="ow">in</span> <span class="n">info</span><span class="p">[</span><span class="s2">"projs"</span><span class="p">]</span>
+        <span class="p">):</span>
+            <span class="n">raw</span><span class="o">.</span><span class="n">set_eeg_reference</span><span class="p">(</span><span class="s2">"average"</span><span class="p">,</span> <span class="n">projection</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">filters</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">stc</span> <span class="o">=</span> <span class="n">apply_lcmv_raw</span><span class="p">(</span><span class="n">raw</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">filters</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">stc</span> <span class="o">=</span> <span class="n">apply_inverse_raw</span><span class="p">(</span>
+                <span class="n">raw</span><span class="p">,</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">inverse</span><span class="p">,</span>
+                <span class="n">lambda2</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">lambda2</span><span class="p">,</span>
+                <span class="n">method</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">inverse_method</span><span class="p">,</span>
+                <span class="n">pick_ori</span><span class="o">=</span><span class="n">pick_ori</span> <span class="k">if</span> <span class="n">pick_ori</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">pick_ori</span><span class="p">,</span>
+                <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+            <span class="p">)</span>
+        <span class="k">return</span> <span class="n">stc</span><span class="o">.</span><span class="n">data</span></div>
+
+
+    <span class="c1"># -- internals ------------------------------------------------------</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_volume_label_operator</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">rois</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">mri_resolution</span><span class="p">:</span> <span class="nb">bool</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="kn">from</span><span class="w"> </span><span class="nn">mne.source_estimate</span><span class="w"> </span><span class="kn">import</span> <span class="n">_volume_labels</span>
+        <span class="k">except</span> <span class="ne">ImportError</span> <span class="k">as</span> <span class="n">exc</span><span class="p">:</span>  <span class="c1"># pragma: no cover - depends on MNE internals</span>
+            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span>
+                <span class="s2">"This MNE version does not expose mne.source_estimate._volume_labels, "</span>
+                <span class="s2">"which the cached-kernel path relies on. Use the fallback path."</span>
+            <span class="p">)</span> <span class="kn">from</span><span class="w"> </span><span class="nn">exc</span>
+
+        <span class="n">members</span> <span class="o">=</span> <span class="p">[</span><span class="n">m</span> <span class="k">for</span> <span class="n">roi</span> <span class="ow">in</span> <span class="n">rois</span> <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="n">roi</span><span class="o">.</span><span class="n">members</span><span class="p">]</span>
+        <span class="n">path</span> <span class="o">=</span> <span class="n">_volume_atlas_path</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">atlas</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">subject</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">subjects_dir</span><span class="p">)</span>
+        <span class="n">labels</span> <span class="o">=</span> <span class="n">_volume_labels</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">src</span><span class="p">,</span> <span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">path</span><span class="p">),</span> <span class="n">members</span><span class="p">),</span> <span class="n">mri_resolution</span><span class="o">=</span><span class="n">mri_resolution</span><span class="p">)</span>
+
+        <span class="n">vertno</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">([</span><span class="n">s</span><span class="p">[</span><span class="s2">"vertno"</span><span class="p">]</span> <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">src</span><span class="p">])</span>
+        <span class="n">position</span> <span class="o">=</span> <span class="p">{</span><span class="nb">int</span><span class="p">(</span><span class="n">v</span><span class="p">):</span> <span class="n">i</span> <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">vertno</span><span class="p">)}</span>
+        <span class="n">n_src</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_sources</span>
+
+        <span class="c1"># One row per atlas label, then merge the labels making up each ROI.</span>
+        <span class="n">rows</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="n">label</span> <span class="ow">in</span> <span class="n">labels</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">label</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
+                <span class="c1"># mri_resolution=True: csr maps source points -&gt; the label's MRI</span>
+                <span class="c1"># voxels, so the label mean is the column mean of that matrix.</span>
+                <span class="n">rows</span><span class="p">[</span><span class="n">label</span><span class="p">[</span><span class="s2">"name"</span><span class="p">]]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">label</span><span class="p">[</span><span class="s2">"csr"</span><span class="p">]</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">))</span><span class="o">.</span><span class="n">ravel</span><span class="p">()</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">idx</span> <span class="o">=</span> <span class="p">[</span><span class="n">position</span><span class="p">[</span><span class="nb">int</span><span class="p">(</span><span class="n">v</span><span class="p">)]</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">label</span><span class="o">.</span><span class="n">vertices</span><span class="p">)</span> <span class="k">if</span> <span class="nb">int</span><span class="p">(</span><span class="n">v</span><span class="p">)</span> <span class="ow">in</span> <span class="n">position</span><span class="p">]</span>
+                <span class="n">row</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">n_src</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">idx</span><span class="p">:</span>
+                    <span class="n">row</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span> <span class="o">=</span> <span class="mf">1.0</span> <span class="o">/</span> <span class="nb">len</span><span class="p">(</span><span class="n">idx</span><span class="p">)</span>
+                <span class="n">rows</span><span class="p">[</span><span class="n">label</span><span class="o">.</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">row</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_merge_rows</span><span class="p">(</span><span class="n">rois</span><span class="p">,</span> <span class="n">rows</span><span class="p">,</span> <span class="n">_row_supports</span><span class="p">(</span><span class="n">rows</span><span class="p">),</span> <span class="n">n_src</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_surface_label_operator</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">rois</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+        <span class="n">labels</span> <span class="o">=</span> <span class="n">read_labels_from_annot</span><span class="p">(</span>
+            <span class="n">subject</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">subject</span><span class="p">,</span> <span class="n">parc</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">atlas</span><span class="p">,</span> <span class="n">subjects_dir</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">subjects_dir</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span>
+        <span class="p">)</span>
+        <span class="n">by_name</span> <span class="o">=</span> <span class="p">{</span><span class="n">label</span><span class="o">.</span><span class="n">name</span><span class="p">:</span> <span class="n">label</span> <span class="k">for</span> <span class="n">label</span> <span class="ow">in</span> <span class="n">labels</span><span class="p">}</span>
+
+        <span class="c1"># Row offset of each hemisphere within the stacked source estimate.</span>
+        <span class="n">offsets</span><span class="p">,</span> <span class="n">running</span> <span class="o">=</span> <span class="p">[],</span> <span class="mi">0</span>
+        <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">src</span><span class="p">:</span>
+            <span class="n">offsets</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">running</span><span class="p">)</span>
+            <span class="n">running</span> <span class="o">+=</span> <span class="n">s</span><span class="p">[</span><span class="s2">"nuse"</span><span class="p">]</span>
+        <span class="n">n_src</span> <span class="o">=</span> <span class="n">running</span>
+
+        <span class="n">rows</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="p">{</span><span class="n">m</span> <span class="k">for</span> <span class="n">roi</span> <span class="ow">in</span> <span class="n">rois</span> <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="n">roi</span><span class="o">.</span><span class="n">members</span><span class="p">}:</span>
+            <span class="n">label</span> <span class="o">=</span> <span class="n">by_name</span><span class="p">[</span><span class="n">name</span><span class="p">]</span>
+            <span class="n">hemi</span> <span class="o">=</span> <span class="mi">0</span> <span class="k">if</span> <span class="n">label</span><span class="o">.</span><span class="n">hemi</span> <span class="o">==</span> <span class="s2">"lh"</span> <span class="k">else</span> <span class="mi">1</span>
+            <span class="n">vertno</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">src</span><span class="p">[</span><span class="n">hemi</span><span class="p">][</span><span class="s2">"vertno"</span><span class="p">]</span>
+            <span class="n">_</span><span class="p">,</span> <span class="n">idx</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">intersect1d</span><span class="p">(</span><span class="n">vertno</span><span class="p">,</span> <span class="n">label</span><span class="o">.</span><span class="n">vertices</span><span class="p">,</span> <span class="n">return_indices</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+            <span class="n">row</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">n_src</span><span class="p">)</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">idx</span><span class="p">):</span>
+                <span class="c1"># mean_flip: sign-align vertices before averaging, so that</span>
+                <span class="c1"># opposing dipole orientations do not cancel.</span>
+                <span class="n">flip</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">label_sign_flip</span><span class="p">(</span><span class="n">label</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">src</span><span class="p">))</span><span class="o">.</span><span class="n">ravel</span><span class="p">()</span>
+                <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">flip</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="n">idx</span><span class="p">):</span>
+                    <span class="c1"># Silently falling back to an unsigned mean here would</span>
+                    <span class="c1"># reintroduce exactly the cancellation mean_flip prevents.</span>
+                    <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span>
+                        <span class="sa">f</span><span class="s2">"label_sign_flip returned </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">flip</span><span class="p">)</span><span class="si">}</span><span class="s2"> signs for label </span><span class="si">{</span><span class="n">name</span><span class="si">!r}</span><span class="s2"> but "</span>
+                        <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">idx</span><span class="p">)</span><span class="si">}</span><span class="s2"> of its vertices are in the source space. Refusing to "</span>
+                        <span class="s2">"guess an alignment; use mode='mean' if sign flipping is not wanted."</span>
+                    <span class="p">)</span>
+                <span class="n">row</span><span class="p">[</span><span class="n">offsets</span><span class="p">[</span><span class="n">hemi</span><span class="p">]</span> <span class="o">+</span> <span class="n">idx</span><span class="p">]</span> <span class="o">=</span> <span class="n">flip</span> <span class="o">/</span> <span class="nb">len</span><span class="p">(</span><span class="n">idx</span><span class="p">)</span>
+            <span class="n">rows</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">row</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_merge_rows</span><span class="p">(</span><span class="n">rois</span><span class="p">,</span> <span class="n">rows</span><span class="p">,</span> <span class="n">_row_supports</span><span class="p">(</span><span class="n">rows</span><span class="p">),</span> <span class="n">n_src</span><span class="p">)</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_merge_rows</span><span class="p">(</span><span class="n">rois</span><span class="p">,</span> <span class="n">rows</span><span class="p">,</span> <span class="n">counts</span><span class="p">,</span> <span class="n">n_src</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Combine per-label rows into one row per ROI, weighted by label size."""</span>
+        <span class="n">operator</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="nb">len</span><span class="p">(</span><span class="n">rois</span><span class="p">),</span> <span class="n">n_src</span><span class="p">))</span>
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">roi</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">rois</span><span class="p">):</span>
+            <span class="n">total</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="n">counts</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">m</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span> <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="n">roi</span><span class="o">.</span><span class="n">members</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">total</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">warn</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">"ROI </span><span class="si">{</span><span class="n">roi</span><span class="o">.</span><span class="n">name</span><span class="si">!r}</span><span class="s2"> contains no source points; its time course "</span>
+                    <span class="s2">"will be all zeros. The ROI may be too small for the source-space "</span>
+                    <span class="s2">"spacing, or outside the head model."</span><span class="p">,</span>
+                    <span class="ne">RuntimeWarning</span><span class="p">,</span>
+                    <span class="n">stacklevel</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+                <span class="p">)</span>
+                <span class="k">continue</span>
+            <span class="c1"># Weight each member by how many source points it contributes, so a</span>
+            <span class="c1"># multi-label ROI equals the mean over all its source points.</span>
+            <span class="k">for</span> <span class="n">member</span> <span class="ow">in</span> <span class="n">roi</span><span class="o">.</span><span class="n">members</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">counts</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">member</span><span class="p">,</span> <span class="mi">0</span><span class="p">):</span>
+                    <span class="n">operator</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">+=</span> <span class="n">rows</span><span class="p">[</span><span class="n">member</span><span class="p">]</span> <span class="o">*</span> <span class="p">(</span><span class="n">counts</span><span class="p">[</span><span class="n">member</span><span class="p">]</span> <span class="o">/</span> <span class="n">total</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">operator</span>
+
+    <span class="c1"># -- construction ---------------------------------------------------</span>
+
+<div class="viewcode-block" id="SourceModel.from_stream">
+<a class="viewcode-back" href="../../generated/mne_rt.SourceModel.html#mne_rt.SourceModel.from_stream">[docs]</a>
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">from_stream</span><span class="p">(</span>
+        <span class="bp">cls</span><span class="p">,</span>
+        <span class="n">rt</span><span class="p">,</span>
+        <span class="o">*</span><span class="p">,</span>
+        <span class="n">atlas</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">method</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">"LCMV"</span><span class="p">,</span>
+        <span class="n">reg</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.05</span><span class="p">,</span>
+        <span class="n">pick_ori</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">"max-power"</span><span class="p">,</span>
+        <span class="n">weight_norm</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">"unit-noise-gain"</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">"SourceModel"</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Build a :class:`SourceModel` from a session that has recorded a baseline.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        rt : instance of RTStream</span>
+<span class="sd">            Session with ``src``/``fwd``/``data_cov`` set — i.e. one on which</span>
+<span class="sd">            :meth:`~mne_rt.RTStream.compute_inv_operator` has run, directly or</span>
+<span class="sd">            through the first source modality that needed it.</span>
+<span class="sd">        atlas : str | None</span>
+<span class="sd">            Overrides the session's ``source_atlas``.</span>
+<span class="sd">        method : str</span>
+<span class="sd">            ``"LCMV"`` for the beamformer, or a minimum-norm method name.</span>
+<span class="sd">        reg, pick_ori, weight_norm</span>
+<span class="sd">            Passed to :func:`~mne.beamformer.make_lcmv`.</span>
+<span class="sd">        """</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">mne.beamformer</span><span class="w"> </span><span class="kn">import</span> <span class="n">make_lcmv</span>
+
+        <span class="n">src</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">rt</span><span class="p">,</span> <span class="s2">"src"</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">src</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span>
+                <span class="s2">"No source space on the session. Run record_baseline(), then let a "</span>
+                <span class="s2">"source modality build the head model, or call "</span>
+                <span class="s2">"compute_inv_operator() yourself, before building a SourceModel."</span>
+            <span class="p">)</span>
+        <span class="n">atlas</span> <span class="o">=</span> <span class="n">atlas</span> <span class="k">if</span> <span class="n">atlas</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">rt</span><span class="p">,</span> <span class="s2">"source_atlas"</span><span class="p">,</span> <span class="s2">"aparc"</span><span class="p">)</span>
+        <span class="n">info</span> <span class="o">=</span> <span class="n">_with_average_reference</span><span class="p">(</span><span class="n">rt</span><span class="o">.</span><span class="n">rec_info</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">method</span> <span class="o">==</span> <span class="s2">"LCMV"</span><span class="p">:</span>
+            <span class="n">data_cov</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">rt</span><span class="p">,</span> <span class="s2">"data_cov"</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">data_cov</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span>
+                    <span class="s2">"An LCMV beamformer needs a data covariance. Run record_baseline() "</span>
+                    <span class="s2">"first, or pass data_cov=... to compute_inv_operator()."</span>
+                <span class="p">)</span>
+            <span class="n">filters</span> <span class="o">=</span> <span class="n">make_lcmv</span><span class="p">(</span>
+                <span class="c1"># `info` carries the average-reference projection that</span>
+                <span class="c1"># RTStream._prepare_raw_array applies to every analysis window;</span>
+                <span class="c1"># without it MNE warns that the covariance is adversely affected,</span>
+                <span class="c1"># and the whitener would not match the data it is applied to.</span>
+                <span class="n">info</span><span class="p">,</span>
+                <span class="n">rt</span><span class="o">.</span><span class="n">fwd</span><span class="p">,</span>
+                <span class="n">data_cov</span><span class="p">,</span>  <span class="c1"># data covariance, NOT the noise covariance</span>
+                <span class="n">reg</span><span class="o">=</span><span class="n">reg</span><span class="p">,</span>
+                <span class="n">noise_cov</span><span class="o">=</span><span class="nb">getattr</span><span class="p">(</span><span class="n">rt</span><span class="p">,</span> <span class="s2">"noise_cov"</span><span class="p">,</span> <span class="kc">None</span><span class="p">),</span>
+                <span class="n">pick_ori</span><span class="o">=</span><span class="n">pick_ori</span><span class="p">,</span>
+                <span class="n">weight_norm</span><span class="o">=</span><span class="n">weight_norm</span><span class="p">,</span>
+                <span class="n">rank</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+            <span class="p">)</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">"SourceModel: built LCMV filters (pick_ori=</span><span class="si">%s</span><span class="s2">)."</span><span class="p">,</span> <span class="n">pick_ori</span><span class="p">)</span>
+            <span class="k">return</span> <span class="bp">cls</span><span class="p">(</span>
+                <span class="n">src</span><span class="o">=</span><span class="n">src</span><span class="p">,</span>
+                <span class="n">atlas</span><span class="o">=</span><span class="n">atlas</span><span class="p">,</span>
+                <span class="n">subject</span><span class="o">=</span><span class="n">rt</span><span class="o">.</span><span class="n">subject_fs_id</span><span class="p">,</span>
+                <span class="n">subjects_dir</span><span class="o">=</span><span class="n">rt</span><span class="o">.</span><span class="n">subjects_fs_dir</span><span class="p">,</span>
+                <span class="n">filters</span><span class="o">=</span><span class="n">filters</span><span class="p">,</span>
+                <span class="n">info</span><span class="o">=</span><span class="n">info</span><span class="p">,</span>
+            <span class="p">)</span>
+
+        <span class="n">inverse</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">rt</span><span class="p">,</span> <span class="s2">"inv"</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">inverse</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">"Source method </span><span class="si">{</span><span class="n">method</span><span class="si">!r}</span><span class="s2"> needs a minimum-norm inverse operator, but the "</span>
+                <span class="s2">"session has none. Call compute_inv_operator(make_inverse=True), or use "</span>
+                <span class="s2">"method='LCMV'."</span>
+            <span class="p">)</span>
+        <span class="c1"># A volume source space has no cortical normal, so the estimate is a</span>
+        <span class="c1"># magnitude rather than a signed time course.</span>
+        <span class="n">mn_pick_ori</span> <span class="o">=</span> <span class="s2">"normal"</span> <span class="k">if</span> <span class="n">src</span><span class="o">.</span><span class="n">kind</span> <span class="o">!=</span> <span class="s2">"volume"</span> <span class="k">else</span> <span class="kc">None</span>
+        <span class="k">return</span> <span class="bp">cls</span><span class="p">(</span>
+            <span class="n">src</span><span class="o">=</span><span class="n">src</span><span class="p">,</span>
+            <span class="n">atlas</span><span class="o">=</span><span class="n">atlas</span><span class="p">,</span>
+            <span class="n">subject</span><span class="o">=</span><span class="n">rt</span><span class="o">.</span><span class="n">subject_fs_id</span><span class="p">,</span>
+            <span class="n">subjects_dir</span><span class="o">=</span><span class="n">rt</span><span class="o">.</span><span class="n">subjects_fs_dir</span><span class="p">,</span>
+            <span class="n">inverse</span><span class="o">=</span><span class="n">inverse</span><span class="p">,</span>
+            <span class="n">inverse_method</span><span class="o">=</span><span class="n">method</span><span class="p">,</span>
+            <span class="n">info</span><span class="o">=</span><span class="n">info</span><span class="p">,</span>
+            <span class="n">pick_ori</span><span class="o">=</span><span class="n">mn_pick_ori</span><span class="p">,</span>
+        <span class="p">)</span></div>
+</div>
+
+</pre></div>
+
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../../_static/scripts/bootstrap.js?digest=cb8930eaaf36d9849b67"></script>
+<script defer src="../../_static/scripts/pydata-sphinx-theme.js?digest=cb8930eaaf36d9849b67"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright 2024-2026, Payam S. Shabestari.
+      <br/>
+    
+  </p>
+</div>
+      
+        <div class="footer-item">
+
+  <p class="sphinx-version">
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 9.0.4.
+    <br/>
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
+<p class="theme-version">
+  <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.21.0.
+</p></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>

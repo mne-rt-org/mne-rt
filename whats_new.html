@@ -1,0 +1,1185 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="./" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>What’s new &#8212; MNE-RT</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="_static/styles/theme.css?digest=cb8930eaaf36d9849b67" rel="stylesheet" />
+<link href="_static/styles/pydata-sphinx-theme.css?digest=cb8930eaaf36d9849b67" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="_static/sg_gallery.css?v=c83e6b79" />
+    <link rel="stylesheet" type="text/css" href="_static/sg_gallery-binder.css?v=f4aeca0c" />
+    <link rel="stylesheet" type="text/css" href="_static/sg_gallery-dataframe.css?v=2082cf3c" />
+    <link rel="stylesheet" type="text/css" href="_static/sg_gallery-rendered-html.css?v=1277b6f3" />
+    <link rel="stylesheet" type="text/css" href="_static/custom.css?v=5bf657dd" />
+  
+  <!-- So that users can add custom icons -->
+  <script defer src="_static/scripts/fontawesome.js?digest=cb8930eaaf36d9849b67"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="_static/scripts/bootstrap.js?digest=cb8930eaaf36d9849b67" />
+<link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=cb8930eaaf36d9849b67" />
+
+    <script src="_static/documentation_options.js?v=6efca38a"></script>
+    <script src="_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="_static/sg-tags.js?v=d80f6fa4"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'whats_new';</script>
+    <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Examples Gallery" href="auto_examples/index.html" />
+    <link rel="prev" title="NF Protocols" href="protocols.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="" />
+  
+    
+    <script src="_static/searchtools.js"></script>
+    <script src="_static/language_data.js"></script>
+    <script src="searchindex.js"></script>
+  
+  </head>
+  <body data-default-mode="">
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+  
+  
+  
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header id="pst-header" class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="index.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="_static/mne_rt_logo.svg" class="logo__image only-light" alt="MNE-RT - Home"/>
+    <img src="_static/mne_rt_logo.svg" class="logo__image only-dark pst-js-only" alt="MNE-RT - Home"/>
+  
+  
+</a></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="install.html">
+    Installation
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="tutorial.html">
+    User Guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="api.html">
+    API Reference
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="visualization.html">
+    Visualisation
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="cli.html">
+    CLI
+  </a>
+</li>
+
+            <li class="nav-item dropdown">
+                <button class="btn dropdown-toggle nav-item" type="button"
+                data-bs-toggle="dropdown" aria-expanded="false"
+                aria-controls="pst-nav-more-links">
+                    More
+                </button>
+                <ul id="pst-nav-more-links" class="dropdown-menu">
+                    
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="denoising.html">
+    Artifact Correction
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="modalities.html">
+    Real-time Feature Modalities
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="decoding.html">
+    Real-time Decoding
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="protocols.html">
+    NF Protocols
+  </a>
+</li>
+
+
+<li class=" current active">
+  <a class="nav-link dropdown-item nav-internal" href="#">
+    What’s new
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="auto_examples/index.html">
+    Examples Gallery
+  </a>
+</li>
+
+                </ul>
+            </li>
+            
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+        </div>
+      
+      
+        <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/mne-rt-org/mne-rt" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-square-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
+        </li>
+</ul></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+    </div>
+  
+
+  
+    <button class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="On this page">
+      <span class="fa-solid fa-outdent"></span>
+    </button>
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="install.html">
+    Installation
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="tutorial.html">
+    User Guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="api.html">
+    API Reference
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="visualization.html">
+    Visualisation
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="cli.html">
+    CLI
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="denoising.html">
+    Artifact Correction
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="modalities.html">
+    Real-time Feature Modalities
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="decoding.html">
+    Real-time Decoding
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="protocols.html">
+    NF Protocols
+  </a>
+</li>
+
+
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="#">
+    What’s new
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="auto_examples/index.html">
+    Examples Gallery
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/mne-rt-org/mne-rt" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-square-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
+        </li>
+</ul></div>
+        
+      </div>
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+
+<nav class="bd-docs-nav bd-links"
+     aria-label="Section Navigation">
+  <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
+  <div class="bd-toc-item navbar-nav"></div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">What’s new</span></li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section id="what-s-new">
+<span id="whats-new"></span><h1>What’s new<a class="headerlink" href="#what-s-new" title="Link to this heading">#</a></h1>
+<section id="version-1-2-0">
+<span id="changes-1-2-0"></span><h2>Version 1.2.0<a class="headerlink" href="#version-1-2-0" title="Link to this heading">#</a></h2>
+<p><em>unreleased</em></p>
+<section id="new-features">
+<h3>New features<a class="headerlink" href="#new-features" title="Link to this heading">#</a></h3>
+<ul>
+<li><p><strong>The session report now describes the session.</strong>
+<a class="reference internal" href="generated/mne_rt.RTStream.html#mne_rt.RTStream.create_report" title="mne_rt.RTStream.create_report"><code class="xref py py-meth docutils literal notranslate"><span class="pre">create_report()</span></code></a> produced four blocks — the baseline
+recording, a PSD, the feature traces plotted against <em>window index</em>, and a
+five-row table — and knew nothing about anything added since 1.1.0. It now
+renders sections for the session summary, the neurofeedback traces, markers
+and gating, data quality, the source-space configuration, the baseline, and a
+dictionary of every saved column.</p>
+<p>The traces are drawn on a <strong>real time axis</strong> from the recorded window onsets,
+with the gated conditions shaded and the rewarded windows marked, so a trace
+can be read against a stimulus log. When no onsets were recorded the report
+falls back to the nominal <code class="docutils literal notranslate"><span class="pre">index</span> <span class="pre">×</span> <span class="pre">hop</span></code> grid and <em>says so</em> in the caption —
+the acquisition loop drifts away from that grid, which is why the onsets are
+recorded in the first place.</p>
+<p>Two failures the old report could not show are now called out in the report
+itself. <strong>A session where the gate never opened</strong> rendered identically to a
+healthy one, even though the subject received nothing for the entire run; it
+now carries a red callout naming the likely causes. And a run whose feature
+computation <strong>exceeds the hop</strong> — so the loop cannot keep up and feedback lags
+the subject — is flagged against the measured latency.</p>
+<p>The summary is rendered from the same <code class="docutils literal notranslate"><span class="pre">meta</span></code> block
+<a class="reference internal" href="generated/mne_rt.RTStream.html#mne_rt.RTStream.save" title="mne_rt.RTStream.save"><code class="xref py py-meth docutils literal notranslate"><span class="pre">save()</span></code></a> writes into the JSON, so the report and the
+saved record cannot disagree. Axis labels come from the same tables the live
+<code class="xref py py-class docutils literal notranslate"><span class="pre">NFPlot</span></code> window uses, for the same reason.</p>
+<p>The filename now carries the BIDS <code class="docutils literal notranslate"><span class="pre">run-</span></code> entity, so the blocks of a
+<a class="reference internal" href="generated/mne_rt.RTStream.html#mne_rt.RTStream.run_blocks" title="mne_rt.RTStream.run_blocks"><code class="xref py py-meth docutils literal notranslate"><span class="pre">run_blocks()</span></code></a> session each get their own report instead
+of overwriting one another; pass <code class="docutils literal notranslate"><span class="pre">run=</span></code> to name one explicitly. The
+combined trace — the signal the subject actually saw when a combiner is used —
+is plotted, having previously been dropped.</p>
+<p>Sections whose data a session does not have are omitted, so a plain
+sensor-space run produces a shorter report rather than empty panels.</p>
+</li>
+<li><p><strong>The neurofeedback loop can now read an experiment’s markers, and gate
+feedback on them.</strong> <a class="reference internal" href="generated/mne_rt.RTStream.html#mne_rt.RTStream.record_main" title="mne_rt.RTStream.record_main"><code class="xref py py-meth docutils literal notranslate"><span class="pre">record_main()</span></code></a> had no event
+awareness at all: a saved session could not say which windows were task and
+which were rest, and feedback ran continuously whether or not the subject was
+being asked to do anything. Attach the stimulus program’s marker outlet with
+<a class="reference internal" href="generated/mne_rt.RTStream.html#mne_rt.RTStream.connect_marker_stream" title="mne_rt.RTStream.connect_marker_stream"><code class="xref py py-meth docutils literal notranslate"><span class="pre">connect_marker_stream()</span></code></a>, and every analysis window is
+tagged with the condition that was running; pass <code class="docutils literal notranslate"><span class="pre">gate_conditions</span></code> to
+<a class="reference internal" href="generated/mne_rt.RTStream.html#mne_rt.RTStream.record_main" title="mne_rt.RTStream.record_main"><code class="xref py py-meth docutils literal notranslate"><span class="pre">record_main()</span></code></a> to restrict feedback to chosen
+conditions.</p>
+<p>A window outside the gate still computes its feature and is saved, so the
+trace stays dense — but no protocol is evaluated for it, and <strong>nothing is
+sent over OSC or LSL</strong>. Not evaluating is what “do not update” has to mean
+for a stateful protocol, and the silence lets the stimulus program hold its
+own display state rather than being handed a value it should not show.</p>
+<p>The condition is a <em>latch</em>: the label of the most recent marker at or before
+the window’s end. With 50 % overlap most windows contain no marker at all, so
+a containment rule would leave them unlabelled. <code class="docutils literal notranslate"><span class="pre">n_markers</span></code> counts markers
+arriving since the previous window ended, which partitions the run — counting
+markers <em>inside</em> each window would count most of them twice. The markers
+themselves are saved under <code class="docutils literal notranslate"><span class="pre">&quot;markers&quot;</span></code> as ground truth, since every
+per-window column is a lossy projection of them.</p>
+<p><code class="xref py py-class docutils literal notranslate"><span class="pre">MarkerArrayStream</span></code> and
+<a class="reference internal" href="generated/mne_rt.RTStream.html#mne_rt.RTStream.connect_marker_array" title="mne_rt.RTStream.connect_marker_array"><code class="xref py py-meth docutils literal notranslate"><span class="pre">connect_marker_array()</span></code></a> replay a fixed marker schedule
+with no LSL networking, which is what makes a gated session testable and
+demonstrable offline. <a class="reference internal" href="generated/mne_rt.ArrayStream.html#mne_rt.ArrayStream" title="mne_rt.ArrayStream"><code class="xref py py-class docutils literal notranslate"><span class="pre">ArrayStream</span></code></a> cannot serve: it assumes a
+sampling rate throughout, and a marker stream is irregular.</p>
+</li>
+<li><p><code class="docutils literal notranslate"><span class="pre">connect_to_lsl</span></code> gained <code class="docutils literal notranslate"><span class="pre">processing_flags</span></code>, forwarded to mne-lsl. Pass
+<code class="docutils literal notranslate"><span class="pre">&quot;all&quot;</span></code> to enable <code class="docutils literal notranslate"><span class="pre">clocksync</span></code> when markers are published from a second
+machine; <code class="docutils literal notranslate"><span class="pre">connect_marker_stream</span></code> enables it for itself by default and warns
+when the M/EEG stream was connected without it. Two LSL streams share a time
+base only once their clocks are synchronised — otherwise every marker lands
+in the wrong window with nothing to report it.</p></li>
+<li><p><strong>Every analysis window now carries its own onset.</strong> Sessions previously saved
+only a start time, leaving a window’s time to be inferred as
+<code class="docutils literal notranslate"><span class="pre">index</span> <span class="pre">*</span> <span class="pre">winsize/2</span></code>. That inference is not sound. It drifts — measured at
+~0.4 s over a 600 s run for a light configuration, and worse as the
+per-window computation approaches the hop — and any window dropped for being
+the wrong length shifted every later index silently, with no record that it
+had happened. Most importantly it cannot produce an absolute time at all,
+which is what aligning against a stimulus log requires.
+<a class="reference internal" href="generated/mne_rt.RTStream.html#mne_rt.RTStream.record_main" title="mne_rt.RTStream.record_main"><code class="xref py py-meth docutils literal notranslate"><span class="pre">record_main()</span></code></a> now records the real onset and duration
+per window, exposed as
+<code class="xref py py-attr docutils literal notranslate"><span class="pre">window_onsets</span></code> / <code class="docutils literal notranslate"><span class="pre">window_durations</span></code> and saved under
+a <code class="docutils literal notranslate"><span class="pre">&quot;windows&quot;</span></code> block in the session JSON: <code class="docutils literal notranslate"><span class="pre">onset</span></code> relative to the first
+window, <code class="docutils literal notranslate"><span class="pre">duration</span></code>, and <code class="docutils literal notranslate"><span class="pre">onset_lsl</span></code> on the absolute LSL clock, which is
+the one that aligns directly against a stimulus log.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">record_main</span></code> now writes the BIDS <code class="docutils literal notranslate"><span class="pre">_beh.tsv</span></code> table by default
+(<code class="docutils literal notranslate"><span class="pre">save_tsv=True</span></code>). It previously wrote only the session JSON, so the
+per-window table never reached disk unless <code class="docutils literal notranslate"><span class="pre">save()</span></code> was called by hand. The
+table leads with <code class="docutils literal notranslate"><span class="pre">onset</span></code> and <code class="docutils literal notranslate"><span class="pre">duration</span></code> as BIDS requires, and the session
+JSON gained a <code class="docutils literal notranslate"><span class="pre">&quot;columns&quot;</span></code> block describing every column — BIDS would put
+that in a <code class="docutils literal notranslate"><span class="pre">_beh.json</span></code> sidecar, but that filename is already the session
+payload’s.</p></li>
+<li><p>A window dropped for having the wrong number of samples is now counted
+(<code class="docutils literal notranslate"><span class="pre">meta[&quot;n_short_windows&quot;]</span></code>) and explained once in the log. This is a
+deterministic failure rather than an occasional one: <code class="docutils literal notranslate"><span class="pre">winsize</span> <span class="pre">*</span> <span class="pre">sfreq</span></code> is
+truncated when sizing the window but rounded up when fetching it, so a
+non-integral product silently discards <em>every</em> window and produces an empty
+session.</p></li>
+<li><p><strong>:class:`~mne_rt.RTEpochs` can now cut epochs on a separate LSL marker
+stream</strong>, which is what a PsychoPy paradigm publishes. Until now the event
+codes had to arrive on a <code class="docutils literal notranslate"><span class="pre">&quot;stim&quot;</span></code>-type channel <em>inside</em> the M/EEG stream
+itself, so an amplifier bridged to LSL without a stim channel could not
+trigger an epoch at all. Pass <code class="docutils literal notranslate"><span class="pre">event_stream_name</span></code> (or <code class="docutils literal notranslate"><span class="pre">event_source_id</span></code>)
+to <a class="reference internal" href="generated/mne_rt.RTEpochs.html#mne_rt.RTEpochs.connect_to_lsl" title="mne_rt.RTEpochs.connect_to_lsl"><code class="xref py py-meth docutils literal notranslate"><span class="pre">connect_to_lsl()</span></code></a>, and <code class="docutils literal notranslate"><span class="pre">event_channels</span></code> then names
+a channel of that stream.</p>
+<p>When an event stream is used, both streams are connected with
+<code class="docutils literal notranslate"><span class="pre">processing_flags=&quot;all&quot;</span></code>: two LSL streams share a time base only once their
+clocks are synchronised, and without it markers published from a second
+machine sit at an arbitrary offset from the data, so every epoch is cut in
+the wrong place and nothing reports it.</p>
+<p>The publisher has three requirements, each documented with a runnable snippet
+on <a class="reference internal" href="generated/mne_rt.RTEpochs.html#mne_rt.RTEpochs.connect_to_lsl" title="mne_rt.RTEpochs.connect_to_lsl"><code class="xref py py-meth docutils literal notranslate"><span class="pre">connect_to_lsl()</span></code></a>: the outlet must be <strong>numeric</strong>
+(mne-lsl refuses string streams outright, and <code class="docutils literal notranslate"><span class="pre">&quot;string&quot;</span></code> is the format most
+PsychoPy marker examples use), it should <strong>label its channel</strong> — an
+unlabelled outlet is exposed as <code class="docutils literal notranslate"><span class="pre">&quot;0&quot;</span></code> — and the codes must be positive
+integers no greater than 32767.</p>
+</li>
+</ul>
+</section>
+<section id="numeric-output-changes">
+<h3>Numeric output changes<a class="headerlink" href="#numeric-output-changes" title="Link to this heading">#</a></h3>
+<p><strong>Standardisation no longer depends on the units of your feature.</strong> If you use
+<code class="docutils literal notranslate"><span class="pre">zscore_normalize=True</span></code>, <a class="reference internal" href="generated/mne_rt.protocols.ZScoreProtocol.html#mne_rt.protocols.ZScoreProtocol" title="mne_rt.protocols.ZScoreProtocol"><code class="xref py py-class docutils literal notranslate"><span class="pre">ZScoreProtocol</span></code></a>,
+<a class="reference internal" href="generated/mne_rt.protocols.TransferProtocol.html#mne_rt.protocols.TransferProtocol" title="mne_rt.protocols.TransferProtocol"><code class="xref py py-class docutils literal notranslate"><span class="pre">TransferProtocol</span></code></a>,
+<a class="reference internal" href="generated/mne_rt.protocols.RLProtocol.html#mne_rt.protocols.RLProtocol" title="mne_rt.protocols.RLProtocol"><code class="xref py py-class docutils literal notranslate"><span class="pre">RLProtocol</span></code></a>,
+<a class="reference internal" href="generated/mne_rt.protocols.ThresholdProtocol.html#mne_rt.protocols.ThresholdProtocol" title="mne_rt.protocols.ThresholdProtocol"><code class="xref py py-class docutils literal notranslate"><span class="pre">ThresholdProtocol</span></code></a> or
+<code class="xref py py-class docutils literal notranslate"><span class="pre">ZScoredNormCombiner</span></code> on a power-like modality, <strong>the numbers
+this version produces differ from 1.1.0 — the previous ones were wrong.</strong></p>
+<p>Every running standard deviation was floored with an absolute constant
+(<code class="docutils literal notranslate"><span class="pre">1e-6</span></code>, or <code class="docutils literal notranslate"><span class="pre">1e-9</span></code> in the combiners). EEG band power is ~1e-12 V²/Hz and MEG
+~1e-24 T²/Hz, so for those features the floor did not <em>guard</em> the standard
+deviation, it <em>replaced</em> it: measured on synthetic EEG band power, a z-score
+that should have been 1.0 came out as 7.9e-9, and on MEG, 9.0e-21. Rewards
+therefore almost never fired, and the adaptive threshold line sat
+indistinguishably close to the mean. Features of order 1 — connectivity,
+entropy, laterality, <code class="docutils literal notranslate"><span class="pre">erd_ers</span></code> — were unaffected, which is why this went
+unnoticed.</p>
+<p>There is now no floor. A standard deviation is used exactly as observed,
+whatever its magnitude, and the only special case is a signal with <em>no</em> spread,
+which has no z-score and yields <code class="docutils literal notranslate"><span class="pre">0.0</span></code> — no crossing, no reward. Affected
+modalities: <code class="docutils literal notranslate"><span class="pre">sensor_power</span></code>, <code class="docutils literal notranslate"><span class="pre">individual_peak_power</span></code>, <code class="docutils literal notranslate"><span class="pre">source_graph</span></code> and,
+marginally, <code class="docutils literal notranslate"><span class="pre">scp</span></code>.</p>
+<p>Two consequences worth expecting:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">current_threshold</span></code> moves. On <code class="docutils literal notranslate"><span class="pre">sensor_power</span></code> it was <code class="docutils literal notranslate"><span class="pre">mean</span> <span class="pre">±</span> <span class="pre">5e-7</span></code> — far
+outside the data — and is now a real <code class="docutils literal notranslate"><span class="pre">mean</span> <span class="pre">±</span> <span class="pre">zscore_threshold</span> <span class="pre">×</span> <span class="pre">σ</span></code> boundary,
+so the dashed line on <a class="reference internal" href="generated/mne_rt.viz.NFPlot.html#mne_rt.viz.NFPlot" title="mne_rt.viz.NFPlot"><code class="xref py py-class docutils literal notranslate"><span class="pre">NFPlot</span></code></a> finally sits where the
+rewards are.</p></li>
+<li><p>With <code class="docutils literal notranslate"><span class="pre">zscore_normalize=True</span></code> the plot’s display scales are now <code class="docutils literal notranslate"><span class="pre">1.0</span></code>,
+since the traces are in standard deviations rather than native units. The
+raw value is still passed through during the warmup windows, so the trace
+sits flat near the axis origin until normalisation engages.</p></li>
+</ul>
+<p><code class="docutils literal notranslate"><span class="pre">min_std</span></code> (on <a class="reference internal" href="generated/mne_rt.protocols.ZScoreProtocol.html#mne_rt.protocols.ZScoreProtocol" title="mne_rt.protocols.ZScoreProtocol"><code class="xref py py-class docutils literal notranslate"><span class="pre">ZScoreProtocol</span></code></a> and <code class="docutils literal notranslate"><span class="pre">--zscore-min-std</span></code>)
+now defaults to <code class="docutils literal notranslate"><span class="pre">None</span></code>, meaning no floor. Passing a float keeps its old
+meaning exactly, so an existing script that set one explicitly is unaffected.
+The CLI help and <a class="reference internal" href="cli.html"><span class="doc">CLI</span></a> previously advised choosing a floor below your
+signal’s magnitude (<code class="docutils literal notranslate"><span class="pre">1e-15</span></code> for <code class="docutils literal notranslate"><span class="pre">sensor_power</span></code>); that advice is obsolete and
+has been removed — passing a floor now <em>opts back into</em> the old behaviour.</p>
+</section>
+<section id="bug-fixes">
+<h3>Bug fixes<a class="headerlink" href="#bug-fixes" title="Link to this heading">#</a></h3>
+<ul>
+<li><p><strong>Neurofeedback values were never sent over LSL.</strong>
+<a class="reference internal" href="generated/mne_rt.LSLSender.html#mne_rt.LSLSender" title="mne_rt.LSLSender"><code class="xref py py-class docutils literal notranslate"><span class="pre">LSLSender</span></code></a> passed a Python list to mne-lsl’s
+<code class="docutils literal notranslate"><span class="pre">StreamOutlet.push_sample</span></code>, which asserts a NumPy array for numeric
+streams — on every version this package supports, not only recent ones — so
+every push raised. Because <a class="reference internal" href="generated/mne_rt.RTStream.html#mne_rt.RTStream.record_main" title="mne_rt.RTStream.record_main"><code class="xref py py-meth docutils literal notranslate"><span class="pre">record_main()</span></code></a> reports only
+the <em>first</em> delivery failure and then carries on, a session ran to
+completion, saved its results and published nothing: a display subscribing to
+the outlet stayed frozen behind a single warning line. The sample is now
+built as a <code class="docutils literal notranslate"><span class="pre">float32</span></code> array of the outlet’s width, which is also the
+outlet’s own dtype. The tests mocked the LSL backend, and a mock accepts a
+list, so nothing caught it; they now assert the type of the pushed sample,
+and one test pushes through a real outlet.</p></li>
+<li><p><strong>:meth:`~mne_rt.RTStream.create_report` raised on a baseline-only session.</strong>
+It read <code class="docutils literal notranslate"><span class="pre">self.modality</span></code>, which is assigned only inside
+<a class="reference internal" href="generated/mne_rt.RTStream.html#mne_rt.RTStream.record_main" title="mne_rt.RTStream.record_main"><code class="xref py py-meth docutils literal notranslate"><span class="pre">record_main()</span></code></a>, so building a report after recording
+just a baseline died with <code class="docutils literal notranslate"><span class="pre">AttributeError</span></code> — despite the docstring and the
+1.0.2 changelog entry both promising a <code class="docutils literal notranslate"><span class="pre">RuntimeError</span></code>. It now raises the
+documented error, naming <code class="docutils literal notranslate"><span class="pre">record_baseline</span></code>. The CLI had been hiding this
+behind a bare <code class="docutils literal notranslate"><span class="pre">except</span> <span class="pre">Exception</span></code>.</p></li>
+<li><p><strong>:meth:`~mne_rt.RTStream.create_report` raised for MEG sessions.</strong>
+<code class="docutils literal notranslate"><span class="pre">include_psd=True</span></code> passed a single Matplotlib axes to the spectrum plot,
+which needs one per channel type — so any MEG session, with both
+magnetometers and gradiometers, failed with <code class="docutils literal notranslate"><span class="pre">axes</span> <span class="pre">must</span> <span class="pre">be</span> <span class="pre">an</span> <span class="pre">array-like</span> <span class="pre">of</span>
+<span class="pre">length</span> <span class="pre">2</span></code>.</p></li>
+<li><p><strong>Fifty lines of :meth:`~mne_rt.RTStream.create_report` were dead code.</strong> The
+sensor-layout and glass-brain block sat inside a bare triple-quoted string, so
+it never ran, while the docstring advertised exactly that content — and a
+1.2.0 instanced-naming fix was applied inside it. It referenced the
+<code class="docutils literal notranslate"><span class="pre">brain_label_1</span></code>/<code class="docutils literal notranslate"><span class="pre">brain_label_2</span></code> keys deprecated in 1.2.0 and could not
+render the ROI lists <code class="docutils literal notranslate"><span class="pre">source_connectivity</span></code> now accepts. The source-space
+configuration is now reported as a table, which also means the report no
+longer needs the optional 3-D visualisation dependencies.</p></li>
+<li><p><strong>Every :class:`~mne_rt.RTEpochs` epoch carried a trailing all-zero sample.</strong>
+The epoch buffer was sized as <code class="docutils literal notranslate"><span class="pre">round((tmax</span> <span class="pre">-</span> <span class="pre">tmin)</span> <span class="pre">*</span> <span class="pre">sfreq)</span> <span class="pre">+</span> <span class="pre">1</span></code>, but
+mne-lsl produces <code class="docutils literal notranslate"><span class="pre">ceil((tmax</span> <span class="pre">-</span> <span class="pre">tmin)</span> <span class="pre">*</span> <span class="pre">sfreq)</span></code> samples with
+<code class="docutils literal notranslate"><span class="pre">endpoint=False</span></code> — one fewer. The last column was therefore never written,
+so it stayed at zero: a step to zero at the end of every epoch, biasing any
+average taken over the full window, and a reported <code class="docutils literal notranslate"><span class="pre">tmax</span></code> one sample past
+the truth. The width and <code class="docutils literal notranslate"><span class="pre">tmin</span></code> now come from
+<a class="reference external" href="https://mne.tools/mne-lsl/stable/generated/api/mne_lsl.stream.EpochsStream.html#mne_lsl.stream.EpochsStream.times" title="(in MNE-LSL)"><code class="xref py py-attr docutils literal notranslate"><span class="pre">times</span></code></a> rather than being re-derived.</p></li>
+<li><p><strong>:meth:`~mne_rt.RTEpochs.connect_to_lsl` left stale handles behind.</strong>
+Reconnecting without an event stream after a session that used one passed the
+now-disconnected marker stream to <code class="docutils literal notranslate"><span class="pre">EpochsStream</span></code>, which refuses it — so the
+second connection failed with an error about a stream the caller had not
+asked for. A failure during setup also stranded a running mock player and a
+connected stream, with <code class="docutils literal notranslate"><span class="pre">_connected</span></code> still <code class="docutils literal notranslate"><span class="pre">False</span></code> so the caller had no
+handle to clean up with; setup is now unwound on the way out.</p></li>
+<li><p><strong>A sensor-space baseline no longer downloads 700 MB of anatomy.</strong>
+<a class="reference internal" href="generated/mne_rt.RTStream.html#mne_rt.RTStream.record_baseline" title="mne_rt.RTStream.record_baseline"><code class="xref py py-meth docutils literal notranslate"><span class="pre">record_baseline()</span></code></a> ended with an unconditional
+<a class="reference internal" href="generated/mne_rt.RTStream.html#mne_rt.RTStream.compute_inv_operator" title="mne_rt.RTStream.compute_inv_operator"><code class="xref py py-meth docutils literal notranslate"><span class="pre">compute_inv_operator()</span></code></a>, which for the default
+<code class="docutils literal notranslate"><span class="pre">subject_fs_id=&quot;fsaverage&quot;</span></code> calls <a class="reference external" href="https://mne.tools/stable/generated/mne.datasets.fetch_fsaverage.html#mne.datasets.fetch_fsaverage" title="(in MNE v1.13)"><code class="xref py py-func docutils literal notranslate"><span class="pre">mne.datasets.fetch_fsaverage()</span></code></a> —
+so <em>every</em> baseline reached across the network for a head model, including
+the many sessions that only ever compute sensor-space features. It made an
+OSF outage look like a library failure, and it was a recurring source of red
+CI on tests that never touch a source. The four sensor-space tests it
+affected go from 47.7 s to 17.3 s with the anatomy already cached; on a cold
+machine the difference is the download itself.</p>
+<p>The head model is now built on first use — by a source-space modality, by the
+brain-activation display, or by calling <code class="docutils literal notranslate"><span class="pre">compute_inv_operator()</span></code> directly,
+which is also how you pass it non-default arguments. Nothing about a
+source-space session changes except <em>when</em> the model is built; a sensor-space
+session never builds one at all. The <code class="docutils literal notranslate"><span class="pre">inv/</span></code> files therefore appear at that
+point rather than at the end of the baseline, and <code class="xref py py-attr docutils literal notranslate"><span class="pre">inv</span></code>
+is no longer set by <code class="docutils literal notranslate"><span class="pre">record_baseline</span></code> alone.
+<a class="reference internal" href="generated/mne_rt.RTStream.html#mne_rt.RTStream.fit_gedai" title="mne_rt.RTStream.fit_gedai"><code class="xref py py-meth docutils literal notranslate"><span class="pre">fit_gedai()</span></code></a> triggers the build too when
+<code class="docutils literal notranslate"><span class="pre">use_leadfield=True</span></code>, since it reads the forward solution and would
+otherwise fall back to band-filter mode — a different denoising algorithm —
+with only a log line to say so.</p>
+</li>
+<li><p><strong>Feedback fired during the z-score warmup.</strong> <code class="docutils literal notranslate"><span class="pre">_apply_zscore</span></code> passes the
+raw value through until a modality has <code class="docutils literal notranslate"><span class="pre">zscore_warmup</span></code> windows behind it,
+but the per-modality protocol was evaluated on those windows regardless. With
+<code class="docutils literal notranslate"><span class="pre">zscore_normalize=True</span></code> the subject was therefore rewarded on native-unit
+values — band power is ~1e-12 V²/Hz — against a z-score-calibrated threshold,
+which is random reinforcement at the start of every run. The combiner path
+already guarded against this; the per-modality path now does too. The gate is
+per-modality rather than the combiner’s <code class="docutils literal notranslate"><span class="pre">all(...)</span></code>, which would block one
+band’s protocol because another band had not warmed yet.</p></li>
+<li><p>An exception anywhere in the acquisition thread used to leave
+<a class="reference internal" href="generated/mne_rt.RTStream.html#mne_rt.RTStream.record_main" title="mne_rt.RTStream.record_main"><code class="xref py py-meth docutils literal notranslate"><span class="pre">record_main()</span></code></a> running forever: the Qt event loop exits
+only when the thread signals that it is done, and that signal was the last
+statement of a body that had already raised. Nothing was saved and the call
+never returned. The signal is now sent from a <code class="docutils literal notranslate"><span class="pre">finally</span></code>.</p></li>
+<li><p><strong>:meth:`~mne_rt.RTStream.run_blocks` never worked past the first block.</strong>
+<a class="reference internal" href="generated/mne_rt.RTStream.html#mne_rt.RTStream.record_main" title="mne_rt.RTStream.record_main"><code class="xref py py-meth docutils literal notranslate"><span class="pre">record_main()</span></code></a> ends by calling
+<a class="reference internal" href="generated/mne_rt.RTStream.html#mne_rt.RTStream.save" title="mne_rt.RTStream.save"><code class="xref py py-meth docutils literal notranslate"><span class="pre">save()</span></code></a>, which disconnects the stream, so block 2 read
+from a stream that was already gone. Headless that produced an <em>empty</em>
+session written over block 1’s files — silent data loss — and with the plot
+windows open the Qt event loop never returned, because it only quits once the
+acquisition thread reports finishing, and that thread had died. The feature is
+documented in the tutorial and has its own combiner handling in
+<code class="docutils literal notranslate"><span class="pre">record_main</span></code>, so it was plainly meant to work; its two tests only checked
+that the method exists and that an empty list raises.</p>
+<p><a class="reference internal" href="generated/mne_rt.RTStream.html#mne_rt.RTStream.save" title="mne_rt.RTStream.save"><code class="xref py py-meth docutils literal notranslate"><span class="pre">save()</span></code></a> gained <code class="docutils literal notranslate"><span class="pre">disconnect=True</span></code> and
+<code class="docutils literal notranslate"><span class="pre">record_main</span></code> the same, both defaulting to today’s behaviour;
+<code class="docutils literal notranslate"><span class="pre">run_blocks</span></code> keeps the stream up until the last block. Reconnecting between
+blocks would not have been enough — <code class="docutils literal notranslate"><span class="pre">save</span></code> also stops the mock player, and
+<code class="docutils literal notranslate"><span class="pre">connect_to_lsl</span></code> builds a new one.</p>
+</li>
+<li><p><strong>Each block overwrote the previous block’s files.</strong> The session stem carried
+no BIDS <code class="docutils literal notranslate"><span class="pre">run-</span></code> entity, so every block wrote the same JSON, TSV, delays and
+raw FIF. <code class="docutils literal notranslate"><span class="pre">record_main</span></code> gained <code class="docutils literal notranslate"><span class="pre">run=</span></code>, and <code class="docutils literal notranslate"><span class="pre">run_blocks</span></code> numbers its
+blocks <code class="docutils literal notranslate"><span class="pre">run-01</span></code>, <code class="docutils literal notranslate"><span class="pre">run-02</span></code>, … A session that does not set it keeps exactly
+the filenames it had.</p></li>
+<li><p><strong>Filters compounded across blocks.</strong> <code class="docutils literal notranslate"><span class="pre">record_main</span></code> applied the bandpass and
+notch on every call, and both mne-lsl and <a class="reference internal" href="generated/mne_rt.ArrayStream.html#mne_rt.ArrayStream" title="mne_rt.ArrayStream"><code class="xref py py-class docutils literal notranslate"><span class="pre">ArrayStream</span></code></a>
+<em>accumulate</em> rather than replace — so block 2 ran through two band-passes and
+block 3 through three. They are now applied once per connection.</p></li>
+<li><p>The feature-extraction thread pool is shut down when
+<a class="reference internal" href="generated/mne_rt.RTStream.html#mne_rt.RTStream.record_main" title="mne_rt.RTStream.record_main"><code class="xref py py-meth docutils literal notranslate"><span class="pre">record_main()</span></code></a> returns. Nothing joined it before, so the
+brain-activation task could still be computing an inverse solution while the
+session was being written to disk.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">run_blocks</span></code> kept only three of each block’s results; rewards, window
+onsets and durations, dropped-window counts, artifact counts and the delay
+traces were overwritten by the next block and lost. They are all in the new
+<code class="xref py py-attr docutils literal notranslate"><span class="pre">block_results</span></code>.</p></li>
+<li><p>Every plot window is closed at the end of a session, not only
+<a class="reference internal" href="generated/mne_rt.viz.NFPlot.html#mne_rt.viz.NFPlot" title="mne_rt.viz.NFPlot"><code class="xref py py-class docutils literal notranslate"><span class="pre">NFPlot</span></code></a> — a second block used to stack a fresh set on top
+of the last.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">ArrayStream</span></code> timestamped its samples with <code class="docutils literal notranslate"><span class="pre">time.time()</span></code> while the
+acquisition loop runs on <code class="docutils literal notranslate"><span class="pre">local_clock()</span></code> — the Unix epoch against
+seconds-since-boot, about 1.8e9 seconds apart. Any timing derived from the
+offline/test stream was therefore on a different clock from the live one.</p></li>
+<li><p>The two behavioural-TSV writers (<a class="reference internal" href="generated/mne_rt.RTStream.html#mne_rt.RTStream.save" title="mne_rt.RTStream.save"><code class="xref py py-meth docutils literal notranslate"><span class="pre">save()</span></code></a> and
+<a class="reference internal" href="generated/mne_rt.tools.save_as_bids.html#mne_rt.tools.save_as_bids" title="mne_rt.tools.save_as_bids"><code class="xref py py-func docutils literal notranslate"><span class="pre">save_as_bids()</span></code></a>) were independent implementations that had
+already drifted apart on float formatting and on ragged-column padding. They
+now share one function, so a column written by both is written identically,
+and <a class="reference internal" href="generated/mne_rt.tools.save_as_bids.html#mne_rt.tools.save_as_bids" title="mne_rt.tools.save_as_bids"><code class="xref py py-func docutils literal notranslate"><span class="pre">save_as_bids()</span></code></a> gains the <code class="docutils literal notranslate"><span class="pre">_beh.json</span></code> sidecar it
+never wrote. Which columns appear still depends on what each caller supplies:
+<code class="docutils literal notranslate"><span class="pre">save_as_bids</span></code> passes feature values only, while a session written by
+<code class="docutils literal notranslate"><span class="pre">record_main</span></code> also carries timing, reward and SNR columns.</p></li>
+<li><p><strong>The adaptive z-score tracked the wrong statistic.</strong> With <code class="docutils literal notranslate"><span class="pre">zscore_alpha</span> <span class="pre">&gt;</span>
+<span class="pre">0</span></code>, <a class="reference internal" href="generated/mne_rt.RTStream.html#mne_rt.RTStream.record_main" title="mne_rt.RTStream.record_main"><code class="xref py py-meth docutils literal notranslate"><span class="pre">record_main()</span></code></a> exponentially averaged
+<code class="docutils literal notranslate"><span class="pre">abs(value</span> <span class="pre">-</span> <span class="pre">mean)</span></code> — the mean absolute deviation, ≈0.798σ for Gaussian
+input — into a variable seeded with a standard deviation, inflating every
+z-score by roughly 25% on top of the floor problem. It now uses the standard
+EMA-weighted variance recursion. The mean and the variance are also advanced
+from the same <code class="docutils literal notranslate"><span class="pre">delta</span></code>; previously the variance used the pre-update mean
+while the returned z-score used the post-update one.</p></li>
+<li><p>Standard deviations are now sample (<code class="docutils literal notranslate"><span class="pre">ddof=1</span></code>) throughout. Two of the three
+estimators already were, so a <a class="reference internal" href="generated/mne_rt.protocols.ZScoreProtocol.html#mne_rt.protocols.ZScoreProtocol" title="mne_rt.protocols.ZScoreProtocol"><code class="xref py py-class docutils literal notranslate"><span class="pre">ZScoreProtocol</span></code></a>
+threshold line was drawn over a trace standardised by a different convention —
+a 5.4% mismatch at the default warmup, and 41% at <code class="docutils literal notranslate"><span class="pre">zscore_warmup=2</span></code>.</p></li>
+<li><p><code class="xref py py-class docutils literal notranslate"><span class="pre">GeometricMeanCombiner</span></code> clipped every input to <code class="docutils literal notranslate"><span class="pre">floor</span></code> before
+taking its logarithm. For band power (~1e-14) against the <code class="docutils literal notranslate"><span class="pre">1e-9</span></code> default
+that meant <em>all</em> inputs clipped, so the result was the constant <code class="docutils literal notranslate"><span class="pre">1e-9</span></code>
+regardless of the data. <code class="docutils literal notranslate"><span class="pre">floor</span></code> now defaults to <code class="docutils literal notranslate"><span class="pre">None</span></code>: positive values of
+any magnitude pass through, and a non-positive one — for which the geometric
+mean is undefined — is dropped from the product rather than clamped.</p></li>
+<li><p><a class="reference internal" href="generated/mne_rt.protocols.TransferProtocol.html#mne_rt.protocols.TransferProtocol" title="mne_rt.protocols.TransferProtocol"><code class="xref py py-class docutils literal notranslate"><span class="pre">TransferProtocol</span></code></a> now rejects a prior recording with
+zero variance at construction, naming the file. Such a prior cannot seed a
+z-score, and under the new rule it would otherwise produce no reward for an
+entire session with nothing to indicate why.</p></li>
+<li><p><code class="xref py py-class docutils literal notranslate"><span class="pre">ZScoredNormCombiner</span></code> now requires <code class="docutils literal notranslate"><span class="pre">warmup</span> <span class="pre">&gt;=</span> <span class="pre">2</span></code>, which its
+sample-variance baseline needs.</p></li>
+</ul>
+</section>
+</section>
+<section id="version-1-1-0">
+<span id="changes-1-1-0"></span><h2>Version 1.1.0<a class="headerlink" href="#version-1-1-0" title="Link to this heading">#</a></h2>
+<p><em>2026-07-29</em></p>
+<section id="id1">
+<h3>New features<a class="headerlink" href="#id1" title="Link to this heading">#</a></h3>
+<ul class="simple">
+<li><p><strong>The same modality can now run several times in one session.</strong> A modality
+name may carry an instance label after an <code class="docutils literal notranslate"><span class="pre">&quot;&#64;&quot;</span></code>, so
+<code class="docutils literal notranslate"><span class="pre">modality=[&quot;source_connectivity&#64;theta&quot;,</span> <span class="pre">&quot;source_connectivity&#64;alpha&quot;]</span></code>
+computes one measure in two bands at once — previously impossible, because
+<a class="reference internal" href="generated/mne_rt.RTStream.html#mne_rt.RTStream.record_main" title="mne_rt.RTStream.record_main"><code class="xref py py-meth docutils literal notranslate"><span class="pre">record_main()</span></code></a> used the modality name as both the
+dispatch key and the key for every piece of per-window state, so a repeated
+name collapsed the two into one. The base modality still selects the config
+entry and the compute function; the full name distinguishes the instances
+everywhere they surface: plot traces, protocol keys, combiner feature names,
+OSC addresses, LSL channels and saved columns. In <code class="docutils literal notranslate"><span class="pre">modality_params</span></code>, a key
+naming a base modality applies to all its instances and an instance’s own
+entry takes precedence, so shared settings need only be written once.
+Protocols are stateful, so each instance needs its own protocol object;
+passing one keyed by a base modality that has instances now raises rather
+than quietly firing a single protocol several times per window.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">LSLSender</span></code> now publishes its channel names in the stream description.
+They were previously stored on the sender and dropped before the outlet was
+built, despite the documented behaviour, leaving subscribers to identify
+values by position — ambiguous as soon as two channels share a base modality
+and differ only by instance label.</p></li>
+<li><p>The sensor → ROI operator is cached alongside the forward model, so several
+instances of a source modality that share an ROI set build it once rather
+than once each.</p></li>
+<li><p><strong>Feature combiners are now wired into the live loop.</strong> The four
+<code class="xref py py-class docutils literal notranslate"><span class="pre">FeatureCombiner</span></code> subclasses existed and were unit-tested, but
+nothing ever called them: <a class="reference internal" href="generated/mne_rt.RTStream.html#mne_rt.RTStream.record_main" title="mne_rt.RTStream.record_main"><code class="xref py py-meth docutils literal notranslate"><span class="pre">record_main()</span></code></a> had no way to
+use one, despite the base class documenting otherwise. It now accepts
+<code class="docutils literal notranslate"><span class="pre">combiner=</span></code> (and <code class="docutils literal notranslate"><span class="pre">combined_name=</span></code>), reducing the per-modality values to a
+single scalar once per window, after z-scoring and smoothing. The result is an
+additional trace — the per-modality ones are kept — and is treated as a
+modality throughout: plotted, saved, broadcast over OSC/LSL, and able to drive
+its own protocol. Mixing features in native units without
+<code class="docutils literal notranslate"><span class="pre">zscore_normalize=True</span></code> warns, since the largest-scale feature would
+otherwise dominate — except for <code class="xref py py-class docutils literal notranslate"><span class="pre">ZScoredNormCombiner</span></code>, which
+normalises internally. <code class="xref py py-class docutils literal notranslate"><span class="pre">GeometricMeanCombiner</span></code> warns about the
+opposite combination: it takes a logarithm, so the negative half of a z-score
+distribution is floored and collapses the result.
+The combined trace is held at <code class="docutils literal notranslate"><span class="pre">0.0</span></code> until every feature’s z-score has warmed
+up, so it never mixes native units and then jumps by orders of magnitude when
+normalisation engages.</p></li>
+<li><p><strong>Source-space connectivity between arbitrary ROI pairs.</strong>
+<code class="docutils literal notranslate"><span class="pre">source_connectivity</span></code> previously <em>required</em> one left-hemisphere and one
+right-hemisphere label and rejected anything else, so a within-hemisphere
+pair — Broca ↔ Wernicke, say — was impossible, as was any pair involving a
+subcortical structure. It now takes a list of <code class="docutils literal notranslate"><span class="pre">rois</span></code> and explicit
+<code class="docutils literal notranslate"><span class="pre">pairs</span></code>, in any combination of hemispheres and of cortical/subcortical
+regions, and reports the mean across pairs (<code class="docutils literal notranslate"><span class="pre">signed:</span> <span class="pre">true</span></code> keeps the
+lead/lag sign instead of the magnitude).</p></li>
+<li><p>All three source modalities (<code class="docutils literal notranslate"><span class="pre">source_power</span></code>, <code class="docutils literal notranslate"><span class="pre">source_connectivity</span></code>,
+<code class="docutils literal notranslate"><span class="pre">source_graph</span></code>) now run on <a class="reference internal" href="generated/mne_rt.SourceModel.html#mne_rt.SourceModel" title="mne_rt.SourceModel"><code class="xref py py-class docutils literal notranslate"><span class="pre">SourceModel</span></code></a>’s cached operator
+and share one forward model and beamformer per <code class="docutils literal notranslate"><span class="pre">(method,</span> <span class="pre">atlas)</span></code>, so
+running the same measure in several frequency bands no longer rebuilds the
+head model for each. <code class="docutils literal notranslate"><span class="pre">source_graph</span></code> gained <code class="docutils literal notranslate"><span class="pre">pair</span></code> for naming the edge to
+report, and <code class="docutils literal notranslate"><span class="pre">source_connectivity</span></code> gained <code class="docutils literal notranslate"><span class="pre">inverse_method</span></code> — its
+<code class="docutils literal notranslate"><span class="pre">method</span></code> is the <em>connectivity metric</em>, which was ambiguous before.</p></li>
+<li><p>Minimum-norm inverses now also use the cached-kernel path, recovered by
+pushing an identity “recording” through
+<a class="reference external" href="https://mne.tools/stable/generated/mne.minimum_norm.apply_inverse_raw.html#mne.minimum_norm.apply_inverse_raw" title="(in MNE v1.13)"><code class="xref py py-func docutils literal notranslate"><span class="pre">apply_inverse_raw()</span></code></a> (public API, exact for <code class="docutils literal notranslate"><span class="pre">MNE</span></code>
+and to floating point for the noise-normalised methods). Surface source
+modalities get <em>faster</em> as a result: measured per window, dSPM drops from
+69 ms to 1.1 ms and MNE from 17 ms to 1.1 ms.</p></li>
+<li><p>Phase-based connectivity metrics are now refused on a magnitude source
+estimate. A free-orientation solution combines three orientations by norm,
+discarding phase, so <code class="docutils literal notranslate"><span class="pre">imcoh</span></code>/<code class="docutils literal notranslate"><span class="pre">plv</span></code>/<code class="docutils literal notranslate"><span class="pre">wpli</span></code> computed on it are
+meaningless; they raise instead of returning a plausible-looking number.</p></li>
+<li><p><strong>Volume source spaces and subcortical ROIs.</strong>
+<a class="reference internal" href="generated/mne_rt.RTStream.html#mne_rt.RTStream" title="mne_rt.RTStream"><code class="xref py py-class docutils literal notranslate"><span class="pre">RTStream</span></code></a> accepts <code class="docutils literal notranslate"><span class="pre">source_space=&quot;volume&quot;</span></code>, building a
+volumetric grid instead of a cortical surface. This makes subcortical
+structures — hippocampus, amygdala, thalamus — reachable for the first
+time; they do not exist on the cortical surface at all. FreeSurfer’s
+<code class="docutils literal notranslate"><span class="pre">aparc+aseg</span></code> atlas carries cortical parcels <em>and</em> subcortical structures,
+so one volume source space covers both without needing a mixed model.
+<code class="docutils literal notranslate"><span class="pre">compute_inv_operator(volume_labels=[...])</span></code> restricts the grid to just
+the labels you need, which takes a whole-brain 5 mm grid from ~14 600
+source points down to a few hundred.</p></li>
+<li><p><strong>New</strong> <code class="xref py py-mod docutils literal notranslate"><span class="pre">mne_rt.source</span></code> <strong>module</strong> with <a class="reference internal" href="generated/mne_rt.SourceModel.html#mne_rt.SourceModel" title="mne_rt.SourceModel"><code class="xref py py-class docutils literal notranslate"><span class="pre">SourceModel</span></code></a>,
+<a class="reference internal" href="generated/mne_rt.ROI.html#mne_rt.ROI" title="mne_rt.ROI"><code class="xref py py-class docutils literal notranslate"><span class="pre">ROI</span></code></a>, <a class="reference internal" href="generated/mne_rt.resolve_rois.html#mne_rt.resolve_rois" title="mne_rt.resolve_rois"><code class="xref py py-func docutils literal notranslate"><span class="pre">resolve_rois()</span></code></a> and
+<a class="reference internal" href="generated/mne_rt.list_rois.html#mne_rt.list_rois" title="mne_rt.list_rois"><code class="xref py py-func docutils literal notranslate"><span class="pre">list_rois()</span></code></a>. ROIs are named groups of atlas labels, so
+<code class="docutils literal notranslate"><span class="pre">&quot;Broca&quot;</span></code> can expand to pars opercularis ∪ pars triangularis and still
+behave as one region.
+<a class="reference internal" href="generated/mne_rt.SourceModel.html#mne_rt.SourceModel.roi_kernel" title="mne_rt.SourceModel.roi_kernel"><code class="xref py py-meth docutils literal notranslate"><span class="pre">roi_kernel()</span></code></a> collapses the whole
+beamformer-plus-label-extraction chain into a single
+<code class="docutils literal notranslate"><span class="pre">(n_roi,</span> <span class="pre">n_channels)</span></code> matrix, built once. Applying it is a ~10 µs matmul
+instead of a ~650 ms round trip through
+<a class="reference external" href="https://mne.tools/stable/generated/mne.extract_label_time_course.html#mne.extract_label_time_course" title="(in MNE v1.13)"><code class="xref py py-func docutils literal notranslate"><span class="pre">extract_label_time_course()</span></code></a>, and is numerically identical to the
+MNE route (~1e-15 relative error, pinned by a test).</p></li>
+<li><p><a class="reference internal" href="generated/mne_rt.RTStream.html#mne_rt.RTStream.compute_inv_operator" title="mne_rt.RTStream.compute_inv_operator"><code class="xref py py-meth docutils literal notranslate"><span class="pre">compute_inv_operator()</span></code></a> now also estimates and saves a
+<strong>data covariance</strong> (<code class="docutils literal notranslate"><span class="pre">*_desc-data_cov.fif</span></code>) and the <strong>source space</strong>
+(<code class="docutils literal notranslate"><span class="pre">*_src.fif</span></code>). The data covariance is what a beamformer adapts to and is a
+different quantity from the noise covariance; the source space is needed to
+map atlas labels onto source estimates and cannot be recovered from a
+beamformer afterwards. <code class="docutils literal notranslate"><span class="pre">make_inverse=False</span></code> skips the minimum-norm
+operator for beamformer-only sessions.</p></li>
+<li><p><a class="reference internal" href="generated/mne_rt.viz.NFPlot.html#mne_rt.viz.NFPlot" title="mne_rt.viz.NFPlot"><code class="xref py py-class docutils literal notranslate"><span class="pre">NFPlot</span></code></a> now draws a live, toggleable dashed
+<strong>threshold line</strong> for the protocol driving each modality — fixed for
+<a class="reference internal" href="generated/mne_rt.protocols.ThresholdProtocol.html#mne_rt.protocols.ThresholdProtocol" title="mne_rt.protocols.ThresholdProtocol"><code class="xref py py-class docutils literal notranslate"><span class="pre">ThresholdProtocol</span></code></a>, adaptive (redrawn every
+push) for <a class="reference internal" href="generated/mne_rt.protocols.ZScoreProtocol.html#mne_rt.protocols.ZScoreProtocol" title="mne_rt.protocols.ZScoreProtocol"><code class="xref py py-class docutils literal notranslate"><span class="pre">ZScoreProtocol</span></code></a>.</p></li>
+<li><p><a class="reference internal" href="generated/mne_rt.viz.NFPlot.html#mne_rt.viz.NFPlot" title="mne_rt.viz.NFPlot"><code class="xref py py-class docutils literal notranslate"><span class="pre">NFPlot</span></code></a> now shades a translucent green <strong>reward
+span</strong> over the time windows where the driving protocol is currently
+rewarding the subject, also independently toggleable. A 🟢 prefix marks
+reward-active updates in the status bar.</p></li>
+<li><p><a class="reference internal" href="generated/mne_rt.viz.EpochPlot.html#mne_rt.viz.EpochPlot" title="mne_rt.viz.EpochPlot"><code class="xref py py-class docutils literal notranslate"><span class="pre">EpochPlot</span></code></a> supports interactive <strong>click-to-reject</strong>
+bad-epoch marking: left-click a shaded epoch span to mark it bad
+(rendered in red), click again to restore it. Marked epochs are tracked
+via <a class="reference internal" href="generated/mne_rt.viz.EpochPlot.html#mne_rt.viz.EpochPlot.bad_epoch_ids" title="mne_rt.viz.EpochPlot.bad_epoch_ids"><code class="xref py py-attr docutils literal notranslate"><span class="pre">bad_epoch_ids</span></code></a> and
+<a class="reference internal" href="generated/mne_rt.viz.EpochPlot.html#mne_rt.viz.EpochPlot.is_epoch_bad" title="mne_rt.viz.EpochPlot.is_epoch_bad"><code class="xref py py-meth docutils literal notranslate"><span class="pre">is_epoch_bad()</span></code></a>.</p></li>
+<li><p>CLI: <code class="docutils literal notranslate"><span class="pre">--protocol</span> <span class="pre">{threshold,zscore}</span></code> explicitly selects the reward
+protocol, with automatic inference from <code class="docutils literal notranslate"><span class="pre">--threshold</span></code> / <code class="docutils literal notranslate"><span class="pre">--zscore-*</span></code>
+flags when omitted; new <code class="docutils literal notranslate"><span class="pre">--zscore-min-std</span></code> option avoids the default
+standard-deviation floor swamping small-magnitude features (e.g.
+<code class="docutils literal notranslate"><span class="pre">sensor_power</span></code>).</p></li>
+<li><p>New <a class="reference internal" href="generated/mne_rt.RTStream.html#mne_rt.RTStream.connect_to_array" title="mne_rt.RTStream.connect_to_array"><code class="xref py py-meth docutils literal notranslate"><span class="pre">connect_to_array()</span></code></a> connects a session to a
+plain in-memory numpy array instead of an LSL stream, driving the exact
+same <a class="reference internal" href="generated/mne_rt.RTStream.html#mne_rt.RTStream.record_baseline" title="mne_rt.RTStream.record_baseline"><code class="xref py py-meth docutils literal notranslate"><span class="pre">record_baseline()</span></code></a> /
+<a class="reference internal" href="generated/mne_rt.RTStream.html#mne_rt.RTStream.record_main" title="mne_rt.RTStream.record_main"><code class="xref py py-meth docutils literal notranslate"><span class="pre">record_main()</span></code></a> pipeline with no LSL networking or
+recorded file required — useful for offline analysis, unit tests, and
+demos. Backed by the new <a class="reference internal" href="generated/mne_rt.ArrayStream.html#mne_rt.ArrayStream" title="mne_rt.ArrayStream"><code class="xref py py-class docutils literal notranslate"><span class="pre">ArrayStream</span></code></a>.</p></li>
+<li><p>New <a class="reference internal" href="generated/mne_rt.RTDecode.html#mne_rt.RTDecode" title="mne_rt.RTDecode"><code class="xref py py-class docutils literal notranslate"><span class="pre">RTDecode</span></code></a> wraps an <a class="reference external" href="https://mne.tools/stable/api/decoding.html#module-mne.decoding" title="(in MNE v1.13)"><code class="xref py py-mod docutils literal notranslate"><span class="pre">mne.decoding</span></code></a>
+(<a class="reference external" href="https://mne.tools/stable/generated/mne.decoding.CSP.html#mne.decoding.CSP" title="(in MNE v1.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">CSP</span></code></a> or <a class="reference external" href="https://mne.tools/stable/generated/mne.decoding.Scaler.html#mne.decoding.Scaler" title="(in MNE v1.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Scaler</span></code></a> +
+<a class="reference external" href="https://mne.tools/stable/generated/mne.decoding.Vectorizer.html#mne.decoding.Vectorizer" title="(in MNE v1.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Vectorizer</span></code></a>) + scikit-learn classifier pipeline for
+real-time single-trial decoding. Fit offline on labelled calibration
+epochs, then attach with <a class="reference internal" href="generated/mne_rt.RTStream.html#mne_rt.RTStream.set_decoder" title="mne_rt.RTStream.set_decoder"><code class="xref py py-meth docutils literal notranslate"><span class="pre">set_decoder()</span></code></a> and query
+once per window as the new <code class="docutils literal notranslate"><span class="pre">&quot;decode&quot;</span></code> NF modality, alongside any other
+modality in <a class="reference internal" href="generated/mne_rt.RTStream.html#mne_rt.RTStream.record_main" title="mne_rt.RTStream.record_main"><code class="xref py py-meth docutils literal notranslate"><span class="pre">record_main()</span></code></a>.</p></li>
+</ul>
+</section>
+<section id="id2">
+<h3>Bug fixes<a class="headerlink" href="#id2" title="Link to this heading">#</a></h3>
+<ul>
+<li><p><strong>A single bad channel broke the session, and silently corrupted
+connectivity.</strong> <code class="docutils literal notranslate"><span class="pre">Stream.get_data()</span></code> defaults to <code class="docutils literal notranslate"><span class="pre">exclude=&quot;bads&quot;</span></code>, but
+<code class="docutils literal notranslate"><span class="pre">rec_info</span></code> keeps those channels, and nine places indexed the acquired array
+by position in <code class="docutils literal notranslate"><span class="pre">rec_info[&quot;ch_names&quot;]</span></code> — the LMS reference channel, ORICA’s
+channel count, the raw viewer, GEDAI’s dimension, and every connectivity and
+source modality’s channel lookup. One bad channel shifted all of them:
+<a class="reference internal" href="generated/mne_rt.RTStream.html#mne_rt.RTStream.record_baseline" title="mne_rt.RTStream.record_baseline"><code class="xref py py-meth docutils literal notranslate"><span class="pre">record_baseline()</span></code></a> raised <code class="docutils literal notranslate"><span class="pre">len(data)</span> <span class="pre">does</span> <span class="pre">not</span> <span class="pre">match</span>
+<span class="pre">len(info[&quot;ch_names&quot;])</span></code> before a session could start, and
+<code class="docutils literal notranslate"><span class="pre">sensor_connectivity</span></code> would have computed on the wrong channel pair. Those
+lookups now use the acquired array’s own channel list. Bad channels are
+deliberately still listed in <code class="docutils literal notranslate"><span class="pre">rec_info</span></code>, since the forward model and
+beamformer exclude them themselves and
+<a class="reference internal" href="generated/mne_rt.tools.RTMaxwellFilter.html#mne_rt.tools.RTMaxwellFilter" title="mne_rt.tools.RTMaxwellFilter"><code class="xref py py-class docutils literal notranslate"><span class="pre">RTMaxwellFilter</span></code></a> needs them marked to reconstruct them
+through the SSS expansion.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">instantaneous_phase</span></code> and <code class="docutils literal notranslate"><span class="pre">laterality_erd_ers</span></code> had no entry in the
+display-scale table, so running either with <code class="docutils literal notranslate"><span class="pre">show_nf_signal=True</span></code> raised
+<code class="docutils literal notranslate"><span class="pre">KeyError</span></code> as soon as the first window was plotted. Both now have one, and
+an unknown name falls back to its base modality’s scale rather than raising.</p></li>
+<li><p>OSC and LSL send failures in the neurofeedback loop were swallowed silently,
+so a session could run to completion delivering no feedback at all with no
+indication of why. The first failure of each is now logged.</p></li>
+<li><p><strong>Corrected several dependency lower bounds that were never satisfiable.</strong>
+CI only ever installed the newest release of each dependency, so the minimum
+versions declared in <code class="docutils literal notranslate"><span class="pre">pyproject.toml</span></code> had never been tested. Installing
+them revealed four combinations that the metadata allowed but that fail on
+contact:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">mne&gt;=1.8</span></code> → <strong>1.9</strong>: on 1.8, <code class="docutils literal notranslate"><span class="pre">record_baseline()</span></code> raises
+<code class="docutils literal notranslate"><span class="pre">KeyError:</span> <span class="pre">'type'</span></code> when saving the baseline recording.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">mne-connectivity&gt;=0.7</span></code> → <strong>0.8</strong>: <code class="docutils literal notranslate"><span class="pre">spectral_connectivity_time</span></code> gained
+<code class="docutils literal notranslate"><span class="pre">&quot;cohy&quot;</span></code> (how imaginary coherence is computed) only in 0.8, and native
+<code class="docutils literal notranslate"><span class="pre">&quot;imcoh&quot;</span></code> only in 0.9. On 0.7 both raise <code class="docutils literal notranslate"><span class="pre">KeyError</span></code>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">nibabel&gt;=5.0</span></code> → <strong>5.2</strong>: 5.0 and 5.1 call <code class="docutils literal notranslate"><span class="pre">np.sctypes</span></code>, removed in
+numpy 2.0, so importing mne-rt failed outright.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">scikit-learn&gt;=1.3</span></code> → <strong>1.4.2</strong>: earlier versions import
+<code class="docutils literal notranslate"><span class="pre">ComplexWarning</span></code> from <code class="docutils literal notranslate"><span class="pre">numpy.core.numeric</span></code>, also removed in numpy 2.0.</p></li>
+</ul>
+<p>The <code class="docutils literal notranslate"><span class="pre">dev</span></code> extra’s <code class="docutils literal notranslate"><span class="pre">pytest</span></code>/<code class="docutils literal notranslate"><span class="pre">pytest-cov</span></code> are now lower-bounded too; with
+no bound at all a minimum-version resolution selected pytest 2.0.0 (2011),
+which does not build. A new <strong>Minimum deps</strong> CI job installs the oldest
+versions each bound allows, so these cannot drift back into fiction.</p>
+</li>
+<li><p><strong>Bad channels broke every source-space window.</strong> The cached source operator’s
+columns follow the forward model’s channels, which exclude <code class="docutils literal notranslate"><span class="pre">info[&quot;bads&quot;]</span></code> and
+any channel without a digitised position, but it was applied to the full data
+window. One bad channel — routine in real recordings — therefore raised a shape
+error on every window, and a same-count reordering would have silently produced
+wrong ROI time courses. Channels are now selected and reordered to match the
+operator, as <a class="reference external" href="https://mne.tools/stable/generated/mne.beamformer.apply_lcmv_raw.html#mne.beamformer.apply_lcmv_raw" title="(in MNE v1.13)"><code class="xref py py-func docutils literal notranslate"><span class="pre">apply_lcmv_raw()</span></code></a> does internally.</p></li>
+<li><p><strong>``compute_inv_operator(volume_labels=[…])`` produced an unusable source
+space.</strong> <a class="reference external" href="https://mne.tools/stable/generated/mne.setup_volume_source_space.html#mne.setup_volume_source_space" title="(in MNE v1.13)"><code class="xref py py-func docutils literal notranslate"><span class="pre">setup_volume_source_space()</span></code></a> returns one source space <em>per
+label</em> unless <code class="docutils literal notranslate"><span class="pre">single_volume=True</span></code>, while label extraction reads a single
+interpolator — so the ROI-restricted path documented as recommended yielded
+rows of the wrong length, or silently all-zero ones.</p></li>
+<li><p>A volume session with default modality parameters failed with
+<code class="docutils literal notranslate"><span class="pre">FileNotFoundError:</span> <span class="pre">Volumetric</span> <span class="pre">atlas</span> <span class="pre">'aparc'</span> <span class="pre">not</span> <span class="pre">found</span></code>: the config shipped
+<code class="docutils literal notranslate"><span class="pre">atlas:</span> <span class="pre">&quot;aparc&quot;</span></code> for every source modality, so the session’s
+<code class="docutils literal notranslate"><span class="pre">source_atlas</span></code> was never consulted. The config now defaults to <code class="docutils literal notranslate"><span class="pre">null</span></code>,
+meaning “use the session’s”.</p></li>
+<li><p>The data covariance was estimated from <code class="docutils literal notranslate"><span class="pre">raw_baseline</span></code> rather than from the
+recording the forward model was built from, so <a class="reference external" href="https://mne.tools/stable/generated/mne.beamformer.make_lcmv.html#mne.beamformer.make_lcmv" title="(in MNE v1.13)"><code class="xref py py-func docutils literal notranslate"><span class="pre">make_lcmv()</span></code></a>
+received an average-reference-projected <code class="docutils literal notranslate"><span class="pre">info</span></code> alongside an unprojected
+covariance.</p></li>
+<li><p>Cached source models are now discarded when a new baseline is recorded;
+previously a second <a class="reference internal" href="generated/mne_rt.RTStream.html#mne_rt.RTStream.record_baseline" title="mne_rt.RTStream.record_baseline"><code class="xref py py-meth docutils literal notranslate"><span class="pre">record_baseline()</span></code></a> left
+<a class="reference internal" href="generated/mne_rt.RTStream.html#mne_rt.RTStream.record_main" title="mne_rt.RTStream.record_main"><code class="xref py py-meth docutils literal notranslate"><span class="pre">record_main()</span></code></a> using the beamformer built from the
+<em>previous</em> baseline.</p></li>
+<li><p>A multi-label ROI containing a label with no source points was silently
+attenuated: label sizes were counted in atlas voxels, so an empty label still
+took a share of the weighting. Sizes are now counted in source points, and the
+“ROI contains no source points” warning fires as intended.</p></li>
+<li><p><strong>EEG source models were built without an average reference.</strong> MNE requires
+an average reference for EEG source modelling —
+<a class="reference external" href="https://mne.tools/stable/generated/mne.minimum_norm.apply_inverse_raw.html#mne.minimum_norm.apply_inverse_raw" title="(in MNE v1.13)"><code class="xref py py-func docutils literal notranslate"><span class="pre">apply_inverse_raw()</span></code></a> rejects data without one, and
+<a class="reference internal" href="generated/mne_rt.RTStream.html#mne_rt.RTStream.record_main" title="mne_rt.RTStream.record_main"><code class="xref py py-meth docutils literal notranslate"><span class="pre">record_main()</span></code></a> duly applies the projection to every
+analysis window — but the forward model, the covariances and the beamformer
+were all built from an <code class="docutils literal notranslate"><span class="pre">info</span></code> without it, so MNE warned on every baseline
+that the covariance was adversely affected and the whitener did not match
+the data it was applied to. The projection is now set before the covariances
+are estimated. This changes source-space values slightly; it is a
+correctness fix, not a cosmetic one.</p></li>
+<li><p><strong>Source-space modalities could never run.</strong> <code class="docutils literal notranslate"><span class="pre">source_power</span></code>,
+<code class="docutils literal notranslate"><span class="pre">source_connectivity</span></code> and <code class="docutils literal notranslate"><span class="pre">source_graph</span></code> read the inverse operator from
+<code class="docutils literal notranslate"><span class="pre">visit_{self.visit}-inv.fif</span></code>, but <code class="docutils literal notranslate"><span class="pre">self.visit</span></code> was never assigned and
+<a class="reference internal" href="generated/mne_rt.RTStream.html#mne_rt.RTStream.compute_inv_operator" title="mne_rt.RTStream.compute_inv_operator"><code class="xref py py-meth docutils literal notranslate"><span class="pre">compute_inv_operator()</span></code></a> writes a BIDS-style
+<code class="docutils literal notranslate"><span class="pre">sub-&lt;id&gt;_ses-&lt;session&gt;_task-baseline_inv.fif</span></code>. All three raised
+<code class="docutils literal notranslate"><span class="pre">AttributeError</span></code> on first use. They now take the operator from the session
+(falling back to the correct filename on disk) and report an actionable error
+when no baseline has been recorded.</p></li>
+<li><p><strong>``method: “imcoh”`` was broken in every connectivity modality.</strong>
+<code class="xref py py-func docutils literal notranslate"><span class="pre">spectral_connectivity_time()</span></code> has no <code class="docutils literal notranslate"><span class="pre">&quot;imcoh&quot;</span></code> in its
+bivariate dispatch table and raised <code class="docutils literal notranslate"><span class="pre">KeyError</span></code>. Imaginary coherence is now
+computed as the imaginary part of <code class="docutils literal notranslate"><span class="pre">&quot;cohy&quot;</span></code> — an exact identity — in
+<code class="docutils literal notranslate"><span class="pre">sensor_connectivity</span></code>, <code class="docutils literal notranslate"><span class="pre">connectivity_ratio</span></code> and <code class="docutils literal notranslate"><span class="pre">source_connectivity</span></code>.
+Connectivity results are read from the raveled output rather than
+<code class="docutils literal notranslate"><span class="pre">get_data(output=&quot;dense&quot;)</span></code>, which allocates a real array and silently
+discards the imaginary part.</p></li>
+<li><p><strong>Theta-band connectivity was impossible at the default window.</strong> <code class="docutils literal notranslate"><span class="pre">n_cycles</span></code>
+was hard-coded to 5; a 5-cycle wavelet at 4 Hz spans 1.25 s and does not fit a
+1 s window. <code class="docutils literal notranslate"><span class="pre">n_cycles</span></code> is now configurable per modality and accepts
+<code class="docutils literal notranslate"><span class="pre">&quot;auto&quot;</span></code> to scale with <code class="docutils literal notranslate"><span class="pre">winsize</span></code>; wavelets that cannot fit are rejected
+up front with a message naming the offending frequency.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">record_main(modality_params=...)</span></code> raised <code class="docutils literal notranslate"><span class="pre">ValueError:</span> <span class="pre">Unknown</span> <span class="pre">method</span></code> for
+the documented <code class="docutils literal notranslate"><span class="pre">{modality:</span> <span class="pre">{param:</span> <span class="pre">value}}</span></code> form, and <code class="docutils literal notranslate"><span class="pre">AttributeError</span></code> for
+the flat form (it called <code class="docutils literal notranslate"><span class="pre">.update()</span></code> on list-valued parameters). Both forms
+now work, and unknown parameter names are reported against the modality.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">source_connectivity</span></code> and <code class="docutils literal notranslate"><span class="pre">source_graph</span></code> read <code class="docutils literal notranslate"><span class="pre">self.params</span></code> on every
+window, but <a class="reference internal" href="generated/mne_rt.RTStream.html#mne_rt.RTStream.record_main" title="mne_rt.RTStream.record_main"><code class="xref py py-meth docutils literal notranslate"><span class="pre">record_main()</span></code></a> leaves it holding the <em>last</em>
+prepared modality’s parameters — so running them alongside another modality
+silently used the wrong frequency band, metric or graph weights. All
+parameters are now captured at prep time. Same fix for <code class="docutils literal notranslate"><span class="pre">argmax_freq</span></code>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">sensor_connectivity</span></code> raised <code class="docutils literal notranslate"><span class="pre">IndexError</span></code> when given a single channel pair
+and silently ignored the third and subsequent pairs. Unknown channel names now
+raise a clear error naming them.</p></li>
+<li><p>Fixed a crash when closing one plot window (e.g. <a class="reference internal" href="generated/mne_rt.viz.RawPlot.html#mne_rt.viz.RawPlot" title="mne_rt.viz.RawPlot"><code class="xref py py-class docutils literal notranslate"><span class="pre">RawPlot</span></code></a>
+or <a class="reference internal" href="generated/mne_rt.viz.TopomapPlot.html#mne_rt.viz.TopomapPlot" title="mne_rt.viz.TopomapPlot"><code class="xref py py-class docutils literal notranslate"><span class="pre">TopomapPlot</span></code></a>) while other plot windows remained open.</p></li>
+<li><p><a class="reference external" href="https://mne.tools/stable/generated/mne.datasets.eegbci.load_data.html#mne.datasets.eegbci.load_data" title="(in MNE v1.13)"><code class="xref py py-func docutils literal notranslate"><span class="pre">mne.datasets.eegbci.load_data()</span></code></a> is now called with
+<code class="docutils literal notranslate"><span class="pre">update_path=True</span></code> in the motor-imagery example, avoiding an
+interactive prompt that hung non-interactive/CI gallery builds.</p></li>
+<li><p>Fixed <code class="xref py py-func docutils literal notranslate"><span class="pre">compute_bandpower()</span></code> always raising <code class="docutils literal notranslate"><span class="pre">TypeError</span></code>
+with <code class="docutils literal notranslate"><span class="pre">method=&quot;multitaper&quot;</span></code> due to an invalid <code class="docutils literal notranslate"><span class="pre">axis</span></code> argument passed to
+MNE’s <a class="reference external" href="https://mne.tools/stable/generated/mne.time_frequency.psd_array_multitaper.html#mne.time_frequency.psd_array_multitaper" title="(in MNE v1.13)"><code class="xref py py-func docutils literal notranslate"><span class="pre">psd_array_multitaper()</span></code></a>.</p></li>
+<li><p>Fixed <a class="reference internal" href="generated/mne_rt.RTStream.html#mne_rt.RTStream.create_report" title="mne_rt.RTStream.create_report"><code class="xref py py-meth docutils literal notranslate"><span class="pre">create_report()</span></code></a> raising <code class="docutils literal notranslate"><span class="pre">FileNotFoundError</span></code>
+when called without a prior <a class="reference internal" href="generated/mne_rt.RTStream.html#mne_rt.RTStream.record_baseline" title="mne_rt.RTStream.record_baseline"><code class="xref py py-meth docutils literal notranslate"><span class="pre">record_baseline()</span></code></a> or
+<a class="reference internal" href="generated/mne_rt.RTStream.html#mne_rt.RTStream.record_main" title="mne_rt.RTStream.record_main"><code class="xref py py-meth docutils literal notranslate"><span class="pre">record_main()</span></code></a> call, since the session’s output
+directories were never created in that path.</p></li>
+</ul>
+</section>
+</section>
+</section>
+
+
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="protocols.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">NF Protocols</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="auto_examples/index.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">Examples Gallery</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <dialog id="pst-secondary-sidebar-modal"></dialog>
+                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+<div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav id="pst-page-toc-nav" class="page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="pst-show_toc_level nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#version-1-2-0">Version 1.2.0</a><ul class="pst-show_toc_level nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#new-features">New features</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#numeric-output-changes">Numeric output changes</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#bug-fixes">Bug fixes</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#version-1-1-0">Version 1.1.0</a><ul class="pst-show_toc_level nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id1">New features</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id2">Bug fixes</a></li>
+</ul>
+</li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="_static/scripts/bootstrap.js?digest=cb8930eaaf36d9849b67"></script>
+<script defer src="_static/scripts/pydata-sphinx-theme.js?digest=cb8930eaaf36d9849b67"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright 2024-2026, Payam S. Shabestari.
+      <br/>
+    
+  </p>
+</div>
+      
+        <div class="footer-item">
+
+  <p class="sphinx-version">
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 9.0.4.
+    <br/>
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
+<p class="theme-version">
+  <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.21.0.
+</p></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>
