@@ -92,9 +92,9 @@ autodoc_mock_imports = _MOCK_MODULES
 # ---------------------------------------------------------------------------
 
 project = 'MNE-RT'
-copyright = '2025, Payam S. Shabestari'
+copyright = '2024-2026, Payam S. Shabestari'
 author = 'Payam S. Shabestari'
-release = '1.0.0'
+release = '1.2.0'
 
 # ---------------------------------------------------------------------------
 # General configuration
@@ -152,7 +152,7 @@ html_theme_options = {
         "image_light": "_static/mne_rt_logo.svg",
         "image_dark":  "_static/mne_rt_logo.svg",
     },
-    "github_url": "https://github.com/payamsash/mne-rt",
+    "github_url": "https://github.com/mne-rt-org/mne-rt",
     "navbar_end": ["navbar-icon-links"],
     "secondary_sidebar_items": ["page-toc", "edit-this-page"],
     "show_toc_level": 2,
