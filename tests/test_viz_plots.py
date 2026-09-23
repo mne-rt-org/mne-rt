@@ -61,9 +61,36 @@ def qt_app():
     yield app
 
 
+# C++ pointers of every top-level widget already closed and handed to Qt for
+# deletion. Module-level because the widgets outlive the tests that made them.
+_TORN_DOWN: set[int] = set()
+
+
+def _qt_handle(widget):
+    """A stable identity for a Qt object, surviving Python wrapper churn.
+
+    ``id()`` is not usable here: a widget whose C++ object outlives its Python
+    wrapper gets a fresh wrapper the next time ``topLevelWidgets()`` returns it
+    (which is why the same window shows up as ``RawPlot`` in one sweep and
+    ``QMainWindow`` in the next), and CPython recycles the address of the
+    collected wrapper. The underlying C++ pointer does not move.
+    """
+    try:  # PyQt5 / PyQt6
+        from PyQt6 import sip
+
+        return sip.unwrapinstance(widget)
+    except Exception:
+        try:  # PySide2 / PySide6
+            import shiboken6
+
+            return shiboken6.getCppPointer(widget)[0]
+        except Exception:  # unknown binding — degrade to per-wrapper identity
+            return id(widget)
+
+
 @pytest.fixture(autouse=True)
 def _destroy_widgets(qt_app):
-    """Tear each test's Qt widgets down deterministically.
+    """Tear each test's Qt widgets down deterministically, exactly once each.
 
     ``widget.close()`` only hides a widget; the C++ object is destroyed later —
     either when Python garbage-collects the wrapper or when the event loop runs
@@ -76,11 +103,33 @@ def _destroy_widgets(qt_app):
     ``processEvents()`` crashes 3/3 runs under
     ``QT_QPA_PLATFORM=offscreen``): handing the widgets to Qt for deletion and
     collecting before draining brings that to 0/3.
+
+    Each widget is handled **once**, tracked by C++ pointer. This matters for
+    wall-clock, not correctness: every ``RawPlot`` leaves 16 parentless
+    top-level widgets behind (its window plus pyqtgraph's ``ViewBox``/
+    ``PlotItem`` context menus), and they are never freed — ``processEvents()``
+    does not dispatch ``DeferredDelete``, and forcing it to
+    (``sendPostedEvents(None, QEvent.Type.DeferredDelete)``) segfaults, because
+    pyqtgraph still references those menus. The leak is load-bearing.
+
+    Re-sweeping the survivors on every test made teardown O(widgets alive), so
+    the file cost O(n^2) overall: 38,912 close/deleteLater pairs across 54
+    tests, against 1,313 live widgets. Offscreen raster hid that locally at
+    ~0.06 s per teardown, but under CI's Xvfb/xcb each close is real X11
+    traffic, and `TestRawPlot` grew from ~2 s for the whole class to
+    52 s -> 105 s -> 212 s -> 423 s per test until the job hit its 30-minute
+    timeout. Handling each widget once restores 1,313 calls, one per widget.
     """
     yield
     from qtpy.QtWidgets import QApplication
 
+    fresh = []
     for widget in QApplication.topLevelWidgets():
+        handle = _qt_handle(widget)
+        if handle not in _TORN_DOWN:
+            _TORN_DOWN.add(handle)
+            fresh.append(widget)
+    for widget in fresh:
         widget.close()
         widget.deleteLater()
     qt_app.processEvents()
