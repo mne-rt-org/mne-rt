@@ -1,0 +1,70 @@
+cff-version: 1.2.0
+message: "If you use MNE-RT in your research, please cite it as below."
+title: "MNE-RT: real-time M/EEG signal processing"
+abstract: >-
+  MNE-RT is an open-source Python package for real-time M/EEG signal
+  processing, built on MNE-Python and MNE-LSL. It implements the full
+  closed-loop neurofeedback and brain-computer interface pipeline:
+  Lab Streaming Layer acquisition, online artifact correction, neural feature
+  extraction in sensor and source space, adaptive reward protocols, live
+  visualisation, feedback output over LSL and OSC, and BIDS-compatible session
+  saving.
+type: software
+version: 1.2.0
+# TODO: add the Zenodo DOI once the v1.2.0 release is archived
+# doi: 10.5281/zenodo.XXXXXXX
+license: BSD-3-Clause
+repository-code: "https://github.com/mne-rt-org/mne-rt"
+url: "https://mne-rt-org.github.io/mne-rt/"
+keywords:
+  - neurofeedback
+  - EEG
+  - MEG
+  - brain-computer interface
+  - real-time
+  - Lab Streaming Layer
+  - source localisation
+  - Python
+authors:
+  - family-names: Shabestari
+    given-names: "Payam S."
+    email: payam.sadeghi74@gmail.com
+    orcid: "https://orcid.org/0000-0002-2647-4891"
+    affiliation: "Department of Otorhinolaryngology, Head and Neck Surgery, University Hospital Zurich, University of Zurich, Zurich, Switzerland"
+preferred-citation:
+  type: conference-paper
+  title: "Advances on Real Time M/EEG Neural Feature Extraction"
+  collection-title: "2025 IEEE 38th International Symposium on Computer-Based Medical Systems (CBMS)"
+  publisher:
+    name: IEEE
+  year: 2025
+  start: 337
+  end: 338
+  doi: "10.1109/CBMS65348.2025.00074"
+  isbn: "9798331526108"
+  authors:
+    - family-names: Shabestari
+      given-names: "Payam S."
+      orcid: "https://orcid.org/0000-0002-2647-4891"
+    - family-names: Ribes
+      given-names: Delphine
+    - family-names: Défayes
+      given-names: Lara
+    - family-names: Cai
+      given-names: Danpeng
+    - family-names: Groves
+      given-names: Emily
+    - family-names: Behjat
+      given-names: "Harry H."
+    - family-names: Van de Ville
+      given-names: Dimitri
+    - family-names: Kleinjung
+      given-names: Tobias
+    - family-names: Naas
+      given-names: Adrian
+    - family-names: Henchoz
+      given-names: Nicolas
+    - family-names: Sonderegger
+      given-names: Andreas
+    - family-names: Neff
+      given-names: Patrick
