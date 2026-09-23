@@ -8,7 +8,9 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/mne-rt-org/mne-rt/blob/main/LICENSE"><img alt="License: MIT" src="https://img.shields.io/github/license/mne-rt-org/mne-rt?color=green"></a>
+  <a href="https://github.com/mne-rt-org/mne-rt/blob/main/LICENSE"><img alt="License: BSD-3-Clause" src="https://img.shields.io/badge/license-BSD--3--Clause-green"></a>
+  <a href="https://github.com/mne-rt-org/mne-rt/actions/workflows/ci.yml"><img alt="CI" src="https://github.com/mne-rt-org/mne-rt/actions/workflows/ci.yml/badge.svg"></a>
+  <a href="https://codecov.io/gh/mne-rt-org/mne-rt"><img alt="Coverage" src="https://codecov.io/gh/mne-rt-org/mne-rt/branch/main/graph/badge.svg"></a>
   <a href="https://pypi.org/project/mne-rt/"><img alt="PyPI" src="https://img.shields.io/pypi/v/mne-rt?color=blue"></a>
   <a href="https://pypi.org/project/mne-rt/"><img alt="Python" src="https://img.shields.io/pypi/pyversions/mne-rt"></a>
   <a href="https://mne-rt-org.github.io/mne-rt/"><img alt="Docs" src="https://img.shields.io/badge/docs-online-brightgreen?logo=readthedocs&logoColor=white"></a>
@@ -161,6 +163,15 @@ mne-rt run --subject sub01 --subjects-dir /data --duration 600 \
 Full documentation (API reference, tutorials, visualization gallery) is available at
 **[mne-rt-org.github.io/mne-rt](https://mne-rt-org.github.io/mne-rt/)**.
 
+## Getting help
+
+- **Documentation** — [mne-rt-org.github.io/mne-rt](https://mne-rt-org.github.io/mne-rt/)
+- **Questions** — [GitHub Discussions](https://github.com/mne-rt-org/mne-rt/discussions)
+- **Bugs** — [GitHub Issues](https://github.com/mne-rt-org/mne-rt/issues); see
+  [SUPPORT.md](SUPPORT.md) for what to include
+- **Contributing** — see [CONTRIBUTING.md](CONTRIBUTING.md) and our
+  [Code of Conduct](CODE_OF_CONDUCT.md)
+
 ## Cite
 
 If you use MNE-RT in your research, please cite:
@@ -168,15 +179,17 @@ If you use MNE-RT in your research, please cite:
 ```bibtex
 @inproceedings{shabestari2025advances,
   title        = {Advances on Real Time {M/EEG} Neural Feature Extraction},
-  author       = {Shabestari, Payam S and Ribes, Delphine and D{\'e}fayes, Lara
-                  and Cai, Danpeng and Groves, Emily and Behjat, Harry H
+  author       = {Shabestari, Payam S. and Ribes, Delphine and D{\'e}fayes, Lara
+                  and Cai, Danpeng and Groves, Emily and Behjat, Harry H.
                   and Van de Ville, Dimitri and Kleinjung, Tobias
-                  and Naas, Adrian and Henchoz, Nicolas and others},
+                  and Naas, Adrian and Henchoz, Nicolas
+                  and Sonderegger, Andreas and Neff, Patrick},
   booktitle    = {2025 IEEE 38th International Symposium on Computer-Based
                   Medical Systems (CBMS)},
-  pages        = {337--338},
+  publisher    = {IEEE},
   year         = {2025},
-  organization = {IEEE}
+  pages        = {337--338},
+  doi          = {10.1109/CBMS65348.2025.00074}
 }
 ```
 
@@ -188,4 +201,4 @@ Development was supported by the
 
 ## License
 
-[MIT License](LICENSE) — © 2025 Payam S. Shabestari
+[BSD 3-Clause License](LICENSE) — © 2024–2026 Payam S. Shabestari

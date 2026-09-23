@@ -16,7 +16,7 @@ authors = [
 maintainers = [
     { name = "Payam S. Shabestari", email = "payam.sadeghi74@gmail.com" },
 ]
-license = "MIT"
+license = "BSD-3-Clause"
 license-files = ["LICENSE"]
 readme = "README.md"
 requires-python = ">=3.11"
