@@ -130,6 +130,36 @@ def test_spectral_centroid(nf_obj):
     assert val > 0  # centroid should be positive frequency
 
 
+def test_instantaneous_phase(nf_obj):
+    """Regression: shipped in ``config_methods.yml`` and documented as a
+    modality, but ``ModalityMixin`` had no ``_instantaneous_phase``, so
+    ``record_main(modality=["instantaneous_phase"])`` raised
+    ``NotImplementedError``. This goes through the real config -> prep ->
+    compute path, which is where the gap was."""
+    val, delay = _call_modality(nf_obj, "instantaneous_phase", DATA)
+    assert isinstance(val, float)
+    assert -np.pi <= val <= np.pi
+    assert delay >= 0
+
+
+def test_instantaneous_phase_tracks_a_known_oscillation(nf_obj):
+    """Phase of a pure sine is reproducible and shifts with the sine's own."""
+    from mne_rt.tools import get_params
+
+    nf_obj.params = get_params(nf_obj.config_file, "instantaneous_phase", {})
+    precomp = nf_obj._instantaneous_phase_prep()
+    t = np.arange(N_TIMES) / SFREQ
+    base = np.tile(np.sin(2 * np.pi * 10.0 * t), (N_CHANNELS, 1))
+    shifted = np.tile(np.sin(2 * np.pi * 10.0 * t + np.pi / 2), (N_CHANNELS, 1))
+
+    val_a, _ = nf_obj._instantaneous_phase(base, **precomp)
+    val_b, _ = nf_obj._instantaneous_phase(base.copy(), **precomp)
+    val_c, _ = nf_obj._instantaneous_phase(shifted, **precomp)
+
+    assert val_a == pytest.approx(val_b)  # deterministic
+    assert val_a != pytest.approx(val_c)  # sensitive to the input phase
+
+
 def test_erd_ers_needs_baseline(nf_obj):
     """erd_ers_prep requires baseline_power — check the error is meaningful."""
     with pytest.raises((AttributeError, RuntimeError)):

@@ -55,6 +55,7 @@ from mne_rt.tools import (
     butter_bandpass,
     compute_bandpower,
     compute_fft,
+    compute_instantaneous_phase,
     estimate_aperiodic_component,
     log_degree_barrier,
     resolve_connectivity_method,
@@ -1036,6 +1037,38 @@ class ModalityMixin:
         total = psd_band.sum(axis=1, keepdims=True) + 1e-300
         centroid_per_ch = (psd_band * freqs_band[np.newaxis, :]).sum(axis=1) / total.squeeze()
         return float(centroid_per_ch.mean())
+
+    # ------------------------------------------------------------------
+    # Instantaneous phase
+    # ------------------------------------------------------------------
+
+    def _instantaneous_phase_prep(self) -> dict:
+        return {
+            "sfreq": self._sfreq,
+            "frange": self.params["frange"],
+            "channel_indices": self.params.get("channel_indices"),
+        }
+
+    @timed
+    def _instantaneous_phase(
+        self,
+        data: np.ndarray,
+        sfreq: float,
+        frange: tuple,
+        channel_indices,
+    ) -> float:
+        """Instantaneous phase of the analytic signal at the window's last sample.
+
+        Returned in radians in ``[-pi, pi]``, for phase-triggered stimulation and
+        phase-alignment protocols. The amplitude envelope that
+        :func:`~mne_rt.tools.compute_instantaneous_phase` also returns is
+        discarded here, since a modality yields one value per window; gate on
+        ``sensor_power`` in the same band if you need an amplitude criterion.
+        """
+        phase, _amplitude = compute_instantaneous_phase(
+            data, sfreq, frange, channel_indices=channel_indices
+        )
+        return float(phase)
 
     # ------------------------------------------------------------------
     # ERD/ERS laterality index

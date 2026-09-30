@@ -180,6 +180,16 @@ has been removed — passing a floor now *opts back into* the old behaviour.
 Bug fixes
 ^^^^^^^^^
 
+- **``instantaneous_phase`` now works.** It was listed in
+  ``config_methods.yml`` and documented as a modality in the tutorial, the CLI
+  reference and the modality guide, and it had a display scale and a
+  visualisation test — but :class:`ModalityMixin` had no
+  ``_instantaneous_phase`` method, so
+  ``record_main(modality=["instantaneous_phase"])`` raised
+  ``NotImplementedError``. The dispatch method is now implemented on top of
+  ``compute_instantaneous_phase``, returning the phase in radians at the
+  window's last sample.
+
 - **Neurofeedback values were never sent over LSL.**
   :class:`~mne_rt.LSLSender` passed a Python list to mne-lsl's
   ``StreamOutlet.push_sample``, which asserts a NumPy array for numeric
