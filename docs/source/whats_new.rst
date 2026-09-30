@@ -8,7 +8,7 @@ What's new
 Version 1.2.0
 --------------
 
-*unreleased*
+*2026-09-23*
 
 New features
 ^^^^^^^^^^^^
