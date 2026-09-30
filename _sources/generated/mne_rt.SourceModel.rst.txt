@@ -1,0 +1,38 @@
+﻿mne\_rt.SourceModel
+===================
+
+.. currentmodule:: mne_rt
+
+.. autoclass:: SourceModel
+
+   
+   .. automethod:: __init__
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+   
+      ~SourceModel.__init__
+      ~SourceModel.apply
+      ~SourceModel.channel_picks
+      ~SourceModel.from_stream
+      ~SourceModel.label_operator
+      ~SourceModel.roi_kernel
+      ~SourceModel.source_estimate
+      ~SourceModel.source_operator
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+   
+      ~SourceModel.channel_names
+      ~SourceModel.kind
+      ~SourceModel.n_sources
+      ~SourceModel.supports_kernel
+   
+   
