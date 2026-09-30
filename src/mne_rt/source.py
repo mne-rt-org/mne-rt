@@ -16,7 +16,8 @@ built once and applied with a ``~1 ms`` matmul::
     roi_tc = R @ data           # per window
 
 :meth:`SourceModel.roi_kernel` builds ``R``; the result is numerically identical
-to the MNE path (verified to ~1e-15 relative error in the test suite).
+to the MNE path (verified to better than 1e-10 relative error in the test
+suite).
 
 Regions of interest
 -------------------
