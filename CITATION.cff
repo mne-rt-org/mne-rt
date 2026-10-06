@@ -39,6 +39,14 @@ authors:
     given-names: Delphine
     orcid: "https://orcid.org/0000-0001-5527-1076"
     affiliation: "EPFL+ECAL Lab, EPFL, Lausanne, Switzerland"
+  - family-names: Férat
+    given-names: Victor
+    orcid: "https://orcid.org/0000-0003-1952-7657"
+    affiliation: "M/EEG & Neuromod platform, Fondation Campus Biotech Geneva, Geneva, Switzerland"
+  - family-names: Ros
+    given-names: Tomas
+    orcid: "https://orcid.org/0000-0001-6952-0459"
+    affiliation: "Department of Basic Neurosciences, University of Geneva, Geneva, Switzerland"
   - family-names: Neff
     given-names: Patrick
     orcid: "https://orcid.org/0000-0003-3174-4910"

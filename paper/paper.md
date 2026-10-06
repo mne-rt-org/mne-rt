@@ -13,13 +13,19 @@ authors:
   - name: Payam S. Shabestari
     orcid: 0000-0002-2647-4891
     corresponding: true
-    affiliation: "1, 2, 3"
+    affiliation: "1, 2, 3, 4"
   - name: Eric Larson
     orcid: 0000-0003-4782-5360
-    affiliation: 4
+    affiliation: 5
   - name: Delphine Ribes
     orcid: 0000-0001-5527-1076
-    affiliation: 5
+    affiliation: 6
+  - name: Victor Férat
+    orcid: 0000-0003-1952-7657
+    affiliation: "3, 4"
+  - name: Tomas Ros
+    orcid: 0000-0001-6952-0459
+    affiliation: "7, 8"
   - name: Patrick Neff
     orcid: 0000-0003-3174-4910
     affiliation: 1
@@ -29,14 +35,21 @@ affiliations:
     ror: 01462r250
   - name: Neuroscience Center Zurich, ETH Zurich and University of Zurich, Zurich, Switzerland
     index: 2
-  - name: Fondation Campus Biotech Geneva (FCBG), Geneva, Switzerland
+  - name: M/EEG & Neuromod platform, Fondation Campus Biotech Geneva, Geneva, Switzerland
     index: 3
-  - name: University of Washington, Seattle, WA, United States
+  - name: neuro@campus, Geneva, Switzerland
     index: 4
+  - name: University of Washington, Seattle, WA, United States
+    index: 5
     ror: 00cvxb145
   - name: EPFL+ECAL Lab, EPFL, Lausanne, Switzerland
-    index: 5
+    index: 6
     ror: 02s376052
+  - name: Department of Basic Neurosciences, University of Geneva, Geneva, Switzerland
+    index: 7
+    ror: 01swzsf04
+  - name: CIBM Center for Biomedical Imaging, University of Geneva, Geneva, Switzerland
+    index: 8
 date: 23 September 2026
 bibliography: paper.bib
 ---
@@ -84,9 +97,11 @@ and who want the online experiment expressed with the same objects, with the
 protocol, the artifact method and the measured timing stored alongside the
 recorded session.
 
-Sensor-space band power is supported by several existing real-time tools.
-Source-space features are less well covered, largely for computational reasons.
-Training a region-to-region interaction, for example imaginary coherency
+Sensor-space band power is already well supported by existing real-time tools,
+so `MNE-RT` does not add a new method there. Source-space features are the gap:
+the implementations available today are not fast enough to run inside a
+real-time loop, and this is what `MNE-RT` contributes a method for. Training a
+region-to-region interaction, for example imaginary coherency
 [@nolte2004imcoh] between a pair of regions of interest reconstructed with an
 LCMV beamformer [@vanveen1997lcmv], requires projecting each window into source
 space and reducing thousands of grid points to a small number of ROI time
@@ -107,14 +122,15 @@ modern LSL bindings, stream inlets and outlets, file replay and online epoching.
 source-space feature kernels, reward logic and session provenance are
 application-level concerns outside that scope.
 
-Outside the MNE ecosystem, `Timeflux` [@clisson2019timeflux] and NeuXus model
-real-time processing as a configurable graph of nodes; `MEDUSA` [@medusa]
+Outside the MNE ecosystem, `Timeflux` [@clisson2019timeflux] and `NeuXus`
+[@neuxus] model real-time processing as a configurable graph of nodes; `MEDUSA` [@medusa]
 provides a broad BCI ecosystem with its own paradigms and signal-processing
 stack; `OpenViBE` [@renard2010openvibe] and `BCI2000` [@schalk2004bci2000] are
 mature C++ platforms driven through graphical designers; NeuroPype is
-proprietary. Each of these requires the user to adopt a separate data model and
-toolchain, and none provides an anatomically constrained source-space feature
-path. `MNE-RT` occupies the remaining position: an MNE-native framework in which
+proprietary. Each of these requires users to adapt their data and processing
+pipeline to platform-specific data structures and toolchains, and none provides
+an anatomically constrained source-space feature path. `MNE-RT` occupies the
+remaining position: an MNE-native framework in which
 the online feature is expressed with the same objects, montages, forward models
 and inverse operators as the offline analysis that motivated it, and in which
 source-space features are computed within the real-time budget.
@@ -124,12 +140,16 @@ source-space features are computed within the real-time budget.
 `MNE-RT` is script-shaped rather than graph-shaped. A session reads as
 `connect_to_lsl` → `record_baseline` → `record_main` → `save`, following the
 structure of an offline `MNE-Python` analysis rather than requiring the
-experiment to be expressed as a dataflow configuration. The cost of this choice
-is a large session class; the consequence is that an experiment is a readable,
-version-controlled script.
+experiment to be expressed as a dataflow configuration. This design centralises
+multiple responsibilities within the session class, resulting in a larger and
+more complex class than a modular graph-based architecture would require. In
+return, an experiment can be expressed as a readable, version-controlled Python
+script that closely follows the structure of the corresponding offline
+analysis.
 
-Source-space features meet the deadline by exploiting the linearity of the
-operators involved, rather than by accelerating the generic pipeline. LCMV with
+Source-space features meet the real-time requirement by exploiting the
+linearity of the operators involved, rather than by accelerating the generic
+pipeline. LCMV with
 `pick_ori="max-power"` and minimum-norm variants with `pick_ori="normal"` are
 linear operators, and `mean`/`mean_flip` label extraction is a fixed sparse
 average. `SourceModel.roi_kernel()` therefore collapses whitening, inverse
