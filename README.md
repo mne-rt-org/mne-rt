@@ -10,7 +10,6 @@
 <p align="center">
   <a href="https://github.com/mne-rt-org/mne-rt/blob/main/LICENSE"><img alt="License: BSD-3-Clause" src="https://img.shields.io/badge/license-BSD--3--Clause-green"></a>
   <a href="https://github.com/mne-rt-org/mne-rt/actions/workflows/ci.yml"><img alt="CI" src="https://github.com/mne-rt-org/mne-rt/actions/workflows/ci.yml/badge.svg"></a>
-  <a href="https://codecov.io/gh/mne-rt-org/mne-rt"><img alt="Coverage" src="https://codecov.io/gh/mne-rt-org/mne-rt/branch/main/graph/badge.svg"></a>
   <a href="https://pypi.org/project/mne-rt/"><img alt="PyPI" src="https://img.shields.io/pypi/v/mne-rt?color=blue"></a>
   <a href="https://pypi.org/project/mne-rt/"><img alt="Python" src="https://img.shields.io/pypi/pyversions/mne-rt"></a>
   <a href="https://mne-rt-org.github.io/mne-rt/"><img alt="Docs" src="https://img.shields.io/badge/docs-online-brightgreen?logo=readthedocs&logoColor=white"></a>
