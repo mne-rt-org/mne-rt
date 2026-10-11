@@ -202,3 +202,17 @@ Development was supported by the
 ## License
 
 [BSD 3-Clause License](LICENSE) — © 2024–2026 Payam S. Shabestari
+
+> **Note on the `gedai` dependency.** mne-rt itself is BSD-3-Clause, but it
+> depends on the [`gedai`](https://pypi.org/project/gedai/) package (used by
+> `mne_rt.tools.AdaptiveMultibandGEDAIDenoiser`;
+> `mne_rt.tools.GEDAIDenoiser` itself does not import it),
+> which is distributed under
+> the [PolyForm Noncommercial License 1.0.0](https://polyformproject.org/licenses/noncommercial/1.0.0).
+> That license restricts use of `gedai` to noncommercial purposes and notes
+> that the underlying GEDAI algorithm is patent-pending, with no commercial
+> patent grant included. **Commercial use of the adaptive multiband
+> GEDAI feature is not covered by this permissive license** and may
+> require a separate agreement with the `gedai` licensor. mne-rt's own
+> license is unchanged; review the dependency's license before use or
+> distribution. `gedai` is installed as a mandatory dependency.

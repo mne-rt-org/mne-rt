@@ -10,8 +10,34 @@ Version 1.2.0
 
 *unreleased*
 
+Bug fixes
+^^^^^^^^^
+
+- ``ArrayStream`` now assigns unique sample-clock timestamps and paces chunks
+  against cumulative sample deadlines instead of assigning one timestamp to
+  every sample in a chunk.
+- Single-band GEDAI can run without a previously fitted blink template.
+
 New features
 ^^^^^^^^^^^^
+
+- **Opt-in causal Haar multiband GEDAI.**
+  :class:`~mne_rt.tools.AdaptiveMultibandGEDAIDenoiser` uses delayed pyGEDAI
+  Haar reconstruction kernels, finite trailing covariance epochs (six cycles
+  by default), and baseline-calibrated SENSAI sensitivities with per-chunk
+  eigenvalue cutoffs. Enable it with ``RTStream.fit_gedai(multiband="causal")``;
+  the single-band default and its existing positional arguments are unchanged.
+  ``RTStream`` processes unique samples in chunks of at most 50 ms, discards
+  startup calibration history, and assembles analysis windows with aligned
+  source timestamps. Missing samples raise an explicit error.
+  ``latency`` and ``delay_samples`` report fixed reconstruction delay, not
+  compute time. Optional ``causal_prefilter_mode`` and
+  ``causal_broadband_pass=False`` select shorter cascades or wavelet-only
+  processing and require recalibration. This is not an accuracy guarantee
+  or a zero-latency implementation; see :ref:`denoising-gedai`.
+  The new ``gedai>=0.60`` dependency supplies the SENSAI sensitivity API.
+  Its PolyForm Noncommercial license differs from mne-rt's BSD-3-Clause
+  license; see the README before commercial use.
 
 - **The session report now describes the session.**
   :meth:`~mne_rt.RTStream.create_report` produced four blocks — the baseline

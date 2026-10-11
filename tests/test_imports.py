@@ -12,6 +12,7 @@ def test_top_level_imports():
     assert hasattr(mne_rt, "RawPlot")
     assert hasattr(mne_rt, "ORICA")
     assert hasattr(mne_rt, "GEDAIDenoiser")
+    assert hasattr(mne_rt, "AdaptiveMultibandGEDAIDenoiser")
     assert hasattr(mne_rt, "OSCSender")
     assert hasattr(mne_rt, "set_log_level")
     assert hasattr(mne_rt, "__version__")
@@ -35,7 +36,7 @@ def test_set_log_level():
 def test_submodule_imports():
     from mne_rt._logging import logger, set_log_level
     from mne_rt.osc import OSCSender
-    from mne_rt.tools import ORICA, GEDAIDenoiser
+    from mne_rt.tools import ORICA, AdaptiveMultibandGEDAIDenoiser, GEDAIDenoiser
 
 
 def test_cli_importable():

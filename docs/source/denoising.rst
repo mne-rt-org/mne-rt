@@ -124,6 +124,20 @@ GEDAI — GED-based Artifact Isolation
 
 **Class:** :class:`mne_rt.tools.GEDAIDenoiser`
 
+.. important::
+   **License notice.** mne-rt itself is BSD-3-Clause, but
+   :class:`~mne_rt.tools.AdaptiveMultibandGEDAIDenoiser` (``multiband=True``
+   / ``"causal"`` below) depends on the
+   `gedai <https://pypi.org/project/gedai/>`_ package, which is distributed
+   under the `PolyForm Noncommercial License 1.0.0
+   <https://polyformproject.org/licenses/noncommercial/1.0.0>`_. That license
+   restricts use to noncommercial purposes, and the underlying GEDAI
+   algorithm is patent-pending with no commercial patent grant included.
+   :class:`~mne_rt.tools.GEDAIDenoiser` itself does not import ``gedai``, but
+   mne-rt installs it as a mandatory dependency. **Commercial use of the
+   adaptive multiband GEDAI feature is not covered by mne-rt's permissive license.**
+   See the "License" section of the project README for details.
+
 GEDAI uses Generalized Eigendecomposition (GED) :footcite:p:`cohen2022tutorial` to find
 spatial filters that maximally separate brain signal from broadband activity,
 optionally anchored to a leadfield-derived forward model :footcite:p:`ros2025return`.
@@ -168,6 +182,153 @@ with the largest eigenvalues (brain-like directions retained).
 :math:`\mathbf{R}_\text{band}` with the leadfield outer product
 :math:`\mathbf{L}\mathbf{L}^\top`, directly constraining filters to be
 consistent with neural generators.
+
+**Delayed Haar multiband mode.**
+:class:`mne_rt.tools.AdaptiveMultibandGEDAIDenoiser`
+(``fit_gedai(multiband="causal")`` or ``multiband=True``) uses FIR kernels
+obtained from pyGEDAI's actual Haar MODWT reconstruction, rather than
+Butterworth crossovers. Every retained band is
+shifted to the same causal delay, preserving their relative phase, and only
+retained, cleaned bands are summed. Bands whose upper edge is at or below
+``wavelet_low_cutoff`` are excluded entirely: no low-frequency residual is
+added back. This dyadic wavelet cutoff is not a brick-wall frequency filter.
+
+The default is **six cycles per band**. Automatic level selection includes
+baseline length, and epoch sizes reuse pyGEDAI's adaptive parameter helper.
+Each active band's covariance uses a finite trailing epoch rather than an
+EMA with an unbounded tail. A chunk updates the covariance and its spatial
+projection; single-sample chunks do not erase the covariance.
+``refit=True`` can re-solve the spatial filters independently of
+``update_covariance``. At a 0.5 Hz cutoff and a 20-second baseline, the
+slowest retained epoch is 15.36 seconds at 200 Hz or 12 seconds at 256 Hz.
+
+The default broadband pass includes the input 0.1 Hz Haar prefilter, the
+low-cut prefilter, and the broadband model's own 0.1 Hz prefilter, matching
+pyGEDAI's unfiltered-input path. Broadband SENSAI calibration uses overlapping
+one-second epochs; per-wavelet calibration uses non-overlapping epochs.
+``broadband_pass=False`` disables broadband cleaning and its additional
+prefilters, but retains the initial 0.1 Hz prefilter and band exclusion.
+In ``RTStream.fit_gedai``, use ``causal_broadband_pass=False`` to select this
+wavelet-only configuration and recalibrate its per-band SENSAI sensitivities.
+
+**Latency is explicit.** Symmetric Haar reconstruction needs future context
+relative to its output timestamp. The streaming implementation obtains that
+context by delaying output, never by reading future acquisition chunks.
+The fixed delay is available as
+:attr:`~mne_rt.tools.AdaptiveMultibandGEDAIDenoiser.delay_samples` and
+:attr:`~mne_rt.tools.AdaptiveMultibandGEDAIDenoiser.latency`.
+Input sample index ``t`` produces output corresponding to
+``t - delay_samples``. Startup output includes delayed calibration history.
+With the default broadband pass, 0.5 Hz cutoff, and a 20-second baseline,
+the delay is 12.78 seconds at 200 Hz and 17.984375 seconds at 256 Hz.
+This excludes computation time and is not near-zero-latency processing.
+
+``RTStream.record_main`` feeds causal GEDAI only previously unseen timestamped
+samples in chunks of at most 50 ms. Overlapping analysis windows are assembled
+from cleaned output, not passed repeatedly through the stateful filters.
+Startup calibration-history output is discarded; feedback begins once a full
+cleaned analysis window is available. Window and marker timestamps refer to the
+delayed source samples. Missing input samples stop acquisition with an explicit
+error rather than silently joining discontinuous history.
+
+For example::
+
+    nf.fit_gedai(
+        multiband="causal",
+        cycles_per_wavelet=6,
+        causal_wavelet_low_cutoff=0.5,
+    )
+    print(nf.gedai.latency)
+
+For the low-delay, wavelet-only configuration::
+
+    nf.fit_gedai(
+        multiband="causal",
+        shrinkage=0.05,
+        cycles_per_wavelet=6,
+        causal_wavelet_low_cutoff=1.0,
+        causal_prefilter_mode="none",
+        causal_broadband_pass=False,
+    )
+
+**Optional shorter Haar cascades.** The default
+``causal_prefilter_mode="reference"`` retains the original prefilter cascade.
+``"lowcut"`` removes the two 0.1 Hz stages and keeps one Haar highpass at
+the requested cutoff. ``"none"`` skips standalone prefilters entirely;
+ignored wavelet bands are still excluded from output. In the latter case,
+broadband GEDAI sees low-frequency activity before wavelet exclusion.
+Calibration follows the selected cascade, so changing modes requires
+refitting. These modes are not claims of offline pyGEDAI equivalence.
+
+At a 1 Hz cutoff, the ``"lowcut"`` / ``"none"`` fixed delays are respectively
+1.270 / 0.635 seconds at 200 Hz, 0.9921875 / 0.49609375 seconds at 256 Hz,
+and 1.020 / 0.510 seconds at 500 Hz (for a sufficiently long baseline).
+Changing cycles from six to four or two shortens covariance epochs, not
+these kernel delays when the retained bands are unchanged. Upsampling
+adds no signal information and requires its own resampling delay and
+computation to be accounted for.
+
+**Causal SENSAI calibration.** The default ``n_artifact="auto"`` uses
+pyGEDAI's SENSAI optimizer, not a fixed component count or an eigenvalue
+heuristic. During ``fit``, each Haar baseline band is divided into epochs
+using ``cycles_per_wavelet`` at the band's lower frequency (half the upper
+edge for the lowest band), with at least as many samples as channels when
+the baseline permits. Only complete epochs are used, or the available
+baseline if shorter than one epoch. Physical data and reference covariance
+scales are retained without unit-power normalization.
+
+For every calibration epoch, the generalized eigenproblem is
+:math:`C_b w = \lambda R w`, with the same regularized reference used
+online. SENSAI chooses the threshold maximizing signal subspace similarity
+minus three times noise subspace similarity, using pyGEDAI's EEG scoring
+convention and up to three reference principal components. It searches
+sensitivity values using pyGEDAI's frequency-dependent bounds and default
+tolerance. Scoring and optimization are delegated to the installed pyGEDAI
+version; this module does not modify its SENSAI objective or optimizer.
+Record that dependency version for reproducibility and refit after upgrading.
+Historical benchmark results obtained with a different SENSAI implementation
+are not accuracy guarantees for this pipeline.
+The fitted sensitivity :math:`s_b` stays fixed until refitting.
+For each local covariance spectrum, :math:`p_{98,b}(t)` is recalculated
+as the 98th percentile of :math:`\log|\lambda| + 100` over nonzero absolute
+eigenvalues. The current cutoff is
+
+.. math::
+
+   \theta_b(t) = \exp\left(\frac{105-s_b}{100}p_{98,b}(t) - 100\right).
+
+Streaming rejects absolute eigenvalues at or above :math:`\theta_b(t)`.
+The eigenvalue cutoff is not frozen to its calibration value.
+The calibration cutoffs are available through
+:attr:`~mne_rt.tools.AdaptiveMultibandGEDAIDenoiser.eigenvalue_thresholds`.
+The last used adaptive cutoffs are available through
+:attr:`~mne_rt.tools.AdaptiveMultibandGEDAIDenoiser.current_eigenvalue_thresholds`.
+There is no clean ground-truth input to calibration. A zero-variance
+baseline band cannot be calibrated; a warning is emitted and automatic
+rejection is disabled for that band until refitting.
+
+**Selection overrides.** A supplied artifact template takes precedence
+over automatic selection in the direct denoiser API. ``RTStream`` uses SENSAI
+for multiband GEDAI and does not implicitly pass an existing blink template.
+An explicit integer ``n_artifact`` retains
+fixed-count selection: the largest eigenvalues are rejected in leadfield
+mode (excess power relative to the model), and the smallest are rejected
+in band-filter mode (least band-specific). ``n_artifact=0`` without a
+template disables component rejection, but not the prefilters, output delay,
+or sub-cutoff band exclusion. Fixed positive counts can remove clean
+activity. Without a leadfield, automatic SENSAI uses the baseline broadband
+covariance as its signal reference, so its validity depends on the
+baseline being representative; it is not a theoretical brain reference.
+
+The uncleaned Haar reconstruction matches pyGEDAI after alignment, away
+from recording boundaries. Spatial cleaning still differs: offline pyGEDAI
+blends two half-epoch-shifted, cosine-weighted reconstructions, whereas this
+streaming implementation uses one projection from a trailing covariance
+epoch per acquired chunk. This remaining difference is intentional; an
+offline future-containing epoch is not available at the current output time.
+SENSAI does not guarantee preservation of every clean source, and processing
+deadlines and denoising quality should be checked for the intended montage
+and hardware. A target Pearson correlation is not guaranteed.
 
 **When to use.** Most powerful when a resting-state baseline is available
 and the artifact has a stable spatial signature (cardiac, powerline).

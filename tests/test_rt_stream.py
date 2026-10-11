@@ -210,6 +210,62 @@ def test_fit_gedai_band_filter_mode(tmp_path):
     assert isinstance(nf.gedai, GEDAIDenoiser)
 
 
+@pytest.mark.parametrize("multiband", [True, "causal"])
+@pytest.mark.parametrize("cycles", [None, 4])
+def test_fit_gedai_multiband_options(tmp_path, monkeypatch, multiband, cycles):
+    from unittest.mock import Mock
+
+    import mne_rt.rt_stream as module
+
+    model = Mock(n_bands=8, latency=12.78)
+    constructor = Mock(return_value=model)
+    monkeypatch.setattr(module, "AdaptiveMultibandGEDAIDenoiser", constructor)
+    nf = _make_rt_stream(tmp_path)
+    nf.raw_baseline = _make_baseline_raw()
+    nf.rec_info = nf.raw_baseline.info
+    nf._sfreq = 256.0
+    nf.fit_gedai(
+        use_leadfield=False,
+        multiband=multiband,
+        cycles_per_wavelet=cycles,
+        causal_wavelet_low_cutoff=1.0,
+        causal_prefilter_mode="none",
+        causal_broadband_pass=False,
+    )
+    expected_cycles = cycles if cycles is not None else 6
+    assert constructor.call_args.kwargs["cycles_per_wavelet"] == expected_cycles
+    assert constructor.call_args.kwargs["wavelet_low_cutoff"] == 1.0
+    assert nf.gedai is model
+    assert constructor.call_args.kwargs["prefilter_mode"] == "none"
+    assert constructor.call_args.kwargs["broadband_pass"] is False
+    model.fit.assert_called_once()
+
+
+@pytest.mark.parametrize("multiband", ["windowed", "invalid", 1, None])
+def test_fit_gedai_rejects_unsupported_multiband_mode(tmp_path, multiband):
+    nf = _make_rt_stream(tmp_path)
+    nf.raw_baseline = _make_baseline_raw()
+    with pytest.raises(ValueError, match="multiband"):
+        nf.fit_gedai(use_leadfield=False, multiband=multiband)
+
+
+def test_fit_gedai_preserves_positional_verbose(tmp_path, monkeypatch):
+    from unittest.mock import Mock
+
+    import mne_rt.rt_stream as module
+
+    model = Mock()
+    constructor = Mock(return_value=model)
+    monkeypatch.setattr(module, "GEDAIDenoiser", constructor)
+    nf = _make_rt_stream(tmp_path)
+    nf.raw_baseline = _make_baseline_raw()
+    nf.rec_info = nf.raw_baseline.info
+    nf._sfreq = 256.0
+    nf.fit_gedai((8.0, 13.0), 0.01, False, "ERROR")
+    assert nf.gedai is model
+    model.fit_from_raw.assert_called_once()
+
+
 def test_fit_maxwell_before_connect_raises(tmp_path):
     nf = _make_rt_stream(tmp_path, data_type="meg")
     with pytest.raises(RuntimeError, match="connect_to_lsl"):
@@ -716,6 +772,67 @@ def test_connect_to_array_record_main_end_to_end(tmp_path, array_info):
         assert len(nf.nf_data["sensor_power"]) > 0
     finally:
         nf.save()
+
+
+def test_causal_gedai_record_main_uses_sensai_and_delayed_windows(tmp_path, array_info):
+    from unittest.mock import patch
+
+    from mne_rt.tools.adaptive_gedai import AdaptiveMultibandGEDAIDenoiser
+
+    nf = _make_rt_stream(
+        tmp_path,
+        montage="easycap-M1",
+        artifact_correction="gedai",
+        bandpass_freq=(1.0, 40.0),
+        notch_freq=50.0,
+    )
+    data = _make_array_data(array_info, duration=20.0)
+    try:
+        nf.connect_to_array(data, array_info, n_repeat=np.inf)
+        nf.record_baseline(baseline_duration=1.0, winsize=0.5)
+        nf.gedai = AdaptiveMultibandGEDAIDenoiser(
+            data.shape[0],
+            array_info["sfreq"],
+            broadband_pass=False,
+            prefilter_mode="none",
+            wavelet_low_cutoff=1,
+        ).fit(data[:, :1024], leadfield=np.eye(data.shape[0]))
+        nf.blink_template = np.arange(data.shape[0], dtype=float)
+        with patch.object(
+            nf.gedai, "update_and_denoise", wraps=nf.gedai.update_and_denoise
+        ) as update:
+            nf.record_main(
+                duration=3.0,
+                winsize=0.5,
+                modality="sensor_power",
+                show_raw_signal=False,
+                show_nf_signal=False,
+            )
+        assert len(nf.nf_data["sensor_power"]) > 0
+        assert update.call_count > len(nf.nf_data["sensor_power"])
+        assert all(len(call.args) == 1 and not call.kwargs for call in update.call_args_list)
+        assert max(call.args[0].shape[1] for call in update.call_args_list) <= round(
+            0.05 * array_info["sfreq"]
+        )
+        assert len(nf.window_onsets) == len(nf.nf_data["sensor_power"])
+        assert np.all(np.diff(nf.window_onsets) > 0)
+    finally:
+        nf.save()
+
+
+def test_array_stream_has_unique_sample_clock_timestamps(array_info):
+    from mne_rt.rt_stream import ArrayStream
+
+    stream = ArrayStream(_make_array_data(array_info), array_info, n_repeat=np.inf)
+    stream.connect()
+    try:
+        time.sleep(0.15)
+        _, timestamps = stream.get_data()
+        valid = timestamps[timestamps > 0]
+        assert valid.size > 10
+        np.testing.assert_allclose(np.diff(valid), 1 / array_info["sfreq"], atol=1e-9)
+    finally:
+        stream.disconnect()
 
 
 def test_connect_to_array_pick_types(tmp_path):
