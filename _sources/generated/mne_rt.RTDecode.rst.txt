@@ -1,0 +1,31 @@
+﻿mne\_rt.RTDecode
+================
+
+.. currentmodule:: mne_rt
+
+.. autoclass:: RTDecode
+
+   
+   .. automethod:: __init__
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+   
+      ~RTDecode.__init__
+      ~RTDecode.fit
+      ~RTDecode.predict
+      ~RTDecode.predict_proba
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+   
+      ~RTDecode.fitted
+   
+   
