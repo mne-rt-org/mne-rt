@@ -3,6 +3,33 @@
 What's new
 ==========
 
+.. _changes_1_3_0:
+
+Version 1.3.0
+--------------
+
+*unreleased*
+
+Bug fixes
+^^^^^^^^^
+
+- **GEDAI's eigenvalue polarity was inverted in leadfield mode**
+  (`#47 <https://github.com/mne-rt-org/mne-rt/issues/47>`__).
+  :meth:`~mne_rt.tools.GEDAIDenoiser.fit_from_leadfield` solves
+  ``C w = lambda R_lead w``, so a large ``lambda`` means sensor variance that
+  the leadfield cannot explain: the artifact end. The class and method
+  docstrings stated the opposite, and
+  :meth:`~mne_rt.tools.GEDAIDenoiser.find_noise_components` always returned the
+  smallest-``lambda`` components, the band-filter convention. A caller following
+  the docs after ``fit_from_leadfield`` therefore removed brain signal and kept
+  the artifact. ``find_noise_components`` now returns the largest-``lambda``
+  components in leadfield mode and the smallest in band-filter mode, and the
+  docstrings describe both. **Code calling ``find_noise_components`` after
+  ``fit_from_leadfield`` now gets different indices.** No shipped pipeline was
+  affected: the live raw viewer and the gallery example fit in band-filter mode,
+  and :class:`~mne_rt.RTStream` selects GEDAI components by template
+  correlation. Reported by Tomas Ros.
+
 .. _changes_1_2_0:
 
 Version 1.2.0

@@ -17,35 +17,29 @@ from mne_rt.tools.tools import butter_bandpass
 class GEDAIDenoiser:
     """Artifact removal via Generalised Eigendecomposition-based Artifact Identification (GEDAI).
 
-    Solves the generalised eigenvalue problem (GEP):
-
-    .. math::
-
-        \\mathbf{C}\\,\\mathbf{w} = \\lambda\\,\\mathbf{R}\\,\\mathbf{w}
-
-    where :math:`\\mathbf{C}` is the signal covariance and :math:`\\mathbf{R}`
-    is a reference covariance.  Two modes are supported:
+    Solves the generalised eigenvalue problem (GEP) ``C @ w = lambda * R @ w``
+    where ``C`` is the signal covariance and ``R`` is a reference covariance.
+    Two modes are supported:
 
     * **Leadfield mode** (recommended, true GEDAI):
-      :math:`\\mathbf{R} = \\mathbf{L}\\mathbf{L}^\\top`, where
-      :math:`\\mathbf{L}` is the EEG forward/leadfield gain matrix.
-      Components with *large* :math:`\\lambda` are well-explained by the
-      brain's theoretical source model and are kept; components with *small*
-      :math:`\\lambda` are not leadfield-aligned and are treated as artifacts.
-      Use :meth:`fit_from_leadfield` to fit in this mode.
+      ``R = L @ L.T``, where ``L`` is the EEG forward/leadfield gain matrix.
+      Because ``lambda = (w.T @ C @ w) / (w.T @ R @ w)``, components with
+      *large* ``lambda`` carry sensor power that the brain's theoretical
+      source model cannot explain and are treated as artifacts; components
+      with *small* ``lambda`` are leadfield-aligned and are kept as brain
+      signal. Use :meth:`fit_from_leadfield` to fit in this mode.
 
     * **Band-filter mode** (Cohen-style GED):
-      :math:`\\mathbf{C} = \\mathbf{R}_{\\mathrm{band}}` and
-      :math:`\\mathbf{R} = \\mathbf{R}_{\\mathrm{broad}}` (broadband EEG
-      covariance, Tikhonov-regularised).  Components with large :math:`\\lambda`
-      maximise the target-band-to-broadband ratio.
-      Use :meth:`fit` or :meth:`fit_from_raw` for this mode.
+      ``C = R_band`` and ``R = R_broad`` (broadband EEG covariance,
+      Tikhonov-regularised). Components with large ``lambda`` maximise the
+      target-band-to-broadband ratio, while components with small ``lambda``
+      capture broadband noise. Use :meth:`fit` or :meth:`fit_from_raw` for
+      this mode.
 
-    In both modes the unmixing matrix :math:`\\mathbf{W}` (spatial filters)
-    and activation patterns :math:`\\mathbf{A} = (\\mathbf{W}^\\top)^+` are
-    stored after fitting.  Denoising zeroes the selected artifact columns of
-    :math:`\\mathbf{A}` and reconstructs clean sensor data as
-    :math:`\\hat{\\mathbf{x}} = \\mathbf{A}_{\\mathrm{clean}}\\,\\mathbf{W}^\\top\\mathbf{x}`.
+    In both modes the unmixing matrix ``W`` (spatial filters) and activation
+    patterns ``A = pinv(W.T)`` are stored after fitting. Denoising zeroes the
+    selected artifact columns of ``A`` and reconstructs clean sensor data as
+    ``x_hat = A_clean @ W.T @ x``.
 
     Parameters
     ----------
@@ -74,6 +68,7 @@ class GEDAIDenoiser:
         self._W: np.ndarray | None = None  # spatial filters, shape (n_ch, n_ch)
         self._A: np.ndarray | None = None  # activation patterns = pinv(W.T)
         self._eigenvalues: np.ndarray | None = None
+        self._reference_is_leadfield: bool = False
 
     # ------------------------------------------------------------------
     # Fitting
@@ -84,7 +79,7 @@ class GEDAIDenoiser:
         data_broadband: np.ndarray,
         data_band: np.ndarray,
     ) -> "GEDAIDenoiser":
-        """Estimate spatial filters from baseline data.
+        """Estimate spatial filters from baseline data (band-filter mode).
 
         Parameters
         ----------
@@ -119,6 +114,7 @@ class GEDAIDenoiser:
         self._eigenvalues = eigenvalues[order]
         self._W = W[:, order]
         self._A = np.linalg.pinv(self._W.T)
+        self._reference_is_leadfield = False
 
         return self
 
@@ -130,19 +126,19 @@ class GEDAIDenoiser:
         """Fit using the forward/leadfield matrix as the reference covariance.
 
         This is the **true GEDAI** mode described in Ros et al. (2025).
-        The reference covariance is constructed as
-        :math:`\\mathbf{R} = \\mathbf{L}\\mathbf{L}^\\top` where
-        :math:`\\mathbf{L}` is the leadfield gain matrix.  Components
-        whose eigenvalues are large are well-aligned with the theoretical
-        brain source model and are treated as signal; components with small
-        eigenvalues are artifact candidates.
+        The reference covariance is constructed as ``R = L @ L.T`` where
+        ``L`` is the leadfield gain matrix. Because the GEP solves
+        ``C @ w = lambda * R @ w``, components whose eigenvalues are *large*
+        have excess sensor variance relative to the theoretical brain source
+        model and are treated as artifacts; components with *small*
+        eigenvalues are leadfield-aligned and are kept as brain signal.
 
         Parameters
         ----------
         data : ndarray, shape (n_channels, n_samples)
             Broadband baseline EEG/MEG recording.
         leadfield : ndarray, shape (n_channels, n_sources)
-            Forward solution gain matrix :math:`\\mathbf{L}` — the
+            Forward solution gain matrix ``L`` — the
             ``fwd['sol']['data']`` array from an MNE forward solution.
 
         Returns
@@ -170,11 +166,12 @@ class GEDAIDenoiser:
 
         eigenvalues, W = linalg.eigh(C, R_lead)
 
-        # Descending order: largest λ = most leadfield-aligned = brain signal
+        # Descending order: largest λ = highest sensor-to-leadfield ratio = artifact
         order = np.argsort(eigenvalues)[::-1]
         self._eigenvalues = eigenvalues[order]
         self._W = W[:, order]
         self._A = np.linalg.pinv(self._W.T)
+        self._reference_is_leadfield = True
 
         return self
 
@@ -266,14 +263,22 @@ class GEDAIDenoiser:
         return artifact_idx, corrs
 
     def find_noise_components(self, n_noise: int = 1) -> list[int]:
-        """Return indices of the ``n_noise`` components with smallest eigenvalues.
+        """Return indices of artifact/noise components according to the fitted mode.
 
-        These components capture the least band-specific activity and are
-        candidates for broadband noise.
+        In **leadfield mode** (:meth:`fit_from_leadfield`), eigenvalues measure
+        the ratio of observed sensor variance to theoretical brain variance
+        (``C @ w = lambda * R_lead @ w``), so components with the *largest*
+        eigenvalues are artifact candidates, and the top ``n_noise`` components
+        ``[0, ..., n_noise - 1]`` are returned.
+
+        In **band-filter mode** (:meth:`fit` / :meth:`fit_from_raw`),
+        components with the *smallest* eigenvalues capture the least
+        band-specific activity and are returned as broadband noise candidates
+        ``[n_channels - n_noise, ..., n_channels - 1]``.
 
         Parameters
         ----------
-        n_noise : int
+        n_noise : int, default 1
             Number of components to flag.
 
         Returns
@@ -281,7 +286,11 @@ class GEDAIDenoiser:
         list of int
         """
         self._check_fitted()
-        return list(range(len(self._eigenvalues) - n_noise, len(self._eigenvalues)))
+        n_total = len(self._eigenvalues)
+        n = max(0, min(int(n_noise), n_total))
+        if self._reference_is_leadfield:
+            return list(range(n))
+        return list(range(n_total - n, n_total))
 
     def denoise(
         self,
@@ -317,7 +326,10 @@ class GEDAIDenoiser:
         ----------
         data : ndarray, shape (n_channels, n_samples)
         template_map : ndarray, shape (n_channels,)
-        threshold : float
+            Topography of the artifact; components whose activation pattern
+            correlates with it above ``threshold`` are suppressed.
+        threshold : float, default 0.7
+            Absolute-correlation threshold.
 
         Returns
         -------
@@ -354,4 +366,6 @@ class GEDAIDenoiser:
 
     def _check_fitted(self) -> None:
         if self._W is None:
-            raise RuntimeError("Call fit() or fit_from_raw() before using this method.")
+            raise RuntimeError(
+                "Call fit(), fit_from_raw(), or fit_from_leadfield() before using this method."
+            )
