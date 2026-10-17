@@ -3397,7 +3397,7 @@ class RTStream(ModalityMixin):
             self.gedai.fit_from_leadfield(
                 data=self.raw_baseline.get_data(),
                 leadfield=L,
-                sfreq=self._sfreq,
+                sfreq=self.raw_baseline.info["sfreq"],
             )
             logger.info("GEDAI fitted in leadfield mode (Ros et al., 2025).")
         else:
