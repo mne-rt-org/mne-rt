@@ -2340,7 +2340,9 @@ class RTStream(ModalityMixin):
                     _art_delays.append(time.time() - art_tic)
             elif self.artifact_correction == "gedai":
                 art_tic = time.time()
-                data = self.gedai.update_and_denoise(data, self.blink_template, threshold=0.7)
+                data = self.gedai.update_and_denoise(
+                    data, getattr(self, "blink_template", None), threshold=0.7
+                )
                 if estimate_delays:
                     _art_delays.append(time.time() - art_tic)
             elif self.artifact_correction == "asr":
@@ -3395,6 +3397,7 @@ class RTStream(ModalityMixin):
             self.gedai.fit_from_leadfield(
                 data=self.raw_baseline.get_data(),
                 leadfield=L,
+                sfreq=self._sfreq,
             )
             logger.info("GEDAI fitted in leadfield mode (Ros et al., 2025).")
         else:
