@@ -34,6 +34,11 @@ Main entry points
     Online Recursive ICA for real-time artifact removal.
 :class:`~mne_rt.tools.GEDAIDenoiser`
     GED-based spatial filter for artifact identification and removal.
+:class:`~mne_rt.tools.AdaptiveMultibandGEDAIDenoiser`
+    Real-time adaptive multiband GEDAI — per-band causal filtering and
+    GED with a covariance time constant that scales with each band's
+    characteristic period, adapted from pyGEDAI's
+    ``AdaptiveMultibandGedai`` for streaming, chunk-by-chunk use.
 
 Verbosity
 ---------
@@ -78,6 +83,7 @@ from mne_rt.source import (  # noqa: F401 — public API
     resolve_rois,
 )
 from mne_rt.tools import ORICA, GEDAIDenoiser
+from mne_rt.tools.adaptive_gedai import AdaptiveMultibandGEDAIDenoiser
 from mne_rt.tools.asr import ASRDenoiser
 from mne_rt.tools.bad_channel_detector import BadChannelDetector
 from mne_rt.tools.lms import AdaptiveLMSFilter
@@ -111,6 +117,7 @@ __all__ = [
     "CompareEvoked",
     "ORICA",
     "GEDAIDenoiser",
+    "AdaptiveMultibandGEDAIDenoiser",
     "AdaptiveLMSFilter",
     "ASRDenoiser",
     "RTMaxwellFilter",

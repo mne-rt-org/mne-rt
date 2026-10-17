@@ -1,3 +1,4 @@
+from .adaptive_gedai import AdaptiveMultibandGEDAIDenoiser
 from .asr import ASRDenoiser
 from .bad_channel_detector import BadChannelDetector
 from .bids_io import save_as_bids

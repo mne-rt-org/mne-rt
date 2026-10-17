@@ -67,6 +67,21 @@ dependencies = [
     "qtpy>=2.4",
     "pyserial>=3.0",       # required by mne-lsl / liblsl
     "fooof>=1.0",          # spectral parameterisation (specparam when stable)
+    # Provides the reference AdaptiveMultibandGedai algorithm (band layout
+    # helpers) that mne_rt.tools.AdaptiveMultibandGEDAIDenoiser adapts for
+    # real-time, causal, chunk-by-chunk use. 0.60 provides the SENSAI
+    # optimizer's fitted sensitivity return value used for live cutoffs.
+    #
+    # LICENSE NOTICE: unlike the rest of mne-rt's BSD-3-Clause dependencies,
+    # `gedai` is distributed under the PolyForm Noncommercial License 1.0.0
+    # (https://polyformproject.org/licenses/noncommercial/1.0.0), and the
+    # underlying GEDAI algorithm is patent-pending with no commercial patent
+    # grant included. Commercial users
+    # must not rely on BSD-3-Clause permissiveness for the adaptive
+    # multiband GEDAI feature (mne_rt.tools.AdaptiveMultibandGEDAIDenoiser)
+    # without separately clearing this with
+    # the `gedai` licensor. See README.md "License".
+    "gedai>=0.60",
     "pyunlocbox>=0.5.2",
     "pactools>=0.3",
     "pyyaml>=6.0",

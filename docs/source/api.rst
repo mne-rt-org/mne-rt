@@ -69,6 +69,7 @@ Artifact correction
    mne_rt.tools.AdaptiveLMSFilter
    mne_rt.tools.ORICA
    mne_rt.tools.GEDAIDenoiser
+   mne_rt.tools.AdaptiveMultibandGEDAIDenoiser
    mne_rt.tools.ASRDenoiser
    mne_rt.tools.RTMaxwellFilter
 
