@@ -95,7 +95,7 @@ def test_leadfield_nullspace_artifact_polarity():
     contaminated = clean_eeg + artifact_eeg
 
     denoiser = GEDAIDenoiser(n_channels=N_CH, shrinkage=0.01)
-    denoiser.fit_from_leadfield(contaminated, leadfield=L, sfreq=SFREQ)
+    denoiser.fit_from_leadfield(contaminated, leadfield=L)
 
     # In leadfield mode (C w = lambda R_lead w), the 2 null-space artifact
     # directions have the largest eigenvalues (indices [0, 1]).
@@ -104,10 +104,6 @@ def test_leadfield_nullspace_artifact_polarity():
 
     reconstructed = denoiser.denoise(contaminated, noise_idx)
     np.testing.assert_allclose(reconstructed, clean_eeg, atol=1e-6, rtol=1e-2)
-
-    # Without template_map, update_and_denoise should fall back to find_noise_components
-    auto_cleaned = denoiser.update_and_denoise(contaminated, template_map=None, n_noise=2)
-    np.testing.assert_allclose(auto_cleaned, reconstructed)
 
     # Band-filter mode must still flag the smallest eigenvalues
     denoiser.fit_from_raw(contaminated, sfreq=SFREQ, band=(8.0, 12.0))

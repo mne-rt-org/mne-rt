@@ -69,8 +69,6 @@ class GEDAIDenoiser:
         self._A: np.ndarray | None = None  # activation patterns = pinv(W.T)
         self._eigenvalues: np.ndarray | None = None
         self._reference_is_leadfield: bool = False
-        self._eigenvalue_threshold: float = np.inf
-        self._sensitivity: float = 0.0
 
     # ------------------------------------------------------------------
     # Fitting
@@ -117,8 +115,6 @@ class GEDAIDenoiser:
         self._W = W[:, order]
         self._A = np.linalg.pinv(self._W.T)
         self._reference_is_leadfield = False
-        self._eigenvalue_threshold = np.inf
-        self._sensitivity = 0.0
 
         return self
 
@@ -126,8 +122,6 @@ class GEDAIDenoiser:
         self,
         data: np.ndarray,
         leadfield: np.ndarray,
-        sfreq: float = 250.0,
-        noise_multiplier: float = 3.0,
     ) -> "GEDAIDenoiser":
         """Fit using the forward/leadfield matrix as the reference covariance.
 
@@ -146,12 +140,6 @@ class GEDAIDenoiser:
         leadfield : ndarray, shape (n_channels, n_sources)
             Forward solution gain matrix ``L`` — the
             ``fwd['sol']['data']`` array from an MNE forward solution.
-        sfreq : float, default 250.0
-            Sampling frequency in Hz (used to size 1-second SENSAI epochs
-            when estimating the automatic eigenvalue threshold if ``gedai``
-            is installed).
-        noise_multiplier : float, default 3.0
-            Noise penalty weight passed to SENSAI optimization when available.
 
         Returns
         -------
@@ -184,46 +172,6 @@ class GEDAIDenoiser:
         self._W = W[:, order]
         self._A = np.linalg.pinv(self._W.T)
         self._reference_is_leadfield = True
-        self._eigenvalue_threshold = np.inf
-        self._sensitivity = 0.0
-
-        # Estimate automatic SENSAI eigenvalue cutoff when gedai is available
-        try:
-            from gedai.sensai.sensai import (
-                _precompute_gevd,
-                _sensai_optimize,
-                _sensai_to_eigen,
-            )
-
-            ep_len = max(2, min(int(round(sfreq)), n_samples // 2))
-            step = max(1, ep_len // 2)
-            if n_samples >= ep_len * 2 and float(np.mean(Xb**2)) > 0:
-                epochs = np.stack(
-                    [Xb[:, s : s + ep_len] for s in range(0, n_samples - ep_len + 1, step)]
-                )
-                if len(epochs) >= 2:
-                    vals, vecs = _precompute_gevd(epochs, R_lead, engine="numpy")
-                    _, sens, _ = _sensai_optimize(
-                        epochs,
-                        R_lead,
-                        n_pc=min(3, self.n_channels),
-                        noise_multiplier=noise_multiplier,
-                        epochs_eigenvalues=vals,
-                        bounds=(-4.0, 12.0),
-                        all_eval=vals,
-                        all_evec=vecs,
-                        percentile=98,
-                        signal_type="eeg",
-                        engine="numpy",
-                    )
-                    self._sensitivity = float(sens)
-                    self._eigenvalue_threshold = float(
-                        _sensai_to_eigen(
-                            self._sensitivity, np.abs(self._eigenvalues), percentile=98
-                        )
-                    )
-        except Exception:
-            pass
 
         return self
 
@@ -314,16 +262,14 @@ class GEDAIDenoiser:
         artifact_idx = np.where(np.abs(corrs) > threshold)[0].tolist()
         return artifact_idx, corrs
 
-    def find_noise_components(self, n_noise: int | str = 1) -> list[int]:
+    def find_noise_components(self, n_noise: int = 1) -> list[int]:
         """Return indices of artifact/noise components according to the fitted mode.
 
         In **leadfield mode** (:meth:`fit_from_leadfield`), eigenvalues measure
         the ratio of observed sensor variance to theoretical brain variance
         (``C @ w = lambda * R_lead @ w``), so components with the *largest*
-        eigenvalues are artifact candidates. Passing ``n_noise="auto"`` selects
-        all components whose eigenvalue meets or exceeds the SENSAI threshold
-        (:attr:`eigenvalue_threshold`); passing an integer returns the top
-        ``n_noise`` components ``[0, ..., n_noise - 1]``.
+        eigenvalues are artifact candidates, and the top ``n_noise`` components
+        ``[0, ..., n_noise - 1]`` are returned.
 
         In **band-filter mode** (:meth:`fit` / :meth:`fit_from_raw`),
         components with the *smallest* eigenvalues capture the least
@@ -332,9 +278,8 @@ class GEDAIDenoiser:
 
         Parameters
         ----------
-        n_noise : int | "auto", default 1
-            Number of components to flag, or ``"auto"`` to use the fitted
-            SENSAI eigenvalue threshold in leadfield mode.
+        n_noise : int, default 1
+            Number of components to flag.
 
         Returns
         -------
@@ -342,12 +287,6 @@ class GEDAIDenoiser:
         """
         self._check_fitted()
         n_total = len(self._eigenvalues)
-        if n_noise == "auto":
-            if self._reference_is_leadfield and np.isfinite(self._eigenvalue_threshold):
-                return np.flatnonzero(
-                    np.abs(self._eigenvalues) >= self._eigenvalue_threshold
-                ).tolist()
-            n_noise = 1
         n = max(0, min(int(n_noise), n_total))
         if self._reference_is_leadfield:
             return list(range(n))
@@ -378,33 +317,25 @@ class GEDAIDenoiser:
     def update_and_denoise(
         self,
         data: np.ndarray,
-        template_map: np.ndarray | None = None,
+        template_map: np.ndarray,
         threshold: float = 0.7,
-        n_noise: int | str = "auto",
     ) -> np.ndarray:
-        """Identify artifact components then denoise in one call.
+        """Identify blink/artifact components then denoise in one call.
 
         Parameters
         ----------
         data : ndarray, shape (n_channels, n_samples)
-        template_map : ndarray, shape (n_channels,), optional
-            If provided, components whose activation pattern correlates with
-            ``template_map`` above ``threshold`` are suppressed. If ``None``,
-            falls back to :meth:`find_noise_components` with ``n_noise``.
+        template_map : ndarray, shape (n_channels,)
+            Topography of the artifact; components whose activation pattern
+            correlates with it above ``threshold`` are suppressed.
         threshold : float, default 0.7
-            Absolute-correlation threshold used when ``template_map`` is given.
-        n_noise : int | "auto", default "auto"
-            Component selection count or ``"auto"`` passed to
-            :meth:`find_noise_components` when ``template_map`` is ``None``.
+            Absolute-correlation threshold.
 
         Returns
         -------
         data_clean : ndarray, shape (n_channels, n_samples)
         """
-        if template_map is not None:
-            artifact_idx, _ = self.find_artifact_components(template_map, threshold)
-        else:
-            artifact_idx = self.find_noise_components(n_noise=n_noise)
+        artifact_idx, _ = self.find_artifact_components(template_map, threshold)
         return self.denoise(data, artifact_idx)
 
     # ------------------------------------------------------------------
@@ -416,12 +347,6 @@ class GEDAIDenoiser:
         """Sorted eigenvalues (descending) from the GED."""
         self._check_fitted()
         return self._eigenvalues
-
-    @property
-    def eigenvalue_threshold(self) -> float:
-        """SENSAI eigenvalue cutoff estimated during :meth:`fit_from_leadfield`."""
-        self._check_fitted()
-        return self._eigenvalue_threshold
 
     @property
     def spatial_filters(self) -> np.ndarray:
