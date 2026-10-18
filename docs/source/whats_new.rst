@@ -10,9 +10,35 @@ Version 1.3.0
 
 *unreleased*
 
+New features
+^^^^^^^^^^^^
+
+- **Opt-in causal Haar multiband GEDAI.**
+  :class:`~mne_rt.tools.AdaptiveMultibandGEDAIDenoiser` uses delayed pyGEDAI
+  Haar reconstruction kernels, finite trailing covariance epochs (six cycles
+  by default), and baseline-calibrated SENSAI sensitivities with per-chunk
+  eigenvalue cutoffs. Enable it with ``RTStream.fit_gedai(multiband="causal")``;
+  the single-band default and its existing positional arguments are unchanged.
+  ``RTStream`` processes unique samples in chunks of at most 50 ms, discards
+  startup calibration history, and assembles analysis windows with aligned
+  source timestamps. Missing samples stop the run with an explicit logged
+  error. Multiband calibration is EEG only; ``fit_gedai`` refuses it for MEG.
+  ``latency`` and ``delay_samples`` report fixed reconstruction delay, not
+  compute time. Optional ``causal_prefilter_mode`` and
+  ``causal_broadband_pass=False`` select shorter cascades or wavelet-only
+  processing and require recalibration. This is not an accuracy guarantee
+  or a zero-latency implementation; see :ref:`denoising-gedai`.
+  It needs the optional ``gedai`` package — ``pip install "mne-rt[gedai]"`` —
+  which is PolyForm Noncommercial licensed, unlike mne-rt's BSD-3-Clause; see
+  the README before commercial use. ``gedai`` is not installed by default or by
+  ``mne-rt[full]``, so mne-rt itself stays BSD-3-Clause unless you opt in.
+
 Bug fixes
 ^^^^^^^^^
 
+- ``ArrayStream`` now assigns unique sample-clock timestamps and paces chunks
+  against cumulative sample deadlines instead of assigning one timestamp to
+  every sample in a chunk.
 - **GEDAI's eigenvalue polarity was inverted in leadfield mode**
   (`#47 <https://github.com/mne-rt-org/mne-rt/issues/47>`__).
   :meth:`~mne_rt.tools.GEDAIDenoiser.fit_from_leadfield` solves

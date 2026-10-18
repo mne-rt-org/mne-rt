@@ -102,6 +102,25 @@ bids = [
     "mne-bids>=0.14",
 ]
 
+# Adaptive multiband GEDAI (AdaptiveMultibandGEDAIDenoiser, fit_gedai(multiband=...)).
+#
+# LICENSE: `gedai` is PolyForm Noncommercial 1.0.0, not BSD-3-Clause, and the
+# GEDAI algorithm is patent-pending with no commercial patent grant. It is
+# therefore opt-in only: not a core dependency and deliberately NOT part of
+# `full`, so `pip install mne-rt` and `pip install "mne-rt[full]"` stay
+# BSD-3-Clause. See README.md "License" before commercial use.
+#
+# PIN: mne-rt calls private gedai functions, so this is pinned to the release
+# it is tested against.
+#   - 0.6.1 removed the `T1` and `percentile` parameters of
+#     `_clean_continuous_dual_stream`, which breaks calibration.
+#   - "0.60" on PyPI sorts ABOVE 0.6.x under PEP 440 (0.60 = 0.sixty), so an
+#     open `>=0.60` could never resolve to 0.6.0 or later; `<0.6.1` excludes it.
+# Widen deliberately, with CI, when adapting to a newer gedai API.
+gedai = [
+    "gedai>=0.6.0,<0.6.1",
+]
+
 # Testing only (fast install)
 dev = [
     "pytest>=8.0",

@@ -68,6 +68,7 @@ from mne_rt.tools import (
     get_params,
     remove_blinks_lms,
 )
+from mne_rt.tools.adaptive_gedai import AdaptiveMultibandGEDAIDenoiser, _CausalGEDAIWindow
 from mne_rt.tools.asr import ASRDenoiser
 from mne_rt.tools.bids_io import _build_bids_stem, describe_nf_columns, write_nf_beh_tsv
 from mne_rt.tools.gedai import GEDAIDenoiser
@@ -186,6 +187,7 @@ class ArrayStream:
         self._connected = False
         self._buffer = np.empty((0, 0))
         self._timestamps = np.empty(0)
+        self._last_sample_timestamp: Optional[float] = None
         self._n_new_samples = 0
 
     def __repr__(self) -> str:
@@ -204,6 +206,7 @@ class ArrayStream:
         n_buf = max(1, int(np.ceil(self._bufsize * sfreq)))
         self._buffer = np.zeros((self._info["nchan"], n_buf))
         self._timestamps = np.zeros(n_buf)
+        self._last_sample_timestamp = None
         self._n_new_samples = 0
         self._stop_event.clear()
         self._connected = True
@@ -244,24 +247,25 @@ class ArrayStream:
 
     def _stream_loop(self) -> None:
         sfreq = self._info["sfreq"]
-        chunk_dur = self._chunk_size / sfreq
         n_total = self._source.shape[1]
         cursor = 0
         n_done = 0
+        started = time.perf_counter()
+        emitted = 0
         while not self._stop_event.is_set():
-            tic = time.time()
             with self._lock:
                 source = self._source
             end = min(cursor + self._chunk_size, n_total)
             chunk = source[:, cursor:end]
             self._push(chunk)
+            emitted += chunk.shape[1]
             cursor = end
             if cursor >= n_total:
                 n_done += 1
                 if n_done >= self._n_repeat:
                     break
                 cursor = 0
-            self._stop_event.wait(max(0.0, chunk_dur - (time.time() - tic)))
+            self._stop_event.wait(max(0.0, started + emitted / sfreq - time.perf_counter()))
 
     def _push(self, chunk: np.ndarray) -> None:
         k = chunk.shape[1]
@@ -274,15 +278,23 @@ class ArrayStream:
         # double on a different time base from the live one.
         now = local_clock()
         with self._lock:
+            sfreq = self._info["sfreq"]
+            first = (
+                now - (k - 1) / sfreq
+                if self._last_sample_timestamp is None
+                else self._last_sample_timestamp + 1 / sfreq
+            )
+            timestamps = first + np.arange(k) / sfreq
+            self._last_sample_timestamp = float(timestamps[-1])
             n_buf = self._buffer.shape[1]
             if k >= n_buf:
                 self._buffer[:] = chunk[:, -n_buf:]
-                self._timestamps[:] = now
+                self._timestamps[:] = timestamps[-n_buf:]
             else:
                 self._buffer[:, :-k] = self._buffer[:, k:]
                 self._buffer[:, -k:] = chunk
                 self._timestamps[:-k] = self._timestamps[k:]
-                self._timestamps[-k:] = now
+                self._timestamps[-k:] = timestamps
             self._n_new_samples = min(self._n_new_samples + k, n_buf)
 
     # ------------------------------------------------------------------
@@ -632,7 +644,9 @@ class RTStream(ModalityMixin):
           (:class:`~mne_rt.tools.ORICA`)
         * ``"gedai"``     — generalised eigendecomposition artefact
           isolation; call :meth:`fit_gedai` after :meth:`record_baseline`.
-          (:class:`~mne_rt.tools.GEDAIDenoiser`)
+          (:class:`~mne_rt.tools.GEDAIDenoiser` or, with
+          ``fit_gedai(multiband=True)``,
+          :class:`~mne_rt.tools.AdaptiveMultibandGEDAIDenoiser`)
         * ``"asr"``       — Artifact Subspace Reconstruction; call
           :meth:`fit_asr` after :meth:`record_baseline`.
           (:class:`~mne_rt.tools.ASRDenoiser`)
@@ -2325,6 +2339,19 @@ class RTStream(ModalityMixin):
 
         # ---- Shared artifact-correction helper ----
 
+        _causal_gedai = (
+            _CausalGEDAIWindow(self.gedai, self.window_size_s)
+            if self.artifact_correction == "gedai"
+            and isinstance(self.gedai, AdaptiveMultibandGEDAIDenoiser)
+            else None
+        )
+        if _causal_gedai is not None:
+            logger.info(
+                "Causal GEDAI uses SENSAI on unique 50 ms chunks; analysis waits "
+                "for a full cleaned window and timestamps account for %.3f s delay.",
+                self.gedai.latency,
+            )
+
         def _correct(data: np.ndarray) -> np.ndarray:
             if self.artifact_correction == "lms":
                 art_tic = time.time()
@@ -2340,7 +2367,10 @@ class RTStream(ModalityMixin):
                     _art_delays.append(time.time() - art_tic)
             elif self.artifact_correction == "gedai":
                 art_tic = time.time()
-                data = self.gedai.update_and_denoise(data, self.blink_template, threshold=0.7)
+                if isinstance(self.gedai, AdaptiveMultibandGEDAIDenoiser):
+                    data = self.gedai.update_and_denoise(data)
+                else:
+                    data = self.gedai.update_and_denoise(data, self.blink_template, threshold=0.7)
                 if estimate_delays:
                     _art_delays.append(time.time() - art_tic)
             elif self.artifact_correction == "asr":
@@ -2458,6 +2488,16 @@ class RTStream(ModalityMixin):
                             )
                         continue
 
+                    _gedai_clean = None
+                    if _causal_gedai is not None:
+                        art_tic = time.time()
+                        corrected = _causal_gedai.update(data, _ts)
+                        if corrected is None:
+                            continue
+                        _gedai_clean, data, _ts = corrected
+                        if estimate_delays:
+                            _art_delays.append(time.time() - art_tic)
+
                     # The timestamp buffer is preallocated with zeros, so `_ts[0]` can
                     # be a literal 0.0 rather than a clock value early in a session.
                     # Derive the onset from the tail, which the hop wait guarantees is
@@ -2531,7 +2571,7 @@ class RTStream(ModalityMixin):
                             _n_artifact_windows[0] += 1
 
                     _raw_chunks.append(data.copy())
-                    data = _correct(data)
+                    data = _gedai_clean if _gedai_clean is not None else _correct(data)
 
                     if track_snr:
                         from mne_rt.tools import compute_bandpower
@@ -3313,8 +3353,16 @@ class RTStream(ModalityMixin):
         shrinkage: float = 0.01,
         use_leadfield: bool = True,
         verbose: Union[bool, str, None] = None,
+        *,
+        multiband: Union[bool, Literal["causal"]] = False,
+        wavelet_level: Union[int, str] = "auto",
+        cycles_per_wavelet: Optional[int] = None,
+        gedai_n_jobs: int = 1,
+        causal_wavelet_low_cutoff: float = 0.5,
+        causal_prefilter_mode: Literal["reference", "lowcut", "none"] = "reference",
+        causal_broadband_pass: bool = True,
     ) -> None:
-        """Fit a :class:`~mne_rt.tools.GEDAIDenoiser` from the recorded baseline.
+        """Fit a GEDAI denoiser from the recorded baseline.
 
         Must be called after :meth:`record_baseline` and before
         :meth:`record_main` when ``artifact_correction="gedai"``.
@@ -3323,8 +3371,8 @@ class RTStream(ModalityMixin):
         ----------
         band : tuple of float, default (8.0, 13.0)
             Target frequency band ``(low_Hz, high_Hz)`` used when fitting
-            in band-filter mode (``use_leadfield=False``).  Ignored when
-            ``use_leadfield=True``.
+            in single-band, band-filter mode (``multiband=False`` and
+            ``use_leadfield=False``). Ignored otherwise.
         shrinkage : float, default 0.01
             Tikhonov regularisation strength applied to the reference
             covariance before solving the generalised eigenvalue problem.
@@ -3343,6 +3391,48 @@ class RTStream(ModalityMixin):
             If ``False``, or if no forward solution is available, falls back
             to band-filter mode: the GEP is solved between the band-filtered
             and broadband EEG covariances (Cohen, 2022).
+        multiband : bool | "causal", default False
+            If ``"causal"`` (or ``True``),
+            fit a :class:`~mne_rt.tools.AdaptiveMultibandGEDAIDenoiser`
+            instead of the single-band :class:`~mne_rt.tools.GEDAIDenoiser`.
+            This uses pyGEDAI's actual Haar reconstruction kernels with an
+            explicit causal delay: it decomposes the signal into aligned
+            frequency bands (layout from pyGEDAI's ``AdaptiveMultibandGedai``),
+            denoises each band with its own GED against the (leadfield or
+            broadband) reference covariance, and adapts each band's
+            covariance over a finite trailing epoch sized by the band's
+            characteristic period. It can be called every chunk, but output
+            is delayed by ``self.gedai.latency`` seconds and begins with
+            calibration history. ``band`` is ignored in this mode.
+
+            .. important::
+               Multiband mode requires the optional ``gedai`` package
+               (``pip install "mne-rt[gedai]"``), which is licensed under the
+               PolyForm Noncommercial License 1.0.0 (not BSD-3-Clause like
+               mne-rt) and covers a patent-pending algorithm with no commercial
+               patent grant. See the project README's "License" section.
+        wavelet_level : int | "auto", default "auto"
+            Number of wavelet bands minus one, used only when
+            ``multiband`` is ``"causal"``/``True``. See
+            :class:`~mne_rt.tools.AdaptiveMultibandGEDAIDenoiser`.
+        cycles_per_wavelet : int | None, default None
+            Defaults to six cycles for causal Haar covariance epochs.
+            Causal epochs use each band's lower frequency.
+        gedai_n_jobs : int, default 1
+            Number of threads used to denoise bands in parallel, used only
+            when ``multiband`` is not ``False``.
+        causal_wavelet_low_cutoff : float, default 0.5
+            Low cutoff (Hz) used by causal Haar GEDAI. Sub-cutoff wavelet
+            bands are excluded and no residual from them is added back.
+        causal_prefilter_mode : {"reference", "lowcut", "none"}, default "reference"
+            Standalone Haar prefilter cascade for causal multiband mode.
+            ``"lowcut"`` keeps only the low-cut highpass; ``"none"`` leaves
+            low-frequency removal to wavelet-band exclusion. Both reduce
+            delay but change calibration and output from reference mode.
+        causal_broadband_pass : bool, default True
+            Whether causal GEDAI includes the broadband pre-cleaning stage.
+            Set to ``False`` for wavelet-only GEDAI. Wavelet SENSAI is fitted
+            afresh to the selected pipeline; do not toggle this after fitting.
         verbose : bool | str | None, default None
             Override the instance-level verbosity for this call.
 
@@ -3353,7 +3443,9 @@ class RTStream(ModalityMixin):
 
         See Also
         --------
-        ant.tools.GEDAIDenoiser : The underlying GED denoiser class.
+        mne_rt.tools.GEDAIDenoiser : The underlying single-band GED denoiser class.
+        mne_rt.tools.AdaptiveMultibandGEDAIDenoiser : The underlying causal
+            adaptive multiband GED denoiser class.
         RTStream.compute_inv_operator : Computes the forward solution
             required for leadfield mode.
 
@@ -3370,40 +3462,80 @@ class RTStream(ModalityMixin):
         >>> nf.record_baseline(baseline_duration=120)
         >>> nf.compute_inv_operator()          # builds the forward model
         >>> nf.fit_gedai(use_leadfield=True)
-        >>> nf.record_main(duration=600, artifact_correction="gedai")
+        >>> nf.record_main(duration=600)  # with nf = RTStream(..., artifact_correction="gedai")
 
         Band-filter mode (no MRI required):
 
         >>> nf.record_baseline(baseline_duration=120)
         >>> nf.fit_gedai(band=(8, 13), use_leadfield=False)
-        >>> nf.record_main(duration=600, artifact_correction="gedai")
+        >>> nf.record_main(duration=600)  # with nf = RTStream(..., artifact_correction="gedai")
+
+        Adaptive multiband mode (streaming Haar reconstruction with fixed delay):
+
+        >>> nf.record_baseline(baseline_duration=120)
+        >>> nf.compute_inv_operator()
+        >>> nf.fit_gedai(use_leadfield=True, multiband="causal")
+        >>> nf.record_main(duration=600)  # with nf = RTStream(..., artifact_correction="gedai")
+
         """
         if not hasattr(self, "raw_baseline") or self.raw_baseline is None:
             raise RuntimeError("Run record_baseline() before calling fit_gedai().")
+        if not isinstance(multiband, bool) and multiband != "causal":
+            raise ValueError("multiband must be False, True, or 'causal'")
+        if multiband and self.data_type == "meg":
+            # SENSAI has a distinct MEG objective (component-count prescan and a
+            # different noise-subspace score); AdaptiveMultibandGEDAIDenoiser
+            # only implements the EEG one. Refuse rather than return a
+            # plausible-looking, EEG-calibrated result for MEG data.
+            raise ValueError(
+                "multiband GEDAI is calibrated for EEG only; use the single-band "
+                "fit_gedai(multiband=False) for MEG data."
+            )
+        if cycles_per_wavelet is None:
+            cycles_per_wavelet = 6
 
         n_channels = len(self._acquired_ch_names())
-        self.gedai = GEDAIDenoiser(n_channels=n_channels, shrinkage=shrinkage)
 
         if use_leadfield:
             # The forward model is built on demand, so without this the
             # leadfield branch below would never be taken and GEDAI would fall
             # back to a different algorithm with only a log line to say so.
             self._ensure_head_model("GEDAI leadfield mode")
-
-        if use_leadfield and getattr(self, "fwd", None) is not None:
-            L = self.fwd["sol"]["data"]  # shape (n_ch, n_sources)
-            self.gedai.fit_from_leadfield(
-                data=self.raw_baseline.get_data(),
-                leadfield=L,
+        have_leadfield = use_leadfield and getattr(self, "fwd", None) is not None
+        if use_leadfield and not have_leadfield:
+            logger.warning(
+                "use_leadfield=True but no forward solution found. "
+                "Falling back to band-filter mode. "
+                "Call compute_inv_operator() first to enable leadfield mode."
             )
+        L = self.fwd["sol"]["data"] if have_leadfield else None  # (n_ch, n_sources)
+
+        if multiband:
+            self.gedai = AdaptiveMultibandGEDAIDenoiser(
+                n_channels=n_channels,
+                sfreq=self._sfreq,
+                wavelet_level=wavelet_level,
+                cycles_per_wavelet=cycles_per_wavelet,
+                shrinkage=shrinkage,
+                n_jobs=gedai_n_jobs,
+                wavelet_low_cutoff=causal_wavelet_low_cutoff,
+                prefilter_mode=causal_prefilter_mode,
+                broadband_pass=causal_broadband_pass,
+            )
+            self.gedai.fit(data=self.raw_baseline.get_data(), leadfield=L)
+            logger.info(
+                "GEDAI fitted in delayed Haar multiband mode (%d bands, %s, %.3f s output delay).",
+                self.gedai.n_bands,
+                "leadfield" if have_leadfield else "band-filter",
+                self.gedai.latency,
+            )
+            return
+
+        self.gedai = GEDAIDenoiser(n_channels=n_channels, shrinkage=shrinkage)
+        if have_leadfield:
+            self.gedai.fit_from_leadfield(data=self.raw_baseline.get_data(), leadfield=L)
             logger.info("GEDAI fitted in leadfield mode (Ros et al., 2025).")
         else:
-            if use_leadfield:
-                logger.warning(
-                    "use_leadfield=True but no forward solution found. "
-                    "Falling back to band-filter mode. "
-                    "Call compute_inv_operator() first to enable leadfield mode."
-                )
             self.gedai.fit_from_raw(
                 data=self.raw_baseline.get_data(),
                 sfreq=self._sfreq,
@@ -3461,7 +3593,7 @@ class RTStream(ModalityMixin):
         --------
         >>> nf.record_baseline(baseline_duration=120)
         >>> nf.fit_asr(cutoff=5.0)
-        >>> nf.record_main(duration=600, artifact_correction="asr")
+        >>> nf.record_main(duration=600)  # with nf = RTStream(..., artifact_correction="asr")
         """
         if not hasattr(self, "raw_baseline") or self.raw_baseline is None:
             raise RuntimeError("Run record_baseline() before calling fit_asr().")
@@ -3578,7 +3710,7 @@ class RTStream(ModalityMixin):
 
             nf.connect_to_lsl()
             nf.fit_maxwell()          # operator ready in seconds
-            nf.record_main(duration=600, artifact_correction="maxwell")
+            nf.record_main(duration=600)  # with nf = RTStream(..., artifact_correction="maxwell")
 
         If a fine-calibration file is available, passing it via
         ``calibration`` typically reduces the RMS noise floor by 10–20 %
@@ -3600,7 +3732,7 @@ class RTStream(ModalityMixin):
 
         >>> nf.connect_to_lsl()
         >>> nf.fit_maxwell()
-        >>> nf.record_main(duration=600, artifact_correction="maxwell")
+        >>> nf.record_main(duration=600)  # with nf = RTStream(..., artifact_correction="maxwell")
 
         tSSS with fine calibration and empty room:
 
@@ -3613,7 +3745,7 @@ class RTStream(ModalityMixin):
         ...     cross_talk="ct_sparse.fif",
         ...     empty_room_raw=er_raw,
         ... )
-        >>> nf.record_main(duration=600, artifact_correction="maxwell")
+        >>> nf.record_main(duration=600)  # with nf = RTStream(..., artifact_correction="maxwell")
         """
         if not hasattr(self, "rec_info") or self.rec_info is None:
             raise RuntimeError(
