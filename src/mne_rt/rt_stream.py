@@ -2370,9 +2370,7 @@ class RTStream(ModalityMixin):
                 if isinstance(self.gedai, AdaptiveMultibandGEDAIDenoiser):
                     data = self.gedai.update_and_denoise(data)
                 else:
-                    data = self.gedai.update_and_denoise(
-                        data, getattr(self, "blink_template", None), threshold=0.7
-                    )
+                    data = self.gedai.update_and_denoise(data, self.blink_template, threshold=0.7)
                 if estimate_delays:
                     _art_delays.append(time.time() - art_tic)
             elif self.artifact_correction == "asr":
@@ -3408,11 +3406,11 @@ class RTStream(ModalityMixin):
             calibration history. ``band`` is ignored in this mode.
 
             .. important::
-               Multiband mode requires the ``gedai`` package, which is
-               licensed under the PolyForm Noncommercial License 1.0.0 (not
-               BSD-3-Clause like mne-rt) and covers a patent-pending
-               algorithm with no commercial patent grant.
-               See the project README's "License" section.
+               Multiband mode requires the optional ``gedai`` package
+               (``pip install "mne-rt[gedai]"``), which is licensed under the
+               PolyForm Noncommercial License 1.0.0 (not BSD-3-Clause like
+               mne-rt) and covers a patent-pending algorithm with no commercial
+               patent grant. See the project README's "License" section.
         wavelet_level : int | "auto", default "auto"
             Number of wavelet bands minus one, used only when
             ``multiband`` is ``"causal"``/``True``. See
@@ -3464,26 +3462,35 @@ class RTStream(ModalityMixin):
         >>> nf.record_baseline(baseline_duration=120)
         >>> nf.compute_inv_operator()          # builds the forward model
         >>> nf.fit_gedai(use_leadfield=True)
-        >>> nf.record_main(duration=600, artifact_correction="gedai")
+        >>> nf.record_main(duration=600)  # with nf = RTStream(..., artifact_correction="gedai")
 
         Band-filter mode (no MRI required):
 
         >>> nf.record_baseline(baseline_duration=120)
         >>> nf.fit_gedai(band=(8, 13), use_leadfield=False)
-        >>> nf.record_main(duration=600, artifact_correction="gedai")
+        >>> nf.record_main(duration=600)  # with nf = RTStream(..., artifact_correction="gedai")
 
         Adaptive multiband mode (streaming Haar reconstruction with fixed delay):
 
         >>> nf.record_baseline(baseline_duration=120)
         >>> nf.compute_inv_operator()
         >>> nf.fit_gedai(use_leadfield=True, multiband="causal")
-        >>> nf.record_main(duration=600, artifact_correction="gedai")
+        >>> nf.record_main(duration=600)  # with nf = RTStream(..., artifact_correction="gedai")
 
         """
         if not hasattr(self, "raw_baseline") or self.raw_baseline is None:
             raise RuntimeError("Run record_baseline() before calling fit_gedai().")
         if not isinstance(multiband, bool) and multiband != "causal":
             raise ValueError("multiband must be False, True, or 'causal'")
+        if multiband and self.data_type == "meg":
+            # SENSAI has a distinct MEG objective (component-count prescan and a
+            # different noise-subspace score); AdaptiveMultibandGEDAIDenoiser
+            # only implements the EEG one. Refuse rather than return a
+            # plausible-looking, EEG-calibrated result for MEG data.
+            raise ValueError(
+                "multiband GEDAI is calibrated for EEG only; use the single-band "
+                "fit_gedai(multiband=False) for MEG data."
+            )
         if cycles_per_wavelet is None:
             cycles_per_wavelet = 6
 
@@ -3586,7 +3593,7 @@ class RTStream(ModalityMixin):
         --------
         >>> nf.record_baseline(baseline_duration=120)
         >>> nf.fit_asr(cutoff=5.0)
-        >>> nf.record_main(duration=600, artifact_correction="asr")
+        >>> nf.record_main(duration=600)  # with nf = RTStream(..., artifact_correction="asr")
         """
         if not hasattr(self, "raw_baseline") or self.raw_baseline is None:
             raise RuntimeError("Run record_baseline() before calling fit_asr().")
@@ -3703,7 +3710,7 @@ class RTStream(ModalityMixin):
 
             nf.connect_to_lsl()
             nf.fit_maxwell()          # operator ready in seconds
-            nf.record_main(duration=600, artifact_correction="maxwell")
+            nf.record_main(duration=600)  # with nf = RTStream(..., artifact_correction="maxwell")
 
         If a fine-calibration file is available, passing it via
         ``calibration`` typically reduces the RMS noise floor by 10–20 %
@@ -3725,7 +3732,7 @@ class RTStream(ModalityMixin):
 
         >>> nf.connect_to_lsl()
         >>> nf.fit_maxwell()
-        >>> nf.record_main(duration=600, artifact_correction="maxwell")
+        >>> nf.record_main(duration=600)  # with nf = RTStream(..., artifact_correction="maxwell")
 
         tSSS with fine calibration and empty room:
 
@@ -3738,7 +3745,7 @@ class RTStream(ModalityMixin):
         ...     cross_talk="ct_sparse.fif",
         ...     empty_room_raw=er_raw,
         ... )
-        >>> nf.record_main(duration=600, artifact_correction="maxwell")
+        >>> nf.record_main(duration=600)  # with nf = RTStream(..., artifact_correction="maxwell")
         """
         if not hasattr(self, "rec_info") or self.rec_info is None:
             raise RuntimeError(

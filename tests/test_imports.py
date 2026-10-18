@@ -56,3 +56,32 @@ def test_rtepochs_importable():
     from mne_rt import RTEpochs
 
     assert RTEpochs is not None
+
+
+def test_gedai_is_optional(monkeypatch):
+    """`gedai` is an opt-in extra under a noncommercial licence, so mne-rt must
+    import without it and only fail, clearly, when the feature is used.
+
+    Simulated by setting the module's recorded import error, which is what the
+    module does when the import fails; this runs whether or not gedai is
+    installed.
+    """
+    import mne_rt
+    from mne_rt.tools import adaptive_gedai
+
+    assert hasattr(mne_rt, "AdaptiveMultibandGEDAIDenoiser")
+    monkeypatch.setattr(adaptive_gedai, "_GEDAI_IMPORT_ERROR", ImportError("no gedai"))
+    with pytest.raises(ImportError, match=r"mne-rt\[gedai\]"):
+        adaptive_gedai.AdaptiveMultibandGEDAIDenoiser(n_channels=4, sfreq=250.0)
+
+
+def test_gedai_not_a_core_or_full_dependency():
+    """Installing mne-rt, or mne-rt[full], must not pull in gedai."""
+    import pathlib
+    import tomllib
+
+    pyproject = pathlib.Path(__file__).resolve().parents[1] / "pyproject.toml"
+    project = tomllib.loads(pyproject.read_text())["project"]
+    assert not any("gedai" in dep for dep in project["dependencies"])
+    assert not any("gedai" in dep for dep in project["optional-dependencies"]["full"])
+    assert project["optional-dependencies"]["gedai"]

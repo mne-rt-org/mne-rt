@@ -54,7 +54,10 @@ jobs:
         with:
           python-version: ${{ matrix.python }}
           activate-environment: true
-      - run: uv pip install -e ".[dev,pyqt6]"
+      # gedai is an opt-in extra; install it here so the adaptive multiband GEDAI
+      # tests run. The `minimum` job below leaves it out, which exercises the
+      # import-without-gedai path instead.
+      - run: uv pip install -e ".[dev,pyqt6,gedai]"
       - run: pytest --cov=mne_rt --cov-report=xml
         env:
           # coverage.py defaults to the sys.monitoring ("sysmon") tracer on

@@ -133,8 +133,9 @@ GEDAI — GED-based Artifact Isolation
    <https://polyformproject.org/licenses/noncommercial/1.0.0>`_. That license
    restricts use to noncommercial purposes, and the underlying GEDAI
    algorithm is patent-pending with no commercial patent grant included.
-   :class:`~mne_rt.tools.GEDAIDenoiser` itself does not import ``gedai``, but
-   mne-rt installs it as a mandatory dependency. **Commercial use of the
+   ``gedai`` is an opt-in extra — ``pip install "mne-rt[gedai]"`` — and is not
+   installed by default or by ``mne-rt[full]``;
+   :class:`~mne_rt.tools.GEDAIDenoiser` does not use it. **Commercial use of the
    adaptive multiband GEDAI feature is not covered by mne-rt's permissive license.**
    See the "License" section of the project README for details.
 

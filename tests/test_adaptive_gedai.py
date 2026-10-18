@@ -3,6 +3,9 @@
 import numpy as np
 import pytest
 
+# gedai is an opt-in extra (`mne-rt[gedai]`); every test here exercises it.
+pytest.importorskip("gedai")
+
 RNG = np.random.default_rng(11)
 N_CH = 8
 SFREQ = 256.0
@@ -282,7 +285,10 @@ def test_sensai_calibration_preserves_pygedai_units(denoiser, monkeypatch):
         denoiser.eigenvalue_thresholds,
         rtol=1e-5,
     )
-    for volts, microvolts in zip(calls[: denoiser.n_bands], calls[denoiser.n_bands :]):
+    # Each fit makes the same number of SENSAI calls, so pair the halves. Splitting
+    # at n_bands only works while broadband_pass is False (one extra call each).
+    half = len(calls) // 2
+    for volts, microvolts in zip(calls[:half], calls[half:]):
         np.testing.assert_allclose(volts * 1e6, microvolts, atol=1e-12)
 
 

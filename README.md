@@ -202,16 +202,14 @@ Development was supported by the
 
 [BSD 3-Clause License](LICENSE) — © 2024–2026 Payam S. Shabestari
 
-> **Note on the `gedai` dependency.** mne-rt itself is BSD-3-Clause, but it
-> depends on the [`gedai`](https://pypi.org/project/gedai/) package (used by
-> `mne_rt.tools.AdaptiveMultibandGEDAIDenoiser`;
-> `mne_rt.tools.GEDAIDenoiser` itself does not import it),
-> which is distributed under
-> the [PolyForm Noncommercial License 1.0.0](https://polyformproject.org/licenses/noncommercial/1.0.0).
-> That license restricts use of `gedai` to noncommercial purposes and notes
-> that the underlying GEDAI algorithm is patent-pending, with no commercial
-> patent grant included. **Commercial use of the adaptive multiband
-> GEDAI feature is not covered by this permissive license** and may
-> require a separate agreement with the `gedai` licensor. mne-rt's own
-> license is unchanged; review the dependency's license before use or
-> distribution. `gedai` is installed as a mandatory dependency.
+> **Note on the optional `gedai` dependency.** mne-rt itself is BSD-3-Clause.
+> The adaptive multiband GEDAI denoiser (`mne_rt.tools.AdaptiveMultibandGEDAIDenoiser`,
+> `RTStream.fit_gedai(multiband=...)`) additionally needs the
+> [`gedai`](https://pypi.org/project/gedai/) package, which is distributed under
+> the [PolyForm Noncommercial License 1.0.0](https://polyformproject.org/licenses/noncommercial/1.0.0)
+> and covers a patent-pending algorithm with no commercial patent grant.
+> `gedai` is **not** installed by `pip install mne-rt` or by `mne-rt[full]`;
+> install it explicitly with `pip install "mne-rt[gedai]"` if you need that
+> feature. **Commercial use of the adaptive multiband GEDAI feature is not
+> covered by mne-rt's permissive license** and may require a separate agreement
+> with the `gedai` licensor. `mne_rt.tools.GEDAIDenoiser` does not use `gedai`.

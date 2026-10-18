@@ -241,6 +241,16 @@ def test_fit_gedai_multiband_options(tmp_path, monkeypatch, multiband, cycles):
     model.fit.assert_called_once()
 
 
+def test_fit_gedai_multiband_refuses_meg(tmp_path):
+    """Multiband SENSAI only implements gedai's EEG objective; refuse MEG rather
+    than calibrate it with the wrong model."""
+    nf = _make_rt_stream(tmp_path)
+    nf.raw_baseline = _make_baseline_raw()
+    nf.data_type = "meg"
+    with pytest.raises(ValueError, match="EEG only"):
+        nf.fit_gedai(use_leadfield=False, multiband="causal")
+
+
 @pytest.mark.parametrize("multiband", ["windowed", "invalid", 1, None])
 def test_fit_gedai_rejects_unsupported_multiband_mode(tmp_path, multiband):
     nf = _make_rt_stream(tmp_path)
@@ -775,6 +785,7 @@ def test_connect_to_array_record_main_end_to_end(tmp_path, array_info):
 
 
 def test_causal_gedai_record_main_uses_sensai_and_delayed_windows(tmp_path, array_info):
+    pytest.importorskip("gedai")
     from unittest.mock import patch
 
     from mne_rt.tools.adaptive_gedai import AdaptiveMultibandGEDAIDenoiser

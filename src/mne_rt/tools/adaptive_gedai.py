@@ -26,9 +26,10 @@ package, which is distributed under the PolyForm Noncommercial License 1.0.0
 restricts use to noncommercial purposes, and the underlying GEDAI algorithm
 is patent-pending with no commercial patent grant included. Commercial use
 of :class:`AdaptiveMultibandGEDAIDenoiser` is not covered by mne-rt's
-permissive license -- see the project README's "License" section. Note that
-``gedai`` is installed as a mandatory mne-rt dependency even though only
-this module (not :class:`~mne_rt.tools.GEDAIDenoiser`) imports it.
+permissive license -- see the project README's "License" section.
+``gedai`` is an opt-in extra (``pip install "mne-rt[gedai]"``), not a core
+dependency: this module imports without it, so ``import mne_rt`` keeps working,
+and only constructing :class:`AdaptiveMultibandGEDAIDenoiser` requires it.
 """
 
 from __future__ import annotations
@@ -49,11 +50,13 @@ try:
         _modwt_haar_single_band,
         compute_wavelet_level,
     )
-except ImportError as exc:  # pragma: no cover - exercised only without gedai installed
-    raise ImportError(
-        "AdaptiveMultibandGEDAIDenoiser requires the 'gedai' package "
-        "(pip install gedai) for its wavelet band layout and SENSAI calibration."
-    ) from exc
+except ImportError as exc:
+    # Raising here would make `import mne_rt` fail without gedai, since this
+    # module is imported by mne_rt/__init__.py and rt_stream.py. Defer the error
+    # to the point of use instead.
+    _GEDAI_IMPORT_ERROR: ImportError | None = exc
+else:
+    _GEDAI_IMPORT_ERROR = None
 
 from mne_rt._logging import logger
 
@@ -64,7 +67,9 @@ class AdaptiveMultibandGEDAIDenoiser:
     Parameters
     ----------
     n_channels : int
-        Number of EEG/MEG channels.
+        Number of EEG channels. SENSAI calibration here uses the EEG objective
+        only; gedai's MEG objective is not implemented, and
+        :meth:`~mne_rt.RTStream.fit_gedai` refuses multiband mode for MEG.
     sfreq : float
         Sampling frequency in Hz.
     wavelet_level : int | "auto", default "auto"
@@ -132,6 +137,14 @@ class AdaptiveMultibandGEDAIDenoiser:
         broadband_pass: bool = True,
         prefilter_mode: Literal["reference", "lowcut", "none"] = "reference",
     ) -> None:
+        if _GEDAI_IMPORT_ERROR is not None:
+            raise ImportError(
+                "AdaptiveMultibandGEDAIDenoiser requires the optional 'gedai' package "
+                "for its wavelet band layout and SENSAI calibration. Install it with "
+                '`pip install "mne-rt[gedai]"`. Note that gedai is PolyForm '
+                "Noncommercial licensed, unlike mne-rt; see the README before "
+                "commercial use."
+            ) from _GEDAI_IMPORT_ERROR
         self.n_channels = int(n_channels)
         self.sfreq = float(sfreq)
         self.cycles_per_wavelet = int(cycles_per_wavelet)
