@@ -47,36 +47,50 @@ for documentation purposes.
 # dominates the noise so that every NF modality shows visible modulation in
 # the final plots.
 #
-# Timeline in the 100 s main session (after the 10 s baseline):
+# Timeline of the simulated **file** (the player loops back to the start
+# after ~112 s):
 #
 # .. code-block:: text
 #
-#     Main t (s):  0──2   12──22   32──42   52──62   72──82   92──100
-#                  ■■■■   ██████   ██████   ██████   ██████   ██████
-#                         ↑ alpha-ON bursts (grey shading in plots)
+#     File t (s):  2──12   22──32   42──52   62──72   82──92   102──112
+#                  ██████   ██████   ██████   ██████   ██████   ███████
+#                  ↑ alpha-ON bursts
+#
+# Where these bursts fall in the *main session* is not fixed: the mock player
+# starts streaming inside :meth:`~mne_rt.RTStream.connect_to_lsl` and keeps
+# going while the connection settles and the baseline is recorded and
+# processed. We therefore locate them from the recorded timestamps at the end,
+# rather than hard-coding a session timeline.
 
 from pathlib import Path
 
 import matplotlib.pyplot as plt
 import numpy as np
+from mne_lsl.lsl import local_clock
 
 from mne_rt import RTStream
-from mne_rt.tools import simulate_raw, save_as_bids
+from mne_rt.tools import save_as_bids, simulate_raw
 
 # Results land in ~/ANT_session_results — inspect subject dir and HTML report there
 tmp = Path.home() / "ANT_session_results"
 tmp.mkdir(parents=True, exist_ok=True)
 
-# Simulate: 10 Hz alpha, 10 s ON / 10 s OFF, 6 repetitions → ~112 s recording
+# Simulate: 10 Hz alpha, 10 s ON / 10 s OFF, 6 repetitions → ~112 s recording.
+# The burst timing is defined once here and reused below to label windows.
+burst_start = 2.0      # first burst onset, file time (s)
+burst_duration = 10.0  # each alpha burst lasts 10 s
+burst_period = 20.0    # 20 s between burst onsets (= 10 s ON + 10 s OFF)
+n_bursts = 6
+
 fname_sim = tmp / "simulated_eeg.fif"
-simulate_raw(
+raw_sim = simulate_raw(
     brain_label="lateraloccipital-lh",
     frequency=10.0,
     amplitude=50.0,           # strong alpha so modulation is unambiguous in NF plots
-    duration=10.0,            # each alpha burst lasts 10 s
-    gap_duration=20.0,        # 20 s between burst onsets (= 10 s ON + 10 s OFF)
-    n_repetition=6,
-    start=2.0,
+    duration=burst_duration,
+    gap_duration=burst_period,
+    n_repetition=n_bursts,
+    start=burst_start,
     data_type="eeg",
     sfreq=256.0,
     fname_save=str(fname_sim),
@@ -108,7 +122,12 @@ nf = RTStream(
 # ``mock_lsl=True`` starts an :class:`mne_lsl.lsl.PlayerLSL` that replays the
 # simulated FIF file as a real-time LSL stream at its original sampling rate.
 # Replace ``mock_lsl=False`` and remove ``fname`` to connect to a live amplifier.
+#
+# We note the LSL clock just before connecting: the player starts streaming the
+# file from its first sample during this call, so ``t_stream_start`` lets us map
+# any later timestamp back to a position in the file.
 
+t_stream_start = local_clock()
 nf.connect_to_lsl(mock_lsl=True, fname=str(fname_sim), verbose=False)
 
 # %%
@@ -140,10 +159,12 @@ nf.record_baseline(baseline_duration=10, verbose=False)
 # All display windows are disabled here; see the note at the top of the
 # example for how to enable them interactively.
 
+winsize = 1.0  # analysis window length (s); reused below to centre each window
+
 nf.record_main(
     duration=100,
     modality=["sensor_power", "erd_ers", "laterality", "spectral_centroid"],
-    winsize=1.0,
+    winsize=winsize,
     signal_smoothing=0.25,
     track_snr=True,
     track_artifact_rate=True,
@@ -212,21 +233,45 @@ for p in sorted(bids_path.rglob("*")):
 # %%
 # Inspect the NF feature time-series
 # -------------------------------------
-# ``nf.nf_data`` is a dict mapping modality name → list of per-window values.
-# With 50 % overlap (0.5 s hop) over a 100 s session, there are ~198 windows.
+# ``nf.nf_data`` maps each modality to its per-window values, and
+# ``nf.window_onsets`` holds the LSL timestamp at which each window starts.
+# With 50 % overlap (0.5 s hop) over a 100 s session there are ~195 windows.
 #
-# The grey vertical bands below mark the expected alpha-ON epochs
-# (t = 0–2, 12–22, 32–42, 52–62, 72–82, 92–100 s from the start of the main
-# session).  Each modality should visibly rise or fall during these periods:
+# To know which windows saw an alpha burst, map each window's centre back to
+# file time — its timestamp minus ``t_stream_start``, wrapped at the file length
+# because the player loops — and check it against the simulated burst times.
+# This is why the plots use the recorded onsets rather than a ``window × hop``
+# grid or a hand-written timeline: connection and baseline processing shift the
+# main session several seconds further into the file than the 10 s baseline
+# alone would suggest — printed below — and dropped windows make the nominal
+# grid drift.
+#
+# The grey bands mark windows during an alpha burst. Each modality should
+# respond to them:
 #
 # * **sensor_power** and **erd_ers** increase during alpha-ON.
-# * **laterality** shifts left (positive) since the source is in left occipital.
-# * **spectral_centroid** shifts toward 10 Hz during alpha-ON.
+# * **laterality** becomes more negative. It is ``log(P_right) − log(P_left)``,
+#   so the left lateral-occipital source drives it towards left dominance.
+# * **spectral_centroid** moves toward 10 Hz, the simulated alpha frequency.
 
-# Expected alpha-ON windows (seconds, relative to main-session start)
-_alpha_on = [(0, 2), (12, 22), (32, 42), (52, 62), (72, 82), (92, 100)]
+sim_period = raw_sim.n_times / raw_sim.info["sfreq"]  # player loops after this
 
-hop_s = 0.5  # 50 % overlap → 0.5 s per window step
+onsets = np.asarray(nf.window_onsets)
+file_time = np.mod(onsets + winsize / 2 - t_stream_start, sim_period)
+alpha_on = np.zeros(onsets.size, dtype=bool)
+for k in range(n_bursts):
+    t0 = burst_start + k * burst_period
+    alpha_on |= (file_time >= t0) & (file_time < t0 + burst_duration)
+
+t = onsets - onsets[0]  # real session time of each window
+hop_s = winsize / 2     # 50 % overlap
+
+print(f"Main session started {np.mod(onsets[0] - t_stream_start, sim_period):.1f} s into the "
+      f"simulated file; {alpha_on.sum()} of {alpha_on.size} windows fall in an alpha burst.")
+
+# Contiguous runs of alpha-ON windows, as (start, end) in session time
+edges = np.flatnonzero(np.diff(np.r_[0, alpha_on.astype(int), 0]))
+on_spans = [(t[a], t[b - 1] + hop_s) for a, b in zip(edges[::2], edges[1::2])]
 
 labels = {
     "sensor_power":      "Sensor power  (V²/Hz)",
@@ -239,12 +284,10 @@ palette = ["#5DA5A4", "#FF6B6B", "#6BCB77", "#FFD93D"]
 fig, axes = plt.subplots(2, 2, figsize=(12, 6), constrained_layout=True)
 
 for ax, (mod, vals), color in zip(axes.flat, nf.nf_data.items(), palette):
-    t = np.arange(len(vals)) * hop_s
     ax.plot(t, vals, color=color, lw=1.6)
     ax.axhline(np.mean(vals), ls="--", lw=1.0, color="#888", label="mean")
-    for t0, t1 in _alpha_on:
-        ax.axvspan(t0, t1, alpha=0.12, color="grey",
-                   label="alpha-ON" if t0 == 0 else None)
+    for i, (t0, t1) in enumerate(on_spans):
+        ax.axvspan(t0, t1, alpha=0.12, color="grey", label="alpha-ON" if i == 0 else None)
     ax.set_title(labels.get(mod, mod), fontsize=10, fontstyle="italic")
     ax.set_xlabel("Time (s)", fontsize=9)
     ax.spines[["top", "right"]].set_visible(False)
