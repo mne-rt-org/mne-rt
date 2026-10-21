@@ -3,7 +3,7 @@
 Real-time Feature Modalities
 ============================
 
-MNE-RT implements 21 real-time feature modalities spanning sensor-space and
+MNE-RT implements 22 real-time feature modalities spanning sensor-space and
 source-space features, from simple band-power estimates to graph-theoretic
 functional connectivity measures.  Each modality can be used as a feedback
 signal, a monitoring metric, or an input to an offline analysis pipeline.
@@ -159,6 +159,95 @@ Instantaneous phase is particularly useful for:
   input to the CFC modality
 * **Phase synchrony feedback** — reward or monitor convergence of phase
   between two electrode pairs
+
+----
+
+.. _modality-microstates:
+
+EEG Microstates
+~~~~~~~~~~~~~~~
+
+**Config key:** ``microstates``
+
+EEG microstates are brief, quasi-stable scalp topographies, typically lasting
+60–120 ms, from which ongoing EEG can be described as a sequence
+:footcite:p:`pascualmarqui1995segmentation,michel2018eeg`. This modality feeds
+back one metric of one target state per window, from template maps you provide.
+
+Each window is band-passed and average-referenced, and every sample is
+assigned to the template map :math:`T_k` with the highest *absolute* spatial
+correlation — polarity is ignored:
+
+.. math::
+
+   \ell(t) = \arg\max_k \; \bigl|\operatorname{corr}\!\bigl(x(t),\, T_k\bigr)\bigr|
+
+From the labels, the metric of the target state :math:`k` is one of:
+
+* ``timecov`` — fraction of the window's labelled time spent in :math:`k`
+* ``meandurs`` — mean duration of :math:`k`'s segments (s)
+* ``occurrences`` — number of :math:`k` segments per second
+* ``gev`` — global explained variance contributed by :math:`k`,
+  :math:`\sum_{t:\,\ell(t)=k} \bigl(\mathrm{GFP}(t)\,\operatorname{corr}(t)\bigr)^2 \,/\, \sum_t \mathrm{GFP}(t)^2`
+* ``mean_corr`` — mean absolute correlation of :math:`k`'s samples with :math:`T_k`
+
+The backfitting rule and these definitions are those of pycrostates
+:footcite:p:`ferat2022pycrostates`, and the test suite checks that labels and
+metrics agree with it window by window, so a value means the same online as
+offline. pycrostates is not required.
+
+**Template maps.** Pass them through ``modality_params``, either as an array
+with ``template_ch_names`` — in either orientation, ``(n_states, n_channels)`` or
+``(n_channels, n_states)`` — or as a fitted pycrostates ``ModKMeans``, which
+carries its own channel and state names::
+
+    nf.record_main(
+        modality="microstates",
+        modality_params={"microstates": {"templates": modk, "target_state": "C"}},
+    )
+
+Maps are matched to the stream **by channel name**, so the stream's channel
+order does not matter; template channels missing from the acquired data — for
+example channels marked bad during the baseline — are left out of the fit with a
+warning. Band-pass the window as the templates were fitted (``frange``, default
+2–20 Hz). Several states can be trained at once as instances, e.g.
+``microstates@A`` and ``microstates@C`` with different ``target_state`` values.
+EEG only.
+
+**Individual maps from the baseline.** Maps can also be fitted on the
+participant's own baseline, between :meth:`~mne_rt.RTStream.record_baseline`
+and :meth:`~mne_rt.RTStream.record_main` — where :meth:`~mne_rt.RTStream.fit_asr`
+and :meth:`~mne_rt.RTStream.fit_gedai` run too. Prepare the baseline as the
+modality prepares each window (same band, average reference). Fitted clusters
+come in arbitrary order, so inspect them and name the state to train::
+
+    from pycrostates.cluster import ModKMeans
+
+    nf.record_baseline(baseline_duration=120)
+    baseline = nf.raw_baseline.copy().filter(2, 20).set_eeg_reference("average")
+    modk = ModKMeans(n_clusters=4)
+    modk.fit(baseline)
+    modk.plot()                                          # inspect the maps
+    modk.rename_clusters(new_names=["A", "B", "C", "D"])
+    nf.record_main(
+        modality="microstates",
+        modality_params={"microstates": {"templates": modk, "target_state": "C"}},
+    )
+
+To skip the manual step, align the fitted maps to a fitted group model instead.
+pycrostates matches them to the group's states, polarity included, so the target
+keeps its name::
+
+    modk.reorder_clusters(template=group)               # a fitted group ModKMeans
+    modk.rename_clusters(new_names=group.cluster_names)
+
+**Edges.** pycrostates excludes each recording's first and last segment,
+which are truncated. ``reject_edges: true`` does the same per window, but over
+a 1 s window this discards a large share of the samples, and a window that is
+a single segment is rejected entirely, so it reads as zero coverage at exactly
+the moment the target state dominates. It is therefore off by default:
+``timecov``, ``gev`` and ``mean_corr`` are unaffected by truncation, while
+``meandurs`` and ``occurrences`` count truncated edge segments.
 
 ----
 

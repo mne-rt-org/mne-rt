@@ -143,7 +143,7 @@ Feature Modality
 ~~~~~~~~~~~
 
 A **modality** is the brain feature that is being fed back to the participant.
-MNE-RT implements 20 modalities across sensor space, connectivity, and source
+MNE-RT implements 22 modalities across sensor space, connectivity, and source
 space.  You select one or more per session:
 
 .. raw:: html
@@ -166,7 +166,7 @@ space.  You select one or more per session:
      </tr>
      <tr style="background:#f1f5f9;">
        <td style="padding:6px 14px;border:1px solid #e2e8f0;font-weight:600;">Time-domain</td>
-       <td style="padding:6px 14px;border:1px solid #e2e8f0;font-family:monospace;font-size:12px;">hjorth · entropy · scp · instantaneous_phase</td>
+       <td style="padding:6px 14px;border:1px solid #e2e8f0;font-family:monospace;font-size:12px;">hjorth · entropy · scp · instantaneous_phase · microstates</td>
        <td style="padding:6px 14px;border:1px solid #e2e8f0;">SCP biofeedback; phase-triggered stimulation</td>
      </tr>
      <tr style="background:#f8fafc;">
@@ -564,7 +564,7 @@ For detailed real-time quality control, see the
 Further Reading
 ---------------
 
-- :doc:`modalities` — mathematical definitions of all 20 feature modalities
+- :doc:`modalities` — mathematical definitions of all 22 feature modalities
 - :doc:`protocols` — reward protocol formulas, selection table, and examples
 - :doc:`denoising` — artifact correction algorithms and benchmarks
 - :doc:`api` — complete class and function reference

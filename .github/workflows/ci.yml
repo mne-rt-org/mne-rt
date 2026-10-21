@@ -55,9 +55,10 @@ jobs:
           python-version: ${{ matrix.python }}
           activate-environment: true
       # gedai is an opt-in extra; install it here so the adaptive multiband GEDAI
-      # tests run. The `minimum` job below leaves it out, which exercises the
-      # import-without-gedai path instead.
-      - run: uv pip install -e ".[dev,pyqt6,gedai]"
+      # tests run. pycrostates is test-only: it is the reference the microstates
+      # modality is checked against, window by window. The `minimum` job below
+      # leaves both out, which exercises mne-rt without them.
+      - run: uv pip install -e ".[dev,pyqt6,gedai]" pycrostates
       - run: pytest --cov=mne_rt --cov-report=xml
         env:
           # coverage.py defaults to the sys.monitoring ("sysmon") tracer on

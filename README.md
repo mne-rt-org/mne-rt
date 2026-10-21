@@ -57,7 +57,7 @@ BIDS-compatible session saving, and a full CLI.
 
 | Feature | Details |
 |---|---|
-| **20 NF modalities** | Band power, ERD/ERS, laterality, Hjorth, spectral centroid, CFC, connectivity, graph Laplacian — sensor and source space |
+| **22 NF modalities** | Band power, ERD/ERS, laterality, Hjorth, spectral centroid, microstates, CFC, connectivity, graph Laplacian — sensor and source space |
 | **10 adaptive protocols** | Z-score, threshold, percentile, staircase, operant, RL, sham, multi-band, and cross-session transfer |
 | **5 artifact correction methods** | ASR, adaptive LMS, GEDAI, ORICA, real-time Maxwell/SSS (MEG) |
 | **9 live visualisation windows** | Scrolling raw · NF signal · epoch overlays · scalp topo · 3-D brain · butterfly · ERP comparison · TFR heatmaps |
