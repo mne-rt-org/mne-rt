@@ -3,6 +3,7 @@
 import json
 import pathlib
 import time
+from pathlib import Path
 
 import numpy as np
 import pytest
@@ -780,6 +781,92 @@ def test_connect_to_array_record_main_end_to_end(tmp_path, array_info):
             show_nf_signal=False,
         )
         assert len(nf.nf_data["sensor_power"]) > 0
+    finally:
+        nf.save()
+
+
+def test_microstates_record_main_save_and_report(tmp_path, array_info):
+    """The template array travels through modality_params; a session using it
+    must record, save and report without trying to serialise it."""
+    rng = np.random.default_rng(0)
+    sfreq = array_info["sfreq"]
+    n = int(20.0 * sfreq)
+    maps = rng.standard_normal((3, len(array_info["ch_names"])))
+    states = np.repeat(rng.integers(3, size=n // 25 + 1), 25)[:n]  # ~100 ms segments
+    data = maps[states].T * np.sin(2 * np.pi * 10 * np.arange(n) / sfreq) * 1e-5
+    data += rng.standard_normal(data.shape) * 1e-7
+
+    nf = _make_rt_stream(tmp_path, montage="easycap-M1")
+    try:
+        nf.connect_to_array(data, array_info, n_repeat=np.inf)
+        nf.record_baseline(baseline_duration=1.0, winsize=0.5)
+        nf.record_main(
+            duration=2.0,
+            modality="microstates",
+            modality_params={
+                "microstates": {
+                    "templates": maps,
+                    "template_ch_names": array_info["ch_names"],
+                    "target_state": 1,
+                }
+            },
+            show_raw_signal=False,
+            show_nf_signal=False,
+        )
+        values = np.asarray(nf.nf_data["microstates"])
+        assert values.size > 0 and np.all((values >= 0) & (values <= 1))
+    finally:
+        saved = nf.save()
+    assert Path(saved["nf_data"]).is_file()
+    assert Path(nf.create_report(open_browser=False)).is_file()
+
+
+def test_microstates_with_individual_maps_fitted_on_the_baseline(tmp_path, array_info):
+    """#44's second approach, with no extra machinery: fit pycrostates on the
+    session's own baseline, choose the state to train, pass the fitted model."""
+    pytest.importorskip("pycrostates")
+    from pycrostates.cluster import ModKMeans
+
+    rng = np.random.default_rng(1)
+    sfreq = array_info["sfreq"]
+    n = int(30.0 * sfreq)
+    maps = rng.standard_normal((3, len(array_info["ch_names"])))
+    # state 1 — the one trained — dominates, so training the wrong map would
+    # read ~0.2 instead of ~0.6
+    states = np.repeat(rng.choice(3, size=n // 25 + 1, p=[0.2, 0.6, 0.2]), 25)[:n]
+    data = maps[states].T * np.sin(2 * np.pi * 10 * np.arange(n) / sfreq) * 1e-5
+    data += rng.standard_normal(data.shape) * 1e-7
+
+    nf = _make_rt_stream(tmp_path, montage="easycap-M1")
+    try:
+        nf.connect_to_array(data, array_info, n_repeat=np.inf)
+        nf.record_baseline(baseline_duration=4.0, winsize=0.5)
+
+        model = ModKMeans(n_clusters=3, n_init=10, random_state=0)
+        # the documented recipe: prepare the baseline as each window is prepared
+        baseline = (
+            nf.raw_baseline.copy()
+            .filter(2, 20, verbose=False)
+            .set_eeg_reference("average", verbose=False)
+        )
+        model.fit(baseline, verbose=False)
+        # The manual step: pick the fitted map to train — here, the one matching
+        # true map 1 — and name it, as one would after model.plot().
+        corr = [abs(np.corrcoef(c, maps[1])[0, 1]) for c in model.cluster_centers_]
+        names = ["other_a", "other_b"]
+        names.insert(int(np.argmax(corr)), "target")
+        model.rename_clusters(new_names=names)
+
+        nf.record_main(
+            duration=3.0,
+            modality="microstates",
+            modality_params={"microstates": {"templates": model, "target_state": "target"}},
+            show_raw_signal=False,
+            show_nf_signal=False,
+        )
+        values = np.asarray(nf.nf_data["microstates"])
+        assert values.size > 0
+        assert 0.45 < values.mean() < 0.8  # state 1's share, not another map's ~0.2
     finally:
         nf.save()
 
