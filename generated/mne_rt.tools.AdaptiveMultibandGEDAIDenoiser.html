@@ -1,0 +1,941 @@
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>mne_rt.tools.AdaptiveMultibandGEDAIDenoiser &#8212; MNE-RT</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=18bd87630a240e9c25be" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=18bd87630a240e9c25be" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery.css?v=c83e6b79" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-binder.css?v=f4aeca0c" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-dataframe.css?v=2082cf3c" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-rendered-html.css?v=1277b6f3" />
+    <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=5bf657dd" />
+  
+  <!-- So that users can add custom icons -->
+  <script defer src="../_static/scripts/fontawesome.js?digest=18bd87630a240e9c25be"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=18bd87630a240e9c25be" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=18bd87630a240e9c25be" />
+
+    <script src="../_static/documentation_options.js?v=6efca38a"></script>
+    <script src="../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="../_static/sg-tags.js?v=d80f6fa4"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'generated/mne_rt.tools.AdaptiveMultibandGEDAIDenoiser';</script>
+    <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="mne_rt.tools.ASRDenoiser" href="mne_rt.tools.ASRDenoiser.html" />
+    <link rel="prev" title="mne_rt.tools.GEDAIDenoiser" href="mne_rt.tools.GEDAIDenoiser.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="color-scheme" content="light dark"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="" />
+  
+    
+    <script src="../_static/searchtools.js"></script>
+    <script src="../_static/language_data.js"></script>
+    <script src="../searchindex.js"></script>
+  
+  </head>
+  <body data-default-mode="">
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+  
+  
+  
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header id="pst-header" class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button type="button" class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../index.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../_static/mne_rt_logo.svg" class="logo__image only-light" alt="MNE-RT - Home"/>
+    <img src="../_static/mne_rt_logo.svg" class="logo__image only-dark pst-js-only" alt="MNE-RT - Home"/>
+  
+  
+</a></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../install.html">
+    Installation
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../tutorial.html">
+    User Guide
+  </a>
+</li>
+
+
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="../api.html">
+    API Reference
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../visualization.html">
+    Visualisation
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../cli.html">
+    CLI
+  </a>
+</li>
+
+            <li class="nav-item dropdown">
+                <button class="btn dropdown-toggle nav-item" type="button"
+                data-bs-toggle="dropdown" aria-expanded="false"
+                aria-controls="pst-nav-more-links">
+                    More
+                </button>
+                <ul id="pst-nav-more-links" class="dropdown-menu">
+                    
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../denoising.html">
+    Artifact Correction
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../modalities.html">
+    Real-time Feature Modalities
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../decoding.html">
+    Real-time Decoding
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../protocols.html">
+    NF Protocols
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../whats_new.html">
+    What’s new
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../auto_examples/index.html">
+    Examples Gallery
+  </a>
+</li>
+
+                </ul>
+            </li>
+            
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<button type="button" class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+        </div>
+      
+      
+        <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/mne-rt-org/mne-rt" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-square-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
+        </li>
+</ul></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<button type="button" class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+    </div>
+  
+
+  
+    <button type="button" class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="On this page">
+      <span class="fa-solid fa-outdent"></span>
+    </button>
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../install.html">
+    Installation
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../tutorial.html">
+    User Guide
+  </a>
+</li>
+
+
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="../api.html">
+    API Reference
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../visualization.html">
+    Visualisation
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../cli.html">
+    CLI
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../denoising.html">
+    Artifact Correction
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../modalities.html">
+    Real-time Feature Modalities
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../decoding.html">
+    Real-time Decoding
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../protocols.html">
+    NF Protocols
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../whats_new.html">
+    What’s new
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../auto_examples/index.html">
+    Examples Gallery
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/mne-rt-org/mne-rt" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-square-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
+        </li>
+</ul></div>
+        
+      </div>
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+
+<nav class="bd-docs-nav bd-links"
+     aria-label="Section Navigation">
+  <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
+  <div class="bd-toc-item navbar-nav"><ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="mne_rt.RTStream.html">mne_rt.RTStream</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mne_rt.RTEpochs.html">mne_rt.RTEpochs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mne_rt.ArrayStream.html">mne_rt.ArrayStream</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mne_rt.MarkerArrayStream.html">mne_rt.MarkerArrayStream</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="mne_rt.RTDecode.html">mne_rt.RTDecode</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="mne_rt.SourceModel.html">mne_rt.SourceModel</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mne_rt.ROI.html">mne_rt.ROI</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mne_rt.resolve_rois.html">mne_rt.resolve_rois</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mne_rt.list_rois.html">mne_rt.list_rois</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="mne_rt.viz.NFPlot.html">mne_rt.viz.NFPlot</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mne_rt.viz.RawPlot.html">mne_rt.viz.RawPlot</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mne_rt.viz.EpochPlot.html">mne_rt.viz.EpochPlot</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mne_rt.viz.BrainPlot.html">mne_rt.viz.BrainPlot</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mne_rt.viz.TopomapPlot.html">mne_rt.viz.TopomapPlot</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mne_rt.viz.TopoPlot.html">mne_rt.viz.TopoPlot</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mne_rt.viz.ButterflyPlot.html">mne_rt.viz.ButterflyPlot</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mne_rt.viz.TFRPlot.html">mne_rt.viz.TFRPlot</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mne_rt.viz.CompareEvoked.html">mne_rt.viz.CompareEvoked</a></li>
+</ul>
+<ul class="current nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="mne_rt.tools.AdaptiveLMSFilter.html">mne_rt.tools.AdaptiveLMSFilter</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mne_rt.tools.ORICA.html">mne_rt.tools.ORICA</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mne_rt.tools.GEDAIDenoiser.html">mne_rt.tools.GEDAIDenoiser</a></li>
+<li class="toctree-l1 current active"><a aria-current="page" class="current reference internal" href="#">mne_rt.tools.AdaptiveMultibandGEDAIDenoiser</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mne_rt.tools.ASRDenoiser.html">mne_rt.tools.ASRDenoiser</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mne_rt.tools.RTMaxwellFilter.html">mne_rt.tools.RTMaxwellFilter</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="mne_rt.tools.BadChannelDetector.html">mne_rt.tools.BadChannelDetector</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mne_rt.tools.RiemannianPotatoDetector.html">mne_rt.tools.RiemannianPotatoDetector</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="mne_rt.protocols.ThresholdProtocol.html">mne_rt.protocols.ThresholdProtocol</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mne_rt.protocols.ZScoreProtocol.html">mne_rt.protocols.ZScoreProtocol</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mne_rt.protocols.PercentileProtocol.html">mne_rt.protocols.PercentileProtocol</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mne_rt.protocols.LinearTrendProtocol.html">mne_rt.protocols.LinearTrendProtocol</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mne_rt.protocols.ShamProtocol.html">mne_rt.protocols.ShamProtocol</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mne_rt.protocols.UpDownStaircaseProtocol.html">mne_rt.protocols.UpDownStaircaseProtocol</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mne_rt.protocols.MultiBandProtocol.html">mne_rt.protocols.MultiBandProtocol</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mne_rt.protocols.RLProtocol.html">mne_rt.protocols.RLProtocol</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mne_rt.protocols.OperantProtocol.html">mne_rt.protocols.OperantProtocol</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mne_rt.protocols.TransferProtocol.html">mne_rt.protocols.TransferProtocol</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="mne_rt.combiners.FeatureCombiner.html">mne_rt.combiners.FeatureCombiner</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mne_rt.combiners.WeightedSumCombiner.html">mne_rt.combiners.WeightedSumCombiner</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mne_rt.combiners.GeometricMeanCombiner.html">mne_rt.combiners.GeometricMeanCombiner</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mne_rt.combiners.ZScoredNormCombiner.html">mne_rt.combiners.ZScoredNormCombiner</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mne_rt.combiners.LearnedCombiner.html">mne_rt.combiners.LearnedCombiner</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="mne_rt.OSCSender.html">mne_rt.OSCSender</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mne_rt.LSLSender.html">mne_rt.LSLSender</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="mne_rt.tools.simulate_raw.html">mne_rt.tools.simulate_raw</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mne_rt.tools.simulate_nf_session.html">mne_rt.tools.simulate_nf_session</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mne_rt.modalities.ModalityMixin.html">mne_rt.modalities.ModalityMixin</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="mne_rt.tools.save_as_bids.html">mne_rt.tools.save_as_bids</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="mne_rt.set_log_level.html">mne_rt.set_log_level</a></li>
+</ul>
+</div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    
+    <li class="breadcrumb-item"><a href="../api.html" class="nav-link">API Reference</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">mne_rt.tools.AdaptiveMultibandGEDAIDenoiser</span></li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section id="mne-rt-tools-adaptivemultibandgedaidenoiser">
+<h1>mne_rt.tools.AdaptiveMultibandGEDAIDenoiser<a class="headerlink" href="#mne-rt-tools-adaptivemultibandgedaidenoiser" title="Link to this heading">#</a></h1>
+<dl class="py class">
+<dt class="sig sig-object py" id="mne_rt.tools.AdaptiveMultibandGEDAIDenoiser">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">mne_rt.tools.</span></span><span class="sig-name descname"><span class="pre">AdaptiveMultibandGEDAIDenoiser</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n_channels</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="(in Python v3.15)"><span class="pre">int</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">sfreq</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#float" title="(in Python v3.15)"><span class="pre">float</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">wavelet_level</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="(in Python v3.15)"><span class="pre">int</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.15)"><span class="pre">str</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'auto'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cycles_per_wavelet</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="(in Python v3.15)"><span class="pre">int</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">6</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">shrinkage</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#float" title="(in Python v3.15)"><span class="pre">float</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.05</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filter_order</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="(in Python v3.15)"><span class="pre">int</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(in Python v3.15)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_jobs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="(in Python v3.15)"><span class="pre">int</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">wavelet_low_cutoff</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#float" title="(in Python v3.15)"><span class="pre">float</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">broadband_pass</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#bool" title="(in Python v3.15)"><span class="pre">bool</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prefilter_mode</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Literal" title="(in Python v3.15)"><span class="pre">Literal</span></a><span class="p"><span class="pre">[</span></span><span class="s"><span class="pre">'reference'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'lowcut'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'none'</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'reference'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mne_rt/tools/adaptive_gedai.html#AdaptiveMultibandGEDAIDenoiser"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mne_rt.tools.AdaptiveMultibandGEDAIDenoiser" title="Link to this definition">#</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/builtins/functions.html#object" title="(in Python v3.15)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<p>Streaming adaptive multiband GEDAI.</p>
+<dl class="field-list">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl>
+<dt><strong>n_channels</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="(in Python v3.15)"><code class="docutils literal notranslate"><span class="pre">int</span></code></a></span></dt><dd><p>Number of EEG channels. SENSAI calibration here uses the EEG objective
+only; gedai’s MEG objective is not implemented, and
+<a class="reference internal" href="mne_rt.RTStream.html#mne_rt.RTStream.fit_gedai" title="mne_rt.RTStream.fit_gedai"><code class="xref py py-meth docutils literal notranslate"><span class="pre">fit_gedai()</span></code></a> refuses multiband mode for MEG.</p>
+</dd>
+<dt><strong>sfreq</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#float" title="(in Python v3.15)"><code class="docutils literal notranslate"><span class="pre">float</span></code></a></span></dt><dd><p>Sampling frequency in Hz.</p>
+</dd>
+<dt><strong>wavelet_level</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="(in Python v3.15)"><code class="docutils literal notranslate"><span class="pre">int</span></code></a> | “auto”, default “auto”</span></dt><dd><p>Number of wavelet decomposition levels (<code class="docutils literal notranslate"><span class="pre">n_bands</span> <span class="pre">=</span> <span class="pre">wavelet_level</span> <span class="pre">+</span>
+<span class="pre">1</span></code>). If <code class="docutils literal notranslate"><span class="pre">&quot;auto&quot;</span></code>, uses <code class="xref py py-func docutils literal notranslate"><span class="pre">gedai.wavelet.transform.compute_wavelet_level()</span></code>.</p>
+</dd>
+<dt><strong>cycles_per_wavelet</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="(in Python v3.15)"><code class="docutils literal notranslate"><span class="pre">int</span></code></a>, default 6</span></dt><dd><p>Cycles at each band’s lower frequency used to size covariance epochs.
+The lowest approximation uses half its upper edge, as in pyGEDAI.</p>
+</dd>
+<dt><strong>shrinkage</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#float" title="(in Python v3.15)"><code class="docutils literal notranslate"><span class="pre">float</span></code></a>, default 0.05</span></dt><dd><p>Reference covariance shrinkage: <code class="docutils literal notranslate"><span class="pre">(1-s)</span> <span class="pre">*</span> <span class="pre">R</span> <span class="pre">+</span> <span class="pre">s</span> <span class="pre">*</span> <span class="pre">mean(diag(R))</span> <span class="pre">*</span> <span class="pre">I</span></code>.</p>
+</dd>
+<dt><strong>filter_order</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="(in Python v3.15)"><code class="docutils literal notranslate"><span class="pre">int</span></code></a> | <a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(in Python v3.15)"><code class="docutils literal notranslate"><span class="pre">None</span></code></a>, default <a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(in Python v3.15)"><code class="docutils literal notranslate"><span class="pre">None</span></code></a></span></dt><dd><p>Deprecated compatibility argument. Haar kernels have no Butterworth
+order. Passing this argument logs a warning; it has no effect.</p>
+</dd>
+<dt><strong>n_jobs</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="(in Python v3.15)"><code class="docutils literal notranslate"><span class="pre">int</span></code></a>, default 1</span></dt><dd><p>Number of threads used to denoise bands in parallel (<code class="docutils literal notranslate"><span class="pre">joblib</span></code>,
+<code class="docutils literal notranslate"><span class="pre">prefer=&quot;threads&quot;</span></code>). Use <code class="docutils literal notranslate"><span class="pre">-1</span></code> for all cores.</p>
+</dd>
+<dt><strong>wavelet_low_cutoff</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#float" title="(in Python v3.15)"><code class="docutils literal notranslate"><span class="pre">float</span></code></a>, default 0.5</span></dt><dd><p>Bands whose upper edge is at or below this frequency (Hz) are
+discarded. This is a dyadic wavelet cutoff, not a brick-wall filter.
+Also controls the broadband prefilter and automatic level selection.</p>
+</dd>
+<dt><strong>broadband_pass</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#bltin-boolean-values" title="(in Python v3.15)"><span class="xref std std-ref">bool</span></a>, default <a class="reference external" href="https://docs.python.org/3/builtins/constants.html#True" title="(in Python v3.15)"><code class="docutils literal notranslate"><span class="pre">True</span></code></a></span></dt><dd><p>Calibrate and apply a broadband GEDAI pass before wavelet cleaning,
+matching pyGEDAI’s default. The broadband covariance epoch is one
+second (or enough samples for the channel count).</p>
+</dd>
+<dt><strong>prefilter_mode</strong><span class="classifier">{“reference”, “lowcut”, “none”}, default “reference”</span></dt><dd><p><code class="docutils literal notranslate"><span class="pre">&quot;reference&quot;</span></code> preserves the pyGEDAI prefilter cascade. <code class="docutils literal notranslate"><span class="pre">&quot;lowcut&quot;</span></code>
+uses only one Haar highpass at <code class="docutils literal notranslate"><span class="pre">wavelet_low_cutoff</span></code>, even without a
+broadband pass. <code class="docutils literal notranslate"><span class="pre">&quot;none&quot;</span></code> skips standalone prefilters; sub-cutoff
+wavelet bands are still excluded. The latter modes reduce delay but
+change calibration and broadband cleaning, so require a new <code class="docutils literal notranslate"><span class="pre">fit</span></code>.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p><code class="docutils literal notranslate"><span class="pre">fit</span></code> calibrates an eigenvalue threshold in each band with pyGEDAI’s
+EEG SENSAI objective (up to three reference principal components, noise
+weight 3, frequency-dependent sensitivity bounds). The fitted sensitivity
+stays fixed; each local eigenvalue spectrum determines the current
+cutoff. Baseline and live data must use the same units and sensor
+reference as the supplied leadfield.</p>
+<p>The finite trailing covariance history is bounded by the pyGEDAI epoch
+size, not an EMA with an unbounded tail. All emitted samples lag their
+input timestamps by <code class="docutils literal notranslate"><span class="pre">latency</span></code> seconds, excluding computation time.
+This can be several seconds even though no acquisition chunks are held
+waiting for a processing window. Offline calibration may use future
+samples within the baseline, but live filtering never reads future chunks.</p>
+<p class="rubric">References</p>
+<p>Ros, T., Férat, V., Huang, Y., et al. (2025). Return of the GEDAI:
+Unsupervised EEG Denoising based on Leadfield Filtering. <em>bioRxiv</em>.
+<a class="reference external" href="https://doi.org/10.1101/2025.10.04.680449">https://doi.org/10.1101/2025.10.04.680449</a></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="mne_rt.tools.AdaptiveMultibandGEDAIDenoiser.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n_channels</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="(in Python v3.15)"><span class="pre">int</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">sfreq</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#float" title="(in Python v3.15)"><span class="pre">float</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">wavelet_level</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="(in Python v3.15)"><span class="pre">int</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.15)"><span class="pre">str</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'auto'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cycles_per_wavelet</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="(in Python v3.15)"><span class="pre">int</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">6</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">shrinkage</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#float" title="(in Python v3.15)"><span class="pre">float</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.05</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filter_order</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="(in Python v3.15)"><span class="pre">int</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(in Python v3.15)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_jobs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="(in Python v3.15)"><span class="pre">int</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">wavelet_low_cutoff</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#float" title="(in Python v3.15)"><span class="pre">float</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">broadband_pass</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#bool" title="(in Python v3.15)"><span class="pre">bool</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prefilter_mode</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Literal" title="(in Python v3.15)"><span class="pre">Literal</span></a><span class="p"><span class="pre">[</span></span><span class="s"><span class="pre">'reference'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'lowcut'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'none'</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'reference'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(in Python v3.15)"><span class="pre">None</span></a></span></span><a class="reference internal" href="../_modules/mne_rt/tools/adaptive_gedai.html#AdaptiveMultibandGEDAIDenoiser.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mne_rt.tools.AdaptiveMultibandGEDAIDenoiser.__init__" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<p class="rubric">Methods</p>
+<div class="pst-scrollable-table-container"><table class="autosummary longtable table">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#mne_rt.tools.AdaptiveMultibandGEDAIDenoiser.__init__" title="mne_rt.tools.AdaptiveMultibandGEDAIDenoiser.__init__"><code class="xref py py-obj docutils literal notranslate"><span class="pre">__init__</span></code></a>(n_channels, sfreq[, wavelet_level, ...])</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#mne_rt.tools.AdaptiveMultibandGEDAIDenoiser.fit" title="mne_rt.tools.AdaptiveMultibandGEDAIDenoiser.fit"><code class="xref py py-obj docutils literal notranslate"><span class="pre">fit</span></code></a>(data[, leadfield])</p></td>
+<td><p>Fit per-band spatial filters from baseline data.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#mne_rt.tools.AdaptiveMultibandGEDAIDenoiser.update_and_denoise" title="mne_rt.tools.AdaptiveMultibandGEDAIDenoiser.update_and_denoise"><code class="xref py py-obj docutils literal notranslate"><span class="pre">update_and_denoise</span></code></a>(data[, template_map, ...])</p></td>
+<td><p>Denoise one real-time chunk, updating per-band covariances as it goes.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p class="rubric">Attributes</p>
+<div class="pst-scrollable-table-container"><table class="autosummary longtable table">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#mne_rt.tools.AdaptiveMultibandGEDAIDenoiser.activation_patterns" title="mne_rt.tools.AdaptiveMultibandGEDAIDenoiser.activation_patterns"><code class="xref py py-obj docutils literal notranslate"><span class="pre">activation_patterns</span></code></a></p></td>
+<td><p>Activation patterns <code class="docutils literal notranslate"><span class="pre">A</span></code> per band, each shape (n_channels, n_channels).</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#mne_rt.tools.AdaptiveMultibandGEDAIDenoiser.band_frequencies" title="mne_rt.tools.AdaptiveMultibandGEDAIDenoiser.band_frequencies"><code class="xref py py-obj docutils literal notranslate"><span class="pre">band_frequencies</span></code></a></p></td>
+<td><p>List of <code class="docutils literal notranslate"><span class="pre">(fmin,</span> <span class="pre">fmax)</span></code> per band.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#mne_rt.tools.AdaptiveMultibandGEDAIDenoiser.band_time_constants" title="mne_rt.tools.AdaptiveMultibandGEDAIDenoiser.band_time_constants"><code class="xref py py-obj docutils literal notranslate"><span class="pre">band_time_constants</span></code></a></p></td>
+<td><p>Trailing covariance epoch durations (seconds), including ignored bands.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#mne_rt.tools.AdaptiveMultibandGEDAIDenoiser.current_eigenvalue_thresholds" title="mne_rt.tools.AdaptiveMultibandGEDAIDenoiser.current_eigenvalue_thresholds"><code class="xref py py-obj docutils literal notranslate"><span class="pre">current_eigenvalue_thresholds</span></code></a></p></td>
+<td><p>Most recently used per-band automatic cutoffs.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#mne_rt.tools.AdaptiveMultibandGEDAIDenoiser.delay_samples" title="mne_rt.tools.AdaptiveMultibandGEDAIDenoiser.delay_samples"><code class="xref py py-obj docutils literal notranslate"><span class="pre">delay_samples</span></code></a></p></td>
+<td><p>Align emitted sample <code class="docutils literal notranslate"><span class="pre">t</span></code> to source sample <code class="docutils literal notranslate"><span class="pre">t</span> <span class="pre">-</span> <span class="pre">delay_samples</span></code>.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#mne_rt.tools.AdaptiveMultibandGEDAIDenoiser.eigenvalue_thresholds" title="mne_rt.tools.AdaptiveMultibandGEDAIDenoiser.eigenvalue_thresholds"><code class="xref py py-obj docutils literal notranslate"><span class="pre">eigenvalue_thresholds</span></code></a></p></td>
+<td><p>Baseline SENSAI eigenvalue cutoffs; live cutoffs adapt to each spectrum.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#mne_rt.tools.AdaptiveMultibandGEDAIDenoiser.eigenvalues" title="mne_rt.tools.AdaptiveMultibandGEDAIDenoiser.eigenvalues"><code class="xref py py-obj docutils literal notranslate"><span class="pre">eigenvalues</span></code></a></p></td>
+<td><p>Sorted eigenvalues (descending) per band.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#mne_rt.tools.AdaptiveMultibandGEDAIDenoiser.latency" title="mne_rt.tools.AdaptiveMultibandGEDAIDenoiser.latency"><code class="xref py py-obj docutils literal notranslate"><span class="pre">latency</span></code></a></p></td>
+<td><p>Fixed FIR reconstruction delay in seconds; not compute time.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#mne_rt.tools.AdaptiveMultibandGEDAIDenoiser.n_bands" title="mne_rt.tools.AdaptiveMultibandGEDAIDenoiser.n_bands"><code class="xref py py-obj docutils literal notranslate"><span class="pre">n_bands</span></code></a></p></td>
+<td><p>Number of frequency bands.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#mne_rt.tools.AdaptiveMultibandGEDAIDenoiser.retained_bands" title="mne_rt.tools.AdaptiveMultibandGEDAIDenoiser.retained_bands"><code class="xref py py-obj docutils literal notranslate"><span class="pre">retained_bands</span></code></a></p></td>
+<td><p>Whether each band contributes to the reconstruction.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#mne_rt.tools.AdaptiveMultibandGEDAIDenoiser.spatial_filters" title="mne_rt.tools.AdaptiveMultibandGEDAIDenoiser.spatial_filters"><code class="xref py py-obj docutils literal notranslate"><span class="pre">spatial_filters</span></code></a></p></td>
+<td><p>Spatial filters <code class="docutils literal notranslate"><span class="pre">W</span></code> per band, each shape (n_channels, n_channels).</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<dl class="py method">
+<dt class="sig sig-object py" id="mne_rt.tools.AdaptiveMultibandGEDAIDenoiser.fit">
+<span class="sig-name descname"><span class="pre">fit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.5)"><span class="pre">ndarray</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">leadfield</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.5)"><span class="pre">ndarray</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(in Python v3.15)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#mne_rt.tools.AdaptiveMultibandGEDAIDenoiser" title="mne_rt.tools.adaptive_gedai.AdaptiveMultibandGEDAIDenoiser"><span class="pre">AdaptiveMultibandGEDAIDenoiser</span></a></span></span><a class="reference internal" href="../_modules/mne_rt/tools/adaptive_gedai.html#AdaptiveMultibandGEDAIDenoiser.fit"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mne_rt.tools.AdaptiveMultibandGEDAIDenoiser.fit" title="Link to this definition">#</a></dt>
+<dd><p>Fit per-band spatial filters from baseline data.</p>
+<dl class="field-list">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl>
+<dt><strong>data</strong><span class="classifier"><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.5)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ndarray</span></code></a>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">shape</span></code> (<code class="xref py py-obj docutils literal notranslate"><span class="pre">n_channels</span></code>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">n_samples</span></code>)</span></dt><dd><p>Broadband baseline recording.</p>
+</dd>
+<dt><strong>leadfield</strong><span class="classifier"><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.5)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ndarray</span></code></a>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">shape</span></code> (<code class="xref py py-obj docutils literal notranslate"><span class="pre">n_channels</span></code>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">n_sources</span></code>), optional</span></dt><dd><p>Forward/leadfield gain matrix. If given, the reference covariance
+is <code class="docutils literal notranslate"><span class="pre">L</span> <span class="pre">&#64;</span> <span class="pre">L.T</span></code> (true GEDAI / leadfield mode); otherwise the
+broadband covariance of <code class="docutils literal notranslate"><span class="pre">data</span></code> is used (band-filter mode).
+For automatic selection without a leadfield, this baseline must
+be representative of the signal covariance to preserve.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">self</span></code></dt><dd></dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mne_rt.tools.AdaptiveMultibandGEDAIDenoiser.update_and_denoise">
+<span class="sig-name descname"><span class="pre">update_and_denoise</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.5)"><span class="pre">ndarray</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">template_map</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.5)"><span class="pre">ndarray</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(in Python v3.15)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">threshold</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#float" title="(in Python v3.15)"><span class="pre">float</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.7</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_artifact</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="(in Python v3.15)"><span class="pre">int</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.15)"><span class="pre">str</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'auto'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">update_covariance</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#bool" title="(in Python v3.15)"><span class="pre">bool</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">refit</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#bool" title="(in Python v3.15)"><span class="pre">bool</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.5)"><span class="pre">ndarray</span></a></span></span><a class="reference internal" href="../_modules/mne_rt/tools/adaptive_gedai.html#AdaptiveMultibandGEDAIDenoiser.update_and_denoise"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mne_rt.tools.AdaptiveMultibandGEDAIDenoiser.update_and_denoise" title="Link to this definition">#</a></dt>
+<dd><p>Denoise one real-time chunk, updating per-band covariances as it goes.</p>
+<dl class="field-list">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl>
+<dt><strong>data</strong><span class="classifier"><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.5)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ndarray</span></code></a>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">shape</span></code> (<code class="xref py py-obj docutils literal notranslate"><span class="pre">n_channels</span></code>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">n_samples</span></code>)</span></dt><dd><p>New chunk of broadband sensor data.</p>
+</dd>
+<dt><strong>template_map</strong><span class="classifier"><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.5)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ndarray</span></code></a>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">shape</span></code> (n_channels,), optional</span></dt><dd><p>Known artifact topography (e.g. blink). If given, components
+whose activation pattern correlates with it above <code class="docutils literal notranslate"><span class="pre">threshold</span></code>
+(absolute correlation) are suppressed in every band.</p>
+</dd>
+<dt><strong>threshold</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#float" title="(in Python v3.15)"><code class="docutils literal notranslate"><span class="pre">float</span></code></a>, default 0.7</span></dt><dd><p>Absolute-correlation threshold used with <code class="docutils literal notranslate"><span class="pre">template_map</span></code>.</p>
+</dd>
+<dt><strong>n_artifact</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="(in Python v3.15)"><code class="docutils literal notranslate"><span class="pre">int</span></code></a> | “auto”, default “auto”</span></dt><dd><p>When <code class="docutils literal notranslate"><span class="pre">template_map</span></code> is <code class="docutils literal notranslate"><span class="pre">None</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;auto&quot;</span></code> rejects eigenvalues
+above each band’s current SENSAI threshold, calculated from the
+baseline-fitted sensitivity and the local eigenvalue spectrum. With no
+leadfield, the baseline broadband covariance is the signal
+reference instead of a theoretical brain model.
+An integer overrides SENSAI with a fixed count. Leadfield mode suppresses the
+largest eigenvalues (excess power relative to the brain model);
+band-filter mode suppresses the smallest (least band-specific).
+Zero disables component rejection, not prefiltering, output delay,
+or sub-cutoff band removal.
+A positive fixed count can remove activity from clean recordings.</p>
+</dd>
+<dt><strong>update_covariance</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#bltin-boolean-values" title="(in Python v3.15)"><span class="xref std std-ref">bool</span></a>, default <a class="reference external" href="https://docs.python.org/3/builtins/constants.html#True" title="(in Python v3.15)"><code class="docutils literal notranslate"><span class="pre">True</span></code></a></span></dt><dd><p>Whether to update each band’s trailing-epoch covariance with this chunk.</p>
+</dd>
+<dt><strong>refit</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#bltin-boolean-values" title="(in Python v3.15)"><span class="xref std std-ref">bool</span></a>, default <a class="reference external" href="https://docs.python.org/3/builtins/constants.html#True" title="(in Python v3.15)"><code class="docutils literal notranslate"><span class="pre">True</span></code></a></span></dt><dd><p>Whether to re-solve the GED for each band after updating its
+covariance. Set to <code class="docutils literal notranslate"><span class="pre">False</span></code> to only update covariances (e.g. to
+re-solve less often than every chunk) while still denoising with
+the previous spatial filters.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl>
+<dt><strong>data_clean</strong><span class="classifier"><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.5)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ndarray</span></code></a>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">shape</span></code> (<code class="xref py py-obj docutils literal notranslate"><span class="pre">n_channels</span></code>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">n_samples</span></code>)</span></dt><dd><p>Output sample <code class="docutils literal notranslate"><span class="pre">t</span></code> corresponds to input sample
+<code class="docutils literal notranslate"><span class="pre">t</span> <span class="pre">-</span> <span class="pre">delay_samples</span></code>, including delayed calibration history at startup.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="mne_rt.tools.AdaptiveMultibandGEDAIDenoiser.n_bands">
+<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">n_bands</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="(in Python v3.15)"><span class="pre">int</span></a></span><a class="headerlink" href="#mne_rt.tools.AdaptiveMultibandGEDAIDenoiser.n_bands" title="Link to this definition">#</a></dt>
+<dd><p>Number of frequency bands.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="mne_rt.tools.AdaptiveMultibandGEDAIDenoiser.band_frequencies">
+<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">band_frequencies</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#list" title="(in Python v3.15)"><span class="pre">list</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#tuple" title="(in Python v3.15)"><span class="pre">tuple</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#float" title="(in Python v3.15)"><span class="pre">float</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#float" title="(in Python v3.15)"><span class="pre">float</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span><a class="headerlink" href="#mne_rt.tools.AdaptiveMultibandGEDAIDenoiser.band_frequencies" title="Link to this definition">#</a></dt>
+<dd><p>List of <code class="docutils literal notranslate"><span class="pre">(fmin,</span> <span class="pre">fmax)</span></code> per band.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="mne_rt.tools.AdaptiveMultibandGEDAIDenoiser.band_time_constants">
+<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">band_time_constants</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#list" title="(in Python v3.15)"><span class="pre">list</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#float" title="(in Python v3.15)"><span class="pre">float</span></a><span class="p"><span class="pre">]</span></span></span><a class="headerlink" href="#mne_rt.tools.AdaptiveMultibandGEDAIDenoiser.band_time_constants" title="Link to this definition">#</a></dt>
+<dd><p>Trailing covariance epoch durations (seconds), including ignored bands.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="mne_rt.tools.AdaptiveMultibandGEDAIDenoiser.retained_bands">
+<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">retained_bands</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#list" title="(in Python v3.15)"><span class="pre">list</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#bool" title="(in Python v3.15)"><span class="pre">bool</span></a><span class="p"><span class="pre">]</span></span></span><a class="headerlink" href="#mne_rt.tools.AdaptiveMultibandGEDAIDenoiser.retained_bands" title="Link to this definition">#</a></dt>
+<dd><p>Whether each band contributes to the reconstruction.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="mne_rt.tools.AdaptiveMultibandGEDAIDenoiser.latency">
+<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">latency</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#float" title="(in Python v3.15)"><span class="pre">float</span></a></span><a class="headerlink" href="#mne_rt.tools.AdaptiveMultibandGEDAIDenoiser.latency" title="Link to this definition">#</a></dt>
+<dd><p>Fixed FIR reconstruction delay in seconds; not compute time.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="mne_rt.tools.AdaptiveMultibandGEDAIDenoiser.delay_samples">
+<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">delay_samples</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="(in Python v3.15)"><span class="pre">int</span></a></span><a class="headerlink" href="#mne_rt.tools.AdaptiveMultibandGEDAIDenoiser.delay_samples" title="Link to this definition">#</a></dt>
+<dd><p>Align emitted sample <code class="docutils literal notranslate"><span class="pre">t</span></code> to source sample <code class="docutils literal notranslate"><span class="pre">t</span> <span class="pre">-</span> <span class="pre">delay_samples</span></code>.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="mne_rt.tools.AdaptiveMultibandGEDAIDenoiser.eigenvalues">
+<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">eigenvalues</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#list" title="(in Python v3.15)"><span class="pre">list</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.5)"><span class="pre">ndarray</span></a><span class="p"><span class="pre">]</span></span></span><a class="headerlink" href="#mne_rt.tools.AdaptiveMultibandGEDAIDenoiser.eigenvalues" title="Link to this definition">#</a></dt>
+<dd><p>Sorted eigenvalues (descending) per band.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="mne_rt.tools.AdaptiveMultibandGEDAIDenoiser.eigenvalue_thresholds">
+<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">eigenvalue_thresholds</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#list" title="(in Python v3.15)"><span class="pre">list</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#float" title="(in Python v3.15)"><span class="pre">float</span></a><span class="p"><span class="pre">]</span></span></span><a class="headerlink" href="#mne_rt.tools.AdaptiveMultibandGEDAIDenoiser.eigenvalue_thresholds" title="Link to this definition">#</a></dt>
+<dd><p>Baseline SENSAI eigenvalue cutoffs; live cutoffs adapt to each spectrum.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="mne_rt.tools.AdaptiveMultibandGEDAIDenoiser.current_eigenvalue_thresholds">
+<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">current_eigenvalue_thresholds</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#list" title="(in Python v3.15)"><span class="pre">list</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#float" title="(in Python v3.15)"><span class="pre">float</span></a><span class="p"><span class="pre">]</span></span></span><a class="headerlink" href="#mne_rt.tools.AdaptiveMultibandGEDAIDenoiser.current_eigenvalue_thresholds" title="Link to this definition">#</a></dt>
+<dd><p>Most recently used per-band automatic cutoffs.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="mne_rt.tools.AdaptiveMultibandGEDAIDenoiser.spatial_filters">
+<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">spatial_filters</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#list" title="(in Python v3.15)"><span class="pre">list</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.5)"><span class="pre">ndarray</span></a><span class="p"><span class="pre">]</span></span></span><a class="headerlink" href="#mne_rt.tools.AdaptiveMultibandGEDAIDenoiser.spatial_filters" title="Link to this definition">#</a></dt>
+<dd><p>Spatial filters <code class="docutils literal notranslate"><span class="pre">W</span></code> per band, each shape (n_channels, n_channels).</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="mne_rt.tools.AdaptiveMultibandGEDAIDenoiser.activation_patterns">
+<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">activation_patterns</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#list" title="(in Python v3.15)"><span class="pre">list</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.5)"><span class="pre">ndarray</span></a><span class="p"><span class="pre">]</span></span></span><a class="headerlink" href="#mne_rt.tools.AdaptiveMultibandGEDAIDenoiser.activation_patterns" title="Link to this definition">#</a></dt>
+<dd><p>Activation patterns <code class="docutils literal notranslate"><span class="pre">A</span></code> per band, each shape (n_channels, n_channels).</p>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+
+
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="mne_rt.tools.GEDAIDenoiser.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">mne_rt.tools.GEDAIDenoiser</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="mne_rt.tools.ASRDenoiser.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">mne_rt.tools.ASRDenoiser</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <dialog id="pst-secondary-sidebar-modal"></dialog>
+                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+<div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav id="pst-page-toc-nav" class="page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="pst-show_toc_level nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#mne_rt.tools.AdaptiveMultibandGEDAIDenoiser"><code class="docutils literal notranslate"><span class="pre">AdaptiveMultibandGEDAIDenoiser</span></code></a><ul class="pst-show_toc_level nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#mne_rt.tools.AdaptiveMultibandGEDAIDenoiser.__init__"><code class="docutils literal notranslate"><span class="pre">AdaptiveMultibandGEDAIDenoiser.__init__()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#mne_rt.tools.AdaptiveMultibandGEDAIDenoiser.fit"><code class="docutils literal notranslate"><span class="pre">AdaptiveMultibandGEDAIDenoiser.fit()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#mne_rt.tools.AdaptiveMultibandGEDAIDenoiser.update_and_denoise"><code class="docutils literal notranslate"><span class="pre">AdaptiveMultibandGEDAIDenoiser.update_and_denoise()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#mne_rt.tools.AdaptiveMultibandGEDAIDenoiser.n_bands"><code class="docutils literal notranslate"><span class="pre">AdaptiveMultibandGEDAIDenoiser.n_bands</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#mne_rt.tools.AdaptiveMultibandGEDAIDenoiser.band_frequencies"><code class="docutils literal notranslate"><span class="pre">AdaptiveMultibandGEDAIDenoiser.band_frequencies</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#mne_rt.tools.AdaptiveMultibandGEDAIDenoiser.band_time_constants"><code class="docutils literal notranslate"><span class="pre">AdaptiveMultibandGEDAIDenoiser.band_time_constants</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#mne_rt.tools.AdaptiveMultibandGEDAIDenoiser.retained_bands"><code class="docutils literal notranslate"><span class="pre">AdaptiveMultibandGEDAIDenoiser.retained_bands</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#mne_rt.tools.AdaptiveMultibandGEDAIDenoiser.latency"><code class="docutils literal notranslate"><span class="pre">AdaptiveMultibandGEDAIDenoiser.latency</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#mne_rt.tools.AdaptiveMultibandGEDAIDenoiser.delay_samples"><code class="docutils literal notranslate"><span class="pre">AdaptiveMultibandGEDAIDenoiser.delay_samples</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#mne_rt.tools.AdaptiveMultibandGEDAIDenoiser.eigenvalues"><code class="docutils literal notranslate"><span class="pre">AdaptiveMultibandGEDAIDenoiser.eigenvalues</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#mne_rt.tools.AdaptiveMultibandGEDAIDenoiser.eigenvalue_thresholds"><code class="docutils literal notranslate"><span class="pre">AdaptiveMultibandGEDAIDenoiser.eigenvalue_thresholds</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#mne_rt.tools.AdaptiveMultibandGEDAIDenoiser.current_eigenvalue_thresholds"><code class="docutils literal notranslate"><span class="pre">AdaptiveMultibandGEDAIDenoiser.current_eigenvalue_thresholds</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#mne_rt.tools.AdaptiveMultibandGEDAIDenoiser.spatial_filters"><code class="docutils literal notranslate"><span class="pre">AdaptiveMultibandGEDAIDenoiser.spatial_filters</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#mne_rt.tools.AdaptiveMultibandGEDAIDenoiser.activation_patterns"><code class="docutils literal notranslate"><span class="pre">AdaptiveMultibandGEDAIDenoiser.activation_patterns</span></code></a></li>
+</ul>
+</li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../_static/scripts/bootstrap.js?digest=18bd87630a240e9c25be"></script>
+<script defer src="../_static/scripts/pydata-sphinx-theme.js?digest=18bd87630a240e9c25be"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright 2024-2026, Payam S. Shabestari.
+      <br/>
+    
+  </p>
+</div>
+      
+        <div class="footer-item">
+
+  <p class="sphinx-version">
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 9.0.4.
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
+<p class="theme-version">
+  <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.23.0.
+</p></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>

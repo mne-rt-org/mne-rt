@@ -1,0 +1,1358 @@
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../../../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>mne_rt.tools.adaptive_gedai &#8212; MNE-RT</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../../_static/styles/theme.css?digest=18bd87630a240e9c25be" rel="stylesheet" />
+<link href="../../../_static/styles/pydata-sphinx-theme.css?digest=18bd87630a240e9c25be" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/sg_gallery.css?v=c83e6b79" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/sg_gallery-binder.css?v=f4aeca0c" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/sg_gallery-dataframe.css?v=2082cf3c" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/sg_gallery-rendered-html.css?v=1277b6f3" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/custom.css?v=5bf657dd" />
+  
+  <!-- So that users can add custom icons -->
+  <script defer src="../../../_static/scripts/fontawesome.js?digest=18bd87630a240e9c25be"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../../_static/scripts/bootstrap.js?digest=18bd87630a240e9c25be" />
+<link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=18bd87630a240e9c25be" />
+
+    <script src="../../../_static/documentation_options.js?v=6efca38a"></script>
+    <script src="../../../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="../../../_static/sg-tags.js?v=d80f6fa4"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = '_modules/mne_rt/tools/adaptive_gedai';</script>
+    <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="color-scheme" content="light dark"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="" />
+  
+    
+    <script src="../../../_static/searchtools.js"></script>
+    <script src="../../../_static/language_data.js"></script>
+    <script src="../../../searchindex.js"></script>
+  
+  </head>
+  <body data-default-mode="">
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+  
+  
+  
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../../../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header id="pst-header" class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button type="button" class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../../../index.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../../../_static/mne_rt_logo.svg" class="logo__image only-light" alt="MNE-RT - Home"/>
+    <img src="../../../_static/mne_rt_logo.svg" class="logo__image only-dark pst-js-only" alt="MNE-RT - Home"/>
+  
+  
+</a></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../install.html">
+    Installation
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../tutorial.html">
+    User Guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../api.html">
+    API Reference
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../visualization.html">
+    Visualisation
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../cli.html">
+    CLI
+  </a>
+</li>
+
+            <li class="nav-item dropdown">
+                <button class="btn dropdown-toggle nav-item" type="button"
+                data-bs-toggle="dropdown" aria-expanded="false"
+                aria-controls="pst-nav-more-links">
+                    More
+                </button>
+                <ul id="pst-nav-more-links" class="dropdown-menu">
+                    
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../../../denoising.html">
+    Artifact Correction
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../../../modalities.html">
+    Real-time Feature Modalities
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../../../decoding.html">
+    Real-time Decoding
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../../../protocols.html">
+    NF Protocols
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../../../whats_new.html">
+    What’s new
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../../../auto_examples/index.html">
+    Examples Gallery
+  </a>
+</li>
+
+                </ul>
+            </li>
+            
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<button type="button" class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+        </div>
+      
+      
+        <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/mne-rt-org/mne-rt" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-square-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
+        </li>
+</ul></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<button type="button" class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+    </div>
+  
+
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+        
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar hide-on-wide">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../install.html">
+    Installation
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../tutorial.html">
+    User Guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../api.html">
+    API Reference
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../visualization.html">
+    Visualisation
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../cli.html">
+    CLI
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../denoising.html">
+    Artifact Correction
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../modalities.html">
+    Real-time Feature Modalities
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../decoding.html">
+    Real-time Decoding
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../protocols.html">
+    NF Protocols
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../whats_new.html">
+    What’s new
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../auto_examples/index.html">
+    Examples Gallery
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/mne-rt-org/mne-rt" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-square-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
+        </li>
+</ul></div>
+        
+      </div>
+    
+  </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../../../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    
+    <li class="breadcrumb-item"><a href="../../index.html" class="nav-link">Module code</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">mne_rt.tools.adaptive_gedai</span></li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <h1>Source code for mne_rt.tools.adaptive_gedai</h1><div class="highlight"><pre>
+<span></span><span class="sd">"""Delayed, streaming Haar adaptive multiband GEDAI.</span>
+
+<span class="sd">The FIR kernels are obtained from pyGEDAI's actual Haar MODWT reconstruction,</span>
+<span class="sd">not an IIR approximation. Symmetric band kernels are shifted to one common</span>
+<span class="sd">causal delay; the output sums only retained, cleaned bands. Bands at or below</span>
+<span class="sd">the low cutoff never contribute a residual to the output.</span>
+
+<span class="sd">Calibration reuses pyGEDAI's epoch sizing and SENSAI optimization, including</span>
+<span class="sd">an optional broadband pass. Streaming uses finite trailing covariance epochs</span>
+<span class="sd">and recalculates eigenvalue cutoffs from the fitted SENSAI sensitivity.</span>
+<span class="sd">Unlike offline pyGEDAI's overlapping, cosine-weighted epoch reconstructions,</span>
+<span class="sd">streaming uses one trailing-epoch spatial projection per acquired chunk.</span>
+<span class="sd">Thus the uncleaned Haar bands match after delay alignment, but denoised</span>
+<span class="sd">output is not guaranteed identical to the noncausal offline algorithm.</span>
+
+<span class="sd">By default, the 0.1 Hz input prefilter and, in broadband mode, low-cut and broadband</span>
+<span class="sd">0.1 Hz prefilters also use delayed Haar reconstruction. Their delays add</span>
+<span class="sd">to the common band delay. Consumers must account for ``delay_samples``;</span>
+<span class="sd">output starts with delayed calibration history, not current live samples.</span>
+
+<span class="sd">License notice</span>
+<span class="sd">--------------</span>
+<span class="sd">mne-rt itself is BSD-3-Clause, but this module depends on the ``gedai``</span>
+<span class="sd">package, which is distributed under the PolyForm Noncommercial License 1.0.0</span>
+<span class="sd">(https://polyformproject.org/licenses/noncommercial/1.0.0). That license</span>
+<span class="sd">restricts use to noncommercial purposes, and the underlying GEDAI algorithm</span>
+<span class="sd">is patent-pending with no commercial patent grant included. Commercial use</span>
+<span class="sd">of :class:`AdaptiveMultibandGEDAIDenoiser` is not covered by mne-rt's</span>
+<span class="sd">permissive license -- see the project README's "License" section.</span>
+<span class="sd">``gedai`` is an opt-in extra (``pip install "mne-rt[gedai]"``), not a core</span>
+<span class="sd">dependency: this module imports without it, so ``import mne_rt`` keeps working,</span>
+<span class="sd">and only constructing :class:`AdaptiveMultibandGEDAIDenoiser` requires it.</span>
+<span class="sd">"""</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Literal</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">joblib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Parallel</span><span class="p">,</span> <span class="n">delayed</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">scipy</span><span class="w"> </span><span class="kn">import</span> <span class="n">linalg</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">scipy.signal</span><span class="w"> </span><span class="kn">import</span> <span class="n">lfilter</span>
+
+<span class="k">try</span><span class="p">:</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">gedai.gedai.adaptive</span><span class="w"> </span><span class="kn">import</span> <span class="n">_compute_wavelet_parameters</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">gedai.gedai.gedai</span><span class="w"> </span><span class="kn">import</span> <span class="n">_clean_continuous_dual_stream</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">gedai.sensai.sensai</span><span class="w"> </span><span class="kn">import</span> <span class="n">_precompute_gevd</span><span class="p">,</span> <span class="n">_sensai_optimize</span><span class="p">,</span> <span class="n">_sensai_to_eigen</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">gedai.wavelet.transform</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+        <span class="n">_apply_wavelet_highpass_prefilter</span><span class="p">,</span>
+        <span class="n">_modwt_haar_single_band</span><span class="p">,</span>
+        <span class="n">compute_wavelet_level</span><span class="p">,</span>
+    <span class="p">)</span>
+<span class="k">except</span> <span class="ne">ImportError</span> <span class="k">as</span> <span class="n">exc</span><span class="p">:</span>
+    <span class="c1"># Raising here would make `import mne_rt` fail without gedai, since this</span>
+    <span class="c1"># module is imported by mne_rt/__init__.py and rt_stream.py. Defer the error</span>
+    <span class="c1"># to the point of use instead.</span>
+    <span class="n">_GEDAI_IMPORT_ERROR</span><span class="p">:</span> <span class="ne">ImportError</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="n">exc</span>
+<span class="k">else</span><span class="p">:</span>
+    <span class="n">_GEDAI_IMPORT_ERROR</span> <span class="o">=</span> <span class="kc">None</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">mne_rt._logging</span><span class="w"> </span><span class="kn">import</span> <span class="n">logger</span>
+
+
+<div class="viewcode-block" id="AdaptiveMultibandGEDAIDenoiser">
+<a class="viewcode-back" href="../../../generated/mne_rt.tools.AdaptiveMultibandGEDAIDenoiser.html#mne_rt.tools.AdaptiveMultibandGEDAIDenoiser">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">AdaptiveMultibandGEDAIDenoiser</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""Streaming adaptive multiband GEDAI.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    n_channels : int</span>
+<span class="sd">        Number of EEG channels. SENSAI calibration here uses the EEG objective</span>
+<span class="sd">        only; gedai's MEG objective is not implemented, and</span>
+<span class="sd">        :meth:`~mne_rt.RTStream.fit_gedai` refuses multiband mode for MEG.</span>
+<span class="sd">    sfreq : float</span>
+<span class="sd">        Sampling frequency in Hz.</span>
+<span class="sd">    wavelet_level : int | "auto", default "auto"</span>
+<span class="sd">        Number of wavelet decomposition levels (``n_bands = wavelet_level +</span>
+<span class="sd">        1``). If ``"auto"``, uses :func:`gedai.wavelet.transform.compute_wavelet_level`.</span>
+<span class="sd">    cycles_per_wavelet : int, default 6</span>
+<span class="sd">        Cycles at each band's lower frequency used to size covariance epochs.</span>
+<span class="sd">        The lowest approximation uses half its upper edge, as in pyGEDAI.</span>
+<span class="sd">    shrinkage : float, default 0.05</span>
+<span class="sd">        Reference covariance shrinkage: ``(1-s) * R + s * mean(diag(R)) * I``.</span>
+<span class="sd">    filter_order : int | None, default None</span>
+<span class="sd">        Deprecated compatibility argument. Haar kernels have no Butterworth</span>
+<span class="sd">        order. Passing this argument logs a warning; it has no effect.</span>
+<span class="sd">    n_jobs : int, default 1</span>
+<span class="sd">        Number of threads used to denoise bands in parallel (``joblib``,</span>
+<span class="sd">        ``prefer="threads"``). Use ``-1`` for all cores.</span>
+<span class="sd">    wavelet_low_cutoff : float, default 0.5</span>
+<span class="sd">        Bands whose upper edge is at or below this frequency (Hz) are</span>
+<span class="sd">        discarded. This is a dyadic wavelet cutoff, not a brick-wall filter.</span>
+<span class="sd">        Also controls the broadband prefilter and automatic level selection.</span>
+<span class="sd">    broadband_pass : bool, default True</span>
+<span class="sd">        Calibrate and apply a broadband GEDAI pass before wavelet cleaning,</span>
+<span class="sd">        matching pyGEDAI's default. The broadband covariance epoch is one</span>
+<span class="sd">        second (or enough samples for the channel count).</span>
+<span class="sd">    prefilter_mode : {"reference", "lowcut", "none"}, default "reference"</span>
+<span class="sd">        ``"reference"`` preserves the pyGEDAI prefilter cascade. ``"lowcut"``</span>
+<span class="sd">        uses only one Haar highpass at ``wavelet_low_cutoff``, even without a</span>
+<span class="sd">        broadband pass. ``"none"`` skips standalone prefilters; sub-cutoff</span>
+<span class="sd">        wavelet bands are still excluded. The latter modes reduce delay but</span>
+<span class="sd">        change calibration and broadband cleaning, so require a new ``fit``.</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    ``fit`` calibrates an eigenvalue threshold in each band with pyGEDAI's</span>
+<span class="sd">    EEG SENSAI objective (up to three reference principal components, noise</span>
+<span class="sd">    weight 3, frequency-dependent sensitivity bounds). The fitted sensitivity</span>
+<span class="sd">    stays fixed; each local eigenvalue spectrum determines the current</span>
+<span class="sd">    cutoff. Baseline and live data must use the same units and sensor</span>
+<span class="sd">    reference as the supplied leadfield.</span>
+
+<span class="sd">    The finite trailing covariance history is bounded by the pyGEDAI epoch</span>
+<span class="sd">    size, not an EMA with an unbounded tail. All emitted samples lag their</span>
+<span class="sd">    input timestamps by ``latency`` seconds, excluding computation time.</span>
+<span class="sd">    This can be several seconds even though no acquisition chunks are held</span>
+<span class="sd">    waiting for a processing window. Offline calibration may use future</span>
+<span class="sd">    samples within the baseline, but live filtering never reads future chunks.</span>
+
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
+<span class="sd">    Ros, T., Férat, V., Huang, Y., et al. (2025). Return of the GEDAI:</span>
+<span class="sd">    Unsupervised EEG Denoising based on Leadfield Filtering. *bioRxiv*.</span>
+<span class="sd">    https://doi.org/10.1101/2025.10.04.680449</span>
+<span class="sd">    """</span>
+
+<div class="viewcode-block" id="AdaptiveMultibandGEDAIDenoiser.__init__">
+<a class="viewcode-back" href="../../../generated/mne_rt.tools.AdaptiveMultibandGEDAIDenoiser.html#mne_rt.tools.AdaptiveMultibandGEDAIDenoiser.__init__">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">n_channels</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+        <span class="n">sfreq</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+        <span class="n">wavelet_level</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">"auto"</span><span class="p">,</span>
+        <span class="n">cycles_per_wavelet</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">6</span><span class="p">,</span>
+        <span class="n">shrinkage</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.05</span><span class="p">,</span>
+        <span class="n">filter_order</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">n_jobs</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
+        <span class="n">wavelet_low_cutoff</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.5</span><span class="p">,</span>
+        <span class="n">broadband_pass</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+        <span class="n">prefilter_mode</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">"reference"</span><span class="p">,</span> <span class="s2">"lowcut"</span><span class="p">,</span> <span class="s2">"none"</span><span class="p">]</span> <span class="o">=</span> <span class="s2">"reference"</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">_GEDAI_IMPORT_ERROR</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ImportError</span><span class="p">(</span>
+                <span class="s2">"AdaptiveMultibandGEDAIDenoiser requires the optional 'gedai' package "</span>
+                <span class="s2">"for its wavelet band layout and SENSAI calibration. Install it with "</span>
+                <span class="s1">'`pip install "mne-rt[gedai]"`. Note that gedai is PolyForm '</span>
+                <span class="s2">"Noncommercial licensed, unlike mne-rt; see the README before "</span>
+                <span class="s2">"commercial use."</span>
+            <span class="p">)</span> <span class="kn">from</span><span class="w"> </span><span class="nn">_GEDAI_IMPORT_ERROR</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">n_channels</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">n_channels</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sfreq</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">sfreq</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cycles_per_wavelet</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">cycles_per_wavelet</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">shrinkage</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">shrinkage</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">filter_order</span> <span class="o">=</span> <span class="n">filter_order</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">n_jobs</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">n_jobs</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">wavelet_low_cutoff</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">wavelet_low_cutoff</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">broadband_pass</span> <span class="o">=</span> <span class="nb">bool</span><span class="p">(</span><span class="n">broadband_pass</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">prefilter_mode</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">"reference"</span><span class="p">,</span> <span class="s2">"lowcut"</span><span class="p">,</span> <span class="s2">"none"</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"prefilter_mode must be 'reference', 'lowcut', or 'none'"</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">prefilter_mode</span> <span class="o">=</span> <span class="n">prefilter_mode</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_channels</span> <span class="o">&lt;</span> <span class="mi">1</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">isfinite</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sfreq</span><span class="p">)</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">sfreq</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"n_channels and sfreq must be positive"</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">cycles_per_wavelet</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"cycles_per_wavelet must be positive"</span><span class="p">)</span>
+        <span class="k">if</span> <span class="p">(</span>
+            <span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">isfinite</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">wavelet_low_cutoff</span><span class="p">)</span>
+            <span class="ow">or</span> <span class="ow">not</span> <span class="mi">0</span> <span class="o">&lt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">wavelet_low_cutoff</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">sfreq</span> <span class="o">/</span> <span class="mi">2</span>
+        <span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"wavelet_low_cutoff must be in [0, sfreq / 2)"</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">isfinite</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">shrinkage</span><span class="p">)</span> <span class="ow">or</span> <span class="ow">not</span> <span class="mi">0</span> <span class="o">&lt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">shrinkage</span> <span class="o">&lt;=</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"shrinkage must be between 0 and 1"</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">filter_order</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
+                <span class="s2">"filter_order is deprecated and has no effect: causal GEDAI now "</span>
+                <span class="s2">"uses delayed Haar reconstruction rather than Butterworth filters."</span>
+            <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_requested_wavelet_level</span> <span class="o">=</span> <span class="n">wavelet_level</span>
+
+        <span class="k">if</span> <span class="n">wavelet_level</span> <span class="o">==</span> <span class="s2">"auto"</span><span class="p">:</span>
+            <span class="n">wavelet_level</span> <span class="o">=</span> <span class="n">compute_wavelet_level</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">sfreq</span><span class="p">,</span>
+                <span class="n">lowcut_hz</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">wavelet_low_cutoff</span> <span class="ow">or</span> <span class="mf">0.5</span><span class="p">,</span>
+                <span class="n">cycles_per_wavelet</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">cycles_per_wavelet</span><span class="p">,</span>
+            <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">wavelet_level</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">wavelet_level</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">wavelet_level</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"wavelet_level must be non-negative"</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_bands</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">dict</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_reference_cov</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_reference_is_leadfield</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_filter_kernels</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_filter_zi</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_prefilter_kernel</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_prefilter_zi</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">n_channels</span><span class="p">,</span> <span class="mi">0</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_broadband</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_delay_samples</span> <span class="o">=</span> <span class="mi">0</span></div>
+
+
+    <span class="c1"># ------------------------------------------------------------------</span>
+    <span class="c1"># Fitting</span>
+    <span class="c1"># ------------------------------------------------------------------</span>
+
+<div class="viewcode-block" id="AdaptiveMultibandGEDAIDenoiser.fit">
+<a class="viewcode-back" href="../../../generated/mne_rt.tools.AdaptiveMultibandGEDAIDenoiser.html#mne_rt.tools.AdaptiveMultibandGEDAIDenoiser.fit">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">fit</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">leadfield</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">"AdaptiveMultibandGEDAIDenoiser"</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Fit per-band spatial filters from baseline data.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        data : ndarray, shape (n_channels, n_samples)</span>
+<span class="sd">            Broadband baseline recording.</span>
+<span class="sd">        leadfield : ndarray, shape (n_channels, n_sources), optional</span>
+<span class="sd">            Forward/leadfield gain matrix. If given, the reference covariance</span>
+<span class="sd">            is ``L @ L.T`` (true GEDAI / leadfield mode); otherwise the</span>
+<span class="sd">            broadband covariance of ``data`` is used (band-filter mode).</span>
+<span class="sd">            For automatic selection without a leadfield, this baseline must</span>
+<span class="sd">            be representative of the signal covariance to preserve.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        self</span>
+<span class="sd">        """</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_validate_data</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+        <span class="n">n_samples</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">n_samples</span> <span class="o">&lt;</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"Need at least 2 samples to fit AdaptiveMultibandGEDAIDenoiser"</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">leadfield</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">leadfield</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">leadfield</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
+            <span class="k">if</span> <span class="p">(</span>
+                <span class="n">leadfield</span><span class="o">.</span><span class="n">ndim</span> <span class="o">!=</span> <span class="mi">2</span>
+                <span class="ow">or</span> <span class="n">leadfield</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_channels</span>
+                <span class="ow">or</span> <span class="n">leadfield</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="mi">0</span>
+                <span class="ow">or</span> <span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">isfinite</span><span class="p">(</span><span class="n">leadfield</span><span class="p">)</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
+            <span class="p">):</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">"Leadfield must be finite with shape (</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">n_channels</span><span class="si">}</span><span class="s2">, n_sources)"</span>
+                <span class="p">)</span>
+            <span class="n">R_ref</span> <span class="o">=</span> <span class="n">leadfield</span> <span class="o">@</span> <span class="n">leadfield</span><span class="o">.</span><span class="n">T</span>
+            <span class="n">ref_power</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">trace</span><span class="p">(</span><span class="n">R_ref</span><span class="p">)</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_channels</span>
+            <span class="k">if</span> <span class="n">ref_power</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"Leadfield must have nonzero power"</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_reference_is_leadfield</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">Xb</span> <span class="o">=</span> <span class="n">data</span> <span class="o">-</span> <span class="n">data</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">keepdims</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+            <span class="n">R_ref</span> <span class="o">=</span> <span class="p">(</span><span class="n">Xb</span> <span class="o">@</span> <span class="n">Xb</span><span class="o">.</span><span class="n">T</span><span class="p">)</span> <span class="o">/</span> <span class="n">n_samples</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_reference_is_leadfield</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="n">reg</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">shrinkage</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">trace</span><span class="p">(</span><span class="n">R_ref</span><span class="p">)</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_channels</span>
+        <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">trace</span><span class="p">(</span><span class="n">R_ref</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"Baseline must have nonzero variance in band-filter mode"</span><span class="p">)</span>
+        <span class="n">R_ref</span> <span class="o">=</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">shrinkage</span><span class="p">)</span> <span class="o">*</span> <span class="n">R_ref</span> <span class="o">+</span> <span class="n">reg</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">eye</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n_channels</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_reference_cov</span> <span class="o">=</span> <span class="n">R_ref</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_requested_wavelet_level</span> <span class="o">==</span> <span class="s2">"auto"</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">wavelet_level</span> <span class="o">=</span> <span class="n">compute_wavelet_level</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">sfreq</span><span class="p">,</span>
+                <span class="n">lowcut_hz</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">wavelet_low_cutoff</span> <span class="ow">or</span> <span class="mf">0.5</span><span class="p">,</span>
+                <span class="n">n_times</span><span class="o">=</span><span class="n">n_samples</span><span class="p">,</span>
+                <span class="n">cycles_per_wavelet</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">cycles_per_wavelet</span><span class="p">,</span>
+            <span class="p">)</span>
+        <span class="n">parameters</span> <span class="o">=</span> <span class="n">_compute_wavelet_parameters</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">sfreq</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">wavelet_level</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">cycles_per_wavelet</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">n_channels</span><span class="p">,</span>
+            <span class="n">n_samples</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">prefilter_mode</span> <span class="o">==</span> <span class="s2">"reference"</span><span class="p">:</span>
+            <span class="n">cutoffs</span> <span class="o">=</span> <span class="p">[</span><span class="mf">0.1</span><span class="p">]</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">broadband_pass</span><span class="p">:</span>
+                <span class="n">cutoffs</span><span class="o">.</span><span class="n">extend</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">wavelet_low_cutoff</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">])</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">prefilter_mode</span> <span class="o">==</span> <span class="s2">"lowcut"</span><span class="p">:</span>
+            <span class="n">cutoffs</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">wavelet_low_cutoff</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">cutoffs</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_prefilter_kernel</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">baseline</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">cutoff</span> <span class="ow">in</span> <span class="n">cutoffs</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_prefilter_kernel</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">convolve</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_prefilter_kernel</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_highpass_kernel</span><span class="p">(</span><span class="n">cutoff</span><span class="p">,</span> <span class="n">n_samples</span><span class="p">)</span>
+            <span class="p">)</span>
+            <span class="n">baseline</span> <span class="o">=</span> <span class="n">_apply_wavelet_highpass_prefilter</span><span class="p">(</span>
+                <span class="n">baseline</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">sfreq</span><span class="p">,</span> <span class="n">lowcut_hz</span><span class="o">=</span><span class="n">cutoff</span><span class="p">,</span> <span class="n">engine</span><span class="o">=</span><span class="s2">"numpy"</span>
+            <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_prefilter_zi</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_initial_state</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_prefilter_kernel</span><span class="p">,</span> <span class="n">data</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">])</span>
+        <span class="n">streamed_baseline</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_prefilter_zi</span> <span class="o">=</span> <span class="n">lfilter</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_prefilter_kernel</span><span class="p">,</span> <span class="p">[</span><span class="mf">1.0</span><span class="p">],</span> <span class="n">data</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">zi</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_prefilter_zi</span>
+        <span class="p">)</span>
+        <span class="n">prefilter_delay</span> <span class="o">=</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_prefilter_kernel</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">//</span> <span class="mi">2</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_broadband</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">broadband_pass</span><span class="p">:</span>
+            <span class="n">bb_samples</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="nb">round</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sfreq</span><span class="p">),</span> <span class="nb">min</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n_channels</span><span class="p">,</span> <span class="n">n_samples</span><span class="p">))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_broadband</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_init_band</span><span class="p">(</span>
+                <span class="o">-</span><span class="mi">1</span><span class="p">,</span>
+                <span class="mf">0.0</span><span class="p">,</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">sfreq</span> <span class="o">/</span> <span class="mi">2</span><span class="p">,</span>
+                <span class="n">baseline</span><span class="p">,</span>
+                <span class="n">bb_samples</span><span class="p">,</span>
+                <span class="p">(</span><span class="o">-</span><span class="mf">4.0</span><span class="p">,</span> <span class="mf">12.0</span><span class="p">),</span>
+                <span class="n">overlap</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span>
+            <span class="p">)</span>
+            <span class="n">baseline</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">_clean_continuous_dual_stream</span><span class="p">(</span>
+                <span class="n">baseline</span><span class="p">,</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">sfreq</span><span class="p">,</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_reference_cov</span><span class="p">,</span>
+                <span class="n">bb_samples</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">sfreq</span><span class="p">,</span>
+                <span class="n">threshold</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_broadband</span><span class="p">[</span><span class="s2">"threshold"</span><span class="p">],</span>
+                <span class="n">T1</span><span class="o">=</span><span class="p">(</span><span class="mi">105</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">_broadband</span><span class="p">[</span><span class="s2">"sensitivity"</span><span class="p">])</span> <span class="o">/</span> <span class="mi">100</span><span class="p">,</span>
+                <span class="n">percentile</span><span class="o">=</span><span class="mi">98</span><span class="p">,</span>
+                <span class="n">engine</span><span class="o">=</span><span class="s2">"numpy"</span><span class="p">,</span>
+            <span class="p">)</span>
+            <span class="c1"># Seed causal states at the same delayed time reached by the prefilter.</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_seed_history</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_broadband</span><span class="p">,</span> <span class="n">streamed_baseline</span><span class="p">[:,</span> <span class="p">:</span><span class="mi">1</span><span class="p">])</span>
+            <span class="n">bb_stream</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty_like</span><span class="p">(</span><span class="n">streamed_baseline</span><span class="p">)</span>
+            <span class="n">step</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="nb">round</span><span class="p">(</span><span class="mf">0.05</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">sfreq</span><span class="p">))</span>
+            <span class="k">for</span> <span class="n">start</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">n_samples</span><span class="p">,</span> <span class="n">step</span><span class="p">):</span>
+                <span class="n">chunk</span> <span class="o">=</span> <span class="n">streamed_baseline</span><span class="p">[:,</span> <span class="n">start</span> <span class="p">:</span> <span class="n">start</span> <span class="o">+</span> <span class="n">step</span><span class="p">]</span>
+                <span class="n">bb_stream</span><span class="p">[:,</span> <span class="n">start</span> <span class="p">:</span> <span class="n">start</span> <span class="o">+</span> <span class="n">step</span><span class="p">]</span> <span class="o">=</span> <span class="n">chunk</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">_process_band</span><span class="p">(</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_broadband</span><span class="p">,</span> <span class="n">chunk</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="mf">0.7</span><span class="p">,</span> <span class="s2">"auto"</span><span class="p">,</span> <span class="kc">True</span><span class="p">,</span> <span class="kc">True</span>
+                <span class="p">)</span>
+            <span class="n">streamed_baseline</span> <span class="o">=</span> <span class="n">bb_stream</span>
+
+        <span class="n">active</span> <span class="o">=</span> <span class="p">[</span><span class="n">p</span><span class="p">[</span><span class="s2">"fmax"</span><span class="p">]</span> <span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">wavelet_low_cutoff</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">parameters</span><span class="p">]</span>
+        <span class="n">supports</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="mi">2</span> <span class="o">**</span> <span class="p">(</span><span class="nb">min</span><span class="p">(</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">wavelet_level</span><span class="p">))</span> <span class="o">-</span> <span class="mi">1</span> <span class="k">if</span> <span class="n">keep</span> <span class="k">else</span> <span class="mi">0</span>
+            <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">keep</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">active</span><span class="p">)</span>
+        <span class="p">]</span>
+        <span class="n">band_delay</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">supports</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_delay_samples</span> <span class="o">=</span> <span class="n">prefilter_delay</span> <span class="o">+</span> <span class="n">band_delay</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_filter_kernels</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">baseline_bands</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">keep</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">active</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">keep</span><span class="p">:</span>
+                <span class="n">kernel</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_haar_kernel</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">wavelet_level</span><span class="p">,</span> <span class="n">i</span><span class="p">)</span>
+                <span class="n">trim</span> <span class="o">=</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">kernel</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">//</span> <span class="mi">2</span> <span class="o">-</span> <span class="n">supports</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+                <span class="k">if</span> <span class="n">trim</span><span class="p">:</span>
+                    <span class="n">kernel</span> <span class="o">=</span> <span class="n">kernel</span><span class="p">[</span><span class="n">trim</span><span class="p">:</span><span class="o">-</span><span class="n">trim</span><span class="p">]</span>
+                <span class="n">kernel</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">pad</span><span class="p">(</span><span class="n">kernel</span><span class="p">,</span> <span class="p">(</span><span class="n">band_delay</span> <span class="o">-</span> <span class="n">supports</span><span class="p">[</span><span class="n">i</span><span class="p">],)</span> <span class="o">*</span> <span class="mi">2</span><span class="p">)</span>
+                <span class="n">values</span> <span class="o">=</span> <span class="n">_modwt_haar_single_band</span><span class="p">(</span><span class="n">baseline</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">wavelet_level</span><span class="p">,</span> <span class="n">i</span><span class="p">,</span> <span class="n">engine</span><span class="o">=</span><span class="s2">"numpy"</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">kernel</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">band_delay</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+                <span class="n">values</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">baseline</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_filter_kernels</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">kernel</span><span class="p">)</span>
+            <span class="n">baseline_bands</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">values</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_filter_zi</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_initial_state</span><span class="p">(</span><span class="n">kernel</span><span class="p">,</span> <span class="n">streamed_baseline</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">])</span> <span class="k">for</span> <span class="n">kernel</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_filter_kernels</span>
+        <span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_bands</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_init_band</span><span class="p">(</span>
+                <span class="n">i</span><span class="p">,</span>
+                <span class="n">p</span><span class="p">[</span><span class="s2">"fmin"</span><span class="p">],</span>
+                <span class="n">p</span><span class="p">[</span><span class="s2">"fmax"</span><span class="p">],</span>
+                <span class="n">values</span><span class="p">,</span>
+                <span class="n">p</span><span class="p">[</span><span class="s2">"n_samples"</span><span class="p">]</span> <span class="o">+</span> <span class="n">p</span><span class="p">[</span><span class="s2">"n_samples"</span><span class="p">]</span> <span class="o">%</span> <span class="mi">2</span><span class="p">,</span>
+                <span class="p">(</span>
+                    <span class="o">-</span><span class="mf">6.0</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">wavelet_low_cutoff</span> <span class="o">&lt;=</span> <span class="p">(</span><span class="n">p</span><span class="p">[</span><span class="s2">"fmin"</span><span class="p">]</span> <span class="o">+</span> <span class="n">p</span><span class="p">[</span><span class="s2">"fmax"</span><span class="p">])</span> <span class="o">/</span> <span class="mi">2</span> <span class="o">&lt;=</span> <span class="mi">60</span> <span class="k">else</span> <span class="mf">0.0</span><span class="p">,</span>
+                    <span class="mf">12.0</span><span class="p">,</span>
+                <span class="p">),</span>
+                <span class="n">ignore</span><span class="o">=</span><span class="ow">not</span> <span class="n">keep</span><span class="p">,</span>
+            <span class="p">)</span>
+            <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">values</span><span class="p">,</span> <span class="n">keep</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">parameters</span><span class="p">,</span> <span class="n">baseline_bands</span><span class="p">,</span> <span class="n">active</span><span class="p">))</span>
+        <span class="p">]</span>
+        <span class="n">delayed_bands</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_split_bands</span><span class="p">(</span><span class="n">streamed_baseline</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">band</span><span class="p">,</span> <span class="n">values</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_bands</span><span class="p">,</span> <span class="n">delayed_bands</span><span class="p">):</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">band</span><span class="p">[</span><span class="s2">"ignore"</span><span class="p">]:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_seed_history</span><span class="p">(</span><span class="n">band</span><span class="p">,</span> <span class="n">values</span><span class="p">)</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
+            <span class="s2">"Causal Haar GEDAI: </span><span class="si">%d</span><span class="s2"> retained bands, </span><span class="si">%.3f</span><span class="s2"> s output delay, "</span>
+            <span class="s2">"</span><span class="si">%d</span><span class="s2"> cycles, </span><span class="si">%.3f</span><span class="s2"> Hz low cutoff."</span><span class="p">,</span>
+            <span class="nb">sum</span><span class="p">(</span><span class="n">active</span><span class="p">),</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">latency</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">cycles_per_wavelet</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">wavelet_low_cutoff</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span></div>
+
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_haar_kernel</span><span class="p">(</span><span class="n">level</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">band_index</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+        <span class="n">support</span> <span class="o">=</span> <span class="mi">2</span><span class="o">**</span><span class="n">level</span> <span class="o">-</span> <span class="mi">1</span>
+        <span class="n">impulse</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="mi">2</span> <span class="o">*</span> <span class="n">support</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
+        <span class="n">impulse</span><span class="p">[</span><span class="n">support</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
+        <span class="k">return</span> <span class="n">_modwt_haar_single_band</span><span class="p">(</span><span class="n">impulse</span><span class="p">,</span> <span class="n">level</span><span class="p">,</span> <span class="n">band_index</span><span class="p">,</span> <span class="n">engine</span><span class="o">=</span><span class="s2">"numpy"</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_highpass_kernel</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cutoff</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">n_samples</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">cutoff</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">level</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="nb">int</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">ceil</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">log2</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sfreq</span> <span class="o">/</span> <span class="n">cutoff</span><span class="p">)))</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">level</span> <span class="o">&gt;</span> <span class="nb">int</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">floor</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">log2</span><span class="p">(</span><span class="n">n_samples</span><span class="p">))):</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
+                <span class="s2">"Baseline too short to resolve the </span><span class="si">%.3f</span><span class="s2"> Hz Haar prefilter; "</span>
+                <span class="s2">"this prefilter is not applied, matching pyGEDAI."</span><span class="p">,</span>
+                <span class="n">cutoff</span><span class="p">,</span>
+            <span class="p">)</span>
+            <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">kernel</span> <span class="o">=</span> <span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">_haar_kernel</span><span class="p">(</span><span class="n">level</span><span class="p">,</span> <span class="n">level</span><span class="p">)</span>
+        <span class="n">kernel</span><span class="p">[</span><span class="nb">len</span><span class="p">(</span><span class="n">kernel</span><span class="p">)</span> <span class="o">//</span> <span class="mi">2</span><span class="p">]</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="k">return</span> <span class="n">kernel</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_initial_state</span><span class="p">(</span><span class="n">kernel</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">first_sample</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">first_sample</span><span class="p">[:,</span> <span class="kc">None</span><span class="p">]</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">cumsum</span><span class="p">(</span><span class="n">kernel</span><span class="p">[:</span><span class="mi">0</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">])[::</span><span class="o">-</span><span class="mi">1</span><span class="p">][</span><span class="kc">None</span><span class="p">,</span> <span class="p">:]</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_split_bands</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]:</span>
+        <span class="n">bands</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">kernel</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_filter_kernels</span><span class="p">):</span>
+            <span class="n">values</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_filter_zi</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">lfilter</span><span class="p">(</span><span class="n">kernel</span><span class="p">,</span> <span class="p">[</span><span class="mf">1.0</span><span class="p">],</span> <span class="n">data</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">zi</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_filter_zi</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+            <span class="n">bands</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">values</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">bands</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_init_band</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">band_idx</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+        <span class="n">fmin</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+        <span class="n">fmax</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+        <span class="n">band_data</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
+        <span class="n">epoch_samples</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+        <span class="n">bounds</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">],</span>
+        <span class="n">ignore</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="n">overlap</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.0</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+        <span class="n">center_freq</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">fmin</span> <span class="o">*</span> <span class="n">fmax</span><span class="p">))</span> <span class="k">if</span> <span class="n">fmin</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="k">else</span> <span class="n">fmax</span> <span class="o">/</span> <span class="mi">2</span><span class="p">,</span> <span class="mf">0.01</span><span class="p">)</span>
+        <span class="n">tau</span> <span class="o">=</span> <span class="n">epoch_samples</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">sfreq</span>
+
+        <span class="n">n_samples</span> <span class="o">=</span> <span class="n">band_data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+        <span class="n">mean</span> <span class="o">=</span> <span class="n">band_data</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">Xb</span> <span class="o">=</span> <span class="n">band_data</span> <span class="o">-</span> <span class="n">mean</span><span class="p">[:,</span> <span class="kc">None</span><span class="p">]</span>
+        <span class="n">R_band</span> <span class="o">=</span> <span class="p">(</span><span class="n">Xb</span> <span class="o">@</span> <span class="n">Xb</span><span class="o">.</span><span class="n">T</span><span class="p">)</span> <span class="o">/</span> <span class="n">n_samples</span>
+
+        <span class="n">W</span><span class="p">,</span> <span class="n">A</span><span class="p">,</span> <span class="n">eigenvalues</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_solve_ged</span><span class="p">(</span><span class="n">R_band</span><span class="p">)</span>
+        <span class="n">eigen_threshold</span><span class="p">,</span> <span class="n">sensitivity</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">inf</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">ignore</span>
+            <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">_fit_sensai</span><span class="p">(</span><span class="n">band_data</span><span class="p">,</span> <span class="n">fmin</span><span class="p">,</span> <span class="n">fmax</span><span class="p">,</span> <span class="n">epoch_samples</span><span class="p">,</span> <span class="n">bounds</span><span class="p">,</span> <span class="n">overlap</span><span class="p">)</span>
+        <span class="p">)</span>
+
+        <span class="k">return</span> <span class="p">{</span>
+            <span class="s2">"index"</span><span class="p">:</span> <span class="n">band_idx</span><span class="p">,</span>
+            <span class="s2">"fmin"</span><span class="p">:</span> <span class="n">fmin</span><span class="p">,</span>
+            <span class="s2">"fmax"</span><span class="p">:</span> <span class="n">fmax</span><span class="p">,</span>
+            <span class="s2">"center_freq"</span><span class="p">:</span> <span class="n">center_freq</span><span class="p">,</span>
+            <span class="s2">"tau"</span><span class="p">:</span> <span class="n">tau</span><span class="p">,</span>
+            <span class="s2">"epoch_samples"</span><span class="p">:</span> <span class="n">epoch_samples</span><span class="p">,</span>
+            <span class="s2">"history"</span><span class="p">:</span> <span class="n">band_data</span><span class="p">[:,</span> <span class="o">-</span><span class="n">epoch_samples</span><span class="p">:]</span><span class="o">.</span><span class="n">copy</span><span class="p">(),</span>
+            <span class="s2">"ignore"</span><span class="p">:</span> <span class="n">ignore</span><span class="p">,</span>
+            <span class="s2">"mean"</span><span class="p">:</span> <span class="n">mean</span><span class="p">,</span>
+            <span class="s2">"R"</span><span class="p">:</span> <span class="n">R_band</span><span class="p">,</span>
+            <span class="s2">"W"</span><span class="p">:</span> <span class="n">W</span><span class="p">,</span>
+            <span class="s2">"A"</span><span class="p">:</span> <span class="n">A</span><span class="p">,</span>
+            <span class="s2">"eigenvalues"</span><span class="p">:</span> <span class="n">eigenvalues</span><span class="p">,</span>
+            <span class="s2">"threshold"</span><span class="p">:</span> <span class="n">eigen_threshold</span><span class="p">,</span>
+            <span class="s2">"effective_threshold"</span><span class="p">:</span> <span class="n">eigen_threshold</span><span class="p">,</span>
+            <span class="s2">"sensitivity"</span><span class="p">:</span> <span class="n">sensitivity</span><span class="p">,</span>
+        <span class="p">}</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_fit_sensai</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">data</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
+        <span class="n">fmin</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+        <span class="n">fmax</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+        <span class="n">epoch_samples</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+        <span class="n">bounds</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">],</span>
+        <span class="n">overlap</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.0</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">]:</span>
+        <span class="n">centered</span> <span class="o">=</span> <span class="n">data</span> <span class="o">-</span> <span class="n">data</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">keepdims</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">power</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">centered</span><span class="o">**</span><span class="mi">2</span><span class="p">))</span>
+        <span class="k">if</span> <span class="n">power</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
+                <span class="s2">"No baseline variance in GEDAI band </span><span class="si">%.3f</span><span class="s2">-</span><span class="si">%.3f</span><span class="s2"> Hz; "</span>
+                <span class="s2">"automatic rejection is disabled for this band until refitted."</span><span class="p">,</span>
+                <span class="n">fmin</span><span class="p">,</span>
+                <span class="n">fmax</span><span class="p">,</span>
+            <span class="p">)</span>
+            <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">inf</span><span class="p">,</span> <span class="mf">0.0</span>
+        <span class="n">epoch_samples</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">epoch_samples</span><span class="p">)</span>
+        <span class="n">step</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="nb">round</span><span class="p">(</span><span class="n">epoch_samples</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">overlap</span><span class="p">)))</span>
+        <span class="n">epochs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">stack</span><span class="p">(</span>
+            <span class="p">[</span>
+                <span class="n">data</span><span class="p">[:,</span> <span class="n">start</span> <span class="p">:</span> <span class="n">start</span> <span class="o">+</span> <span class="n">epoch_samples</span><span class="p">]</span>
+                <span class="k">for</span> <span class="n">start</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">epoch_samples</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">step</span><span class="p">)</span>
+            <span class="p">]</span>
+        <span class="p">)</span>
+        <span class="n">values</span><span class="p">,</span> <span class="n">vectors</span> <span class="o">=</span> <span class="n">_precompute_gevd</span><span class="p">(</span><span class="n">epochs</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_reference_cov</span><span class="p">,</span> <span class="n">engine</span><span class="o">=</span><span class="s2">"numpy"</span><span class="p">)</span>
+        <span class="n">eigen_threshold</span><span class="p">,</span> <span class="n">sensitivity</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">_sensai_optimize</span><span class="p">(</span>
+            <span class="n">epochs</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_reference_cov</span><span class="p">,</span>
+            <span class="n">n_pc</span><span class="o">=</span><span class="nb">min</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_channels</span><span class="p">),</span>
+            <span class="n">noise_multiplier</span><span class="o">=</span><span class="mf">3.0</span><span class="p">,</span>
+            <span class="n">epochs_eigenvalues</span><span class="o">=</span><span class="n">values</span><span class="p">,</span>
+            <span class="n">bounds</span><span class="o">=</span><span class="n">bounds</span><span class="p">,</span>
+            <span class="n">all_eval</span><span class="o">=</span><span class="n">values</span><span class="p">,</span>
+            <span class="n">all_evec</span><span class="o">=</span><span class="n">vectors</span><span class="p">,</span>
+            <span class="n">percentile</span><span class="o">=</span><span class="mi">98</span><span class="p">,</span>
+            <span class="n">signal_type</span><span class="o">=</span><span class="s2">"eeg"</span><span class="p">,</span>
+            <span class="n">engine</span><span class="o">=</span><span class="s2">"numpy"</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="k">return</span> <span class="nb">float</span><span class="p">(</span><span class="n">eigen_threshold</span><span class="p">),</span> <span class="nb">float</span><span class="p">(</span><span class="n">sensitivity</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_seed_history</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">band</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">history</span> <span class="o">=</span> <span class="n">data</span><span class="p">[:,</span> <span class="o">-</span><span class="n">band</span><span class="p">[</span><span class="s2">"epoch_samples"</span><span class="p">]</span> <span class="p">:]</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+        <span class="n">band</span><span class="p">[</span><span class="s2">"history"</span><span class="p">]</span> <span class="o">=</span> <span class="n">history</span>
+        <span class="n">band</span><span class="p">[</span><span class="s2">"mean"</span><span class="p">]</span> <span class="o">=</span> <span class="n">history</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">centered</span> <span class="o">=</span> <span class="n">history</span> <span class="o">-</span> <span class="n">band</span><span class="p">[</span><span class="s2">"mean"</span><span class="p">][:,</span> <span class="kc">None</span><span class="p">]</span>
+        <span class="n">band</span><span class="p">[</span><span class="s2">"R"</span><span class="p">]</span> <span class="o">=</span> <span class="n">centered</span> <span class="o">@</span> <span class="n">centered</span><span class="o">.</span><span class="n">T</span> <span class="o">/</span> <span class="nb">max</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">history</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="n">band</span><span class="p">[</span><span class="s2">"W"</span><span class="p">],</span> <span class="n">band</span><span class="p">[</span><span class="s2">"A"</span><span class="p">],</span> <span class="n">band</span><span class="p">[</span><span class="s2">"eigenvalues"</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_solve_ged</span><span class="p">(</span><span class="n">band</span><span class="p">[</span><span class="s2">"R"</span><span class="p">])</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_solve_ged</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">R_band</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">):</span>
+        <span class="n">eigenvalues</span><span class="p">,</span> <span class="n">W</span> <span class="o">=</span> <span class="n">linalg</span><span class="o">.</span><span class="n">eigh</span><span class="p">(</span><span class="n">R_band</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_reference_cov</span><span class="p">)</span>
+        <span class="n">order</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">argsort</span><span class="p">(</span><span class="n">eigenvalues</span><span class="p">)[::</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+        <span class="n">eigenvalues</span> <span class="o">=</span> <span class="n">eigenvalues</span><span class="p">[</span><span class="n">order</span><span class="p">]</span>
+        <span class="n">W</span> <span class="o">=</span> <span class="n">W</span><span class="p">[:,</span> <span class="n">order</span><span class="p">]</span>
+        <span class="n">A</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_reference_cov</span> <span class="o">@</span> <span class="n">W</span>
+        <span class="k">return</span> <span class="n">W</span><span class="p">,</span> <span class="n">A</span><span class="p">,</span> <span class="n">eigenvalues</span>
+
+    <span class="c1"># ------------------------------------------------------------------</span>
+    <span class="c1"># Streaming denoise</span>
+    <span class="c1"># ------------------------------------------------------------------</span>
+
+<div class="viewcode-block" id="AdaptiveMultibandGEDAIDenoiser.update_and_denoise">
+<a class="viewcode-back" href="../../../generated/mne_rt.tools.AdaptiveMultibandGEDAIDenoiser.html#mne_rt.tools.AdaptiveMultibandGEDAIDenoiser.update_and_denoise">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">update_and_denoise</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">data</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
+        <span class="n">template_map</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">threshold</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.7</span><span class="p">,</span>
+        <span class="n">n_artifact</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">"auto"</span><span class="p">,</span>
+        <span class="n">update_covariance</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+        <span class="n">refit</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Denoise one real-time chunk, updating per-band covariances as it goes.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        data : ndarray, shape (n_channels, n_samples)</span>
+<span class="sd">            New chunk of broadband sensor data.</span>
+<span class="sd">        template_map : ndarray, shape (n_channels,), optional</span>
+<span class="sd">            Known artifact topography (e.g. blink). If given, components</span>
+<span class="sd">            whose activation pattern correlates with it above ``threshold``</span>
+<span class="sd">            (absolute correlation) are suppressed in every band.</span>
+<span class="sd">        threshold : float, default 0.7</span>
+<span class="sd">            Absolute-correlation threshold used with ``template_map``.</span>
+<span class="sd">        n_artifact : int | "auto", default "auto"</span>
+<span class="sd">            When ``template_map`` is ``None``, ``"auto"`` rejects eigenvalues</span>
+<span class="sd">            above each band's current SENSAI threshold, calculated from the</span>
+<span class="sd">            baseline-fitted sensitivity and the local eigenvalue spectrum. With no</span>
+<span class="sd">            leadfield, the baseline broadband covariance is the signal</span>
+<span class="sd">            reference instead of a theoretical brain model.</span>
+<span class="sd">            An integer overrides SENSAI with a fixed count. Leadfield mode suppresses the</span>
+<span class="sd">            largest eigenvalues (excess power relative to the brain model);</span>
+<span class="sd">            band-filter mode suppresses the smallest (least band-specific).</span>
+<span class="sd">            Zero disables component rejection, not prefiltering, output delay,</span>
+<span class="sd">            or sub-cutoff band removal.</span>
+<span class="sd">            A positive fixed count can remove activity from clean recordings.</span>
+<span class="sd">        update_covariance : bool, default True</span>
+<span class="sd">            Whether to update each band's trailing-epoch covariance with this chunk.</span>
+<span class="sd">        refit : bool, default True</span>
+<span class="sd">            Whether to re-solve the GED for each band after updating its</span>
+<span class="sd">            covariance. Set to ``False`` to only update covariances (e.g. to</span>
+<span class="sd">            re-solve less often than every chunk) while still denoising with</span>
+<span class="sd">            the previous spatial filters.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        data_clean : ndarray, shape (n_channels, n_samples)</span>
+<span class="sd">            Output sample ``t`` corresponds to input sample</span>
+<span class="sd">            ``t - delay_samples``, including delayed calibration history at startup.</span>
+<span class="sd">        """</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_check_fitted</span><span class="p">()</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_validate_data</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">n_artifact</span> <span class="o">!=</span> <span class="s2">"auto"</span> <span class="ow">and</span> <span class="p">(</span>
+            <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">n_artifact</span><span class="p">,</span> <span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">integer</span><span class="p">))</span> <span class="ow">or</span> <span class="n">n_artifact</span> <span class="o">&lt;</span> <span class="mi">0</span>
+        <span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"n_artifact must be 'auto' or a non-negative integer"</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">isfinite</span><span class="p">(</span><span class="n">threshold</span><span class="p">)</span> <span class="ow">or</span> <span class="ow">not</span> <span class="mi">0</span> <span class="o">&lt;=</span> <span class="n">threshold</span> <span class="o">&lt;=</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"threshold must be between 0 and 1"</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">template_map</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">template_map</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">template_map</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
+            <span class="k">if</span> <span class="p">(</span>
+                <span class="n">template_map</span><span class="o">.</span><span class="n">shape</span> <span class="o">!=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n_channels</span><span class="p">,)</span>
+                <span class="ow">or</span> <span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">isfinite</span><span class="p">(</span><span class="n">template_map</span><span class="p">)</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
+                <span class="ow">or</span> <span class="n">np</span><span class="o">.</span><span class="n">ptp</span><span class="p">(</span><span class="n">template_map</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span>
+            <span class="p">):</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"template_map must be finite, nonconstant, and match n_channels"</span><span class="p">)</span>
+
+        <span class="n">data</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_prefilter_zi</span> <span class="o">=</span> <span class="n">lfilter</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_prefilter_kernel</span><span class="p">,</span> <span class="p">[</span><span class="mf">1.0</span><span class="p">],</span> <span class="n">data</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">zi</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_prefilter_zi</span>
+        <span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_broadband</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">data</span> <span class="o">=</span> <span class="n">data</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">_process_band</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_broadband</span><span class="p">,</span>
+                <span class="n">data</span><span class="p">,</span>
+                <span class="n">template_map</span><span class="p">,</span>
+                <span class="n">threshold</span><span class="p">,</span>
+                <span class="n">n_artifact</span><span class="p">,</span>
+                <span class="n">update_covariance</span><span class="p">,</span>
+                <span class="n">refit</span><span class="p">,</span>
+            <span class="p">)</span>
+        <span class="n">band_data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_split_bands</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+        <span class="n">args</span> <span class="o">=</span> <span class="p">(</span><span class="n">template_map</span><span class="p">,</span> <span class="n">threshold</span><span class="p">,</span> <span class="n">n_artifact</span><span class="p">,</span> <span class="n">update_covariance</span><span class="p">,</span> <span class="n">refit</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_jobs</span> <span class="o">!=</span> <span class="mi">1</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_bands</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="n">noise_bands</span> <span class="o">=</span> <span class="n">Parallel</span><span class="p">(</span><span class="n">n_jobs</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">n_jobs</span><span class="p">,</span> <span class="n">prefer</span><span class="o">=</span><span class="s2">"threads"</span><span class="p">)(</span>
+                <span class="n">delayed</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_process_band</span><span class="p">)(</span><span class="n">band</span><span class="p">,</span> <span class="n">values</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">)</span>
+                <span class="k">for</span> <span class="n">band</span><span class="p">,</span> <span class="n">values</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_bands</span><span class="p">,</span> <span class="n">band_data</span><span class="p">)</span>
+            <span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">noise_bands</span> <span class="o">=</span> <span class="p">[</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_process_band</span><span class="p">(</span><span class="n">band</span><span class="p">,</span> <span class="n">values</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">)</span>
+                <span class="k">for</span> <span class="n">band</span><span class="p">,</span> <span class="n">values</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_bands</span><span class="p">,</span> <span class="n">band_data</span><span class="p">)</span>
+            <span class="p">]</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">band_data</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">noise_bands</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span></div>
+
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_process_band</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">band</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span>
+        <span class="n">band_data</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
+        <span class="n">template_map</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span> <span class="o">|</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">threshold</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+        <span class="n">n_artifact</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">update_covariance</span><span class="p">:</span> <span class="nb">bool</span><span class="p">,</span>
+        <span class="n">refit</span><span class="p">:</span> <span class="nb">bool</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">band</span><span class="p">[</span><span class="s2">"ignore"</span><span class="p">]:</span>
+            <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">band_data</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">update_covariance</span><span class="p">:</span>
+            <span class="n">history</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">([</span><span class="n">band</span><span class="p">[</span><span class="s2">"history"</span><span class="p">],</span> <span class="n">band_data</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+            <span class="n">history</span> <span class="o">=</span> <span class="n">history</span><span class="p">[:,</span> <span class="o">-</span><span class="n">band</span><span class="p">[</span><span class="s2">"epoch_samples"</span><span class="p">]</span> <span class="p">:]</span>
+            <span class="n">band</span><span class="p">[</span><span class="s2">"history"</span><span class="p">]</span> <span class="o">=</span> <span class="n">history</span>
+            <span class="n">band</span><span class="p">[</span><span class="s2">"mean"</span><span class="p">]</span> <span class="o">=</span> <span class="n">history</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+            <span class="n">centered</span> <span class="o">=</span> <span class="n">history</span> <span class="o">-</span> <span class="n">band</span><span class="p">[</span><span class="s2">"mean"</span><span class="p">][:,</span> <span class="kc">None</span><span class="p">]</span>
+            <span class="n">band</span><span class="p">[</span><span class="s2">"R"</span><span class="p">]</span> <span class="o">=</span> <span class="n">centered</span> <span class="o">@</span> <span class="n">centered</span><span class="o">.</span><span class="n">T</span> <span class="o">/</span> <span class="nb">max</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">history</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">refit</span><span class="p">:</span>
+            <span class="n">band</span><span class="p">[</span><span class="s2">"W"</span><span class="p">],</span> <span class="n">band</span><span class="p">[</span><span class="s2">"A"</span><span class="p">],</span> <span class="n">band</span><span class="p">[</span><span class="s2">"eigenvalues"</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_solve_ged</span><span class="p">(</span><span class="n">band</span><span class="p">[</span><span class="s2">"R"</span><span class="p">])</span>
+
+        <span class="n">W</span><span class="p">,</span> <span class="n">A</span> <span class="o">=</span> <span class="n">band</span><span class="p">[</span><span class="s2">"W"</span><span class="p">],</span> <span class="n">band</span><span class="p">[</span><span class="s2">"A"</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">template_map</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">template</span> <span class="o">=</span> <span class="n">template_map</span> <span class="o">-</span> <span class="n">template_map</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span>
+            <span class="n">patterns</span> <span class="o">=</span> <span class="n">A</span> <span class="o">-</span> <span class="n">A</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">keepdims</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+            <span class="n">norms</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">patterns</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">template</span><span class="p">)</span>
+            <span class="n">corrs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">divide</span><span class="p">(</span><span class="n">template</span> <span class="o">@</span> <span class="n">patterns</span><span class="p">,</span> <span class="n">norms</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">A</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]),</span> <span class="n">where</span><span class="o">=</span><span class="n">norms</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span>
+            <span class="n">artifact_idx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">corrs</span><span class="p">)</span> <span class="o">&gt;</span> <span class="n">threshold</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="k">elif</span> <span class="n">n_artifact</span> <span class="o">==</span> <span class="s2">"auto"</span><span class="p">:</span>
+            <span class="n">positive</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">band</span><span class="p">[</span><span class="s2">"eigenvalues"</span><span class="p">])</span>
+            <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">isfinite</span><span class="p">(</span><span class="n">band</span><span class="p">[</span><span class="s2">"threshold"</span><span class="p">])</span> <span class="ow">and</span> <span class="n">np</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">positive</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">):</span>
+                <span class="n">band</span><span class="p">[</span><span class="s2">"effective_threshold"</span><span class="p">]</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span>
+                    <span class="n">_sensai_to_eigen</span><span class="p">(</span><span class="n">band</span><span class="p">[</span><span class="s2">"sensitivity"</span><span class="p">],</span> <span class="n">positive</span><span class="p">,</span> <span class="n">percentile</span><span class="o">=</span><span class="mi">98</span><span class="p">)</span>
+                <span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">band</span><span class="p">[</span><span class="s2">"effective_threshold"</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">inf</span>
+            <span class="n">artifact_idx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">flatnonzero</span><span class="p">(</span><span class="n">positive</span> <span class="o">&gt;=</span> <span class="n">band</span><span class="p">[</span><span class="s2">"effective_threshold"</span><span class="p">])</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">n_artifact</span><span class="p">,</span> <span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">integer</span><span class="p">))</span>
+            <span class="n">n</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">n_artifact</span><span class="p">,</span> <span class="n">A</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+            <span class="n">artifact_idx</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">n</span><span class="p">)</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_reference_is_leadfield</span>
+                <span class="k">else</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">A</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">n</span><span class="p">,</span> <span class="n">A</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+            <span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">A</span><span class="p">[:,</span> <span class="n">artifact_idx</span><span class="p">]</span> <span class="o">@</span> <span class="p">(</span><span class="n">W</span><span class="p">[:,</span> <span class="n">artifact_idx</span><span class="p">]</span><span class="o">.</span><span class="n">T</span> <span class="o">@</span> <span class="n">band_data</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_validate_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">data</span><span class="o">.</span><span class="n">ndim</span> <span class="o">!=</span> <span class="mi">2</span> <span class="ow">or</span> <span class="n">data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_channels</span> <span class="ow">or</span> <span class="n">data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Expected data with shape (</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">n_channels</span><span class="si">}</span><span class="s2">, n_samples &gt; 0)"</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">isfinite</span><span class="p">(</span><span class="n">data</span><span class="p">)</span><span class="o">.</span><span class="n">all</span><span class="p">():</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"Data must contain only finite values"</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">data</span>
+
+    <span class="c1"># ------------------------------------------------------------------</span>
+    <span class="c1"># Properties</span>
+    <span class="c1"># ------------------------------------------------------------------</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">n_bands</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Number of frequency bands."""</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_check_fitted</span><span class="p">()</span>
+        <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_bands</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">band_frequencies</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">tuple</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">]]:</span>
+<span class="w">        </span><span class="sd">"""List of ``(fmin, fmax)`` per band."""</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_check_fitted</span><span class="p">()</span>
+        <span class="k">return</span> <span class="p">[(</span><span class="n">b</span><span class="p">[</span><span class="s2">"fmin"</span><span class="p">],</span> <span class="n">b</span><span class="p">[</span><span class="s2">"fmax"</span><span class="p">])</span> <span class="k">for</span> <span class="n">b</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_bands</span><span class="p">]</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">band_time_constants</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">float</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">"""Trailing covariance epoch durations (seconds), including ignored bands."""</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_check_fitted</span><span class="p">()</span>
+        <span class="k">return</span> <span class="p">[</span><span class="n">b</span><span class="p">[</span><span class="s2">"tau"</span><span class="p">]</span> <span class="k">for</span> <span class="n">b</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_bands</span><span class="p">]</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">retained_bands</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">bool</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">"""Whether each band contributes to the reconstruction."""</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_check_fitted</span><span class="p">()</span>
+        <span class="k">return</span> <span class="p">[</span><span class="ow">not</span> <span class="n">b</span><span class="p">[</span><span class="s2">"ignore"</span><span class="p">]</span> <span class="k">for</span> <span class="n">b</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_bands</span><span class="p">]</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">latency</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Fixed FIR reconstruction delay in seconds; not compute time."""</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_check_fitted</span><span class="p">()</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_delay_samples</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">sfreq</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">delay_samples</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Align emitted sample ``t`` to source sample ``t - delay_samples``."""</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_check_fitted</span><span class="p">()</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_delay_samples</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">eigenvalues</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">"""Sorted eigenvalues (descending) per band."""</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_check_fitted</span><span class="p">()</span>
+        <span class="k">return</span> <span class="p">[</span><span class="n">b</span><span class="p">[</span><span class="s2">"eigenvalues"</span><span class="p">]</span> <span class="k">for</span> <span class="n">b</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_bands</span><span class="p">]</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">eigenvalue_thresholds</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">float</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">"""Baseline SENSAI eigenvalue cutoffs; live cutoffs adapt to each spectrum."""</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_check_fitted</span><span class="p">()</span>
+        <span class="k">return</span> <span class="p">[</span><span class="n">b</span><span class="p">[</span><span class="s2">"threshold"</span><span class="p">]</span> <span class="k">for</span> <span class="n">b</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_bands</span><span class="p">]</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">current_eigenvalue_thresholds</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">float</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">"""Most recently used per-band automatic cutoffs."""</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_check_fitted</span><span class="p">()</span>
+        <span class="k">return</span> <span class="p">[</span><span class="n">b</span><span class="p">[</span><span class="s2">"effective_threshold"</span><span class="p">]</span> <span class="k">for</span> <span class="n">b</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_bands</span><span class="p">]</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">spatial_filters</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">"""Spatial filters ``W`` per band, each shape (n_channels, n_channels)."""</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_check_fitted</span><span class="p">()</span>
+        <span class="k">return</span> <span class="p">[</span><span class="n">b</span><span class="p">[</span><span class="s2">"W"</span><span class="p">]</span> <span class="k">for</span> <span class="n">b</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_bands</span><span class="p">]</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">activation_patterns</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">"""Activation patterns ``A`` per band, each shape (n_channels, n_channels)."""</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_check_fitted</span><span class="p">()</span>
+        <span class="k">return</span> <span class="p">[</span><span class="n">b</span><span class="p">[</span><span class="s2">"A"</span><span class="p">]</span> <span class="k">for</span> <span class="n">b</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_bands</span><span class="p">]</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_check_fitted</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_bands</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">"Call fit() before using AdaptiveMultibandGEDAIDenoiser."</span><span class="p">)</span></div>
+
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">_CausalGEDAIWindow</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""Process unique timestamped samples, then assemble delayed analysis windows."""</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">model</span><span class="p">:</span> <span class="n">AdaptiveMultibandGEDAIDenoiser</span><span class="p">,</span> <span class="n">window_samples</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">model</span> <span class="o">=</span> <span class="n">model</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">window_samples</span> <span class="o">=</span> <span class="n">window_samples</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_chunk_samples</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="nb">round</span><span class="p">(</span><span class="mf">0.05</span> <span class="o">*</span> <span class="n">model</span><span class="o">.</span><span class="n">sfreq</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_warmup</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">delay_samples</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_last_timestamp</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_pending_raw</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">((</span><span class="n">model</span><span class="o">.</span><span class="n">n_channels</span><span class="p">,</span> <span class="mi">0</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_pending_times</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_clean</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">((</span><span class="n">model</span><span class="o">.</span><span class="n">n_channels</span><span class="p">,</span> <span class="mi">0</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_raw</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">((</span><span class="n">model</span><span class="o">.</span><span class="n">n_channels</span><span class="p">,</span> <span class="mi">0</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_times</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">update</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">data</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
+        <span class="n">timestamps</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">_validate_data</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+        <span class="n">timestamps</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">timestamps</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">timestamps</span><span class="o">.</span><span class="n">shape</span> <span class="o">!=</span> <span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">],)</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">isfinite</span><span class="p">(</span><span class="n">timestamps</span><span class="p">)</span><span class="o">.</span><span class="n">all</span><span class="p">():</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"Causal GEDAI requires one finite timestamp per input sample"</span><span class="p">)</span>
+        <span class="n">valid</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">flatnonzero</span><span class="p">(</span><span class="n">timestamps</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">valid</span><span class="o">.</span><span class="n">size</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">"Causal GEDAI is waiting for initialized stream timestamps."</span><span class="p">)</span>
+            <span class="k">return</span> <span class="kc">None</span>
+        <span class="n">data</span><span class="p">,</span> <span class="n">timestamps</span> <span class="o">=</span> <span class="n">data</span><span class="p">[:,</span> <span class="n">valid</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="p">:],</span> <span class="n">timestamps</span><span class="p">[</span><span class="n">valid</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="p">:]</span>
+        <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">diff</span><span class="p">(</span><span class="n">timestamps</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"Causal GEDAI input timestamps must be strictly increasing"</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_last_timestamp</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">first</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">searchsorted</span><span class="p">(</span><span class="n">timestamps</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_last_timestamp</span><span class="p">,</span> <span class="n">side</span><span class="o">=</span><span class="s2">"right"</span><span class="p">)</span>
+            <span class="n">data</span><span class="p">,</span> <span class="n">timestamps</span> <span class="o">=</span> <span class="n">data</span><span class="p">[:,</span> <span class="n">first</span><span class="p">:],</span> <span class="n">timestamps</span><span class="p">[</span><span class="n">first</span><span class="p">:]</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">timestamps</span><span class="o">.</span><span class="n">size</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">None</span>
+        <span class="n">previous</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="n">timestamps</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_last_timestamp</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">np</span><span class="o">.</span><span class="n">r_</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_last_timestamp</span><span class="p">,</span> <span class="n">timestamps</span><span class="p">]</span>
+        <span class="p">)</span>
+        <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">diff</span><span class="p">(</span><span class="n">previous</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mf">1.5</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">sfreq</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span>
+                <span class="s2">"Causal GEDAI detected missing input samples. Increase the stream "</span>
+                <span class="s2">"buffer/analysis window or reduce processing load, then refit and restart."</span>
+            <span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">start</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">timestamps</span><span class="o">.</span><span class="n">size</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_chunk_samples</span><span class="p">):</span>
+            <span class="n">stop</span> <span class="o">=</span> <span class="n">start</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">_chunk_samples</span>
+            <span class="n">chunk</span><span class="p">,</span> <span class="n">times</span> <span class="o">=</span> <span class="n">data</span><span class="p">[:,</span> <span class="n">start</span><span class="p">:</span><span class="n">stop</span><span class="p">],</span> <span class="n">timestamps</span><span class="p">[</span><span class="n">start</span><span class="p">:</span><span class="n">stop</span><span class="p">]</span>
+            <span class="n">cleaned</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">update_and_denoise</span><span class="p">(</span><span class="n">chunk</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_pending_raw</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">_pending_raw</span><span class="p">,</span> <span class="n">chunk</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_pending_times</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">r_</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_pending_times</span><span class="p">,</span> <span class="n">times</span><span class="p">]</span>
+            <span class="n">skip</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_warmup</span><span class="p">,</span> <span class="n">chunk</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_warmup</span> <span class="o">-=</span> <span class="n">skip</span>
+            <span class="n">ready</span> <span class="o">=</span> <span class="n">chunk</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">skip</span>
+            <span class="k">if</span> <span class="n">ready</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_clean</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">_clean</span><span class="p">,</span> <span class="n">cleaned</span><span class="p">[:,</span> <span class="n">skip</span><span class="p">:]],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_raw</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">_raw</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pending_raw</span><span class="p">[:,</span> <span class="p">:</span><span class="n">ready</span><span class="p">]],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_times</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">r_</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_times</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pending_times</span><span class="p">[:</span><span class="n">ready</span><span class="p">]]</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_pending_raw</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pending_raw</span><span class="p">[:,</span> <span class="n">ready</span><span class="p">:]</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_pending_times</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pending_times</span><span class="p">[</span><span class="n">ready</span><span class="p">:]</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_clean</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_clean</span><span class="p">[:,</span> <span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">window_samples</span> <span class="p">:]</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_raw</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_raw</span><span class="p">[:,</span> <span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">window_samples</span> <span class="p">:]</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_times</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_times</span><span class="p">[</span><span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">window_samples</span> <span class="p">:]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_last_timestamp</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">timestamps</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_times</span><span class="o">.</span><span class="n">size</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">window_samples</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">None</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_clean</span><span class="o">.</span><span class="n">copy</span><span class="p">(),</span> <span class="bp">self</span><span class="o">.</span><span class="n">_raw</span><span class="o">.</span><span class="n">copy</span><span class="p">(),</span> <span class="bp">self</span><span class="o">.</span><span class="n">_times</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+</pre></div>
+
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../../../_static/scripts/bootstrap.js?digest=18bd87630a240e9c25be"></script>
+<script defer src="../../../_static/scripts/pydata-sphinx-theme.js?digest=18bd87630a240e9c25be"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright 2024-2026, Payam S. Shabestari.
+      <br/>
+    
+  </p>
+</div>
+      
+        <div class="footer-item">
+
+  <p class="sphinx-version">
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 9.0.4.
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
+<p class="theme-version">
+  <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.23.0.
+</p></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>

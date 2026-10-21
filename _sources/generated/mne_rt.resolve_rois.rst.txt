@@ -1,0 +1,6 @@
+﻿mne\_rt.resolve\_rois
+=====================
+
+.. currentmodule:: mne_rt
+
+.. autofunction:: resolve_rois
