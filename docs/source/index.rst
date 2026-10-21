@@ -236,7 +236,7 @@ Pipeline overview
      <tr style="background:#f5f3ff;">
        <td style="padding:7px 14px;border-bottom:1px solid #ede9fe;font-weight:600;white-space:nowrap;">⑤ Feature extraction</td>
        <td style="padding:7px 14px;border-bottom:1px solid #ede9fe;"><code>record_main(modality=[…])</code></td>
-       <td style="padding:7px 14px;border-bottom:1px solid #ede9fe;">20 feature modalities in sensor or source space; parallel thread-pool per window</td>
+       <td style="padding:7px 14px;border-bottom:1px solid #ede9fe;">22 feature modalities in sensor or source space; parallel thread-pool per window</td>
      </tr>
      <tr style="background:#ecfdf5;">
        <td style="padding:7px 14px;border-bottom:1px solid #d1fae5;font-weight:600;white-space:nowrap;">⑥ Feedback protocol</td>

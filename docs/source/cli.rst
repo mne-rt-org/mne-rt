@@ -478,6 +478,8 @@ Available feature modalities
      - Cross-frequency coupling (sensor space)
    * - ``instantaneous_phase``
      - Instantaneous phase and amplitude envelope via Hilbert analytic signal
+   * - ``microstates``
+     - EEG microstate metric (coverage, duration, occurrence, GEV) of a target template map
    * - ``scp``
      - Slow cortical potential — low-pass mean amplitude shift (DC-coupled)
    * - ``peak_alpha_freq``
