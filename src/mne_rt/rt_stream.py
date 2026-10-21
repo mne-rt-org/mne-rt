@@ -1514,6 +1514,7 @@ class RTStream(ModalityMixin):
             ``"spectral_centroid"``, ``"argmax_freq"``,
             ``"individual_peak_power"``, ``"entropy"``,
             ``"instantaneous_phase"``, ``"scp"``, ``"peak_alpha_freq"``,
+            ``"microstates"`` (template maps via ``modality_params``),
             ``"sensor_connectivity"``, ``"cfc_sensor"``, ``"sensor_graph"``,
             ``"connectivity_ratio"``,
             ``"source_power"``, ``"source_connectivity"``, ``"source_graph"``,
@@ -1970,6 +1971,7 @@ class RTStream(ModalityMixin):
             "scp": 50e-6,
             "decode": 1.0,
             "instantaneous_phase": 3.2,  # radians, |phase| <= pi
+            "microstates": 1.0,  # timecov / gev / mean_corr lie in [0, 1]
             "laterality_erd_ers": 50.0,
         }
         # NFPlot indexes scales_dict with a bare [], so every *displayed* name

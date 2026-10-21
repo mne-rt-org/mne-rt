@@ -62,6 +62,7 @@ from mne_rt.tools import (
     resolve_n_cycles,
     timed,
 )
+from mne_rt.tools import microstates as microstate_tools
 
 #: Inverse solutions the source-space modalities accept.
 _SOURCE_METHODS = frozenset({"MNE", "dSPM", "sLORETA", "eLORETA", "LCMV"})
@@ -1069,6 +1070,96 @@ class ModalityMixin:
             data, sfreq, frange, channel_indices=channel_indices
         )
         return float(phase)
+
+    # ------------------------------------------------------------------
+    # Microstates
+    # ------------------------------------------------------------------
+
+    def _microstates_prep(self) -> dict:
+        """Align the template maps with the acquired channels, once per session."""
+        if self.data_type != "eeg":
+            raise ValueError(
+                "microstates backfits average-referenced scalp maps and is defined "
+                f"for EEG only; this session has data_type={self.data_type!r}."
+            )
+        p = self.params
+        centers, tmpl_ch, names = microstate_tools.resolve_templates(
+            p["templates"], p["template_ch_names"], p["state_names"]
+        )
+        # Match by name: the acquired array excludes bad channels and follows
+        # the stream's order, which need not be the templates' order.
+        acquired = self._acquired_ch_names()
+        shared = [ch for ch in tmpl_ch if ch in acquired]
+        missing = [ch for ch in tmpl_ch if ch not in acquired]
+        if len(shared) < 3:
+            raise ValueError(
+                f"microstates: only {len(shared)} of the {len(tmpl_ch)} template "
+                "channels are in the acquired data; at least 3 are needed. Check "
+                "that template_ch_names use the stream's channel names."
+            )
+        if missing:
+            warn(
+                f"microstates: {len(missing)} template channel(s) are not in the "
+                f"acquired data (e.g. marked bad) and are left out of the fit: "
+                f"{', '.join(missing[:8])}{' ...' if len(missing) > 8 else ''}",
+                UserWarning,
+                stacklevel=2,
+            )
+
+        target = p["target_state"]
+        if isinstance(target, str):
+            if target not in names:
+                raise ValueError(
+                    f"microstates: target_state {target!r} is not one of the states {names}."
+                )
+            target = names.index(target)
+        elif not 0 <= int(target) < len(names):
+            raise ValueError(
+                f"microstates: target_state {target} is out of range for {len(names)} states."
+            )
+        if p["metric"] not in microstate_tools.METRICS:
+            raise ValueError(
+                f"microstates: metric must be one of {microstate_tools.METRICS}, got {p['metric']!r}."
+            )
+        frange = p["frange"]
+        sos = butter_bandpass(frange[0], frange[1], self._sfreq, order=5) if frange else None
+        return {
+            "picks": [acquired.index(ch) for ch in shared],
+            "templates_z": microstate_tools.zscore_templates(
+                centers[:, [tmpl_ch.index(ch) for ch in shared]]
+            ),
+            "target": int(target),
+            "metric": p["metric"],
+            "sos": sos,
+            "reject_edges": bool(p["reject_edges"]),
+            "sfreq": self._sfreq,
+        }
+
+    @timed
+    def _microstates(
+        self,
+        data: np.ndarray,
+        picks: list,
+        templates_z: np.ndarray,
+        target: int,
+        metric: str,
+        sos,
+        reject_edges: bool,
+        sfreq: float,
+    ) -> float:
+        """Metric of the target microstate in this window.
+
+        Backfitting and metrics follow pycrostates; see
+        :mod:`mne_rt.tools.microstates`.
+        """
+        x = data[picks]
+        # Without a band-pass, at least remove each channel's offset: a constant
+        # per-channel offset is itself a scalp map and would bias every fit.
+        x = sosfiltfilt(sos, x, axis=1) if sos is not None else x - x.mean(axis=1, keepdims=True)
+        labels, corr, gfp = microstate_tools.backfit(x, templates_z)
+        if reject_edges:
+            labels = microstate_tools.reject_edge_segments(labels)
+        return microstate_tools.microstate_parameters(labels, corr, gfp, sfreq, target)[metric]
 
     # ------------------------------------------------------------------
     # ERD/ERS laterality index

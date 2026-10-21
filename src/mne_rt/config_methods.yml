@@ -107,6 +107,27 @@ NF_modality:
     frange: [8, 13]          # Hz — bandpass before Hilbert transform
     channel_indices: null    # null = average all channels; or list of ints
 
+  # ── Sensor-space microstates ───────────────────────────────────────────────
+
+  microstates:
+    # EEG microstate metric of one target state. Each sample of the band-passed,
+    # average-referenced window is assigned to the template map with the highest
+    # absolute spatial correlation; the metric is then computed for the target
+    # state. Backfitting and metric definitions match pycrostates.
+    # Pass the maps through modality_params, e.g.
+    #   modality_params={"microstates": {"templates": modkmeans, "target_state": "C"}}
+    templates: null          # array, (n_states, n_channels) or (n_channels, n_states),
+                             # or a fitted pycrostates ModKMeans
+    template_ch_names: null  # channel of each template column; not needed for a ModKMeans
+    state_names: null        # names of the states; taken from a ModKMeans if given
+    target_state: 0          # index or name of the state whose metric is fed back
+    metric: "timecov"        # "timecov" | "meandurs" | "occurrences" | "gev" | "mean_corr"
+    frange: [2, 20]          # Hz band-pass before backfitting; null = remove channel means only.
+                             # Match the band the templates were fitted on.
+    reject_edges: false      # true = drop each window's first/last segment, as pycrostates
+                             # does; off by default because a 1 s window that is a single
+                             # segment would then be rejected entirely
+
   # ── Sensor-space connectivity ──────────────────────────────────────────────
 
   sensor_connectivity:
