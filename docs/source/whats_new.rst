@@ -36,6 +36,23 @@ New features
 Bug fixes
 ^^^^^^^^^
 
+- **record_main now raises when the acquisition loop fails**
+  (`#49 <https://github.com/mne-rt-org/mne-rt/issues/49>`__). An exception in
+  the acquisition thread — a stream that stopped delivering data, a modality
+  that raised — was logged and then lost, so
+  :meth:`~mne_rt.RTStream.record_main` returned as if the run had succeeded and
+  a script, or ``mne-rt run``, could not tell. It is now re-raised unchanged
+  once the session has been saved and the windows closed; what was recorded
+  before the failure stays in ``nf_data`` and on disk. A window that failed
+  before its feedback was delivered is dropped, so every saved column, and the
+  raw recording, ends on the same window — before, one modality could be a
+  window ahead of another.
+  :meth:`~mne_rt.RTStream.run_blocks` raises too, without running the remaining
+  blocks, disconnects as at the end of a full sequence, and keeps the blocks
+  that finished in ``block_results``. **Code that
+  relied on record_main returning after a failed run will now see the
+  exception.**
+
 - ``ArrayStream`` now assigns unique sample-clock timestamps and paces chunks
   against cumulative sample deadlines instead of assigning one timestamp to
   every sample in a chunk.
