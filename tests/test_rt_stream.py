@@ -785,6 +785,201 @@ def test_connect_to_array_record_main_end_to_end(tmp_path, array_info):
         nf.save()
 
 
+def _failing_after(n_ok, exc):
+    """A modality stand-in: ``n_ok`` good windows, then ``exc``."""
+    calls = {"n": 0}
+
+    def modality(data, **_):
+        calls["n"] += 1
+        if calls["n"] > n_ok:
+            raise exc
+        return 1.0, 0.0
+
+    return modality
+
+
+_HEADLESS = {"show_raw_signal": False, "show_nf_signal": False}
+
+
+def test_record_main_raises_when_acquisition_fails(tmp_path, array_info, monkeypatch):
+    """#49: a failure in the acquisition thread was logged and swallowed, so
+    record_main returned as if the run had succeeded."""
+    import threading
+
+    thread_hook = []
+    monkeypatch.setattr(threading, "excepthook", thread_hook.append)
+
+    nf = _make_rt_stream(tmp_path, montage="easycap-M1")
+    try:
+        nf.connect_to_array(
+            _make_array_data(array_info, duration=20.0), array_info, n_repeat=np.inf
+        )
+        nf.record_baseline(baseline_duration=1.0, winsize=0.5)
+        nf._sensor_power = _failing_after(2, RuntimeError("stream died"))
+        with pytest.raises(RuntimeError, match="stream died"):
+            nf.record_main(duration=5.0, modality="sensor_power", **_HEADLESS)
+        # What was recorded before the failure is kept, and saved as for a
+        # successful run ...
+        assert len(nf.nf_data["sensor_power"]) == 2
+        assert list(tmp_path.rglob("*_beh.json"))
+        # ... and the traceback is not printed a second time by the thread.
+        assert thread_hook == []
+    finally:
+        nf.save()
+
+
+def test_failed_run_is_saved_with_whole_windows_only(tmp_path, array_info):
+    """A window that fails part-way is rolled back: the second modality failing
+    must not leave the first one, the onsets or the counters a window ahead."""
+    import json
+
+    nf = _make_rt_stream(tmp_path, montage="easycap-M1")
+    try:
+        nf.connect_to_array(
+            _make_array_data(array_info, duration=20.0), array_info, n_repeat=np.inf
+        )
+        nf.record_baseline(baseline_duration=1.0, winsize=0.5)
+        nf._band_ratio = _failing_after(3, RuntimeError("second modality died"))
+        with pytest.raises(RuntimeError, match="second modality died"):
+            nf.record_main(duration=5.0, modality=["sensor_power", "band_ratio"], **_HEADLESS)
+        assert {m: len(v) for m, v in nf.nf_data.items()} == {"sensor_power": 3, "band_ratio": 3}
+        assert len(nf.window_onsets) == len(nf.window_durations) == 3
+        assert nf.n_total_windows == 3
+        assert len(nf._raw_chunks) == 3  # the raw FIF ends on the same window
+        (saved,) = tmp_path.rglob("*_beh.json")
+        meta = json.loads(saved.read_text())["meta"]
+        assert meta["n_windows"] == {"sensor_power": 3, "band_ratio": 3}
+    finally:
+        nf.save()
+
+
+def test_a_failing_save_does_not_hide_the_acquisition_error(tmp_path, array_info, monkeypatch):
+    nf = _make_rt_stream(tmp_path, montage="easycap-M1")
+    try:
+        nf.connect_to_array(
+            _make_array_data(array_info, duration=20.0), array_info, n_repeat=np.inf
+        )
+        nf.record_baseline(baseline_duration=1.0, winsize=0.5)
+        nf._sensor_power = _failing_after(1, RuntimeError("stream died"))
+        real_save = nf.save
+
+        def broken_save(*args, **kwargs):
+            raise OSError("disk full")
+
+        monkeypatch.setattr(nf, "save", broken_save)
+        with pytest.raises(RuntimeError, match="stream died") as info:
+            nf.record_main(duration=5.0, modality="sensor_power", **_HEADLESS)
+        assert isinstance(info.value.__context__, OSError)  # neither error is lost
+        monkeypatch.setattr(nf, "save", real_save)
+    finally:
+        nf.save()
+
+
+def test_run_blocks_disconnects_when_an_early_block_fails(tmp_path, array_info):
+    """Only the last block disconnects normally; a failure before it must not
+    leave the stream up once run_blocks has raised."""
+    nf = _make_rt_stream(tmp_path, montage="easycap-M1")
+    try:
+        nf.connect_to_array(
+            _make_array_data(array_info, duration=20.0), array_info, n_repeat=np.inf
+        )
+        nf.record_baseline(baseline_duration=1.0, winsize=0.5)
+        nf._band_ratio = _failing_after(0, RuntimeError("block 1 failed"))
+        blocks = [
+            {"duration": 2.0, "modality": "band_ratio", **_HEADLESS},
+            {"duration": 2.0, "modality": "sensor_power", **_HEADLESS},
+        ]
+        with pytest.raises(RuntimeError, match="block 1 failed"):
+            nf.run_blocks(blocks, rest_duration=0)
+        assert nf.block_results == []
+        assert not nf.stream.connected
+    finally:
+        nf.save()
+
+
+def test_run_blocks_failing_cleanup_does_not_hide_the_block_error(
+    tmp_path, array_info, monkeypatch
+):
+    """The disconnect after a failed block must not replace the block's error,
+    and the last block need not be a Mapping to read its ``disconnect``."""
+    nf = _make_rt_stream(tmp_path, montage="easycap-M1")
+    try:
+        nf.connect_to_array(
+            _make_array_data(array_info, duration=20.0), array_info, n_repeat=np.inf
+        )
+        nf.record_baseline(baseline_duration=1.0, winsize=0.5)
+        nf._band_ratio = _failing_after(0, RuntimeError("block 1 failed"))
+
+        def broken_disconnect(**_):
+            raise OSError("disconnect failed")
+
+        monkeypatch.setattr(nf, "_disconnect", broken_disconnect)
+        blocks = [
+            list({"duration": 2.0, "modality": "band_ratio", **_HEADLESS}.items()),
+            list({"duration": 2.0, "modality": "sensor_power", **_HEADLESS}.items()),
+        ]
+        with pytest.raises(RuntimeError, match="block 1 failed"):
+            nf.run_blocks(blocks, rest_duration=0)
+    finally:
+        monkeypatch.undo()
+        nf.save()
+
+
+def test_run_blocks_disconnects_when_the_last_block_fails_before_saving(tmp_path, array_info):
+    """A last block that raises before its own save never reaches its
+    disconnect, so run_blocks has to do it."""
+    nf = _make_rt_stream(tmp_path, montage="easycap-M1")
+    try:
+        nf.connect_to_array(
+            _make_array_data(array_info, duration=20.0), array_info, n_repeat=np.inf
+        )
+        nf.record_baseline(baseline_duration=1.0, winsize=0.5)
+        with pytest.raises(ValueError):
+            nf.run_blocks(
+                [{"duration": 2.0, "modality": "not_a_modality", **_HEADLESS}],
+                rest_duration=0,
+            )
+        assert not nf.stream.connected
+    finally:
+        nf.save()
+
+
+def test_record_main_still_returns_normally_when_nothing_fails(tmp_path, array_info):
+    nf = _make_rt_stream(tmp_path, montage="easycap-M1")
+    try:
+        nf.connect_to_array(
+            _make_array_data(array_info, duration=20.0), array_info, n_repeat=np.inf
+        )
+        nf.record_baseline(baseline_duration=1.0, winsize=0.5)
+        assert nf.record_main(duration=2.0, modality="sensor_power", **_HEADLESS) is None
+        assert len(nf.nf_data["sensor_power"]) > 0
+    finally:
+        nf.save()
+
+
+def test_run_blocks_keeps_finished_blocks_when_one_fails(tmp_path, array_info):
+    """A failed block now raises, so run_blocks must not lose the blocks that
+    finished: it used to set block_results only after the last block."""
+    nf = _make_rt_stream(tmp_path, montage="easycap-M1")
+    try:
+        nf.connect_to_array(
+            _make_array_data(array_info, duration=20.0), array_info, n_repeat=np.inf
+        )
+        nf.record_baseline(baseline_duration=1.0, winsize=0.5)
+        nf._band_ratio = _failing_after(0, RuntimeError("block 2 failed"))
+        blocks = [
+            {"duration": 2.0, "modality": "sensor_power", **_HEADLESS},
+            {"duration": 2.0, "modality": "band_ratio", **_HEADLESS},
+        ]
+        with pytest.raises(RuntimeError, match="block 2 failed"):
+            nf.run_blocks(blocks, rest_duration=0)
+        assert [b["run"] for b in nf.block_results] == [1]
+        assert len(nf.block_results[0]["nf_data"]["sensor_power"]) > 0
+        assert len(nf.block_nf_data) == 1
+    finally:
+        nf.save()
+
+
 def test_microstates_record_main_save_and_report(tmp_path, array_info):
     """The template array travels through modality_params; a session using it
     must record, save and report without trying to serialise it."""
