@@ -823,20 +823,13 @@ class RTStream(ModalityMixin):
 
     def _teardown_existing_stream(self) -> None:
         """Disconnect any previously-connected stream/mock player, if present."""
-        self._teardown_session_streams()
         # The marker stream is timestamped against the signal stream, so it
         # cannot outlive it: keeping it would silently match markers to a
         # different recording.
-        self._teardown_marker_stream(announce=True)
+        self._disconnect(announce=True)
         # Belongs to the stream just torn down; leaving it set would make the
         # clocksync check in connect_marker_stream answer for the wrong stream.
         self._processing_flags = None
-        if getattr(self, "_mock_player", None) is not None:
-            try:
-                self._mock_player.stop()
-            except Exception:
-                pass
-            self._mock_player = None
 
     def _acquired_info(self) -> Any:
         """``rec_info`` restricted to :meth:`_acquired_ch_names`."""
@@ -1741,6 +1734,12 @@ class RTStream(ModalityMixin):
             If ``show_brain_activation=True`` but ``subjects_fs_dir`` is
             not set, or if ``artifact_correction="gedai"`` but
             :meth:`fit_gedai` has not been called.
+        Exception
+            Whatever ended the acquisition loop early — a stream that stopped
+            delivering data, a modality that raised — re-raised unchanged once
+            the session has been saved and the windows closed. What was recorded
+            before the failure is kept in :attr:`nf_data` and written to disk,
+            exactly as for a successful run.
 
         Notes
         -----
@@ -2433,18 +2432,54 @@ class RTStream(ModalityMixin):
 
         # ---- Acquisition thread ----
 
+        # Filled by the acquisition thread when it fails. An exception raised in a
+        # thread cannot reach the caller by itself, so it is kept here and
+        # re-raised at the end of this method, once the session is saved (#49).
+        _acq_error: list[BaseException] = []
+        # Set when record_main stops waiting for a thread that would not stop. A
+        # failure after that has no one left to raise it to, and nf_data may
+        # already be on disk, so it is neither rolled back nor kept.
+        _abandoned = threading.Event()
+
         def _acquire() -> None:
             # `done_event` is the only way the Qt event loop learns the run is
             # over (see `_pump_signal`), so anything raised in here would leave
             # record_main spinning forever with nothing saved.
+            # Bound before the try: the finally and the handler use them, and
+            # must not fail if the very first statement does.
+            _raw_chunks: list[np.ndarray] = []
+            # Everything the loop appends to, or counts, once per window. A
+            # window that fails part-way is rolled back to how it started, so a
+            # failed run is saved with whole windows only: every column the same
+            # length, the counters agreeing with them.
+            _window_lists = [
+                _raw_chunks,
+                _acq_delays,
+                _art_delays,
+                _win_onsets,
+                _win_durations,
+                _win_conditions,
+                _win_marker_counts,
+                _win_gated,
+                _snr_data,
+                *nf_data.values(),
+                *reward_data.values(),
+                *_meth_delays.values(),
+            ]
+            _window_counters = [_n_short, _n_gated, _n_total_windows, _n_artifact_windows]
+
+            def _snapshot() -> tuple[list[int], list[int]]:
+                return [len(x) for x in _window_lists], [c[0] for c in _window_counters]
+
+            _window_start = _snapshot()
             try:
                 t_start = local_clock()
-                _raw_chunks: list[np.ndarray] = []
                 # 50 % overlap: advance by half a window each step so consecutive
                 # NF estimates share data → smooth, correlated curve updates.
                 _hop = max(1, self.window_size_s // 2)
 
                 while local_clock() < t_start + duration and not stop_event.is_set():
+                    _window_start = _snapshot()
                     # Block until half a window of new samples has arrived, then
                     # fetch the latest winsize seconds (50 % overlap with prev window).
                     # While waiting, flush any accumulated raw samples to the display
@@ -2691,12 +2726,32 @@ class RTStream(ModalityMixin):
                                     exc_info=True,
                                 )
 
+                    # The feedback has reached the participant, so the window
+                    # is part of the record from here on, whatever the displays
+                    # below do.
+                    _window_start = _snapshot()
                     _push_topo(data)
                     _push_brain(data)
 
-            except BaseException:
-                logger.exception("Acquisition failed; ending the run.")
-                raise
+            except BaseException as exc:
+                if _abandoned.is_set():
+                    logger.error("Acquisition failed after the run had ended.", exc_info=True)
+                    return
+                # The full traceback travels with the exception record_main
+                # re-raises; logging it here as well printed it twice. Re-raising
+                # here instead would only end this thread.
+                logger.error(
+                    "Acquisition failed (%s: %s); ending the run.", type(exc).__name__, exc
+                )
+                logger.debug("Acquisition failure traceback", exc_info=True)
+                # Protocols are not rolled back: one that had already evaluated
+                # the dropped window keeps it in its running state.
+                lens, counts = _window_start
+                for lst, n in zip(_window_lists, lens):
+                    del lst[n:]
+                for counter, n in zip(_window_counters, counts):
+                    counter[0] = n
+                _acq_error.append(exc)
             finally:
                 done_event.set()
                 self._raw_chunks = _raw_chunks
@@ -2849,6 +2904,7 @@ class RTStream(ModalityMixin):
         stop_event.set()
         acq_thread.join(timeout=10)
         if acq_thread.is_alive():
+            _abandoned.set()
             logger.warning(
                 "The acquisition thread did not stop within 10 s; the session is being "
                 "saved without it."
@@ -2908,23 +2964,8 @@ class RTStream(ModalityMixin):
         self.n_total_windows = n_tot
         self.snr_data = _snr_data if track_snr else []
 
-        saved_files = self.save(
-            nf_data=self.save_nf_signal,
-            acq_delay=True,
-            artifact_delay=True,
-            method_delay=True,
-            raw_data=save_raw,
-            format="json",
-            # The TSV and its sidecar are what an analysis pipeline reads; the
-            # JSON is the full record. Writing only the JSON meant the per-window
-            # table never reached disk in the default flow.
-            bids_tsv=save_tsv,
-            disconnect=disconnect,
-        )
-        for kind, path in saved_files.items():
-            logger.info("Saved %s → %s", kind, path)
-
-        # All of them, not just the neurofeedback trace: leaving the others open
+        # Before saving, so a save that raises cannot leave them on screen. All
+        # of them, not just the neurofeedback trace: leaving the others open
         # means a second block stacks a fresh set of windows on top of the last.
         for _w in (nf_plot, raw_plot, topo_plot):
             if _w is not None:
@@ -2944,6 +2985,53 @@ class RTStream(ModalityMixin):
                 brain_plot.plotter.close()
             except Exception:
                 logger.debug("Closing the brain plotter failed.", exc_info=True)
+
+        try:
+            saved_files = self.save(
+                nf_data=self.save_nf_signal,
+                acq_delay=True,
+                artifact_delay=True,
+                method_delay=True,
+                raw_data=save_raw,
+                format="json",
+                # The TSV and its sidecar are what an analysis pipeline reads; the
+                # JSON is the full record. Writing only the JSON meant the per-window
+                # table never reached disk in the default flow.
+                bids_tsv=save_tsv,
+                disconnect=disconnect,
+            )
+        except Exception:
+            if not _acq_error:
+                raise
+            # Saving a run that had already failed can fail in turn. Raise the
+            # acquisition error, which is why the run failed; the save error is
+            # chained to it as its context, so neither is lost.
+            raise _acq_error.pop()
+        for kind, path in saved_files.items():
+            logger.info("Saved %s → %s", kind, path)
+
+        # Only now, so that what was recorded before the failure is already on
+        # disk and in nf_data.
+        if _acq_error:
+            # Popped rather than indexed: the traceback references the thread's
+            # frame, which references this list, so keeping the exception in it
+            # would hold every local of the run alive until the cyclic GC ran.
+            raise _acq_error.pop()
+
+    def _disconnect(self, *, announce: bool = False) -> None:
+        """Stop the M/EEG stream, the marker stream and the mock player.
+
+        Safe to call again on what is already disconnected. ``announce`` is
+        passed on to :meth:`_teardown_marker_stream`.
+        """
+        self._teardown_session_streams()
+        self._teardown_marker_stream(announce=announce)
+        if getattr(self, "_mock_player", None) is not None:
+            try:
+                self._mock_player.stop()
+            except Exception:
+                pass
+            self._mock_player = None
 
     # ------------------------------------------------------------------
     # Offline replay
@@ -3070,6 +3158,17 @@ class RTStream(ModalityMixin):
             One dict per block, each matching :attr:`nf_data` from that block's
             :meth:`record_main` call.  Also stored as :attr:`block_nf_data`.
 
+        Raises
+        ------
+        Exception
+            Whatever :meth:`record_main` raised for a block whose acquisition
+            failed. The remaining blocks are not run, and the stream is
+            disconnected as at the end of a full sequence. The blocks of this
+            call that finished stay in :attr:`block_results` and
+            :attr:`block_nf_data`, which always describe the most recent call;
+            the failed block's partial data is in :attr:`nf_data`. All of them
+            are on disk.
+
         Notes
         -----
         :meth:`save` is called internally at the end of *each* block by
@@ -3123,6 +3222,28 @@ class RTStream(ModalityMixin):
         all_snr_data: list[list] = []
         all_results: list[dict] = []
 
+        # Bound before the loop, not after: record_main raises when a block's
+        # acquisition fails, and the blocks that finished must survive that. The
+        # lists are appended to in place, so each block is visible here as soon as
+        # it ends. The failed block's partial data is in nf_data and on disk.
+        self.block_nf_data = all_nf_data
+        self.block_artifact_rates = all_artifact_rates
+        self.block_snr_data = all_snr_data
+        self.block_results = all_results
+
+        # dict() rather than .get(): a block may be anything dict() accepts.
+        end_disconnected = dict(blocks[-1]).get("disconnect", True)
+
+        def _end_early() -> None:
+            # The remaining blocks will not run, and neither will the last
+            # block's disconnect: do it here, as a finished sequence would. Its
+            # own failure must not replace the error that ended the sequence.
+            if end_disconnected:
+                try:
+                    self._disconnect()
+                except Exception:
+                    logger.debug("Disconnecting after a failed block failed.", exc_info=True)
+
         for i, block in enumerate(blocks):
             block_kwargs = dict(block)
             post_rest = float(block_kwargs.pop("rest", rest_duration))
@@ -3142,12 +3263,16 @@ class RTStream(ModalityMixin):
             # the mock player, which reconnecting the stream alone cannot undo.
             block_run = block_kwargs.pop("run", i + 1)
             block_disconnect = block_kwargs.pop("disconnect", _last)
-            self.record_main(
-                verbose=verbose,
-                run=block_run,
-                disconnect=block_disconnect,
-                **block_kwargs,
-            )
+            try:
+                self.record_main(
+                    verbose=verbose,
+                    run=block_run,
+                    disconnect=block_disconnect,
+                    **block_kwargs,
+                )
+            except BaseException:
+                _end_early()
+                raise
             # Everything record_main rebinds, not the three that happened to be
             # captured before: the rest were overwritten by the next block and
             # lost.
@@ -3178,12 +3303,12 @@ class RTStream(ModalityMixin):
 
             if not _last and post_rest > 0:
                 logger.info("run_blocks: rest period %.0f s …", post_rest)
-                time.sleep(post_rest)
+                try:
+                    time.sleep(post_rest)
+                except BaseException:
+                    _end_early()
+                    raise
 
-        self.block_nf_data = all_nf_data
-        self.block_artifact_rates = all_artifact_rates
-        self.block_snr_data = all_snr_data
-        self.block_results = all_results
         return all_nf_data
 
     # ------------------------------------------------------------------
@@ -4137,13 +4262,7 @@ class RTStream(ModalityMixin):
         cannot be resumed by reconnecting the stream alone.
         """
         if disconnect:
-            self._teardown_session_streams()
-            self._teardown_marker_stream()
-            if getattr(self, "_mock_player", None) is not None:
-                try:
-                    self._mock_player.stop()
-                except Exception:
-                    pass
+            self._disconnect()
 
         self._ensure_dirs()
 
