@@ -73,6 +73,22 @@ Bug fixes
   and :class:`~mne_rt.RTStream` selects GEDAI components by template
   correlation. Reported by Tomas Ros.
 
+API changes
+^^^^^^^^^^^
+
+- ``bufsize_baseline`` in :meth:`~mne_rt.RTStream.connect_to_lsl` is
+  deprecated. It was documented as the buffer size for the baseline but never
+  used: the stream has one buffer, sized by ``bufsize_main``, and
+  :meth:`~mne_rt.RTStream.record_baseline` reads it in chunks. Passing it now
+  raises a ``FutureWarning``; it will be removed in a future release.
+- :meth:`~mne_rt.RTStream.save` raises ``ValueError`` for a ``format`` other
+  than ``"json"``, which was accepted and ignored, before it disconnects or
+  writes anything.
+- :meth:`~mne_rt.RTStream.record_baseline` raises ``ValueError`` when
+  ``winsize`` is larger than the stream's buffer (``bufsize_main``). The stream
+  returns at most its buffer, so part of every chunk was silently missing from
+  the baseline.
+
 .. _changes_1_2_0:
 
 Version 1.2.0

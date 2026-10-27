@@ -417,7 +417,7 @@ class ButterflyPlot(QMainWindow):
         n_conds = len(self._conditions)
         for row_idx, cond in enumerate(self._conditions):
             plot = self._glw.addPlot(row=row_idx, col=0)
-            self._style_plot(plot, cond)
+            self._style_plot(plot)
             self._cond_plots[cond] = plot
 
             # t = 0 dashed line
@@ -467,7 +467,7 @@ class ButterflyPlot(QMainWindow):
         for row_idx in range(n_conds):
             self._glw.ci.layout.setRowStretchFactor(row_idx, 1)
 
-    def _style_plot(self, plot: pg.PlotItem, cond_title: str) -> None:
+    def _style_plot(self, plot: pg.PlotItem) -> None:
         """Configure a condition PlotItem: hide axes, disable mouse."""
         plot.setMenuEnabled(False)
         plot.hideButtons()
