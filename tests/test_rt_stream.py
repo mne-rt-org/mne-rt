@@ -327,6 +327,15 @@ def test_save_writes_nf_data_json(tmp_path):
     assert payload["meta"]["modalities"] == ["sensor_power"]
 
 
+def test_save_rejects_an_unsupported_format_before_writing(tmp_path):
+    """``format`` was accepted and ignored, so ``"csv"`` silently wrote JSON."""
+    nf = _make_rt_stream(tmp_path)
+    nf.nf_data = {"sensor_power": [0.1, 0.2, 0.3]}
+    with pytest.raises(ValueError, match="format"):
+        nf.save(format="csv")
+    assert not list(tmp_path.rglob("*_beh.json"))
+
+
 def test_save_writes_bids_tsv_when_requested(tmp_path):
     nf = _make_rt_stream(tmp_path)
     nf.nf_data = {"sensor_power": [0.1, 0.2]}
@@ -783,6 +792,39 @@ def test_connect_to_array_record_main_end_to_end(tmp_path, array_info):
         assert len(nf.nf_data["sensor_power"]) > 0
     finally:
         nf.save()
+
+
+def test_record_baseline_rejects_a_winsize_larger_than_the_buffer(tmp_path):
+    """The stream returns at most its buffer, so the rest of each chunk was
+    silently missing from the baseline."""
+    nf = _make_rt_stream(tmp_path)
+    nf.bufsize = 3
+    with pytest.raises(ValueError, match="buffer"):
+        nf.record_baseline(baseline_duration=10, winsize=4)
+
+
+class _Stop(Exception):
+    pass
+
+
+def test_connect_to_lsl_bufsize_baseline_is_deprecated(tmp_path, monkeypatch):
+    """It was documented but never used. The connection itself is cut short:
+    the warning is raised before anything is connected."""
+    import warnings
+
+    nf = _make_rt_stream(tmp_path)
+
+    def stop():
+        raise _Stop
+
+    monkeypatch.setattr(nf, "_teardown_existing_stream", stop)
+    with pytest.warns(FutureWarning, match="bufsize_baseline") as record, pytest.raises(_Stop):
+        nf.connect_to_lsl(bufsize_baseline=4)
+    assert record[0].filename == __file__  # points at the caller, not at mne-rt
+    with warnings.catch_warnings():
+        warnings.simplefilter("error", FutureWarning)
+        with pytest.raises(_Stop):
+            nf.connect_to_lsl()
 
 
 def _failing_after(n_ok, exc):

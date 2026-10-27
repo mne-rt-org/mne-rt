@@ -862,7 +862,7 @@ class RTStream(ModalityMixin):
         mock_lsl: bool = False,
         fname: Optional[str] = None,
         n_repeat: Union[int, float] = np.inf,
-        bufsize_baseline: int = 4,
+        bufsize_baseline: Optional[int] = None,
         bufsize_main: int = 3,
         acquisition_delay: float = 0.001,
         timeout: float = 15.0,
@@ -887,8 +887,14 @@ class RTStream(ModalityMixin):
             ``None`` uses the bundled sample recording.
         n_repeat : int | float, default ``np.inf``
             How many times to loop the mock recording.
-        bufsize_baseline : int, default 4
-            LSL buffer size in seconds for baseline sessions.
+        bufsize_baseline : int | None, default None
+            Deprecated, and never had an effect: the stream has a single
+            buffer, sized by ``bufsize_main``, and :meth:`record_baseline`
+            reads it in chunks of ``winsize`` seconds, so a baseline of any
+            length fits as long as ``winsize`` does not exceed ``bufsize_main``.
+
+            .. deprecated:: 1.3.0
+               Will be removed in a future release.
         bufsize_main : int, default 3
             LSL buffer size in seconds for main sessions.
         acquisition_delay : float, default 0.001
@@ -933,6 +939,14 @@ class RTStream(ModalityMixin):
             nf.connect_to_lsl(mock_lsl=True, fname="path/to/data.fif")
             nf.connect_to_lsl(mock_lsl=True, fname="path/to/data.edf")
         """
+        if bufsize_baseline is not None:
+            warn(
+                "`bufsize_baseline` is deprecated and has no effect; the stream's "
+                "buffer is sized by `bufsize_main`. It will be removed in a future "
+                "release.",
+                FutureWarning,
+                stacklevel=3,
+            )
         self._teardown_existing_stream()
 
         if mock_lsl and fname is None:
@@ -1373,9 +1387,15 @@ class RTStream(ModalityMixin):
         baseline_duration : float
             Total recording duration in seconds.
         winsize : float, default 3.0
-            Duration in seconds of each data fetch chunk.
+            Duration in seconds of each data fetch chunk. At most the stream's
+            buffer, ``bufsize_main`` in :meth:`connect_to_lsl`.
         verbose : bool | str | None, default None
             Override the instance-level verbosity for this call.
+
+        Raises
+        ------
+        ValueError
+            If ``winsize`` is larger than the stream's buffer.
 
         Notes
         -----
@@ -1390,6 +1410,16 @@ class RTStream(ModalityMixin):
         --------
         >>> nf.record_baseline(baseline_duration=120)
         """
+        # The buffer holds only `bufsize` seconds: a longer fetch returns that
+        # much and the loop then sleeps past the rest, so a part of every chunk
+        # would be missing from the baseline without a word.
+        bufsize = getattr(self, "bufsize", None)
+        if bufsize is not None and winsize > bufsize:
+            raise ValueError(
+                f"winsize={winsize} s is larger than the stream's {bufsize} s buffer, "
+                "so part of every chunk would be lost. Lower winsize, or reconnect "
+                "with a larger bufsize_main."
+            )
         self.baseline_duration = baseline_duration
         logger.info("Recording baseline (%.0f s) …", baseline_duration)
 
@@ -4192,7 +4222,7 @@ class RTStream(ModalityMixin):
         method_delay: bool = True,
         raw_data: bool = False,
         bids_tsv: bool = False,
-        format: str = "json",
+        format: Literal["json"] = "json",
         delay_include_trace: bool = False,
         disconnect: bool = True,
     ) -> dict[str, Path]:
@@ -4248,6 +4278,12 @@ class RTStream(ModalityMixin):
             ``"raw"``) to the saved file path.  Only keys for files actually
             written are included.
 
+        Raises
+        ------
+        ValueError
+            If ``format`` is not ``"json"``. Nothing is written and the stream
+            stays connected.
+
         Notes
         -----
         Output filenames are built from the BIDS stem
@@ -4261,6 +4297,10 @@ class RTStream(ModalityMixin):
         :meth:`connect_to_lsl` builds a new one, so a disconnected mock session
         cannot be resumed by reconnecting the stream alone.
         """
+        # Before anything else, so a bad value neither disconnects the stream
+        # nor writes a JSON file the caller did not ask for.
+        if format != "json":
+            raise ValueError(f'`format` must be "json", the only one supported; got {format!r}.')
         if disconnect:
             self._disconnect()
 
