@@ -83,6 +83,9 @@ from mne_rt.viz.nf_plot import _label_for, _unit_for
 # Package root — resolves correctly both in editable installs and installed wheels
 _PKG_DIR = Path(__file__).resolve().parent
 _REPO_ROOT = _PKG_DIR.parent.parent  # src/ant → src → repo root
+# How long record_main waits, past the end of a run, for the acquisition thread
+# to stop before it saves the session without it.
+_ACQ_STOP_TIMEOUT = 10.0
 
 
 def _make_demo_raw_fif(
@@ -1769,7 +1772,15 @@ class RTStream(ModalityMixin):
             delivering data, a modality that raised — re-raised unchanged once
             the session has been saved and the windows closed. What was recorded
             before the failure is kept in :attr:`nf_data` and written to disk,
-            exactly as for a successful run.
+            exactly as for a successful run. If saving fails too, that is
+            logged and added to the exception as a note.
+        KeyboardInterrupt
+            On Ctrl-C during a headless run, once the run has been stopped and
+            what was recorded saved.
+        RuntimeError
+            If the acquisition thread has not stopped 10 s after the run ended:
+            something it waits on is stuck. The session is saved up to the
+            last whole window first.
 
         Notes
         -----
@@ -2458,7 +2469,21 @@ class RTStream(ModalityMixin):
                 except _queue.Full:
                     pass
 
-            self.executor.submit(_compute_and_enqueue, window.copy())
+            fut = self.executor.submit(_compute_and_enqueue, window.copy())
+            fut.add_done_callback(_report_brain_failure)
+
+        _brain_warned = [False]
+
+        def _report_brain_failure(fut) -> None:
+            # Nothing waits on these futures, so a failure here was silent: the
+            # brain display froze and nothing said why. It is display only, so
+            # the run goes on, as for a failing OSC or LSL send.
+            if fut.cancelled() or fut.exception() is None or _brain_warned[0]:
+                return
+            _brain_warned[0] = True
+            logger.warning(
+                "The brain display failed; continuing without it.", exc_info=fut.exception()
+            )
 
         # ---- Acquisition thread ----
 
@@ -2470,38 +2495,46 @@ class RTStream(ModalityMixin):
         # failure after that has no one left to raise it to, and nf_data may
         # already be on disk, so it is neither rolled back nor kept.
         _abandoned = threading.Event()
+        # Holds the KeyboardInterrupt that ended a headless run early, if any.
+        _interrupted: list[BaseException] = []
+        _raw_chunks: list[np.ndarray] = []
+        # Everything the loop appends to, or counts, once per window. A window
+        # that fails part-way is rolled back to the last commit, so a failed run
+        # is saved with whole windows only: every column the same length, the
+        # counters agreeing with them.
+        _window_lists = [
+            _raw_chunks,
+            _acq_delays,
+            _art_delays,
+            _win_onsets,
+            _win_durations,
+            _win_conditions,
+            _win_marker_counts,
+            _win_gated,
+            _snr_data,
+            *nf_data.values(),
+            *reward_data.values(),
+            *_meth_delays.values(),
+        ]
+        _window_counters = [_n_short, _n_gated, _n_total_windows, _n_artifact_windows]
+
+        def _snapshot() -> tuple[list[int], list[int]]:
+            return [len(x) for x in _window_lists], [c[0] for c in _window_counters]
+
+        # The lengths and counts at the last whole window. The lock makes
+        # committing, rolling back and abandoning the thread exclusive, so the
+        # thread never rolls back what record_main has started to save.
+        _committed = [_snapshot()]
+        _commit_lock = threading.Lock()
+
+        def _commit() -> None:
+            with _commit_lock:
+                _committed[0] = _snapshot()
 
         def _acquire() -> None:
             # `done_event` is the only way the Qt event loop learns the run is
             # over (see `_pump_signal`), so anything raised in here would leave
             # record_main spinning forever with nothing saved.
-            # Bound before the try: the finally and the handler use them, and
-            # must not fail if the very first statement does.
-            _raw_chunks: list[np.ndarray] = []
-            # Everything the loop appends to, or counts, once per window. A
-            # window that fails part-way is rolled back to how it started, so a
-            # failed run is saved with whole windows only: every column the same
-            # length, the counters agreeing with them.
-            _window_lists = [
-                _raw_chunks,
-                _acq_delays,
-                _art_delays,
-                _win_onsets,
-                _win_durations,
-                _win_conditions,
-                _win_marker_counts,
-                _win_gated,
-                _snr_data,
-                *nf_data.values(),
-                *reward_data.values(),
-                *_meth_delays.values(),
-            ]
-            _window_counters = [_n_short, _n_gated, _n_total_windows, _n_artifact_windows]
-
-            def _snapshot() -> tuple[list[int], list[int]]:
-                return [len(x) for x in _window_lists], [c[0] for c in _window_counters]
-
-            _window_start = _snapshot()
             try:
                 t_start = local_clock()
                 # 50 % overlap: advance by half a window each step so consecutive
@@ -2509,7 +2542,7 @@ class RTStream(ModalityMixin):
                 _hop = max(1, self.window_size_s // 2)
 
                 while local_clock() < t_start + duration and not stop_event.is_set():
-                    _window_start = _snapshot()
+                    _commit()
                     # Block until half a window of new samples has arrived, then
                     # fetch the latest winsize seconds (50 % overlap with prev window).
                     # While waiting, flush any accumulated raw samples to the display
@@ -2759,12 +2792,23 @@ class RTStream(ModalityMixin):
                     # The feedback has reached the participant, so the window
                     # is part of the record from here on, whatever the displays
                     # below do.
-                    _window_start = _snapshot()
+                    _commit()
                     _push_topo(data)
                     _push_brain(data)
 
             except BaseException as exc:
-                if _abandoned.is_set():
+                with _commit_lock:
+                    abandoned = _abandoned.is_set()
+                    if not abandoned:
+                        # Protocols are not rolled back: one that had already
+                        # evaluated the dropped window keeps it in its state.
+                        lens, counts = _committed[0]
+                        for lst, n in zip(_window_lists, lens):
+                            del lst[n:]
+                        for counter, n in zip(_window_counters, counts):
+                            counter[0] = n
+                        _acq_error.append(exc)
+                if abandoned:
                     logger.error("Acquisition failed after the run had ended.", exc_info=True)
                     return
                 # The full traceback travels with the exception record_main
@@ -2774,17 +2818,8 @@ class RTStream(ModalityMixin):
                     "Acquisition failed (%s: %s); ending the run.", type(exc).__name__, exc
                 )
                 logger.debug("Acquisition failure traceback", exc_info=True)
-                # Protocols are not rolled back: one that had already evaluated
-                # the dropped window keeps it in its running state.
-                lens, counts = _window_start
-                for lst, n in zip(_window_lists, lens):
-                    del lst[n:]
-                for counter, n in zip(_window_counters, counts):
-                    counter[0] = n
-                _acq_error.append(exc)
             finally:
                 done_event.set()
-                self._raw_chunks = _raw_chunks
 
         # ---- Start acquisition thread ----
 
@@ -2926,30 +2961,56 @@ class RTStream(ModalityMixin):
             app.exec()  # blocks here; drives all three windows in parallel
 
         else:
-            acq_thread.join()  # headless: block until acquisition finishes
+            # Headless: until acquisition finishes, but bounded, so that a thread
+            # stuck on the stream or a modality cannot hang this call.
+            try:
+                acq_thread.join(timeout=duration + _ACQ_STOP_TIMEOUT)
+            except KeyboardInterrupt as exc:
+                # Ending here would leave the thread reading a stream that the
+                # caller, run_blocks included, then disconnects, and nothing
+                # saved. End the run as for a failure instead: stop the thread
+                # below, save what was recorded, then re-raise.
+                logger.warning("Interrupted; saving what was recorded so far.")
+                _interrupted.append(exc)
 
         # Ask first, then wait: the loop runs to `t_start + duration` regardless
         # of whether the windows are still open, so a bounded join alone can
         # return with the thread still live.
         stop_event.set()
-        acq_thread.join(timeout=10)
-        if acq_thread.is_alive():
-            _abandoned.set()
+        acq_thread.join(timeout=_ACQ_STOP_TIMEOUT)
+        abandoned = acq_thread.is_alive()
+        if abandoned:
+            with _commit_lock:
+                _abandoned.set()
+                lens, counts = _committed[0]
             logger.warning(
-                "The acquisition thread did not stop within 10 s; the session is being "
-                "saved without it."
+                "The acquisition thread did not stop within %g s; the session is being "
+                "saved up to its last whole window without it.",
+                _ACQ_STOP_TIMEOUT,
             )
+            # The thread may still append to the lists, but no longer removes
+            # anything from them, so their first `n` items are final. What is
+            # persisted is copies cut there, which nothing appends to later.
+            _final = {id(x): x[:n] for x, n in zip(_window_lists, lens)}
+            _final_n = {id(c): n for c, n in zip(_window_counters, counts)}
+        else:
+            _final = {id(x): x for x in _window_lists}
+            _final_n = {id(c): c[0] for c in _window_counters}
         # After the join, so the brain-plot task submitted from the acquisition
         # thread cannot still be running `apply_inverse_raw` while the session
         # is serialised below. Left in place rather than set to None, because a
-        # thread that outlived the join would then submit into `None`.
+        # thread that outlived the join would then submit into `None`. Not
+        # waited on when the thread was abandoned: the modality task it is
+        # stuck on runs here too, and waiting on it would hang this method.
         if getattr(self, "executor", None) is not None:
-            self.executor.shutdown(wait=True)
+            self.executor.shutdown(wait=not abandoned, cancel_futures=abandoned)
 
         # ---- Persist results ----
 
-        self.nf_data = nf_data
-        self.reward_data = reward_data
+        n_tot = _final_n[id(_n_total_windows)]
+        n_gated = _final_n[id(_n_gated)]
+        self.nf_data = {m: _final[id(v)] for m, v in nf_data.items()}
+        self.reward_data = {m: _final[id(v)] for m, v in reward_data.items()}
         self._zscore_normalize = zscore_normalize
         # The protocol objects themselves, not just their rewards: `create_report`
         # needs `current_threshold` to say what the rewards were judged against,
@@ -2957,42 +3018,39 @@ class RTStream(ModalityMixin):
         self._protocols = _proto_map
         self._combined_name = combined_name if combiner is not None else None
         # Absolute LSL-clock onsets; `save()` converts to session-relative.
-        self.window_onsets = _win_onsets
-        self.window_durations = _win_durations
-        self.n_short_windows = _n_short[0]
-        self.window_conditions = _win_conditions
-        self.window_marker_counts = _win_marker_counts
-        self.window_gated = _win_gated
+        self.window_onsets = _final[id(_win_onsets)]
+        self.window_durations = _final[id(_win_durations)]
+        self.n_short_windows = _final_n[id(_n_short)]
+        self.window_conditions = _final[id(_win_conditions)]
+        self.window_marker_counts = _final[id(_win_marker_counts)]
+        self.window_gated = _final[id(_win_gated)]
         self.markers = list(_markers)
         self.gate_conditions = gate_conditions
-        self.n_gated_windows = _n_gated[0]
+        self.n_gated_windows = n_gated
+        self._raw_chunks = _final[id(_raw_chunks)]
 
         # A gate that never opened looks exactly like a working session from the
         # outside: features are computed and saved, the plot updates, and the
         # subject simply never receives anything. Say so.
-        if (
-            gate_conditions is not None
-            and _n_total_windows[0] > 0
-            and _n_gated[0] == _n_total_windows[0]
-        ):
+        if gate_conditions is not None and n_tot > 0 and n_gated == n_tot:
             logger.warning(
                 "Every one of the %d windows was outside gate_conditions=%s, so no "
                 "feedback was delivered for the entire run. %d marker(s) arrived. "
                 "Check that the paradigm publishes the expected codes, and that both "
                 "streams are clock-synchronised if they come from different machines.",
-                _n_total_windows[0],
+                n_tot,
                 gate_conditions,
                 len(_markers),
             )
         if estimate_delays:
-            self.acq_delays = _acq_delays
-            self.artifact_delays = _art_delays
-            self.method_delays = _meth_delays
-        n_tot = _n_total_windows[0]
-        self.artifact_rate = _n_artifact_windows[0] / n_tot if n_tot > 0 else 0.0
-        self.n_artifact_windows = _n_artifact_windows[0]
+            self.acq_delays = _final[id(_acq_delays)]
+            self.artifact_delays = _final[id(_art_delays)]
+            self.method_delays = {m: _final[id(v)] for m, v in _meth_delays.items()}
+        n_artifact = _final_n[id(_n_artifact_windows)]
+        self.artifact_rate = n_artifact / n_tot if n_tot > 0 else 0.0
+        self.n_artifact_windows = n_artifact
         self.n_total_windows = n_tot
-        self.snr_data = _snr_data if track_snr else []
+        self.snr_data = _final[id(_snr_data)] if track_snr else []
 
         # Before saving, so a save that raises cannot leave them on screen. All
         # of them, not just the neurofeedback trace: leaving the others open
@@ -3030,13 +3088,18 @@ class RTStream(ModalityMixin):
                 bids_tsv=save_tsv,
                 disconnect=disconnect,
             )
-        except Exception:
+        except Exception as exc:
             if not _acq_error:
+                if _interrupted:
+                    exc.add_note("The run had been interrupted (KeyboardInterrupt).")
                 raise
-            # Saving a run that had already failed can fail in turn. Raise the
-            # acquisition error, which is why the run failed; the save error is
-            # chained to it as its context, so neither is lost.
-            raise _acq_error.pop()
+            # Saving a run that had already failed can fail in turn. The
+            # acquisition error, which is why the run failed, is still the one
+            # raised, below and not from here: raised inside this handler, it
+            # would have its own context replaced by the save error.
+            logger.error("Saving the failed run failed too.", exc_info=True)
+            _acq_error[0].add_note(f"Saving the run then failed too: {exc!r}")
+            saved_files = {}
         for kind, path in saved_files.items():
             logger.info("Saved %s → %s", kind, path)
 
@@ -3047,6 +3110,15 @@ class RTStream(ModalityMixin):
             # frame, which references this list, so keeping the exception in it
             # would hold every local of the run alive until the cyclic GC ran.
             raise _acq_error.pop()
+        if _interrupted:
+            raise _interrupted.pop()
+        if abandoned:
+            raise RuntimeError(
+                f"The acquisition thread did not stop within {_ACQ_STOP_TIMEOUT:g} s of "
+                "the end of the run, so the session was saved up to its last whole "
+                "window without it. Something it waits on — the stream or a modality — "
+                "is stuck."
+            )
 
     def _disconnect(self, *, announce: bool = False) -> None:
         """Stop the M/EEG stream, the marker stream and the mock player.
@@ -3195,9 +3267,11 @@ class RTStream(ModalityMixin):
             failed. The remaining blocks are not run, and the stream is
             disconnected as at the end of a full sequence. The blocks of this
             call that finished stay in :attr:`block_results` and
-            :attr:`block_nf_data`, which always describe the most recent call;
-            the failed block's partial data is in :attr:`nf_data`. All of them
-            are on disk.
+            :attr:`block_nf_data`, which always describe the most recent call,
+            and on disk. If the failed block got as far as recording, its
+            partial data is in :attr:`nf_data` and on disk too; if it failed
+            before, for instance on an invalid argument, :attr:`nf_data` still
+            holds the previous block's.
 
         Notes
         -----
@@ -3247,6 +3321,12 @@ class RTStream(ModalityMixin):
         if not blocks:
             raise ValueError("`blocks` must be a non-empty list of dicts.")
 
+        # Once, up front: a block may be anything dict() accepts, including a
+        # one-shot iterable that a second dict() would find empty. Before the
+        # results below are reset, so a bad block keeps the previous call's.
+        blocks = [dict(block) for block in blocks]
+        end_disconnected = blocks[-1].get("disconnect", True)
+
         all_nf_data: list[dict] = []
         all_artifact_rates: list[float] = []
         all_snr_data: list[list] = []
@@ -3261,10 +3341,64 @@ class RTStream(ModalityMixin):
         self.block_snr_data = all_snr_data
         self.block_results = all_results
 
-        # dict() rather than .get(): a block may be anything dict() accepts.
-        end_disconnected = dict(blocks[-1]).get("disconnect", True)
+        try:
+            for i, block in enumerate(blocks):
+                block_kwargs = dict(block)
+                post_rest = float(block_kwargs.pop("rest", rest_duration))
+                _last = i == len(blocks) - 1
 
-        def _end_early() -> None:
+                logger.info(
+                    "run_blocks: starting block %d/%d (duration=%.0f s)",
+                    i + 1,
+                    len(blocks),
+                    block_kwargs.get("duration", 0),
+                )
+                # Popped before the call rather than inside it: relying on argument
+                # evaluation order to run these before `**block_kwargs` is expanded
+                # would be a duplicate-keyword TypeError waiting to happen.
+                # Each block writes its own files instead of overwriting the previous
+                # block's, and the stream stays up between blocks -- `save()` stops
+                # the mock player, which reconnecting the stream alone cannot undo.
+                block_run = block_kwargs.pop("run", i + 1)
+                block_disconnect = block_kwargs.pop("disconnect", _last)
+                self.record_main(
+                    verbose=verbose,
+                    run=block_run,
+                    disconnect=block_disconnect,
+                    **block_kwargs,
+                )
+                # Everything record_main rebinds, not the three that happened to be
+                # captured before: the rest were overwritten by the next block and
+                # lost.
+                all_nf_data.append(dict(self.nf_data))
+                all_artifact_rates.append(self.artifact_rate)
+                all_snr_data.append(list(self.snr_data))
+                all_results.append(
+                    {
+                        "run": block_run,
+                        "nf_data": dict(self.nf_data),
+                        "reward_data": {k: list(v) for k, v in self.reward_data.items()},
+                        "window_onsets": list(getattr(self, "window_onsets", [])),
+                        "window_durations": list(getattr(self, "window_durations", [])),
+                        "n_short_windows": getattr(self, "n_short_windows", 0),
+                        "artifact_rate": self.artifact_rate,
+                        "n_total_windows": getattr(self, "n_total_windows", 0),
+                        "n_artifact_windows": getattr(self, "n_artifact_windows", 0),
+                        "snr_data": list(self.snr_data),
+                        # Present only with estimate_delays=True, and overwritten by
+                        # the next block like everything else here.
+                        "acq_delays": list(getattr(self, "acq_delays", [])),
+                        "artifact_delays": list(getattr(self, "artifact_delays", [])),
+                        "method_delays": {
+                            k: list(v) for k, v in getattr(self, "method_delays", {}).items()
+                        },
+                    }
+                )
+
+                if not _last and post_rest > 0:
+                    logger.info("run_blocks: rest period %.0f s …", post_rest)
+                    time.sleep(post_rest)
+        except BaseException:
             # The remaining blocks will not run, and neither will the last
             # block's disconnect: do it here, as a finished sequence would. Its
             # own failure must not replace the error that ended the sequence.
@@ -3273,71 +3407,7 @@ class RTStream(ModalityMixin):
                     self._disconnect()
                 except Exception:
                     logger.debug("Disconnecting after a failed block failed.", exc_info=True)
-
-        for i, block in enumerate(blocks):
-            block_kwargs = dict(block)
-            post_rest = float(block_kwargs.pop("rest", rest_duration))
-            _last = i == len(blocks) - 1
-
-            logger.info(
-                "run_blocks: starting block %d/%d (duration=%.0f s)",
-                i + 1,
-                len(blocks),
-                block_kwargs.get("duration", 0),
-            )
-            # Popped before the call rather than inside it: relying on argument
-            # evaluation order to run these before `**block_kwargs` is expanded
-            # would be a duplicate-keyword TypeError waiting to happen.
-            # Each block writes its own files instead of overwriting the previous
-            # block's, and the stream stays up between blocks -- `save()` stops
-            # the mock player, which reconnecting the stream alone cannot undo.
-            block_run = block_kwargs.pop("run", i + 1)
-            block_disconnect = block_kwargs.pop("disconnect", _last)
-            try:
-                self.record_main(
-                    verbose=verbose,
-                    run=block_run,
-                    disconnect=block_disconnect,
-                    **block_kwargs,
-                )
-            except BaseException:
-                _end_early()
-                raise
-            # Everything record_main rebinds, not the three that happened to be
-            # captured before: the rest were overwritten by the next block and
-            # lost.
-            all_nf_data.append(dict(self.nf_data))
-            all_artifact_rates.append(self.artifact_rate)
-            all_snr_data.append(list(self.snr_data))
-            all_results.append(
-                {
-                    "run": block_run,
-                    "nf_data": dict(self.nf_data),
-                    "reward_data": {k: list(v) for k, v in self.reward_data.items()},
-                    "window_onsets": list(getattr(self, "window_onsets", [])),
-                    "window_durations": list(getattr(self, "window_durations", [])),
-                    "n_short_windows": getattr(self, "n_short_windows", 0),
-                    "artifact_rate": self.artifact_rate,
-                    "n_total_windows": getattr(self, "n_total_windows", 0),
-                    "n_artifact_windows": getattr(self, "n_artifact_windows", 0),
-                    "snr_data": list(self.snr_data),
-                    # Present only with estimate_delays=True, and overwritten by
-                    # the next block like everything else here.
-                    "acq_delays": list(getattr(self, "acq_delays", [])),
-                    "artifact_delays": list(getattr(self, "artifact_delays", [])),
-                    "method_delays": {
-                        k: list(v) for k, v in getattr(self, "method_delays", {}).items()
-                    },
-                }
-            )
-
-            if not _last and post_rest > 0:
-                logger.info("run_blocks: rest period %.0f s …", post_rest)
-                try:
-                    time.sleep(post_rest)
-                except BaseException:
-                    _end_early()
-                    raise
+            raise
 
         return all_nf_data
 
@@ -5101,19 +5171,7 @@ class RTStream(ModalityMixin):
                 self.executor.shutdown(wait=False)
             except Exception:
                 pass
-        if getattr(self, "_mock_player", None) is not None:
-            try:
-                self._mock_player.stop()
-            except Exception:
-                pass
-        if getattr(self, "stream", None) is not None:
-            try:
-                if getattr(self.stream, "connected", False):
-                    self.stream.disconnect()
-            except Exception:
-                pass
-        if getattr(self, "marker_stream", None) is not None:
-            try:
-                self.marker_stream.disconnect()
-            except Exception:
-                pass
+        try:
+            self._disconnect()
+        except Exception:
+            pass
