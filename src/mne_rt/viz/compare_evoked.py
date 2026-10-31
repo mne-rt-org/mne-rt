@@ -871,7 +871,7 @@ class CompareEvoked(QMainWindow):
         if not avgs_scaled:
             return
         amp = float(np.percentile(np.abs(np.stack(avgs_scaled, 0)), 99)) or 1e-12
-        half = amp * self._yscale
+        half = amp / self._yscale  # a gain: ×2 shows the traces twice as tall
         for plot in self._ch_plots.values():
             if plot.isVisible():
                 plot.setYRange(-half, half, padding=0.05)

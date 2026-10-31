@@ -899,8 +899,13 @@ class RawPlot(QMainWindow):
         self._redraw()
 
     def _reset_online_state(self) -> None:
-        """Reset filter and corrector state when the buffer is cleared."""
-        self._filter_zi = None
+        """Hook for state to reset when the buffer is cleared.
+
+        The filter state is kept. The filter runs on the stream, which goes on
+        when only the display is cleared: setting the state to None turned the
+        filter off while its label still said it was on, and zeroing it would
+        ring on the DC offset of real EEG for seconds.
+        """
 
     # ------------------------------------------------------------------
     # Callbacks — scroll / wheel
@@ -1271,9 +1276,11 @@ class RawPlot(QMainWindow):
     def _on_bad_seg_click(self, x_val: float) -> None:
         # Convert plot x-coordinate to absolute session time immediately, so
         # that a scrolling buffer between click 1 and click 2 doesn't shift it.
+        # Not clamped at 0: while the buffer fills, the data sits at its right
+        # end, so the buffer starts before the recording does.
         buf_size = self._buf.shape[1]
-        buf_start_s = max(0.0, (self._total_pushed - buf_size) / self._sfreq)
-        abs_time = buf_start_s + x_val
+        buf_start_s = (self._total_pushed - buf_size) / self._sfreq
+        abs_time = max(0.0, buf_start_s + x_val)
 
         if self._bad_seg_click1 is None:
             # First double-click — store absolute start time
@@ -1316,7 +1323,7 @@ class RawPlot(QMainWindow):
         self._bad_seg_overlays.clear()
 
         buf_size = self._buf.shape[1]
-        buf_start_s = max(0.0, (self._total_pushed - buf_size) / self._sfreq)
+        buf_start_s = (self._total_pushed - buf_size) / self._sfreq  # see _on_bad_seg_click
 
         # ── pending start indicator ────────────────────────────────────
         def _remove_start_line() -> None:
@@ -1577,8 +1584,15 @@ class RawPlot(QMainWindow):
         while self._data_queue:
             chunk = self._data_queue.popleft()
             n = chunk.shape[1]
-            self._buf = np.roll(self._buf, -n, axis=1)
-            self._buf[:, -n:] = chunk
+            # Not `buf[:, -n:]` for these two: -0 selects the whole buffer,
+            # and a chunk longer than the buffer does not fit in it.
+            if n == 0:
+                continue
+            if n >= self._buf.shape[1]:
+                self._buf[:] = chunk[:, -self._buf.shape[1] :]
+            else:
+                self._buf = np.roll(self._buf, -n, axis=1)
+                self._buf[:, -n:] = chunk
             self._total_pushed += n
         self._run_potato_detection()
         end = min(self._page_start + self._n_shown, self._n_ch)

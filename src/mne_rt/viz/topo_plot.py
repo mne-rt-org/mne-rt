@@ -240,6 +240,12 @@ class TopoPlot(QMainWindow):
         self._linewidth = 1.6
         self._smooth_ms = 0.0
         self._show_sem = False
+        # update() is handed every epoch so far; Reset hides the first
+        # `_n_reset` of them, or the next trial would bring them all back.
+        self._n_seen = 0
+        self._n_reset = 0
+        self._last_epoch: Optional[np.ndarray] = None  # newest epoch passed in
+        self._reset_epoch: Optional[np.ndarray] = None  # newest one at reset
         self._plot_bg = _BG
         self._x_start = tmin
         self._x_end = tmax
@@ -708,7 +714,7 @@ class TopoPlot(QMainWindow):
         if not avgs:
             return
         amp = float(np.percentile(np.abs(np.stack(avgs, 0)), 99)) or 1e-12
-        half = amp * self._yscale
+        half = amp / self._yscale  # a gain: ×2 shows the traces twice as tall
         for plot in self._plots:
             plot.setYRange(-half, half, padding=0.05)
 
@@ -796,6 +802,8 @@ class TopoPlot(QMainWindow):
             item.setVisible(v)
 
     def _reset_epochs(self) -> None:
+        self._n_reset = self._n_seen
+        self._reset_epoch = self._last_epoch
         for cond in self._conditions:
             self._epoch_buf[cond] = []
             self._n_per[cond] = 0
@@ -840,9 +848,19 @@ class TopoPlot(QMainWindow):
         conditions : list of str
             Condition label for each epoch; ``len(conditions) == data.shape[0]``.
         """
+        self._n_seen = len(conditions)
+        self._last_epoch = data[-1].copy() if len(data) else None
+        # A new run, with nothing of the reset one to hide: it is shorter, or
+        # its epoch at the reset position is not the one that was there.
+        if self._n_reset and (
+            self._n_seen < self._n_reset
+            or not np.array_equal(data[self._n_reset - 1], self._reset_epoch)
+        ):
+            self._n_reset = 0
+        data, conditions = data[self._n_reset :], list(conditions)[self._n_reset :]
         n_total = len(conditions)
         for cond in self._conditions:
-            mask = np.array([c == cond for c in conditions])
+            mask = np.array([c == cond for c in conditions], dtype=bool)
             self._epoch_buf[cond] = list(data[mask]) if mask.any() else []
             self._n_per[cond] = int(mask.sum())
         self._redraw_sig.emit(n_total)
@@ -870,13 +888,16 @@ class TopoPlot(QMainWindow):
             checked = self._cond_checks.get(cond, QCheckBox()).isChecked()
 
             for ch_i, curve in enumerate(self._curves[cond]):
-                y = avg[ch_i]
+                y, s = avg[ch_i], sem[ch_i]
                 if len(y) != self._n_t:
-                    y = np.interp(self._times, np.linspace(self.tmin, self.tmax, len(y)), y)
-                curve.setData(self._times, self._smooth(y))
+                    t_in = np.linspace(self.tmin, self.tmax, len(y))
+                    y = np.interp(self._times, t_in, y)
+                    s = np.interp(self._times, t_in, s)
+                # The band goes around the curve as drawn, smoothed or not.
+                y, s = self._smooth(y), self._smooth(s)
+                curve.setData(self._times, y)
 
                 if self._show_sem and n >= 2:
-                    s = sem[ch_i]
                     self._sem_upper[cond][ch_i].setData(self._times, y + s)
                     self._sem_lower[cond][ch_i].setData(self._times, y - s)
                     self._sem_fills[cond][ch_i].setVisible(checked)

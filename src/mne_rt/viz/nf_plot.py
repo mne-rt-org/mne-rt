@@ -270,6 +270,7 @@ class NFPlot(QMainWindow):
         self._paused = False
         self._display_alpha = float(np.clip(display_smoothing, 0.0, 1.0))
         self._ema = np.zeros(self._n)
+        self._ema_started = np.zeros(self._n, dtype=bool)
         self._show_threshold = True
         self._threshold_active = [False] * self._n
         self._show_reward = True
@@ -616,6 +617,7 @@ class NFPlot(QMainWindow):
     def _clear(self) -> None:
         self._buf[:] = 0.0
         self._reward_buf[:] = 0
+        self._ema_started[:] = False
         for i, curve in enumerate(self._curves):
             curve.setData(self._time_axis, self._buf[i])
             self._update_reward_regions(i)
@@ -646,7 +648,7 @@ class NFPlot(QMainWindow):
 
     def _auto_range(self) -> None:
         for i, pi in enumerate(self._plots):
-            row = self._buf[i][self._buf[i] != 0]
+            row = self._buf[i][np.isfinite(self._buf[i]) & (self._buf[i] != 0)]
             vals = list(row) if row.size > 0 else []
             # Include the threshold line so auto-range doesn't scroll it
             # out of view when it sits outside the trace's current span.
@@ -659,11 +661,23 @@ class NFPlot(QMainWindow):
             pi.setYRange(lo - margin, hi + margin, padding=0)
 
     def _scale_up(self, idx: int) -> None:
-        self._channel_scales[idx] *= 2.0
-        self._scale_labels[idx].setText(f"×{self._channel_scales[idx]:.3g}")
+        self._rescale(idx, 2.0)
 
     def _scale_down(self, idx: int) -> None:
-        self._channel_scales[idx] /= 2.0
+        self._rescale(idx, 0.5)
+
+    def _rescale(self, idx: int, factor: float) -> None:
+        # The history and the threshold too, not only what arrives next: the
+        # trace would otherwise jump by `factor` at the point of the click.
+        self._channel_scales[idx] *= factor
+        self._buf[idx] *= factor
+        self._ema[idx] *= factor
+        if self._threshold_active[idx]:
+            line = self._threshold_lines[idx]
+            text = line.label.textItem.toPlainText()  # setPos resets it to "thr"
+            line.setPos(line.value() * factor)
+            line.label.setText(text)
+        self._curves[idx].setData(self._time_axis, self._buf[idx])
         self._scale_labels[idx].setText(f"×{self._channel_scales[idx]:.3g}")
 
     # ------------------------------------------------------------------
@@ -726,8 +740,16 @@ class NFPlot(QMainWindow):
         )
 
         if self._display_alpha < 1.0:
-            self._ema = self._display_alpha * norm + (1.0 - self._display_alpha) * self._ema
-            norm = self._ema
+            # A non-finite value is drawn as a gap and kept out of the average:
+            # once in it, NaN stays there and the trace never comes back.
+            a = self._display_alpha
+            finite = np.isfinite(norm)
+            first = finite & ~self._ema_started
+            more = finite & self._ema_started
+            self._ema[first] = norm[first]
+            self._ema[more] = a * norm[more] + (1.0 - a) * self._ema[more]
+            self._ema_started |= finite
+            norm = np.where(finite, self._ema, np.nan)
 
         self._buf = np.roll(self._buf, -1, axis=1)
         self._buf[:, -1] = norm
