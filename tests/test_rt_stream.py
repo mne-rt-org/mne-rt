@@ -896,14 +896,17 @@ def test_failed_run_is_saved_with_whole_windows_only(tmp_path, array_info):
 
 
 def test_a_failing_save_does_not_hide_the_acquisition_error(tmp_path, array_info, monkeypatch):
+    """The acquisition error is raised, keeping its own cause; the save error
+    is attached to it as a note."""
     nf = _make_rt_stream(tmp_path, montage="easycap-M1")
     try:
         nf.connect_to_array(
             _make_array_data(array_info, duration=20.0), array_info, n_repeat=np.inf
         )
         nf.record_baseline(baseline_duration=1.0, winsize=0.5)
-        nf._sensor_power = _failing_after(1, RuntimeError("stream died"))
-        real_save = nf.save
+        died = RuntimeError("stream died")
+        died.__context__ = ValueError("root cause")
+        nf._sensor_power = _failing_after(1, died)
 
         def broken_save(*args, **kwargs):
             raise OSError("disk full")
@@ -911,8 +914,110 @@ def test_a_failing_save_does_not_hide_the_acquisition_error(tmp_path, array_info
         monkeypatch.setattr(nf, "save", broken_save)
         with pytest.raises(RuntimeError, match="stream died") as info:
             nf.record_main(duration=5.0, modality="sensor_power", **_HEADLESS)
-        assert isinstance(info.value.__context__, OSError)  # neither error is lost
-        monkeypatch.setattr(nf, "save", real_save)
+        # Neither error is lost, and the save error does not replace the cause.
+        assert repr(info.value.__context__) == "ValueError('root cause')"
+        assert any("disk full" in note for note in info.value.__notes__)
+    finally:
+        monkeypatch.undo()  # before saving, or a failure above is hidden by this one
+        nf.save()
+
+
+def test_record_main_raises_when_the_acquisition_thread_hangs(tmp_path, array_info, monkeypatch):
+    """A modality that never returns used to hang record_main for good: the
+    headless join had no timeout, and the executor shutdown then waited on the
+    stuck task. Now the run is saved up to its last whole window, and what was
+    saved does not change when the thread wakes up later."""
+    import threading
+    import time
+
+    from mne_rt import rt_stream
+
+    monkeypatch.setattr(rt_stream, "_ACQ_STOP_TIMEOUT", 1.0)
+    release = threading.Event()
+    calls = {"n": 0}
+
+    def hangs_after_two(data, **_):
+        calls["n"] += 1
+        if calls["n"] > 2:
+            release.wait(30)
+        return 1.0, 0.0
+
+    nf = _make_rt_stream(tmp_path, montage="easycap-M1")
+    try:
+        nf.connect_to_array(
+            _make_array_data(array_info, duration=20.0), array_info, n_repeat=np.inf
+        )
+        nf.record_baseline(baseline_duration=1.0, winsize=0.5)
+        nf._sensor_power = hangs_after_two
+        t0 = time.monotonic()
+        with pytest.raises(RuntimeError, match="did not stop"):
+            nf.record_main(duration=2.0, modality="sensor_power", **_HEADLESS)
+        assert time.monotonic() - t0 < 15
+        assert len(nf.nf_data["sensor_power"]) == 2
+        assert len(nf.window_onsets) == len(nf._raw_chunks) == nf.n_total_windows == 2
+        # The thread wakes up and finishes its window: nothing saved changes.
+        release.set()
+        time.sleep(1.0)
+        assert len(nf.nf_data["sensor_power"]) == 2
+        assert len(nf.window_onsets) == len(nf._raw_chunks) == 2
+    finally:
+        release.set()
+        nf.save()
+
+
+def test_ctrl_c_during_a_headless_run_stops_saves_and_reraises(tmp_path, array_info, monkeypatch):
+    """Ctrl-C used to leave record_main with the thread still reading the
+    stream and nothing saved."""
+    import threading
+    import time
+
+    real_join = threading.Thread.join
+    pressed = []
+
+    def interrupted_join(self, timeout=None):
+        # The first wait on the acquisition thread only: the one that ends the run.
+        if getattr(self._target, "__name__", "") == "_acquire" and not pressed:
+            pressed.append(True)
+            time.sleep(1.0)  # a few windows in
+            raise KeyboardInterrupt
+        return real_join(self, timeout)
+
+    monkeypatch.setattr(threading.Thread, "join", interrupted_join)
+    nf = _make_rt_stream(tmp_path, montage="easycap-M1")
+    try:
+        nf.connect_to_array(
+            _make_array_data(array_info, duration=20.0), array_info, n_repeat=np.inf
+        )
+        nf.record_baseline(baseline_duration=1.0, winsize=0.5)
+        with pytest.raises(KeyboardInterrupt):
+            nf.record_main(duration=30.0, modality="sensor_power", **_HEADLESS)
+        n = len(nf.nf_data["sensor_power"])
+        assert 0 < n == len(nf.window_onsets)
+        assert list(tmp_path.rglob("*_beh.json"))
+        time.sleep(1.0)  # the thread was stopped, so nothing is added later
+        assert len(nf.nf_data["sensor_power"]) == n
+    finally:
+        monkeypatch.undo()
+        nf.save()
+
+
+def test_run_blocks_accepts_one_shot_iterables_as_blocks(tmp_path, array_info):
+    """Reading the last block's ``disconnect`` up front used to consume it, so
+    that block ran with none of its settings."""
+    nf = _make_rt_stream(tmp_path, montage="easycap-M1")
+    try:
+        nf.connect_to_array(
+            _make_array_data(array_info, duration=20.0), array_info, n_repeat=np.inf
+        )
+        nf.record_baseline(baseline_duration=1.0, winsize=0.5)
+        block = {"duration": 1.0, "modality": "band_ratio", **_HEADLESS}
+        nf.run_blocks([iter(block.items())], rest_duration=0)
+        assert list(nf.nf_data) == ["band_ratio"]
+        # A block dict() cannot read fails before anything runs, and leaves the
+        # previous call's results in place.
+        with pytest.raises(TypeError):
+            nf.run_blocks([block, 42], rest_duration=0)
+        assert len(nf.block_results) == 1
     finally:
         nf.save()
 
