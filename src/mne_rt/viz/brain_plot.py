@@ -182,6 +182,18 @@ _BACKGROUNDS: dict[str, tuple[str, str]] = {
 _DEFAULT_BG = "Midnight"
 
 
+def _ema_step(ema: np.ndarray, x: np.ndarray, a: float) -> np.ndarray:
+    """One display-smoothing step that a non-finite value cannot poison.
+
+    A vertex whose new value is not finite keeps its average; one whose average
+    is not finite restarts from its new value. A plain blend would turn the
+    vertex NaN for good and leave it blank until the next reset.
+    """
+    out = a * x + (1.0 - a) * ema
+    out = np.where(np.isfinite(ema), out, x)
+    return np.where(np.isfinite(x), out, ema)
+
+
 class BrainPlot:
     """Interactive real-time 3D brain activation display.
 
@@ -958,8 +970,8 @@ class BrainPlot:
                 self._rh_ema = rh_scalars.copy()
             else:
                 a = self._display_alpha
-                self._lh_ema = a * lh_scalars + (1.0 - a) * self._lh_ema
-                self._rh_ema = a * rh_scalars + (1.0 - a) * self._rh_ema
+                self._lh_ema = _ema_step(self._lh_ema, lh_scalars, a)
+                self._rh_ema = _ema_step(self._rh_ema, rh_scalars, a)
             lh_scalars = self._lh_ema
             rh_scalars = self._rh_ema
 
@@ -1048,6 +1060,9 @@ class BrainPlot:
     def reset_activity(self) -> None:
         """Zero out all activity scalars and refresh the display."""
         self._scalars_full[:] = 0.0
+        # Or the next update blends into the activity just cleared.
+        self._lh_ema = None
+        self._rh_ema = None
         self._refresh_scalars()
 
     # ------------------------------------------------------------------

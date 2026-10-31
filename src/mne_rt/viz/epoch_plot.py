@@ -662,6 +662,8 @@ class EpochPlot(QMainWindow):
         self._pending.clear()
         self._buf[:] = 0.0
         self._triggers.clear()
+        for item in self._epoch_overlay_items:  # forgetting them left them drawn
+            self._pi.removeItem(item)
         self._epoch_overlay_items.clear()
         self._bad_epoch_ids.clear()
         self._visible_epoch_spans.clear()
@@ -879,8 +881,11 @@ class EpochPlot(QMainWindow):
         Parameters
         ----------
         code : int, default 1
-            Integer event code matched against :attr:`event_id`.
+            Integer event code matched against :attr:`event_id`.  No-op when
+            paused, like :meth:`push`: the data it marks is not kept either.
         """
+        if self._paused:
+            return
         self._pending.append(("trigger", code))
 
     def _process_pending(self) -> None:
@@ -892,8 +897,15 @@ class EpochPlot(QMainWindow):
             kind, payload = self._pending.popleft()
             if kind == "data":
                 n = payload.shape[1]
-                self._buf = np.roll(self._buf, -n, axis=1)
-                self._buf[:, -n:] = payload
+                # Not `buf[:, -n:]` for these two: -0 selects the whole buffer,
+                # and a chunk longer than the buffer does not fit in it.
+                if n == 0:
+                    continue
+                if n >= self._buf.shape[1]:
+                    self._buf[:] = payload[:, -self._buf.shape[1] :]
+                else:
+                    self._buf = np.roll(self._buf, -n, axis=1)
+                    self._buf[:, -n:] = payload
                 self._total_pushed += n
                 changed = True
             else:  # trigger

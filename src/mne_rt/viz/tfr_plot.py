@@ -280,10 +280,17 @@ class TFRPlot(QMainWindow):
         self._norm_mode = "db"
 
         # ── Thread-safety state ──────────────────────────────────────────
+        # One worker at a time, rerun while anything changed since it started.
+        # Both flags change only under the lock: set inside the worker, as they
+        # were, two update() calls close together could each start one.
+        self._compute_lock = threading.Lock()
         self._computing = False
+        self._dirty = False
         self._latest_data: Optional[np.ndarray] = None
         self._latest_conds: list[str] = []
-        self._tfr_result: dict[str, np.ndarray] = {}
+        # (result, params, conditions) of the last pass, replaced in one store
+        # so that _redraw never pairs one pass's result with another's labels.
+        self._tfr_pass: Optional[tuple[dict, dict, list[str]]] = None
 
         # ── Colormap & color limits ──────────────────────────────────────
         self._cmap_name = "hot"
@@ -424,10 +431,10 @@ class TFRPlot(QMainWindow):
         self._gl_widget.clear()
         self._image_items = [[] for _ in range(len(self._conditions))]
         self._plot_items = [[] for _ in range(len(self._conditions))]
-        self._display_idx = [self.ch_names.index(c) for c in self._display_chs]
+        with self._compute_lock:
+            self._display_idx = [self.ch_names.index(c) for c in self._display_chs]
         self._build_tfr_grid()
-        if self._latest_data is not None and not self._computing:
-            threading.Thread(target=self._compute_and_emit, daemon=True).start()
+        self._schedule()
 
     # -----------------------------------------------------------------------
     # Channel auto-selection
@@ -931,7 +938,8 @@ class TFRPlot(QMainWindow):
         self._rebuild_grid()
 
     def _on_mode_change(self, idx: int) -> None:
-        self.mode = "induced" if idx == 0 else "evoked"
+        with self._compute_lock:
+            self.mode = "induced" if idx == 0 else "evoked"
         self._maybe_recompute()
 
     def _on_freq_range(self) -> None:
@@ -941,11 +949,14 @@ class TFRPlot(QMainWindow):
             return
         self._fstart_lbl.setText(f"{fmin} Hz")
         self._fend_lbl.setText(f"{fmax} Hz")
-        self._freqs = np.arange(fmin, fmax, 2, dtype=float)
-        if len(self._freqs) == 0:
-            self._freqs = np.array([float(fmin)])
-        self._n_cycles = self._freqs / 2.0
-        self._clip_freqs()
+        # Under the lock: a worker taking its snapshot between these steps
+        # would pair the new frequencies with the old cycle counts.
+        with self._compute_lock:
+            self._freqs = np.arange(fmin, fmax, 2, dtype=float)
+            if len(self._freqs) == 0:
+                self._freqs = np.array([float(fmin)])
+            self._n_cycles = self._freqs / 2.0
+            self._clip_freqs()
         # Refresh transforms and realign all axes
         f_min = float(self._freqs[0]) if len(self._freqs) else 0.0
         f_max = float(self._freqs[-1]) if len(self._freqs) else 100.0
@@ -959,7 +970,8 @@ class TFRPlot(QMainWindow):
         self._maybe_recompute()
 
     def _on_norm_change(self, idx: int) -> None:
-        self._norm_mode = "db" if idx == 0 else "raw"
+        with self._compute_lock:
+            self._norm_mode = "db" if idx == 0 else "raw"
         self._maybe_recompute()
 
     def _on_cmap_change(self, idx: int) -> None:
@@ -979,22 +991,27 @@ class TFRPlot(QMainWindow):
         else:
             self._vmin = self._vmin_spin.value()
             self._vmax = self._vmax_spin.value()
-        self._maybe_recompute()
+        self._redraw_last()
 
     def _on_vmin_change(self, val: float) -> None:
         if not self._auto_lvl_chk.isChecked():
             self._vmin = val
-            self._maybe_recompute()
+            self._redraw_last()
 
     def _on_vmax_change(self, val: float) -> None:
         if not self._auto_lvl_chk.isChecked():
             self._vmax = val
-            self._maybe_recompute()
+            self._redraw_last()
+
+    def _redraw_last(self) -> None:
+        """Redraw the last result with new colour levels; no recompute needed."""
+        last = self._tfr_pass
+        if last is not None:
+            self._redraw(len(last[2]))
 
     def _maybe_recompute(self) -> None:
         """Trigger recompute if we already have data."""
-        if self._latest_data is not None and not self._computing:
-            threading.Thread(target=self._compute_and_emit, daemon=True).start()
+        self._schedule()
 
     def _export_png(self) -> None:
         path, _ = QFileDialog.getSaveFileName(
@@ -1010,7 +1027,22 @@ class TFRPlot(QMainWindow):
     # TFR computation
     # -----------------------------------------------------------------------
 
-    def _compute_tfr(self, data: np.ndarray, conditions: list[str]) -> "dict[str, np.ndarray]":
+    def _params(self) -> dict:
+        """The settings a TFR pass depends on, copied. Call under the lock."""
+        return {
+            "freqs": np.array(self._freqs, copy=True),
+            "n_cycles": np.array(self._n_cycles, copy=True),
+            "mode": self.mode,
+            "norm": self._norm_mode,
+            "display_idx": list(self._display_idx),
+        }
+
+    def _compute_tfr(
+        self,
+        data: np.ndarray,
+        conditions: list[str],
+        params: Optional[dict] = None,
+    ) -> "dict[str, np.ndarray]":
         """Compute Morlet TFR for each condition.
 
         Parameters
@@ -1019,6 +1051,9 @@ class TFRPlot(QMainWindow):
             All accumulated epochs.
         conditions : list of str
             Condition label for each epoch.
+        params : dict | None
+            Settings to use, from :meth:`_params`. ``None`` reads the current
+            ones.
 
         Returns
         -------
@@ -1026,34 +1061,40 @@ class TFRPlot(QMainWindow):
             Mapping condition → power array of shape
             ``(n_display_ch, n_freqs, n_times_dec)``.
         """
+        if params is None:
+            with self._compute_lock:
+                params = self._params()
+        display_idx = params["display_idx"]
         result: dict[str, np.ndarray] = {}
 
         for cond in self._conditions:
-            mask = np.array([c == cond for c in conditions])
+            mask = np.array([c == cond for c in conditions], dtype=bool)
             if not mask.any():
-                result[cond] = np.zeros((len(self._display_idx), len(self._freqs), self._n_t_dec))
+                result[cond] = np.zeros((len(display_idx), len(params["freqs"]), self._n_t_dec))
                 continue
 
-            ep = data[mask]  # (n_ep, n_ch, n_t)
+            # The displayed channels only: the baseline is per channel, so the
+            # rest would be computed only to be thrown away.
+            ep = data[mask][:, display_idx]  # (n_ep, n_display_ch, n_t)
 
-            if self.mode == "evoked":
+            if params["mode"] == "evoked":
                 ep = ep.mean(0, keepdims=True)  # TFR of trial average
 
             power = mne.time_frequency.tfr_array_morlet(
                 ep.astype(np.float64),
                 sfreq=self.sfreq,
-                freqs=self._freqs,
-                n_cycles=self._n_cycles,
+                freqs=params["freqs"],
+                n_cycles=params["n_cycles"],
                 output="power",
                 decim=self.decim,
                 zero_mean=True,
             )  # (n_ep, n_ch, n_freqs, n_times_dec)
 
-            avg_power = power.mean(0)  # (n_ch, n_freqs, n_times_dec)
+            avg_power = power.mean(0)  # (n_display_ch, n_freqs, n_times_dec)
 
-            if self._norm_mode == "db":
+            if params["norm"] == "db":
                 # Baseline correction: dB change from mean baseline power
-                bl_mask = self._times_dec <= 0
+                bl_mask = self._baseline_mask()
                 if bl_mask.any():
                     bl_power = avg_power[:, :, bl_mask].mean(-1, keepdims=True) + 1e-30
                     avg_power = 10.0 * np.log10(avg_power / bl_power)
@@ -1061,9 +1102,19 @@ class TFRPlot(QMainWindow):
                 else:
                     avg_power = 10.0 * np.log10(avg_power + 1e-30)
 
-            result[cond] = avg_power[self._display_idx]  # select display chs
+            result[cond] = avg_power
 
         return result
+
+    def _baseline_mask(self) -> np.ndarray:
+        """Decimated time points inside :attr:`baseline`; all False for ``None``."""
+        t = self._times_dec
+        if self.baseline is None:
+            return np.zeros(t.shape, dtype=bool)
+        lo, hi = self.baseline
+        lo = t[0] if lo is None else lo
+        hi = t[-1] if hi is None else hi
+        return (t >= lo) & (t <= hi)
 
     # -----------------------------------------------------------------------
     # Threading
@@ -1083,21 +1134,39 @@ class TFRPlot(QMainWindow):
         conditions : list of str
             Condition label for each epoch; ``len(conditions) == data.shape[0]``.
         """
-        self._latest_data = data.copy()
-        self._latest_conds = list(conditions)
-        if not self._computing:
-            threading.Thread(target=self._compute_and_emit, daemon=True).start()
+        with self._compute_lock:
+            self._latest_data = data.copy()
+            self._latest_conds = list(conditions)
+        self._schedule()
+
+    def _schedule(self) -> None:
+        """Recompute from the latest data, now or once the running pass ends."""
+        with self._compute_lock:
+            if self._latest_data is None:
+                return
+            self._dirty = True
+            if self._computing:
+                return
+            self._computing = True
+        threading.Thread(target=self._compute_and_emit, daemon=True).start()
 
     def _compute_and_emit(self) -> None:
-        self._computing = True
-        try:
-            tfr = self._compute_tfr(self._latest_data, self._latest_conds)
-            self._tfr_result = tfr
-            self._redraw_sig.emit(len(self._latest_conds))
-        except Exception as exc:
-            logger.warning("TFRPlot compute error: %s", exc)
-        finally:
-            self._computing = False
+        while True:
+            with self._compute_lock:
+                if not self._dirty:
+                    self._computing = False
+                    return
+                self._dirty = False
+                # A consistent snapshot: the data, the labels and every setting
+                # can change on the main thread while the TFR is computed.
+                data, conds = self._latest_data, list(self._latest_conds)
+                params = self._params()
+            try:
+                result = self._compute_tfr(data, conds, params)
+                self._tfr_pass = (result, params, conds)
+                self._redraw_sig.emit(len(conds))
+            except Exception as exc:
+                logger.warning("TFRPlot compute error: %s", exc)
 
     # -----------------------------------------------------------------------
     # Redraw  (main thread)
@@ -1107,13 +1176,23 @@ class TFRPlot(QMainWindow):
         """Update all image items from the latest TFR result.
 
         Always called on the main (GUI) thread via the Qt signal mechanism.
-        Uses a **shared** colour scale across all conditions so the two
+        ``n_total`` is what the signal carries; the counts shown are those of
+        the pass drawn, which may be newer.  Uses a **shared** colour scale across all conditions so the two
         heatmaps are directly comparable.
         """
-        self._total_lbl.setText(f"Total: {n_total} trials")
+        last = self._tfr_pass
+        if last is None:
+            return
+        tfr_result, params, conds = last
+        # Computed for channels or frequencies that have since changed; the
+        # pass for the new ones is already scheduled.
+        current = params["display_idx"] == self._display_idx and np.array_equal(
+            params["freqs"], self._freqs
+        )
+        self._total_lbl.setText(f"Total: {len(conds)} trials")
 
         for cond_i, cond in enumerate(self._conditions):
-            n = sum(1 for c in self._latest_conds if c == cond)
+            n = sum(1 for c in conds if c == cond)
             self._cond_n_lbl[cond].setText(f"n = {n}")
 
         # ── Shared colour limits across ALL conditions and channels ───────
@@ -1122,8 +1201,8 @@ class TFRPlot(QMainWindow):
         else:
             samples = []
             for cond in self._conditions:
-                pwr = self._tfr_result.get(cond)
-                if pwr is not None:
+                pwr = tfr_result.get(cond)
+                if pwr is not None and current:
                     for ch_i in range(len(self._display_chs)):
                         flat = pwr[ch_i].ravel()
                         if flat.any():
@@ -1139,8 +1218,8 @@ class TFRPlot(QMainWindow):
 
         # ── Update images ─────────────────────────────────────────────────
         for cond_i, cond in enumerate(self._conditions):
-            pwr = self._tfr_result.get(cond)
-            if pwr is None:
+            pwr = tfr_result.get(cond)
+            if pwr is None or not current:
                 continue
             for ch_i in range(len(self._display_chs)):
                 # ImageItem expects (n_times_dec, n_freqs)

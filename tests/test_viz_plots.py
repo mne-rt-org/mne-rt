@@ -864,3 +864,298 @@ class TestNFPlot:
         w.closed.connect(lambda: received.append(True))
         w.close()
         assert received == [True]
+
+
+# ---------------------------------------------------------------------------
+# Some regressions
+# ---------------------------------------------------------------------------
+
+
+def test_butterfly_colours_frontal_channels_as_frontal(qt_app, common_kw):
+    """MNE layouts grow y towards the nose; taken as is, Fz got the occipital
+    colour and Oz the frontal one."""
+    from mne_rt.viz.butterfly_plot import ButterflyPlot
+
+    names = ["Fz", "Cz", "Pz", "Oz"]
+    w = ButterflyPlot(**{**common_kw, "ch_names": names})
+    y = dict(zip(names, (pos[1] for pos in w._norm_pos)))
+    assert y["Fz"] < y["Cz"] < y["Pz"] < y["Oz"]  # 0 = frontal, 1 = occipital
+    w.close()
+
+
+@pytest.mark.parametrize("cls_name", ["ButterflyPlot", "TopoPlot"])
+def test_y_scale_is_a_gain(qt_app, common_kw, cls_name):
+    """×2 must show the traces twice as tall, i.e. halve the y range."""
+    import importlib
+
+    module = {"ButterflyPlot": "butterfly_plot", "TopoPlot": "topo_plot"}[cls_name]
+    cls = getattr(importlib.import_module(f"mne_rt.viz.{module}"), cls_name)
+    w = cls(**common_kw)
+    w.update(*_make_epochs(6))
+    plot = next(iter(w._cond_plots.values())) if cls_name == "ButterflyPlot" else w._plots[0]
+    w._scale_sl.setValue(5)  # ×1
+    w._apply_y_range()
+    span_1 = np.diff(plot.viewRange()[1])[0]
+    w._scale_sl.setValue(10)  # ×2
+    w._apply_y_range()
+    span_2 = np.diff(plot.viewRange()[1])[0]
+    assert span_2 == pytest.approx(span_1 / 2, rel=0.05)
+    w.close()
+
+
+def test_topo_sem_band_surrounds_the_drawn_curve(qt_app, common_kw):
+    """The band was drawn around the unsmoothed mean, and raised a shape error
+    for epochs whose length is interpolated to the display grid."""
+    from mne_rt.viz.topo_plot import TopoPlot
+
+    w = TopoPlot(**common_kw)
+    w._show_sem = True
+    w._smooth_ms = 20.0
+    data, conds = _make_epochs(6)
+    w.update(data[:, :, :100], conds)  # shorter than the display grid
+    cond = conds[0]
+    _, y = w._curves[cond][0].getData()
+    _, upper = w._sem_upper[cond][0].getData()
+    _, lower = w._sem_lower[cond][0].getData()
+    np.testing.assert_allclose((upper + lower) / 2, y, rtol=1e-6, atol=1e-30)
+    w.close()
+
+
+def test_topo_reset_survives_the_next_update(qt_app, common_kw):
+    """update() is given every epoch so far, so Reset was undone by the next
+    trial."""
+    from mne_rt.viz.topo_plot import TopoPlot
+
+    w = TopoPlot(**common_kw)
+    data, conds = _make_epochs(8)
+    w.update(data[:6], conds[:6])
+    w._reset_epochs()
+    w.update(data, conds)  # the same six, plus two new ones
+    assert sum(w._n_per.values()) == 2
+    w.close()
+
+
+def test_raw_filter_stays_on_after_a_reset(qt_app):
+    """Clearing the buffer set the filter state to None, which push() reads as
+    "no filter", while the status label still showed it as on. The state is
+    kept, not zeroed: the stream goes on, and a zeroed state rings on DC."""
+    from mne_rt.viz.raw_plot import RawPlot
+
+    w = RawPlot(CH_NAMES, sfreq=SFREQ)
+    w._cmb_filter.setCurrentIndex(3)  # band-pass
+    w._apply_filter_settings()
+    w.push(RNG.standard_normal((N_CH, 64)) * 1e-6)
+    w._flush_data_queue()
+    zi = w._filter_zi.copy()
+    w._clear()
+    assert w._filter_sos is not None
+    np.testing.assert_array_equal(w._filter_zi, zi)
+    w.close()
+
+
+@pytest.mark.parametrize("cls_name", ["RawPlot", "EpochPlot"])
+def test_ring_buffer_takes_empty_and_oversized_chunks(qt_app, cls_name):
+    """`buf[:, -0:]` is the whole buffer, so an empty chunk raised, and so did
+    one longer than the buffer."""
+    if cls_name == "RawPlot":
+        from mne_rt.viz.raw_plot import RawPlot as cls
+
+        drain = "_flush_data_queue"
+    else:
+        from mne_rt.viz.epoch_plot import EpochPlot as cls
+
+        drain = "_process_pending"
+    w = cls(CH_NAMES, sfreq=SFREQ, time_window=1.0)
+    n_buf = w._buf.shape[1]
+    big = RNG.standard_normal((N_CH, n_buf + 10))
+    w.push(big[:, :0])
+    w.push(big)
+    getattr(w, drain)()
+    np.testing.assert_allclose(w._buf, big[:, -n_buf:], rtol=1e-6)
+    assert w._total_pushed == n_buf + 10
+    w.close()
+
+
+def test_raw_bad_segment_times_while_the_buffer_fills(qt_app):
+    """With 3 s of data in a 10 s window the data sits at x = 7-10 s; a click at
+    x = 8 s is 1 s into the recording, not 8 s."""
+    from mne_rt.viz.raw_plot import RawPlot
+
+    w = RawPlot(CH_NAMES, sfreq=SFREQ, time_window=10.0)
+    w.push(np.zeros((N_CH, int(3 * SFREQ))))
+    w._flush_data_queue()
+    w._on_bad_seg_click(8.0)
+    assert w._bad_seg_click1 == pytest.approx(1.0)
+    w.close()
+
+
+def test_epoch_clear_removes_the_trigger_overlays(qt_app):
+    from mne_rt.viz.epoch_plot import EpochPlot
+
+    w = EpochPlot(CH_NAMES, sfreq=SFREQ)
+    w.push(np.zeros((N_CH, int(SFREQ))))
+    w.push_trigger(1)
+    w.push(np.zeros((N_CH, int(SFREQ))))
+    w._process_pending()
+    drawn = list(w._epoch_overlay_items)
+    assert drawn
+    w._clear()
+    assert not any(item in w._pi.items for item in drawn)
+    w.close()
+
+
+def test_epoch_triggers_are_dropped_while_paused(qt_app):
+    """Their data is dropped while paused, so they piled up at one stale index."""
+    from mne_rt.viz.epoch_plot import EpochPlot
+
+    w = EpochPlot(CH_NAMES, sfreq=SFREQ)
+    w._toggle_pause(True)
+    w.push_trigger(1)
+    assert not w._pending
+    w.close()
+
+
+def test_nf_trace_recovers_after_a_nan(qt_app):
+    """One NaN made the smoothed value NaN for good."""
+    from mne_rt.viz.nf_plot import NFPlot
+
+    w = NFPlot(["erd_ers"], {"erd_ers": 1.0}, sfreq=30, display_smoothing=0.3)
+    w.push([1.0])
+    assert w._buf[0, -1] == pytest.approx(1.0)  # starts at the value, not at 0
+    w.push([np.nan])
+    assert np.isnan(w._buf[0, -1])  # shown as a gap
+    w.push([2.0])
+    assert w._buf[0, -1] == pytest.approx(0.3 * 2.0 + 0.7 * 1.0)
+    w._auto_range()
+    assert np.all(np.isfinite(w._plots[0].viewRange()[1]))
+    w.close()
+
+
+def test_nf_channel_scale_rescales_the_history(qt_app):
+    """+/- used to apply only to values arriving after the click."""
+    from mne_rt.viz.nf_plot import NFPlot
+
+    w = NFPlot(["erd_ers"], {"erd_ers": 1.0}, sfreq=30, display_smoothing=1.0)
+    for v in (1.0, 2.0, 3.0):
+        w.push([v])
+    w._scale_up(0)
+    np.testing.assert_allclose(w._buf[0, -3:], [2.0, 4.0, 6.0])
+    w.close()
+
+
+def test_tfr_baseline_is_the_one_asked_for(qt_app, common_kw):
+    from mne_rt.viz.tfr_plot import TFRPlot
+
+    w = TFRPlot(**{**common_kw, "baseline": (-0.05, 0.0)}, channels=CH_NAMES[:1])
+    t = w._times_dec[w._baseline_mask()]
+    assert t.size and t.min() >= -0.05 and t.max() <= 0.0
+    w.close()
+
+
+def test_tfr_reruns_for_epochs_that_arrive_mid_computation(qt_app, common_kw):
+    """Epochs arriving while a TFR was computed were never used, and two close
+    updates could start two workers."""
+    import threading
+    import time
+
+    from mne_rt.viz.tfr_plot import TFRPlot
+
+    w = TFRPlot(**common_kw, channels=CH_NAMES[:1])
+    started, release, calls, running = threading.Event(), threading.Event(), [], []
+
+    def slow_tfr(data, conds, params=None):
+        running.append(1)
+        assert len(running) == 1  # one worker at a time
+        calls.append(len(conds))
+        started.set()
+        release.wait(5)
+        running.pop()
+        return {}
+
+    w._compute_tfr = slow_tfr
+    data, conds = _make_epochs(6)
+    w.update(data[:4], conds[:4])
+    assert started.wait(5)
+    w.update(data, conds)  # arrives while the first pass is running
+    release.set()
+    deadline = time.monotonic() + 5
+    while w._computing and time.monotonic() < deadline:
+        time.sleep(0.01)
+    assert calls == [4, 6]
+    w.close()
+
+
+def test_tfr_redraw_ignores_a_result_for_other_channels(qt_app, common_kw):
+    """A result computed before the channel selection changed was indexed
+    with the new channel count, raising IndexError in the Qt slot."""
+    from mne_rt.viz.tfr_plot import TFRPlot
+
+    w = TFRPlot(**common_kw, channels=CH_NAMES[:1])
+    shape = (1, len(w._freqs), w._n_t_dec)
+    w._tfr_pass = ({c: np.ones(shape) for c in w._conditions}, w._params(), [])
+    w._display_chs = CH_NAMES[:2]
+    w._rebuild_grid()
+    w._redraw(0)  # must not raise
+    w.close()
+
+
+def test_tfr_colour_levels_redraw_without_recomputing(qt_app, common_kw):
+    from mne_rt.viz.tfr_plot import TFRPlot
+
+    w = TFRPlot(**common_kw, channels=CH_NAMES[:1])
+    scheduled = []
+    w._schedule = lambda: scheduled.append(True)
+    w._auto_lvl_chk.setChecked(False)
+    w._on_vmin_change(-1.0)
+    w._on_vmax_change(1.0)
+    assert scheduled == []
+    w.close()
+
+
+def test_tfr_computes_only_the_displayed_channels(qt_app, common_kw):
+    """The other channels were transformed and thrown away; NaN in one of them
+    shows they are no longer touched."""
+    from mne_rt.viz.tfr_plot import TFRPlot
+
+    w = TFRPlot(**common_kw, channels=CH_NAMES[:1])
+    data, conds = _make_epochs(4)
+    data[:, 1:] = np.nan
+    result = w._compute_tfr(data, conds)
+    assert all(np.all(np.isfinite(p)) for p in result.values())
+    w.close()
+
+
+def test_topo_reset_does_not_hide_a_new_run(qt_app, common_kw):
+    """A new run whose first update is longer than the reset point lost its
+    first epochs to the old reset."""
+    from mne_rt.viz.topo_plot import TopoPlot
+
+    w = TopoPlot(**common_kw)
+    data, conds = _make_epochs(4)
+    w.update(data, conds)
+    w._reset_epochs()  # hides 4 epochs of this run
+    new, new_conds = _make_epochs(5)  # a new run, first update has 5
+    w.update(new, new_conds)
+    assert sum(w._n_per.values()) == 5
+    w.close()
+
+
+def test_nf_rescale_keeps_the_threshold_label(qt_app):
+    """setPos() resets an InfiniteLine label to its format string ("thr")."""
+    from mne_rt.viz.nf_plot import NFPlot
+
+    w = NFPlot(["erd_ers"], {"erd_ers": 1.0}, sfreq=30, display_smoothing=1.0)
+    w.push([1.0], thresholds=[3.2])
+    label = w._threshold_lines[0].label.textItem.toPlainText()
+    assert label.startswith("thr 3.2")
+    w._scale_up(0)
+    assert w._threshold_lines[0].label.textItem.toPlainText() == label
+    w.close()
+
+
+def test_brain_display_smoothing_survives_a_nan():
+    from mne_rt.viz.brain_plot import _ema_step
+
+    ema = np.array([1.0, np.nan, 1.0])
+    out = _ema_step(ema, np.array([np.nan, 2.0, 2.0]), 0.5)
+    np.testing.assert_allclose(out, [1.0, 2.0, 1.5])

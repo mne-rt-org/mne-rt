@@ -322,9 +322,9 @@ class ButterflyPlot(QMainWindow):
         for name, pos in zip(layout.names, layout.pos):
             xc = float(pos[0] + pos[2] / 2.0)
             yc = float(pos[1] + pos[3] / 2.0)
-            # y is already 0=top (frontal) after standard layout convention;
-            # keep as-is so y≈0 → frontal, y≈1 → occipital.
-            name_xy[name] = (xc, float(yc))
+            # MNE layouts grow y towards the nose, so flip it: y≈0 → frontal,
+            # y≈1 → occipital, as the region colours expect.
+            name_xy[name] = (xc, 1.0 - yc)
 
         n_matched = sum(1 for c in self.ch_names if c in name_xy)
         if n_matched < self._n_ch // 2:
@@ -651,7 +651,7 @@ class ButterflyPlot(QMainWindow):
         if not avgs:
             return
         amp = float(np.percentile(np.abs(np.stack(avgs, 0)), 99)) or 1e-12
-        half = amp * self._yscale
+        half = amp / self._yscale  # a gain: ×2 shows the traces twice as tall
         for plot in self._cond_plots.values():
             plot.setYRange(-half, half, padding=0.05)
 
