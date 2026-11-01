@@ -167,7 +167,7 @@ class ModalityMixin:
     # Shared helpers
     # ------------------------------------------------------------------
 
-    def _acquired_ch_names(self) -> list:
+    def _acquired_ch_names(self, use_picks: bool = True) -> list:
         """Channels present in the array ``stream.get_data()`` returns.
 
         This is **not** ``rec_info["ch_names"]``: ``get_data()`` defaults to
@@ -189,7 +189,7 @@ class ModalityMixin:
         """
         bads = set(self.rec_info["bads"])
         names = [ch for ch in self.rec_info["ch_names"] if ch not in bads]
-        picks = getattr(self, "picks", None)
+        picks = getattr(self, "picks", None) if use_picks else None
         if picks is None or isinstance(picks, str):
             # A channel-type string is resolved by the stream itself; the
             # ordering it returns still follows rec_info.

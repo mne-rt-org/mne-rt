@@ -372,6 +372,38 @@ class TestRawPlot:
         assert np.any(w._buf != 0.0)
         w.close()
 
+    def test_push_converts_declared_units_to_volts(self, qt_app):
+        """A µV stream (unit_mul=-6, e.g. dsi2lsl) is drawn at the SI scale.
+
+        Without the conversion every trace is 1e6 rows tall and off-screen.
+        """
+        import mne
+
+        from mne_rt.viz.raw_plot import RawPlot
+
+        info = mne.create_info(CH_NAMES, SFREQ, "eeg")
+        with info._unlock():
+            for ch in info["chs"]:
+                ch["unit_mul"] = -6  # FIFF_UNITM_MU
+        w = RawPlot(CH_NAMES, sfreq=SFREQ, info=info)
+        data = np.full((N_CH, 64), 50.0)  # 50 µV as sent by the device
+        w.push(data)
+        w._flush_data_queue()
+        assert np.allclose(w._buf[:, -64:], 50e-6)
+        w.close()
+
+    def test_push_leaves_si_streams_unscaled(self, qt_app):
+        import mne
+
+        from mne_rt.viz.raw_plot import RawPlot
+
+        w = RawPlot(CH_NAMES, sfreq=SFREQ, info=mne.create_info(CH_NAMES, SFREQ, "eeg"))
+        assert w._unit_factor is None
+        w.push(np.full((N_CH, 64), 50e-6))
+        w._flush_data_queue()
+        assert np.allclose(w._buf[:, -64:], 50e-6)
+        w.close()
+
     def test_push_respects_pause(self, qt_app):
         from mne_rt.viz.raw_plot import RawPlot
 

@@ -280,6 +280,13 @@ class RawPlot(QMainWindow):
         self._n_shown = min(int(n_shown), self._n_ch)
         self._scale = float(scale_uv) * 1e-6
         self._info = info
+        # Streams that send µV (or mV, …) declare it via ``unit_mul``; the
+        # display scale assumes SI units, so convert on entry.
+        self._unit_factor = None
+        if info is not None and len(info["chs"]) == self._n_ch:
+            factor = np.array([10.0 ** ch.get("unit_mul", 0) for ch in info["chs"]])
+            if np.any(factor != 1.0):
+                self._unit_factor = factor[:, np.newaxis]
         self._page_start = 0
         self._paused = False
         self._dc_remove = False
@@ -1533,6 +1540,8 @@ class RawPlot(QMainWindow):
             return
 
         chunk = data.copy()
+        if self._unit_factor is not None:
+            chunk *= self._unit_factor
 
         # 1. Online causal filter (sosfilt with persistent state)
         if self._filter_sos is not None and self._filter_zi is not None:

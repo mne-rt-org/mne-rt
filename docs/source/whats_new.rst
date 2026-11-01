@@ -33,6 +33,19 @@ New features
   the README before commercial use. ``gedai`` is not installed by default or by
   ``mne-rt[full]``, so mne-rt itself stays BSD-3-Clause unless you opt in.
 
+- **Wearable Sensing DSI headsets.** :meth:`~mne_rt.RTStream.connect_to_lsl`
+  takes ``device="dsi"`` for streams published by ``dsi2lsl``. That tool names
+  every channel after its reference (``"O1-A1/2-A2/2"``), which matches no
+  montage, and declares its trigger and auxiliary inputs as EEG. With
+  ``device="dsi"`` the suffix is stripped and ``TRG``, ``X1``–``X3``, ``A1``
+  and ``A2`` are retyped, so ``pick_types="eeg"`` keeps the scalp channels and
+  a montage that knows the DSI-24's ``T3``–``T6`` labels (``colin27_1020``)
+  applies. ``mne-rt baseline`` and ``mne-rt run`` gain ``--device dsi``, which
+  also defaults the montage to ``colin27_1020``.
+
+- ``mne-rt baseline`` and ``mne-rt run`` gain ``--stream-name`` to select the
+  live LSL stream.
+
 Bug fixes
 ^^^^^^^^^
 
@@ -72,6 +85,35 @@ Bug fixes
   affected: the live raw viewer and the gallery example fit in band-filter mode,
   and :class:`~mne_rt.RTStream` selects GEDAI components by template
   correlation. Reported by Tomas Ros.
+
+- **The CLI and** ``connect_to_lsl()`` **could not reach a live device without a
+  stream name.** With no ``stream_name`` or ``stream_source_id``,
+  :meth:`~mne_rt.RTStream.connect_to_lsl` looked for the source ID of its own
+  mock player, which only exists with ``mock_lsl=True``, so the documented
+  ``nf.connect_to_lsl()`` — and every non-mock ``mne-rt baseline`` / ``run`` —
+  timed out. It now connects to the only stream on the network, and raises if
+  there are several.
+
+- **The raw viewer stayed on "Waiting for data …" whenever** ``picks`` **was
+  set.** :class:`~mne_rt.viz.RawPlot` was built for the picked channels but fed
+  every channel, and ``push`` drops a chunk of the wrong shape without a word.
+  The viewer now shows every good channel, whatever ``picks`` the feature uses.
+
+- **The topomap raised** ``IndexError`` **on every update, and the brain display
+  stayed empty, whenever** ``picks`` **was set.** Both span every good channel but
+  were handed the feature's picked window. They now receive the full window.
+
+- **Microvolt streams were drawn a million times too large.** Devices such as
+  DSI headsets stream µV and say so in the LSL metadata, which mne-lsl records
+  as ``unit_mul``; :class:`~mne_rt.viz.RawPlot` assumed volts, so every trace
+  left the screen. It now converts on entry.
+
+- A failure while updating the raw viewer is logged once instead of being
+  swallowed, so an empty viewer can be told apart from a stream with no data.
+
+- The brain display band-passes each window with an IIR filter. The FIR it used
+  for an 8–13 Hz band was longer than a 1 s window, distorting it and warning
+  on every update.
 
 API changes
 ^^^^^^^^^^^
