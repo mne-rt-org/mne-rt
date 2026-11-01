@@ -1191,3 +1191,157 @@ def test_brain_display_smoothing_survives_a_nan():
     ema = np.array([1.0, np.nan, 1.0])
     out = _ema_step(ema, np.array([np.nan, 2.0, 2.0]), 0.5)
     np.testing.assert_allclose(out, [1.0, 2.0, 1.5])
+
+
+# ---------------------------------------------------------------------------
+# Channel picker (SensorSelector) and bad channels in the topomap
+# ---------------------------------------------------------------------------
+
+
+def _selector(**kw):
+    from mne_rt.viz._sensor_selector import SensorSelector, sensor_positions
+
+    return SensorSelector(TOPO_CH_NAMES, sensor_positions(TOPO_CH_NAMES), **kw)
+
+
+def test_sensor_positions_put_frontal_channels_on_top():
+    from mne_rt.viz._sensor_selector import sensor_positions
+
+    pos = dict(
+        zip(["Fz", "Cz", "Oz"], sensor_positions(["Fz", "Cz", "Oz"], montage="colin27_1020"))
+    )
+    assert pos["Fz"][1] < pos["Cz"][1] < pos["Oz"][1]  # 0 = frontal
+
+
+def test_sensor_selector_respects_limits_and_signals(qt_app):
+    w = _selector(selected=["Fp1"], max_selected=2)
+    changes = []
+    w.selectionChanged.connect(changes.append)
+    assert w.toggle("F3") and w.selected == ["Fp1", "F3"]
+    assert not w.toggle("F4")  # at the maximum
+    assert w.toggle("Fp1") and w.selected == ["F3"]
+    assert not w.toggle("F3")  # at the minimum of one
+    assert not w.toggle("nope")
+    assert changes == [["Fp1", "F3"], ["F3"]]
+    w.set_selected(["P3", "nope"])  # no signal
+    assert w.selected == ["P3"] and len(changes) == 2
+    w.close()
+
+
+def test_compare_evoked_and_tfr_follow_the_selector(qt_app, common_kw):
+    from mne_rt.viz.compare_evoked import CompareEvoked
+    from mne_rt.viz.tfr_plot import TFRPlot
+
+    w = CompareEvoked(**common_kw, channels=CH_NAMES[:1])
+    w._selector.toggle(CH_NAMES[3])
+    assert w._disp_channels == [CH_NAMES[0], CH_NAMES[3]]
+    assert set(w._ch_plots) == {CH_NAMES[0], CH_NAMES[3]}
+    w.close()
+
+    t = TFRPlot(**common_kw, channels=CH_NAMES[:1])
+    for ch in CH_NAMES[1:]:
+        t._selector.toggle(ch)
+    assert len(t._display_chs) == 8 == t._selector._max_selected
+    t.close()
+
+
+class TestRawPlotChannelPicker:
+    def _plot(self, n_shown=3):
+        from mne_rt.viz.raw_plot import RawPlot
+
+        return RawPlot(CH_NAMES, sfreq=SFREQ, n_shown=n_shown)
+
+    def test_hidden_channels_are_not_drawn(self, qt_app):
+        w = self._plot()
+        w.push(np.arange(N_CH, dtype=float)[:, None] * np.ones((N_CH, 50)) * 1e-6)
+        w._flush_data_queue()
+        w.show_channels([CH_NAMES[6], CH_NAMES[1]])
+        assert w.shown_channels == [CH_NAMES[1], CH_NAMES[6]]  # channel order
+        assert w._visible() == [1, 6]
+        labels = [t[1] for t in w._pi.getAxis("left")._tickLevels[0]]
+        assert sorted(labels) == [CH_NAMES[1], CH_NAMES[6]]
+        # The rows are drawn from the shown channels' data, the third row is empty
+        top = w._curves[0].getData()[1]
+        assert np.allclose(top[-1] - 1.0, 1e-6 / w._scale)  # row offset 1, channel 1
+        assert w._curves[2].getData()[0] is None or len(w._curves[2].getData()[0]) == 0
+        assert w._ch_scroll.maximum() == 0
+        w.close()
+
+    def test_paging_runs_over_shown_channels_only(self, qt_app):
+        w = self._plot(n_shown=2)
+        w.show_channels(CH_NAMES[:5])
+        assert w._ch_scroll.maximum() == 3
+        w._set_page_start(10)
+        assert w._visible() == [3, 4]
+        w.show_channels([])
+        assert w._visible() == [] and w.shown_channels == []
+        w.show_channels(CH_NAMES)
+        assert w._visible() == [0, 1]
+        w.close()
+
+    def test_right_click_on_a_sensor_marks_it_bad(self, qt_app):
+        w = self._plot()
+        w._selector.channelRightClicked.emit(CH_NAMES[2])
+        assert w.bad_channels == [CH_NAMES[2]]
+        assert w._selector._bads == {CH_NAMES[2]}
+        w._toggle_bad_channel(2)  # the y-axis label click un-marks it, in both places
+        assert w.bad_channels == [] and w._selector._bads == set()
+        w.close()
+
+
+def _bad_p3_info():
+    import mne
+
+    names = "P3 C3 F3 Fz F4 C4 P4 Cz Pz Fp1 Fp2 T3 T5 O1 O2 F7 F8 T6 T4".split()
+    info = mne.create_info(names, SFREQ, "eeg")
+    info.set_montage("colin27_1020")
+    info["bads"] = ["P3"]
+    return info
+
+
+def test_topomap_interpolates_a_bad_channel(qt_app):
+    """A broken electrode is drawn from its neighbours, whatever it records."""
+    from mne_rt.viz.topomap_plot import TopomapPlot
+
+    info = _bad_p3_info()
+    pos = np.array([ch["loc"][:3] for ch in info["chs"]])
+    amp = 1 + 5 * (pos[:, 1].max() - pos[:, 1]) / np.ptp(pos[:, 1])  # alpha grows posteriorly
+    t = np.arange(int(SFREQ)) / SFREQ
+    data = amp[:, None] * np.sin(2 * np.pi * 10 * t) * 1e-5
+    data[0] = RNG.standard_normal(len(t)) * 1e-3  # P3 is broken
+
+    w = TopomapPlot(info, sfreq=SFREQ)
+    assert list(w._plot_info["ch_names"][-1:]) == ["P3"]
+    assert w._interp_matrix.shape == (1, len(info["ch_names"]) - 1)
+    alpha = w._compute_band_powers(data)[next(b for b in w._bands if "8" in b)]
+    ratio = alpha[-1] / np.median(alpha[:-1])
+    assert ratio == pytest.approx(amp[0] ** 2 / np.median(amp[1:] ** 2), rel=0.1)
+    w.push(data)  # draws without raising
+    w.close()
+
+    off = TopomapPlot(info, sfreq=SFREQ, interpolate_bads=False)
+    assert off._interp_matrix is None and "P3" not in off._plot_info["ch_names"]
+    off.close()
+
+
+def test_sensor_positions_place_bad_channels_too():
+    """find_layout drops bads, which put them in the off-head fallback column."""
+    from mne_rt.viz._sensor_selector import sensor_positions
+
+    info = _bad_p3_info()
+    pos = dict(zip(info["ch_names"], sensor_positions(info["ch_names"], info)))
+    assert pos["P3"][1] > pos["C3"][1] > pos["F3"][1]  # behind C3, not at the top edge
+
+
+def test_sensor_positions_tolerate_channels_without_a_position():
+    """Two unplaced channels overlap at 0, which made find_layout refuse them all."""
+    import mne
+
+    from mne_rt.viz._sensor_selector import sensor_positions
+
+    names = ["Fz", "Cz", "Oz", "HEOG", "VEOG"]
+    info = mne.create_info(names, SFREQ, "eeg")
+    info.set_montage("colin27_1020", on_missing="ignore")
+    pos = dict(zip(names, sensor_positions(names, info, montage=None)))
+    assert pos["Fz"][1] < pos["Cz"][1] < pos["Oz"][1]  # a real layout, not the circle
+    assert pos["HEOG"][0] == pos["VEOG"][0] == 0.02  # the edge column

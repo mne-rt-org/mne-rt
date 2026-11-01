@@ -270,9 +270,9 @@ class TFRPlot(QMainWindow):
         self._display_chs = self._auto_channels(channels)
         self._display_idx = [self.ch_names.index(c) for c in self._display_chs]
 
-        # Scalp positions for topomap channel selector (normalised, yn=0=frontal)
-        self._norm_pos = self._compute_positions(info, montage)
-        self._topo_scatter: Optional[pg.ScatterPlotItem] = None
+        # Channel selector (assigned in _build_sidebar)
+        self._info = info
+        self._selector = None
 
         # ── Normalisation mode ───────────────────────────────────────────
         # 'db'  — dB change from baseline  (default)
@@ -370,57 +370,6 @@ class TFRPlot(QMainWindow):
 
         # Clip n_cycles to fit within epoch (10 % safety margin)
         self._n_cycles = np.minimum(nc, np.maximum(nc_max * 0.90, 1.0))
-
-    # -----------------------------------------------------------------------
-    # Scalp layout (for topomap channel selector)
-    # -----------------------------------------------------------------------
-
-    def _compute_positions(self, info, montage_name: str) -> list[tuple[float, float]]:
-        import math as _math
-
-        if _mne_available:
-            if info is not None:
-                pos = self._from_layout(mne.channels.find_layout(info))
-                if pos is not None:
-                    return pos
-            try:
-                tmp = mne.create_info(self.ch_names, sfreq=1.0, ch_types="eeg", verbose=False)
-                mont = mne.channels.make_standard_montage(montage_name)
-                tmp.set_montage(mont, on_missing="ignore", verbose=False)
-                pos = self._from_layout(mne.channels.find_layout(tmp))
-                if pos is not None:
-                    return pos
-            except Exception as exc:
-                logger.debug("TFRPlot: montage layout failed: %s", exc)
-        n = len(self.ch_names)
-        return [
-            (
-                0.5 + 0.42 * _math.cos(2 * _math.pi * i / n - _math.pi / 2),
-                0.5 + 0.42 * _math.sin(2 * _math.pi * i / n - _math.pi / 2),
-            )
-            for i in range(n)
-        ]
-
-    def _from_layout(self, layout) -> Optional[list[tuple[float, float]]]:
-        if layout is None:
-            return None
-        name_xy: dict[str, tuple[float, float]] = {}
-        for name, pos in zip(layout.names, layout.pos):
-            xc = float(pos[0] + pos[2] / 2.0)
-            yc = float(pos[1] + pos[3] / 2.0)
-            name_xy[name] = (xc, 1.0 - yc)
-        n_matched = sum(1 for c in self.ch_names if c in name_xy)
-        if n_matched < len(self.ch_names) // 2:
-            return None
-        positions: list[tuple[float, float]] = []
-        fb = 0
-        for ch in self.ch_names:
-            if ch in name_xy:
-                positions.append(name_xy[ch])
-            else:
-                positions.append((0.02, fb * 0.05))
-                fb += 1
-        return positions
 
     # -----------------------------------------------------------------------
     # Grid rebuild (called when channel selection changes)
@@ -852,88 +801,25 @@ class TFRPlot(QMainWindow):
     # -----------------------------------------------------------------------
 
     def _build_topo_widget(self, parent: QWidget) -> pg.PlotWidget:
-        pw = pg.PlotWidget(parent=parent)
-        pw.setFixedSize(184, 184)
-        pw.setBackground(_SURFACE)
-        pw.hideAxis("bottom")
-        pw.hideAxis("left")
-        pw.getViewBox().setMouseEnabled(x=False, y=False)
-        pw.getViewBox().setAspectLocked(True)
-        pw.getViewBox().setRange(
-            xRange=(-0.06, 1.06),
-            yRange=(-0.06, 1.14),
-            padding=0,
+        """Return the clickable scalp map that picks the displayed channels."""
+        from mne_rt.viz._sensor_selector import SensorSelector, sensor_positions
+
+        self._selector = SensorSelector(
+            self.ch_names,
+            sensor_positions(self.ch_names, self._info, self.montage),
+            self._display_chs,
+            max_selected=8,
+            background=_SURFACE,
+            outline=_BORDER,
+            accent=_ACCENT,
+            hint_color=_DIM,
+            parent=parent,
         )
+        self._selector.selectionChanged.connect(self._on_selection_changed)
+        return self._selector
 
-        theta = np.linspace(0, 2 * np.pi, 160)
-        pw.plot(
-            0.5 + 0.48 * np.cos(theta), 0.5 + 0.48 * np.sin(theta), pen=pg.mkPen(_BORDER, width=1.5)
-        )
-        pw.plot([0.47, 0.5, 0.53, 0.47], [0.97, 1.06, 0.97, 0.97], pen=pg.mkPen(_BORDER, width=1.2))
-
-        spots = []
-        for i, ch in enumerate(self.ch_names):
-            xn, yn = self._norm_pos[i]
-            tx = 0.5 + (xn - 0.5) * 0.9
-            ty = 1.0 - (0.5 + (yn - 0.5) * 0.9)
-            selected = ch in self._display_chs
-            spots.append(
-                {
-                    "pos": (tx, ty),
-                    "data": ch,
-                    "brush": pg.mkBrush(_ACCENT if selected else _BORDER),
-                    "pen": pg.mkPen(None),
-                    "size": 10 if selected else 6,
-                }
-            )
-
-        self._topo_scatter = pg.ScatterPlotItem(
-            spots=spots,
-            hoverable=True,
-            tip=lambda x, y, data: str(data) if data else "",
-        )
-        self._topo_scatter.sigClicked.connect(self._on_topo_click)
-        pw.addItem(self._topo_scatter)
-
-        hint = pg.TextItem("click to select", color=_DIM, anchor=(0.5, 1))
-        hint.setFont(QFont("Helvetica", 7))
-        hint.setPos(0.5, -0.02)
-        pw.addItem(hint)
-        return pw
-
-    def _update_topo_colors(self) -> None:
-        if self._topo_scatter is None:
-            return
-        spots = []
-        for i, ch in enumerate(self.ch_names):
-            xn, yn = self._norm_pos[i]
-            tx = 0.5 + (xn - 0.5) * 0.9
-            ty = 1.0 - (0.5 + (yn - 0.5) * 0.9)
-            selected = ch in self._display_chs
-            spots.append(
-                {
-                    "pos": (tx, ty),
-                    "data": ch,
-                    "brush": pg.mkBrush(_ACCENT if selected else _BORDER),
-                    "pen": pg.mkPen(None),
-                    "size": 10 if selected else 6,
-                }
-            )
-        self._topo_scatter.setData(spots=spots)
-
-    def _on_topo_click(self, *args) -> None:
-        points = args[-2] if len(args) >= 2 else args[0]
-        for pt in points:
-            ch = pt.data()
-            if ch is None or ch not in self.ch_names:
-                continue
-            if ch in self._display_chs:
-                if len(self._display_chs) > 1:
-                    self._display_chs.remove(ch)
-            else:
-                if len(self._display_chs) < 8:
-                    self._display_chs.append(ch)
-        self._update_topo_colors()
+    def _on_selection_changed(self, channels: list[str]) -> None:
+        self._display_chs = channels
         self._sel_lbl.setText(", ".join(self._display_chs))
         self._rebuild_grid()
 

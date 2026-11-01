@@ -288,11 +288,8 @@ class CompareEvoked(QMainWindow):
         self._show_sem = True
         self._show_peak = True
 
-        # Scalp positions for all channels (normalised, yn=0=frontal)
-        self._norm_pos = self._compute_positions(info, montage)
-
-        # Topomap scatter item (assigned in _build_topo_widget)
-        self._topo_scatter: Optional[pg.ScatterPlotItem] = None
+        # Channel selector (assigned in _build_sidebar)
+        self._selector = None
 
         # Canvas data structures (rebuilt by _rebuild_canvas)
         self._ch_plots: dict[str, pg.PlotItem] = {}
@@ -315,60 +312,6 @@ class CompareEvoked(QMainWindow):
             len(self._conditions),
             self._unit_label,
         )
-
-    # -----------------------------------------------------------------------
-    # Scalp layout
-    # -----------------------------------------------------------------------
-
-    def _compute_positions(self, info, montage_name: str) -> list[tuple[float, float]]:
-        """Return normalised (xn, yn) for each channel, yn=0=frontal."""
-        if _mne_available:
-            if info is not None:
-                pos = self._from_layout(mne.channels.find_layout(info))
-                if pos is not None:
-                    return pos
-            try:
-                tmp = mne.create_info(self.ch_names, sfreq=1.0, ch_types="eeg", verbose=False)
-                mont = mne.channels.make_standard_montage(montage_name)
-                tmp.set_montage(mont, on_missing="ignore", verbose=False)
-                pos = self._from_layout(mne.channels.find_layout(tmp))
-                if pos is not None:
-                    return pos
-            except Exception as exc:
-                logger.debug("CompareEvoked: montage layout failed: %s", exc)
-        logger.warning("CompareEvoked: falling back to circular layout.")
-        return self._circular_fallback()
-
-    def _from_layout(self, layout) -> Optional[list[tuple[float, float]]]:
-        if layout is None:
-            return None
-        name_xy: dict[str, tuple[float, float]] = {}
-        for name, pos in zip(layout.names, layout.pos):
-            xc = float(pos[0] + pos[2] / 2.0)
-            yc = float(pos[1] + pos[3] / 2.0)
-            name_xy[name] = (xc, 1.0 - yc)  # yn=0 = frontal
-        n_matched = sum(1 for c in self.ch_names if c in name_xy)
-        if n_matched < self._n_ch // 2:
-            return None
-        positions: list[tuple[float, float]] = []
-        fb = 0
-        for ch in self.ch_names:
-            if ch in name_xy:
-                positions.append(name_xy[ch])
-            else:
-                positions.append((0.02, fb * 0.05))
-                fb += 1
-        return positions
-
-    def _circular_fallback(self) -> list[tuple[float, float]]:
-        n = self._n_ch
-        return [
-            (
-                0.5 + 0.42 * math.cos(2 * math.pi * i / n - math.pi / 2),
-                0.5 + 0.42 * math.sin(2 * math.pi * i / n - math.pi / 2),
-            )
-            for i in range(n)
-        ]
 
     # -----------------------------------------------------------------------
     # Styles
@@ -577,120 +520,25 @@ class CompareEvoked(QMainWindow):
     # -----------------------------------------------------------------------
 
     def _build_topo_widget(self, parent: QWidget) -> pg.PlotWidget:
-        """Return a 184×184 pyqtgraph PlotWidget with clickable electrode dots."""
-        pw = pg.PlotWidget(parent=parent)
-        pw.setFixedSize(184, 184)
-        pw.setBackground(_SURFACE)
-        pw.hideAxis("bottom")
-        pw.hideAxis("left")
-        pw.getViewBox().setMouseEnabled(x=False, y=False)
-        pw.getViewBox().setAspectLocked(True)
-        # View range with a small margin so the nose isn't clipped
-        pw.getViewBox().setRange(
-            xRange=(-0.06, 1.06),
-            yRange=(-0.06, 1.14),
-            padding=0,
+        """Return the clickable scalp map that picks the displayed channels."""
+        from mne_rt.viz._sensor_selector import SensorSelector, sensor_positions
+
+        self._selector = SensorSelector(
+            self.ch_names,
+            sensor_positions(self.ch_names, self._info, self.montage),
+            self._disp_channels,
+            background=_SURFACE,
+            outline=_BORDER,
+            accent=_ACCENT,
+            hint_color=_DIM,
+            parent=parent,
         )
+        self._selector.selectionChanged.connect(self._on_selection_changed)
+        return self._selector
 
-        # ── Head circle ──────────────────────────────────────────────────
-        theta = np.linspace(0, 2 * np.pi, 160)
-        cx = 0.5 + 0.48 * np.cos(theta)
-        cy = 0.5 + 0.48 * np.sin(theta)
-        pw.plot(cx, cy, pen=pg.mkPen(_BORDER, width=1.5))
-
-        # ── Nose (small triangle at top, y > 0.98) ───────────────────────
-        nose_x = [0.47, 0.5, 0.53, 0.47]
-        nose_y = [0.97, 1.06, 0.97, 0.97]
-        pw.plot(nose_x, nose_y, pen=pg.mkPen(_BORDER, width=1.2))
-
-        # ── Left/right ear bumps ─────────────────────────────────────────
-        for side in (-1, 1):
-            ear_x_vals = np.linspace(0.48 * side, 0.56 * side, 8)
-            ear_y_vals = 0.5 + 0.06 * np.sin(np.linspace(0, np.pi, 8))
-            pw.plot(
-                0.5 + ear_x_vals,
-                ear_y_vals,
-                pen=pg.mkPen(_BORDER, width=1.2),
-            )
-
-        # ── Channel dots ─────────────────────────────────────────────────
-        # yn=0 = frontal = top of display (y large in pg's y-up coords)
-        spots = []
-        for i, ch in enumerate(self.ch_names):
-            xn, yn = self._norm_pos[i]
-            # Map into the circle: keep within 0.5±0.45
-            tx = 0.5 + (xn - 0.5) * 0.9
-            ty = 0.5 + (yn - 0.5) * 0.9  # yn=0→top, yn=1→bottom; y-axis: 0=bottom
-            # pg default: y increases upward, so we flip yn
-            ty = 1.0 - ty  # now ty=1 → frontal top, ty=0 → occipital bottom
-            selected = ch in self._disp_channels
-            spots.append(
-                {
-                    "pos": (tx, ty),
-                    "data": ch,
-                    "brush": pg.mkBrush(_ACCENT if selected else _BORDER),
-                    "pen": pg.mkPen(None),
-                    "size": 10 if selected else 6,
-                }
-            )
-
-        self._topo_scatter = pg.ScatterPlotItem(
-            spots=spots,
-            hoverable=True,
-            tip=lambda x, y, data: str(data) if data else "",
-        )
-        self._topo_scatter.sigClicked.connect(self._on_topo_click)
-        pw.addItem(self._topo_scatter)
-
-        # ── Hint text ────────────────────────────────────────────────────
-        hint = pg.TextItem("click to select", color=_DIM, anchor=(0.5, 1))
-        hint.setFont(QFont("Helvetica", 7))
-        hint.setPos(0.5, -0.02)
-        pw.addItem(hint)
-
-        return pw
-
-    def _update_topo_colors(self) -> None:
-        """Refresh dot appearance after selection changes."""
-        if self._topo_scatter is None:
-            return
-        spots = []
-        for i, ch in enumerate(self.ch_names):
-            xn, yn = self._norm_pos[i]
-            tx = 0.5 + (xn - 0.5) * 0.9
-            ty = 1.0 - (0.5 + (yn - 0.5) * 0.9)
-            selected = ch in self._disp_channels
-            spots.append(
-                {
-                    "pos": (tx, ty),
-                    "data": ch,
-                    "brush": pg.mkBrush(_ACCENT if selected else _BORDER),
-                    "pen": pg.mkPen(None),
-                    "size": 10 if selected else 6,
-                }
-            )
-        self._topo_scatter.setData(spots=spots)
-
-    def _on_topo_click(self, *args) -> None:
-        """Handle a click on the topomap scatter plot.
-
-        PyQtGraph passes ``(scatter, points, event)``; we accept ``*args``
-        for version compatibility.
-        """
-        # points is the second-to-last argument across pg versions
-        points = args[-2] if len(args) >= 2 else args[0]
-        for pt in points:
-            ch = pt.data()
-            if ch is None or ch not in self.ch_names:
-                continue
-            if ch in self._disp_channels:
-                if len(self._disp_channels) > 1:  # always keep at least 1
-                    self._disp_channels.remove(ch)
-            else:
-                self._disp_channels.append(ch)
-        self._update_topo_colors()
-        # Update title
-        self._sel_lbl.setText(f"{', '.join(self._disp_channels)}")
+    def _on_selection_changed(self, channels: list[str]) -> None:
+        self._disp_channels = channels
+        self._sel_lbl.setText(", ".join(self._disp_channels))
         self._rebuild_canvas()
 
     # -----------------------------------------------------------------------

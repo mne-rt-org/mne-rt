@@ -189,3 +189,44 @@ def test_cli_parses_stream_name_and_device():
         ]
     )
     assert args.stream_name == "DSI" and args.device == "dsi" and args.montage is None
+
+
+def test_record_main_topomap_interpolates_bad_channels(tmp_path, monkeypatch):
+    """A channel marked bad is not acquired, but the topomap still draws it."""
+    import mne
+
+    import mne_rt.rt_stream as rs
+    from mne_rt import RTStream
+
+    info = mne.create_info(DSI24_SCALP, 250.0, "eeg")
+    info.set_montage(mne.channels.make_standard_montage("colin27_1020"))
+    data = np.random.default_rng(0).standard_normal((len(DSI24_SCALP), 250 * 24)) * 1e-5
+
+    seen = {}
+
+    class SpyTopo(rs.TopomapPlot):
+        def push(self, window):
+            seen.setdefault("shapes", []).append(window.shape[0])
+            seen["interp"] = [self._info["ch_names"][i] for i in self._interp_picks]
+            super().push(window)
+
+    monkeypatch.setattr(rs, "TopomapPlot", SpyTopo)
+
+    nf = RTStream("sub01", "01", str(tmp_path), montage=None)
+    nf.connect_to_array(data, info, n_repeat=np.inf)
+    nf.rec_info["bads"] = ["P3"]
+    try:
+        nf.record_main(
+            duration=4.0,
+            winsize=1.0,
+            modality="sensor_power",
+            picks=["O1", "O2"],
+            show_raw_signal=False,
+            show_nf_signal=False,
+            show_topo=True,
+            save_tsv=False,
+        )
+        assert seen["interp"] == ["P3"]
+        assert set(seen["shapes"]) == {len(DSI24_SCALP)}  # P3's row is back
+    finally:
+        nf.save()

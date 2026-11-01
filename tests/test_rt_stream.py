@@ -3279,3 +3279,23 @@ def test_executor_is_shut_down_when_record_main_returns(tmp_path, array_info):
     finally:
         if nf.stream.connected:
             nf.stream.disconnect()
+
+
+def test_mock_connects_to_the_data_not_the_annotations(tmp_path):
+    """The mock player publishes a recording's annotations as a second stream
+    with the same source_id; matching the source_id alone connected to either
+    (the bundled sample's 17 marker channels, more often than not)."""
+    from mne_rt import RTStream
+    from mne_rt.rt_stream import _REPO_ROOT
+
+    sample = _REPO_ROOT / "data" / "sample" / "sample_data.vhdr"
+    if not sample.is_file():
+        pytest.skip("needs the bundled sample recording (editable install)")
+    nf = RTStream("sub01", "01", str(tmp_path), montage=None)
+    try:
+        for _ in range(2):
+            nf.connect_to_lsl(mock_lsl=True, fname=str(sample), timeout=15.0)
+            assert nf.rec_info["nchan"] == 64
+            assert set(nf.stream.get_channel_types()) == {"eeg"}
+    finally:
+        nf.save()

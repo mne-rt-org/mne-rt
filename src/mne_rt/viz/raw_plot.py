@@ -221,7 +221,8 @@ class RawPlot(QMainWindow):
         ``scale_uv=1e-6`` (i.e., 1 pT per half-row).
     info : mne.Info | None, default None
         If provided: used to resolve channel types, apply SSP projectors,
-        and show sensor positions on right-click.
+        place the sensors of the channel picker and show sensor positions on
+        right-click.
     verbose : bool | str | None, default None
         Verbosity level.  See :func:`~mne_rt._logging.set_log_level`.
 
@@ -235,6 +236,8 @@ class RawPlot(QMainWindow):
     The control panel (right sidebar) provides:
 
     * **Playback** — pause/resume, clear buffer, screenshot.
+    * **Channels** — a scalp map of the sensors: click a sensor to show or
+      hide its trace, right-click it to mark it bad.
     * **Amplitude** — ÷2 / ×2 scale buttons with a live readout.
     * **Display** — time-window selector, grid toggle, DC-removal toggle.
     * **Filter** — online causal bandpass/highpass/lowpass/notch (scipy).
@@ -288,6 +291,7 @@ class RawPlot(QMainWindow):
             if np.any(factor != 1.0):
                 self._unit_factor = factor[:, np.newaxis]
         self._page_start = 0
+        self._shown_idx: list[int] = list(range(self._n_ch))
         self._paused = False
         self._dc_remove = False
 
@@ -424,8 +428,11 @@ class RawPlot(QMainWindow):
             self._pi.addItem(c)
 
         sep_pen = pg.mkPen(color=(70, 70, 110, 55), width=1, style=Qt.PenStyle.DotLine)
-        for i in range(self._n_shown):
-            self._pi.addItem(pg.InfiniteLine(pos=i, angle=0, pen=sep_pen))
+        self._sep_lines = [
+            pg.InfiniteLine(pos=i, angle=0, pen=sep_pen) for i in range(self._n_shown)
+        ]
+        for line in self._sep_lines:
+            self._pi.addItem(line)
 
         self._update_tick_labels()
 
@@ -450,6 +457,7 @@ class RawPlot(QMainWindow):
         layout.setContentsMargins(6, 6, 6, 6)
 
         layout.addWidget(self._grp_playback())
+        layout.addWidget(self._grp_channels())
         layout.addWidget(self._grp_amplitude())
         layout.addWidget(self._grp_display())
         layout.addWidget(self._grp_filter())
@@ -476,6 +484,42 @@ class RawPlot(QMainWindow):
         btn_shot.clicked.connect(self._screenshot)
         for w in (self._btn_pause, btn_clear, btn_shot):
             lay.addWidget(w)
+        return grp
+
+    def _grp_channels(self) -> QGroupBox:
+        from mne_rt.viz._sensor_selector import SensorSelector, sensor_positions
+
+        grp = QGroupBox("Channels")
+        lay = QVBoxLayout(grp)
+        self._selector = SensorSelector(
+            self._ch_names,
+            sensor_positions(self._ch_names, self._info, montage=None),
+            self._ch_names,
+            min_selected=0,
+            size=196,
+            background="#0d0d1a",
+            outline="#3a3a5c",
+            accent="#4fc3f7",
+            bad="#ff5252",
+            hint="click: show/hide · right-click: bad",
+            hint_color="#9090aa",
+        )
+        self._selector.selectionChanged.connect(self._set_shown_channels)
+        self._selector.channelRightClicked.connect(
+            lambda ch: self._toggle_bad_channel(self._ch_names.index(ch))
+        )
+        lay.addWidget(self._selector, alignment=Qt.AlignmentFlag.AlignHCenter)
+        row = QHBoxLayout()
+        for text, names in (("All", self._ch_names), ("None", [])):
+            btn = QPushButton(text)
+            btn.clicked.connect(lambda _=False, names=names: self.show_channels(names))
+            row.addWidget(btn)
+        lay.addLayout(row)
+        self._shown_lbl = QLabel()
+        self._shown_lbl.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        self._shown_lbl.setStyleSheet("color:#9090aa; font-size:10px;")
+        lay.addWidget(self._shown_lbl)
+        self._update_shown_label()
         return grp
 
     def _grp_amplitude(self) -> QGroupBox:
@@ -882,19 +926,22 @@ class RawPlot(QMainWindow):
             return f"{uv:.4g} µV / row"
         return f"{uv * 1000:.4g} nV / row"
 
+    def _visible(self) -> list[int]:
+        """Indices of the channels on the current page."""
+        return self._shown_idx[self._page_start : self._page_start + self._n_shown]
+
     def _update_tick_labels(self) -> None:
-        end = min(self._page_start + self._n_shown, self._n_ch)
-        n_actual = end - self._page_start
+        visible = self._visible()
+        n_actual = len(visible)
         ticks = []
-        for i in range(n_actual):
-            ch_idx = self._page_start + i
+        for i, ch_idx in enumerate(visible):
             name = self._ch_names[ch_idx]
             label = f"✕ {name}" if ch_idx in self._bad_ch_idxs else name
             ticks.append((n_actual - 1 - i, label))
         self._pi.getAxis("left").setTicks([ticks, []])
 
     def _set_page_start(self, new_start: int, source: str = "other") -> None:
-        new_start = max(0, min(new_start, max(0, self._n_ch - self._n_shown)))
+        new_start = max(0, min(new_start, max(0, len(self._shown_idx) - self._n_shown)))
         if new_start == self._page_start:
             return
         self._page_start = new_start
@@ -935,11 +982,11 @@ class RawPlot(QMainWindow):
         # ── Y-axis clicks ──────────────────────────────────────────────
         if axis.sceneBoundingRect().contains(pos):
             y_val = vb.mapSceneToView(pos).y()
-            end = min(self._page_start + self._n_shown, self._n_ch)
-            n_actual = end - self._page_start
+            visible = self._visible()
+            n_actual = len(visible)
             vis_idx = int(round(n_actual - 1 - y_val))
             if 0 <= vis_idx < n_actual:
-                ch_idx = self._page_start + vis_idx
+                ch_idx = visible[vis_idx]
                 if btn == Qt.MouseButton.RightButton:
                     self._show_channel_location(self._ch_names[ch_idx])
                 elif btn == Qt.MouseButton.LeftButton and not event.double():
@@ -1273,6 +1320,7 @@ class RawPlot(QMainWindow):
             self._status.showMessage(f"Bad channels: {', '.join(self._ch_names[i] for i in bads)}")
         else:
             self._status.showMessage("No bad channels marked")
+        self._selector.set_bads(self._ch_names[i] for i in bads)
         self._update_tick_labels()
         self._redraw()
 
@@ -1488,8 +1536,7 @@ class RawPlot(QMainWindow):
     # ------------------------------------------------------------------
 
     def _redraw(self) -> None:
-        end = min(self._page_start + self._n_shown, self._n_ch)
-        visible = list(range(self._page_start, end))
+        visible = self._visible()
         n_actual = len(visible)
         gain = 1.0 / (self._scale + 1e-300)
 
@@ -1604,9 +1651,48 @@ class RawPlot(QMainWindow):
                 self._buf[:, -n:] = chunk
             self._total_pushed += n
         self._run_potato_detection()
-        end = min(self._page_start + self._n_shown, self._n_ch)
-        self._status.showMessage(f"Streaming  —  ch {self._page_start + 1}–{end} of {self._n_ch}")
+        n_shown = len(self._shown_idx)
+        if n_shown == 0:
+            self._status.showMessage("Streaming  —  no channel selected")
+        else:
+            end = min(self._page_start + self._n_shown, n_shown)
+            self._status.showMessage(f"Streaming  —  ch {self._page_start + 1}–{end} of {n_shown}")
         self._redraw()
+
+    def show_channels(self, ch_names: list[str]) -> None:
+        """Show only *ch_names*, in channel order, as the channel picker does.
+
+        Parameters
+        ----------
+        ch_names : list of str
+            Channels to display. Unknown names are ignored.
+        """
+        self._selector.set_selected(ch_names)
+        self._set_shown_channels(self._selector.selected)
+
+    def _set_shown_channels(self, ch_names: list[str]) -> None:
+        wanted = set(ch_names)
+        self._shown_idx = [i for i, ch in enumerate(self._ch_names) if ch in wanted]
+        n_rows = max(1, min(self._n_shown, len(self._shown_idx)))
+        # Fewer channels than rows: spread them over the plot height
+        self._pi.setYRange(-0.5, n_rows - 0.5, padding=0)
+        for i, line in enumerate(self._sep_lines):
+            line.setVisible(i < n_rows)
+        n_pages = max(0, len(self._shown_idx) - self._n_shown)
+        self._ch_scroll.blockSignals(True)
+        self._ch_scroll.setRange(0, n_pages)
+        self._ch_scroll.blockSignals(False)
+        self._page_start = -1  # force the update below
+        self._set_page_start(0)
+        self._update_shown_label()
+
+    def _update_shown_label(self) -> None:
+        self._shown_lbl.setText(f"{len(self._shown_idx)} of {self._n_ch} channels shown")
+
+    @property
+    def shown_channels(self) -> list[str]:
+        """Channel names currently displayed."""
+        return [self._ch_names[i] for i in self._shown_idx]
 
     @property
     def bad_channels(self) -> list[str]:

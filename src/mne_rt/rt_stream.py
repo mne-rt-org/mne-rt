@@ -88,6 +88,10 @@ _REPO_ROOT = _PKG_DIR.parent.parent  # src/ant → src → repo root
 _ACQ_STOP_TIMEOUT = 10.0
 
 
+# Name of the stream the mock player publishes; its annotations stream is
+# "<name>-annotations", with the same source_id.
+_MOCK_STREAM_NAME = "MNE-RT-mock"
+
 #: dsi2lsl inputs that are not scalp EEG: trigger, auxiliary and ear-reference channels.
 _DSI_CHANNEL_TYPES = {
     "TRG": "stim",
@@ -1036,6 +1040,7 @@ class RTStream(ModalityMixin):
                 fname,
                 chunk_size=chunk_size,
                 n_repeat=n_repeat,
+                name=_MOCK_STREAM_NAME,
                 source_id=self.source_id,
             )
             self._mock_player.start()
@@ -1046,7 +1051,10 @@ class RTStream(ModalityMixin):
         elif stream_source_id is not None:
             stream = Stream(bufsize=self.bufsize, source_id=stream_source_id)
         elif mock_lsl:
-            stream = Stream(bufsize=self.bufsize, source_id=self.source_id)
+            # By name too: the player publishes the recording's annotations as
+            # a second stream with the same source_id, and matching the source_id
+            # alone connected to either one at random.
+            stream = Stream(bufsize=self.bufsize, name=_MOCK_STREAM_NAME, source_id=self.source_id)
         else:
             # A live device with no identifier given: the one stream on the
             # network (mne-lsl raises if there are several, or none). Matching
@@ -2230,9 +2238,24 @@ class RTStream(ModalityMixin):
             )
             nf_plot.show()
 
+        # Rows of the acquired window in the topomap's info, when that info also
+        # holds the bad channels it interpolates; None when the two match.
+        topo_rows: Optional[list[int]] = None
         if show_topo:
+            topo_info = self._acquired_info(use_picks=False)
+            if self.rec_info["bads"]:
+                acquired = topo_info["ch_names"]
+                names = [
+                    ch
+                    for ch in self.rec_info["ch_names"]
+                    if ch in acquired or ch in self.rec_info["bads"]
+                ]
+                topo_info = mne.pick_info(
+                    self.rec_info, [self.rec_info["ch_names"].index(ch) for ch in names]
+                )
+                topo_rows = [names.index(ch) for ch in acquired]
             topo_plot = TopomapPlot(
-                info=self._acquired_info(use_picks=False),
+                info=topo_info,
                 sfreq=self._sfreq,
                 bands=topo_bands,
                 display_smoothing=topo_display_smoothing,
@@ -2996,6 +3019,12 @@ class RTStream(ModalityMixin):
                     except Exception:
                         pass
                     if topo_data is not None:
+                        if topo_rows is not None:
+                            # Bad channels are not acquired: give them rows,
+                            # which the topomap interpolates over.
+                            full = np.zeros((len(topo_info["ch_names"]), topo_data.shape[1]))
+                            full[topo_rows] = topo_data
+                            topo_data = full
                         topo_plot.push(topo_data)
 
                 topo_timer = QTimer()
