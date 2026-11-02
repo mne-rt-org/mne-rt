@@ -37,8 +37,9 @@ class _FakeStream:
         self.renamed = mapping
         self.info["ch_names"] = [mapping.get(ch, ch) for ch in self.info["ch_names"]]
 
-    def set_channel_types(self, mapping):
+    def set_channel_types(self, mapping, *, on_unit_change="warn"):
         self.types = mapping
+        self.on_unit_change = on_unit_change
 
 
 def test_setup_dsi_channels_strips_reference_and_retypes_aux():
@@ -55,6 +56,8 @@ def test_setup_dsi_channels_strips_reference_and_retypes_aux():
         "X1": "misc",
         "TRG": "stim",
     }
+    # TRG's unit changes from V to none: intended, so no warning on every connect.
+    assert stream.on_unit_change == "ignore"
 
 
 def test_setup_dsi_channels_refuses_ambiguous_names():
@@ -88,7 +91,7 @@ def dsi_fif(tmp_path):
 def test_connect_to_lsl_dsi_device(tmp_path, dsi_fif):
     from mne_rt import RTStream
 
-    nf = RTStream("sub01", "01", str(tmp_path), montage="colin27_1020")
+    nf = RTStream("sub01", "01", str(tmp_path), montage="standard_1020")
     try:
         nf.connect_to_lsl(
             mock_lsl=True, fname=str(dsi_fif), device="dsi", pick_types="eeg", timeout=15.0
@@ -114,7 +117,7 @@ def test_viewers_cover_all_channels_when_picks_is_set(tmp_path, monkeypatch):
     import mne_rt.rt_stream as rs
     from mne_rt import RTStream
 
-    montage = mne.channels.make_standard_montage("colin27_1020")
+    montage = mne.channels.make_standard_montage("standard_1020")
     names = DSI24_SCALP
     info = mne.create_info(names, 250.0, "eeg")
     info.set_montage(montage)
@@ -162,7 +165,7 @@ def test_cli_device_dsi_defaults():
     from mne_rt.cli import _resolve_montage, _stream_kwargs
 
     dsi = Namespace(montage=None, device="dsi", mock=False, stream_name="DSI")
-    assert _resolve_montage(dsi) == "colin27_1020"
+    assert _resolve_montage(dsi) == "standard_1020"
     assert _stream_kwargs(dsi) == {"stream_name": "DSI", "device": "dsi", "pick_types": "eeg"}
 
     plain = Namespace(montage=None, device=None, mock=True, stream_name="DSI")
@@ -189,3 +192,226 @@ def test_cli_parses_stream_name_and_device():
         ]
     )
     assert args.stream_name == "DSI" and args.device == "dsi" and args.montage is None
+
+
+# ---------------------------------------------------------------------------
+# From the review of #56
+# ---------------------------------------------------------------------------
+
+
+def test_connect_to_lsl_rejects_a_device_that_is_not_a_string(tmp_path):
+    from mne_rt import RTStream
+
+    nf = RTStream("sub01", "01", str(tmp_path), montage=None)
+    with pytest.raises(ValueError, match="device"):
+        nf.connect_to_lsl(mock_lsl=True, device=1)
+
+
+def _nf_with_info(tmp_path, names, types, bads=()):
+    import mne
+
+    from mne_rt import RTStream
+
+    nf = RTStream("sub01", "01", str(tmp_path), montage=None)
+    nf.rec_info = mne.create_info(names, 250.0, types)
+    nf.rec_info["bads"] = list(bads)
+    return nf
+
+
+def test_acquired_channels_resolve_a_type_string(tmp_path):
+    """picks="eeg" returned every good channel, while the stream returned only
+    the EEG ones, so every channel-dependent step described the wrong rows."""
+    nf = _nf_with_info(tmp_path, ["C3", "EOG1", "C4", "TRG"], ["eeg", "eog", "eeg", "stim"])
+    nf.picks = "eeg"
+    assert nf._acquired_ch_names() == ["C3", "C4"]
+    assert nf._acquired_ch_names(use_picks=False) == ["C3", "EOG1", "C4", "TRG"]
+
+
+def test_acquired_channels_keep_the_order_of_a_list(tmp_path):
+    """get_data returns a list of picks in the order given; this used to return
+    them in recording order, swapping the channels' names."""
+    nf = _nf_with_info(tmp_path, ["C3", "Cz", "C4"], "eeg", bads=["Cz"])
+    nf.picks = ["C4", "Cz", "C3", "C4"]
+    assert nf._acquired_ch_names() == ["C4", "C3"]  # bads out, once each
+
+
+def test_si_scale_reads_the_declared_units():
+    import mne
+
+    from mne_rt.rt_stream import _si_scale
+
+    info = mne.create_info(["C3", "C4"], 250.0, "eeg")
+    assert _si_scale(info) is None
+    with info._unlock():
+        info["chs"][0]["unit_mul"] = -6
+    np.testing.assert_allclose(_si_scale(info), [1e-6, 1.0])
+
+
+def test_read_window_converts_to_si_units(tmp_path):
+    """µV streams were treated as V everywhere but in the raw viewer."""
+    import mne
+
+    from mne_rt import RTStream
+
+    info = mne.create_info(["C3", "Cz", "C4"], 100.0, "eeg")
+    data = np.ones((3, 500)) * 50.0  # 50 µV, sent as µV
+    nf = RTStream("sub01", "01", str(tmp_path), montage=None)
+    try:
+        nf.connect_to_array(data, info, n_repeat=np.inf)
+        nf._si_scale = np.array([1e-6, 1e-6, 1e-6])
+        nf.rec_info["bads"] = ["Cz"]
+        import time
+
+        time.sleep(0.3)
+        good, _ = nf._read_window(0.1)
+        every, _ = nf._read_window(0.1, all_channels=True)
+        assert good.shape[0] == 2 and every.shape[0] == 3
+        np.testing.assert_allclose(good, 50e-6)
+        np.testing.assert_allclose(every, 50e-6)
+    finally:
+        nf.save()
+
+
+def test_find_signal_stream_leaves_marker_streams_out(monkeypatch):
+    """A marker outlet next to the EEG made a connection without a name fail
+    ("2 were found") or connect to the markers."""
+    import mne_lsl.lsl
+
+    from mne_rt.rt_stream import _find_signal_stream
+
+    class Info:
+        def __init__(self, name, stype, sfreq):
+            self.name, self.stype, self.sfreq, self.source_id = name, stype, sfreq, name + "-id"
+
+    found = [Info("DSI", "EEG", 300.0), Info("psychopy_markers", "Markers", 0.0)]
+    monkeypatch.setattr(mne_lsl.lsl, "resolve_streams", lambda timeout: found)
+    assert _find_signal_stream(15.0) == {"name": "DSI", "source_id": "DSI-id"}
+    found.append(Info("Other", "EEG", 500.0))
+    with pytest.raises(RuntimeError, match="'DSI' \\(EEG\\), 'Other' \\(EEG\\)"):
+        _find_signal_stream(15.0)
+
+
+def test_baseline_describes_every_good_channel_whatever_the_picks(tmp_path):
+    """The baseline reads every good channel, but was wrapped in an Info cut to
+    the `picks` of an earlier record_main."""
+    import mne
+
+    from mne_rt import RTStream
+
+    montage = mne.channels.make_standard_montage("standard_1020")
+    info = mne.create_info(DSI24_SCALP, 250.0, "eeg")
+    info.set_montage(montage)
+    data = np.random.default_rng(1).standard_normal((len(DSI24_SCALP), 2500)) * 1e-6
+    nf = RTStream("sub01", "01", str(tmp_path), montage="standard_1020")
+    try:
+        nf.connect_to_array(data, info, n_repeat=np.inf)
+        nf.picks = ["O1", "O2"]  # left by an earlier record_main
+        nf.record_baseline(baseline_duration=1.0, winsize=0.5)
+        assert nf.raw_baseline.ch_names == DSI24_SCALP
+    finally:
+        nf.save()
+
+
+def test_picks_naming_a_missing_or_only_bad_channel_raise(tmp_path):
+    """Dropped silently, a typo ran the session on the rest, or on nothing."""
+    nf = _nf_with_info(tmp_path, ["C3", "Cz", "C4"], "eeg", bads=["Cz"])
+    nf.picks = ["C3", "c4"]
+    with pytest.raises(ValueError, match="does not have"):
+        nf._acquired_ch_names()
+    nf.picks = ["Cz"]
+    with pytest.raises(ValueError, match="marked bad"):
+        nf._acquired_ch_names()
+
+
+def test_get_data_si_scales_only_the_rows_it_returns(tmp_path):
+    import mne
+
+    from mne_rt import RTStream
+
+    info = mne.create_info(["C3", "C4"], 100.0, "eeg")
+    nf = RTStream("sub01", "01", str(tmp_path), montage=None)
+    try:
+        nf.connect_to_array(np.ones((2, 500)), info, n_repeat=np.inf)
+        nf._si_scale = np.array([1e-6, 1.0])
+        import time
+
+        time.sleep(0.3)
+        c4, _ = nf._get_data_si(0.1, picks=["C4"])
+        c3, _ = nf._get_data_si(0.1, picks=["C3"])
+        np.testing.assert_allclose(c4, 1.0)
+        np.testing.assert_allclose(c3, 1e-6)
+    finally:
+        nf.save()
+
+
+def test_find_signal_stream_waits_for_a_late_outlet(monkeypatch):
+    """Capping discovery at one short scan failed when dsi2lsl started late."""
+    import mne_lsl.lsl
+
+    from mne_rt.rt_stream import _find_signal_stream
+
+    class Info:
+        name, stype, sfreq, source_id = "DSI", "EEG", 300.0, "DSI-id"
+
+    scans = []
+
+    def resolve(timeout):
+        scans.append(timeout)
+        return [Info()] if len(scans) >= 3 else []
+
+    monkeypatch.setattr(mne_lsl.lsl, "resolve_streams", resolve)
+    assert _find_signal_stream(15.0)["name"] == "DSI"
+    assert len(scans) == 3
+
+
+def test_baseline_is_cut_to_the_picks_for_the_modalities(tmp_path):
+    """The baseline holds every good channel; ERD/ERS, laterality and the
+    correctors compared or fitted it against windows of `picks` only."""
+    import mne
+
+    from mne_rt import RTStream
+
+    montage = mne.channels.make_standard_montage("standard_1020")
+    info = mne.create_info(DSI24_SCALP, 250.0, "eeg")
+    info.set_montage(montage)
+    data = np.random.default_rng(2).standard_normal((len(DSI24_SCALP), 2500)) * 1e-6
+    nf = RTStream("sub01", "01", str(tmp_path), montage="standard_1020")
+    try:
+        nf.connect_to_array(data, info, n_repeat=np.inf)
+        nf.record_baseline(baseline_duration=1.0, winsize=0.5)
+        nf.picks = ["O2", "O1"]
+        cut = nf._baseline_data()
+        full = nf.raw_baseline.get_data()
+        names = nf.raw_baseline.ch_names
+        np.testing.assert_array_equal(cut, full[[names.index("O2"), names.index("O1")]])
+    finally:
+        nf.save()
+
+
+def test_save_raw_with_picks_writes_the_analysed_channels(tmp_path):
+    """The saved windows hold `picks`, but were wrapped in the Info of every
+    channel, so RawArray raised and no raw FIF was written."""
+    import mne
+
+    from mne_rt import RTStream
+
+    montage = mne.channels.make_standard_montage("standard_1020")
+    info = mne.create_info(DSI24_SCALP, 250.0, "eeg")
+    info.set_montage(montage)
+    data = np.random.default_rng(3).standard_normal((len(DSI24_SCALP), 5000)) * 1e-6
+    nf = RTStream("sub01", "01", str(tmp_path), montage="standard_1020")
+    try:
+        nf.connect_to_array(data, info, n_repeat=np.inf)
+        nf.record_baseline(baseline_duration=1.0, winsize=0.5)
+        nf.record_main(
+            duration=2.0,
+            modality="sensor_power",
+            picks=["O1", "O2"],
+            save_raw=True,
+            show_raw_signal=False,
+            show_nf_signal=False,
+        )
+        (fif,) = tmp_path.rglob("*task-neurofeedback*_eeg.fif")
+        assert mne.io.read_raw_fif(fif, verbose=False).ch_names == ["O1", "O2"]
+    finally:
+        nf.save()

@@ -39,9 +39,9 @@ New features
   montage, and declares its trigger and auxiliary inputs as EEG. With
   ``device="dsi"`` the suffix is stripped and ``TRG``, ``X1``–``X3``, ``A1``
   and ``A2`` are retyped, so ``pick_types="eeg"`` keeps the scalp channels and
-  a montage that knows the DSI-24's ``T3``–``T6`` labels (``colin27_1020``)
+  a montage that knows the DSI-24's ``T3``–``T6`` labels (``standard_1020``)
   applies. ``mne-rt baseline`` and ``mne-rt run`` gain ``--device dsi``, which
-  also defaults the montage to ``colin27_1020``.
+  also defaults the montage to ``standard_1020``.
 
 - ``mne-rt baseline`` and ``mne-rt run`` gain ``--stream-name`` to select the
   live LSL stream.
@@ -91,8 +91,8 @@ Bug fixes
   :meth:`~mne_rt.RTStream.connect_to_lsl` looked for the source ID of its own
   mock player, which only exists with ``mock_lsl=True``, so the documented
   ``nf.connect_to_lsl()`` — and every non-mock ``mne-rt baseline`` / ``run`` —
-  timed out. It now connects to the only stream on the network, and raises if
-  there are several.
+  timed out. It now connects to the only signal stream on the network, leaving
+  out marker streams, and raises if there are several.
 
 - **The raw viewer stayed on "Waiting for data …" whenever** ``picks`` **was
   set.** :class:`~mne_rt.viz.RawPlot` was built for the picked channels but fed
@@ -101,12 +101,30 @@ Bug fixes
 
 - **The topomap raised** ``IndexError`` **on every update, and the brain display
   stayed empty, whenever** ``picks`` **was set.** Both span every good channel but
-  were handed the feature's picked window. They now receive the full window.
+  were handed the feature's picked window. They now receive the full window, cut
+  from the same fetch as the analysed one.
 
-- **Microvolt streams were drawn a million times too large.** Devices such as
-  DSI headsets stream µV and say so in the LSL metadata, which mne-lsl records
-  as ``unit_mul``; :class:`~mne_rt.viz.RawPlot` assumed volts, so every trace
-  left the screen. It now converts on entry.
+- **A channel-type** ``picks`` **(e.g.** ``"eeg"`` **) or a list out of recording
+  order described the wrong channels.** The stream returned only that type, or
+  the list in the order given, while every channel-dependent step (modalities,
+  baseline, inverse) was handed a description of all good channels in recording
+  order. Both now agree, and the baseline is cut to the same channels before
+  ERD/ERS, laterality, peak frequency, GEDAI and ASR compare or fit against it.
+  A name in ``picks`` that the stream does not have, or a list of only bad
+  channels, now raises instead of being dropped.
+
+- ``save(raw_data=True)`` after a run with ``picks``, or with bad channels,
+  raised in ``RawArray`` and wrote no raw FIF: the analysed windows were wrapped
+  in the info of every channel.
+
+- **Microvolt streams were treated as volts throughout.** Devices such as DSI
+  headsets stream µV and say so in the LSL metadata, which mne-lsl records as
+  ``unit_mul`` but does not apply. The raw viewer drew every trace a million
+  times too large, every window crossed the artifact threshold, band power was
+  off by 10¹², and the saved FIF files held µV labelled as V.
+  :meth:`~mne_rt.RTStream.connect_to_lsl` now converts such streams to SI units
+  as they are read, and declares them as SI; ``nf.get_data()`` returns SI too,
+  while ``nf.stream.get_data()`` still returns the samples as sent.
 
 - A failure while updating the raw viewer is logged once instead of being
   swallowed, so an empty viewer can be told apart from a stream with no data.

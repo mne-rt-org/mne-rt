@@ -643,7 +643,7 @@ def _add_common_session_args(p: argparse.ArgumentParser) -> None:
         default=None,
         metavar="NAME",
         help=(
-            "EEG montage name or .bvct file path (default: colin27_1020 with "
+            "EEG montage name or .bvct file path (default: standard_1020 with "
             "--device dsi, otherwise easycap-M1)."
         ),
     )
@@ -678,7 +678,9 @@ def _resolve_montage(args) -> str:
     if args.montage is not None:
         return args.montage
     # The DSI-24 uses the old T3/T4/T5/T6 labels, which easycap-M1 lacks.
-    return "colin27_1020" if args.device == "dsi" else "easycap-M1"
+    # standard_1020 has them and, unlike colin27_1020, exists before MNE 1.13
+    # (the minimum we support is 1.9).
+    return "standard_1020" if args.device == "dsi" else "easycap-M1"
 
 
 def _stream_kwargs(args) -> dict:
