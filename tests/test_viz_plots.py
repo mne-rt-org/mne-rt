@@ -372,10 +372,11 @@ class TestRawPlot:
         assert np.any(w._buf != 0.0)
         w.close()
 
-    def test_push_converts_declared_units_to_volts(self, qt_app):
-        """A µV stream (unit_mul=-6, e.g. dsi2lsl) is drawn at the SI scale.
-
-        Without the conversion every trace is 1e6 rows tall and off-screen.
+    def test_push_does_not_rescale_by_unit_mul(self, qt_app):
+        """Data reaching RawPlot is already SI: RTStream converts a µV stream
+        where it reads it (``_read_window``). Scaling again here by
+        ``unit_mul`` would shrink it a million times, and in MNE ``unit_mul``
+        never scales data anyway.
         """
         import mne
 
@@ -386,19 +387,6 @@ class TestRawPlot:
             for ch in info["chs"]:
                 ch["unit_mul"] = -6  # FIFF_UNITM_MU
         w = RawPlot(CH_NAMES, sfreq=SFREQ, info=info)
-        data = np.full((N_CH, 64), 50.0)  # 50 µV as sent by the device
-        w.push(data)
-        w._flush_data_queue()
-        assert np.allclose(w._buf[:, -64:], 50e-6)
-        w.close()
-
-    def test_push_leaves_si_streams_unscaled(self, qt_app):
-        import mne
-
-        from mne_rt.viz.raw_plot import RawPlot
-
-        w = RawPlot(CH_NAMES, sfreq=SFREQ, info=mne.create_info(CH_NAMES, SFREQ, "eeg"))
-        assert w._unit_factor is None
         w.push(np.full((N_CH, 64), 50e-6))
         w._flush_data_queue()
         assert np.allclose(w._buf[:, -64:], 50e-6)
@@ -1208,7 +1196,7 @@ def test_sensor_positions_put_frontal_channels_on_top():
     from mne_rt.viz._sensor_selector import sensor_positions
 
     pos = dict(
-        zip(["Fz", "Cz", "Oz"], sensor_positions(["Fz", "Cz", "Oz"], montage="colin27_1020"))
+        zip(["Fz", "Cz", "Oz"], sensor_positions(["Fz", "Cz", "Oz"], montage="standard_1020"))
     )
     assert pos["Fz"][1] < pos["Cz"][1] < pos["Oz"][1]  # 0 = frontal
 
@@ -1294,7 +1282,7 @@ def _bad_p3_info():
 
     names = "P3 C3 F3 Fz F4 C4 P4 Cz Pz Fp1 Fp2 T3 T5 O1 O2 F7 F8 T6 T4".split()
     info = mne.create_info(names, SFREQ, "eeg")
-    info.set_montage("colin27_1020")
+    info.set_montage("standard_1020")
     info["bads"] = ["P3"]
     return info
 
@@ -1341,7 +1329,24 @@ def test_sensor_positions_tolerate_channels_without_a_position():
 
     names = ["Fz", "Cz", "Oz", "HEOG", "VEOG"]
     info = mne.create_info(names, SFREQ, "eeg")
-    info.set_montage("colin27_1020", on_missing="ignore")
+    info.set_montage("standard_1020", on_missing="ignore")
     pos = dict(zip(names, sensor_positions(names, info, montage=None)))
     assert pos["Fz"][1] < pos["Cz"][1] < pos["Oz"][1]  # a real layout, not the circle
     assert pos["HEOG"][0] == pos["VEOG"][0] == 0.02  # the edge column
+
+
+def test_raw_plot_takes_integer_chunks_and_says_when_it_drops_one(qt_app, monkeypatch):
+    """A chunk of another channel set was dropped without a word, which is how
+    the viewer sat on "Waiting for data" when fed the wrong channels."""
+    from mne_rt.viz import raw_plot
+
+    seen = []
+    monkeypatch.setattr(raw_plot.logger, "warning", lambda msg, *a, **k: seen.append(msg))
+    w = raw_plot.RawPlot(["C3", "C4"], sfreq=100.0)
+    w.push(np.ones((2, 10), dtype=np.int16))
+    w._flush_data_queue()
+    assert np.any(w._buf != 0)
+    w.push(np.ones((3, 10)))
+    w.push(np.ones((3, 10)))
+    assert len(seen) == 1 and "dropping" in seen[0]
+    w.close()

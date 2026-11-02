@@ -34,6 +34,8 @@ from qtpy.QtWidgets import (
     QWidget,
 )
 
+from mne_rt._logging import logger
+
 # ---------------------------------------------------------------------------
 # Per-channel trace colours — 20 visually distinct hues for a dark background
 # ---------------------------------------------------------------------------
@@ -283,13 +285,7 @@ class RawPlot(QMainWindow):
         self._n_shown = min(int(n_shown), self._n_ch)
         self._scale = float(scale_uv) * 1e-6
         self._info = info
-        # Streams that send µV (or mV, …) declare it via ``unit_mul``; the
-        # display scale assumes SI units, so convert on entry.
-        self._unit_factor = None
-        if info is not None and len(info["chs"]) == self._n_ch:
-            factor = np.array([10.0 ** ch.get("unit_mul", 0) for ch in info["chs"]])
-            if np.any(factor != 1.0):
-                self._unit_factor = factor[:, np.newaxis]
+        self._shape_warned = False
         self._page_start = 0
         self._shown_idx: list[int] = list(range(self._n_ch))
         self._paused = False
@@ -1584,11 +1580,19 @@ class RawPlot(QMainWindow):
         if self._paused:
             return
         if data.shape[0] != self._n_ch:
+            # Dropped, but not silently: this is what left the viewer on
+            # "Waiting for data" when it was fed another channel set.
+            if not self._shape_warned:
+                self._shape_warned = True
+                logger.warning(
+                    "RawPlot: dropping chunks of %d channels; the viewer shows %d.",
+                    data.shape[0],
+                    self._n_ch,
+                )
             return
 
-        chunk = data.copy()
-        if self._unit_factor is not None:
-            chunk *= self._unit_factor
+        # Float, so that the filters and scaling below work on integer streams.
+        chunk = np.array(data, dtype=float)
 
         # 1. Online causal filter (sosfilt with persistent state)
         if self._filter_sos is not None and self._filter_zi is not None:
