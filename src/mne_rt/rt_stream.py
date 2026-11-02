@@ -89,6 +89,10 @@ _REPO_ROOT = _PKG_DIR.parent.parent  # src/ant → src → repo root
 _ACQ_STOP_TIMEOUT = 10.0
 
 
+# Name of the stream the mock player publishes; its annotations stream is
+# "<name>-annotations", with the same source_id.
+_MOCK_STREAM_NAME = "MNE-RT-mock"
+
 #: dsi2lsl inputs that are not scalp EEG: trigger, auxiliary and ear-reference channels.
 _DSI_CHANNEL_TYPES = {
     "TRG": "stim",
@@ -1084,6 +1088,7 @@ class RTStream(ModalityMixin):
                 fname,
                 chunk_size=chunk_size,
                 n_repeat=n_repeat,
+                name=_MOCK_STREAM_NAME,
                 source_id=self.source_id,
             )
             self._mock_player.start()
@@ -1094,7 +1099,10 @@ class RTStream(ModalityMixin):
         elif stream_source_id is not None:
             stream = Stream(bufsize=self.bufsize, source_id=stream_source_id)
         elif mock_lsl:
-            stream = Stream(bufsize=self.bufsize, source_id=self.source_id)
+            # By name too: the player publishes the recording's annotations as
+            # a second stream with the same source_id, and matching the source_id
+            # alone connected to either one at random.
+            stream = Stream(bufsize=self.bufsize, name=_MOCK_STREAM_NAME, source_id=self.source_id)
         else:
             # A live device with no identifier given: the one signal stream on
             # the network. Matching self.source_id here, as before, could only
@@ -2327,8 +2335,10 @@ class RTStream(ModalityMixin):
             nf_plot.show()
 
         if show_topo:
+            # Every channel, bads included, which the topomap interpolates; it
+            # is fed windows of the good ones and puts them in place itself.
             topo_plot = TopomapPlot(
-                info=self._acquired_info(use_picks=False),
+                info=self.rec_info,
                 sfreq=self._sfreq,
                 bands=topo_bands,
                 display_smoothing=topo_display_smoothing,

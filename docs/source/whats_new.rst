@@ -52,6 +52,17 @@ New features
 - ``mne-rt baseline`` and ``mne-rt run`` gain ``--stream-name`` to select the
   live LSL stream.
 
+- **A clickable scalp map to pick channels**, shared by
+  :class:`~mne_rt.viz.RawPlot`, :class:`~mne_rt.viz.CompareEvoked` and
+  :class:`~mne_rt.viz.TFRPlot`. In :class:`~mne_rt.viz.RawPlot` a click shows
+  or hides a channel and a right click marks it bad. Channels without a
+  position are listed in columns at the edge of the map.
+
+- :class:`~mne_rt.viz.TopomapPlot` takes ``interpolate_bads`` (default
+  ``True``): bad channels are estimated from the good ones by spherical-spline
+  interpolation and drawn with a cross. Its ``push`` accepts a window of the
+  good channels only, as ``StreamLSL.get_data`` returns by default.
+
 Bug fixes
 ^^^^^^^^^
 

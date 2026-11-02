@@ -196,6 +196,48 @@ def test_cli_parses_stream_name_and_device():
     assert args.stream_name == "DSI" and args.device == "dsi" and args.montage is None
 
 
+def test_record_main_topomap_interpolates_bad_channels(tmp_path, monkeypatch):
+    """A channel marked bad is not acquired, but the topomap still draws it."""
+    import mne
+
+    import mne_rt.rt_stream as rs
+    from mne_rt import RTStream
+
+    info = mne.create_info(DSI24_SCALP, 250.0, "eeg")
+    info.set_montage(make_standard_montage("colin27_1020"))
+    data = np.random.default_rng(0).standard_normal((len(DSI24_SCALP), 250 * 24)) * 1e-5
+
+    seen = {}
+
+    class SpyTopo(rs.TopomapPlot):
+        # After push, which puts the good-channel window back into full rows.
+        def _update_topomaps(self, window):
+            seen.setdefault("shapes", []).append(window.shape[0])
+            seen["interp"] = [self._info["ch_names"][i] for i in self._interp_picks]
+            super()._update_topomaps(window)
+
+    monkeypatch.setattr(rs, "TopomapPlot", SpyTopo)
+
+    nf = RTStream("sub01", "01", str(tmp_path), montage=None)
+    nf.connect_to_array(data, info, n_repeat=np.inf)
+    nf.rec_info["bads"] = ["P3"]
+    try:
+        nf.record_main(
+            duration=4.0,
+            winsize=1.0,
+            modality="sensor_power",
+            picks=["O1", "O2"],
+            show_raw_signal=False,
+            show_nf_signal=False,
+            show_topo=True,
+            save_tsv=False,
+        )
+        assert seen["interp"] == ["P3"]
+        assert set(seen["shapes"]) == {len(DSI24_SCALP)}  # P3's row is back
+    finally:
+        nf.save()
+
+
 # ---------------------------------------------------------------------------
 # From the review of #56
 # ---------------------------------------------------------------------------
@@ -415,6 +457,47 @@ def test_save_raw_with_picks_writes_the_analysed_channels(tmp_path):
         )
         (fif,) = tmp_path.rglob("*task-neurofeedback*_eeg.fif")
         assert mne.io.read_raw_fif(fif, verbose=False).ch_names == ["O1", "O2"]
+    finally:
+        nf.save()
+
+
+def test_record_main_topomap_with_a_type_string_picks_and_other_channel_types(
+    tmp_path, monkeypatch
+):
+    """picks="eeg" on a stream with a stim channel and a bad one gave the
+    topomap windows of the wrong size, raising in the Qt timer every 200 ms."""
+    import mne
+
+    import mne_rt.rt_stream as rs
+    from mne_rt import RTStream
+
+    names = DSI24_SCALP + ["TRG"]
+    info = mne.create_info(names, 250.0, ["eeg"] * len(DSI24_SCALP) + ["stim"])
+    info.set_montage(make_standard_montage("colin27_1020"))
+    data = np.random.default_rng(4).standard_normal((len(names), 250 * 24)) * 1e-5
+    shapes = []
+
+    class SpyTopo(rs.TopomapPlot):
+        def _update_topomaps(self, window):
+            shapes.append(window.shape[0])
+            super()._update_topomaps(window)
+
+    monkeypatch.setattr(rs, "TopomapPlot", SpyTopo)
+    nf = RTStream("sub01", "01", str(tmp_path), montage=None)
+    nf.connect_to_array(data, info, n_repeat=np.inf)
+    nf.rec_info["bads"] = ["P3"]
+    try:
+        nf.record_main(
+            duration=4.0,
+            winsize=1.0,
+            modality="sensor_power",
+            picks="eeg",
+            show_raw_signal=False,
+            show_nf_signal=False,
+            show_topo=True,
+            save_tsv=False,
+        )
+        assert shapes and set(shapes) == {len(names)}
     finally:
         nf.save()
 
