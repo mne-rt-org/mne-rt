@@ -640,9 +640,25 @@ def _add_common_session_args(p: argparse.ArgumentParser) -> None:
     )
     p.add_argument(
         "--montage",
-        default="easycap-M1",
+        default=None,
         metavar="NAME",
-        help="EEG montage name or .bvct file path (default: easycap-M1).",
+        help=(
+            "EEG montage name or .bvct file path (default: colin27_1020 with "
+            "--device dsi, otherwise easycap-M1)."
+        ),
+    )
+    p.add_argument(
+        "--stream-name",
+        metavar="NAME",
+        help="Name of the live LSL stream to connect to (e.g. 'DSI').  Ignored with --mock.",
+    )
+    p.add_argument(
+        "--device",
+        choices=["dsi"],
+        help=(
+            "Acquisition-system conventions to apply: 'dsi' for Wearable Sensing "
+            "DSI headsets streamed with dsi2lsl (plain channel names, scalp EEG only)."
+        ),
     )
     p.add_argument(
         "--data-type",
@@ -655,6 +671,26 @@ def _add_common_session_args(p: argparse.ArgumentParser) -> None:
         metavar="DIR",
         help="FreeSurfer subjects directory (required for source modalities).",
     )
+
+
+def _resolve_montage(args) -> str:
+    """``--montage``, or the default for ``--device``."""
+    if args.montage is not None:
+        return args.montage
+    # The DSI-24 uses the old T3/T4/T5/T6 labels, which easycap-M1 lacks.
+    # colin27_1020 has them. Before MNE 1.13 it was called standard_1020;
+    # RTStream translates the name to the one this MNE has.
+    return "colin27_1020" if args.device == "dsi" else "easycap-M1"
+
+
+def _stream_kwargs(args) -> dict:
+    """``connect_to_lsl`` arguments selecting a live stream and its device."""
+    kwargs = {"stream_name": None if args.mock else args.stream_name}
+    if args.device is not None:
+        kwargs["device"] = args.device
+        # dsi2lsl declares trigger/aux inputs as EEG; `device` retypes them.
+        kwargs["pick_types"] = "eeg"
+    return kwargs
 
 
 # ---------------------------------------------------------------------------
@@ -1169,7 +1205,7 @@ def _cmd_baseline(args) -> None:
         subject_id=args.subject,
         session=args.session,
         subjects_dir=args.subjects_dir,
-        montage=args.montage,
+        montage=_resolve_montage(args),
         data_type=args.data_type,
         subjects_fs_dir=args.subjects_fs_dir,
         verbose=args.verbose,
@@ -1177,6 +1213,7 @@ def _cmd_baseline(args) -> None:
     nf.connect_to_lsl(
         mock_lsl=args.mock,
         fname=getattr(args, "fname", None),
+        **_stream_kwargs(args),
         verbose=args.verbose,
     )
     nf.record_baseline(baseline_duration=args.duration, verbose=args.verbose)
@@ -1219,7 +1256,7 @@ def _cmd_run(args) -> None:
         subject_id=args.subject,
         session=args.session,
         subjects_dir=args.subjects_dir,
-        montage=args.montage,
+        montage=_resolve_montage(args),
         data_type=args.data_type,
         subjects_fs_dir=getattr(args, "subjects_fs_dir", None),
         artifact_correction=artifact_correction,
@@ -1228,6 +1265,7 @@ def _cmd_run(args) -> None:
     nf.connect_to_lsl(
         mock_lsl=args.mock,
         fname=getattr(args, "fname", None),
+        **_stream_kwargs(args),
         verbose=args.verbose,
     )
 

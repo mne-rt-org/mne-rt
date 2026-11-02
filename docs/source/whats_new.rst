@@ -33,6 +33,25 @@ New features
   the README before commercial use. ``gedai`` is not installed by default or by
   ``mne-rt[full]``, so mne-rt itself stays BSD-3-Clause unless you opt in.
 
+- **Wearable Sensing DSI headsets.** :meth:`~mne_rt.RTStream.connect_to_lsl`
+  takes ``device="dsi"`` for streams published by ``dsi2lsl``. That tool names
+  every channel after its reference (``"O1-A1/2-A2/2"``), which matches no
+  montage, and declares its trigger and auxiliary inputs as EEG. With
+  ``device="dsi"`` the suffix is stripped and ``TRG``, ``X1``–``X3``, ``A1``
+  and ``A2`` are retyped, so ``pick_types="eeg"`` keeps the scalp channels and
+  a montage that knows the DSI-24's ``T3``–``T6`` labels (``colin27_1020``)
+  applies. ``mne-rt baseline`` and ``mne-rt run`` gain ``--device dsi``, which
+  also defaults the montage to ``colin27_1020``.
+
+- :class:`~mne_rt.RTStream` accepts either name of the montages MNE 1.13
+  renamed (``"standard_1020"`` is now ``"colin27_1020"``, and likewise for
+  ``standard_1005``, ``_alphabetic``, ``_postfixed``, ``_prefixed`` and
+  ``_primed``) and uses the one the installed MNE has. Before, the new names
+  were refused on MNE < 1.13, and on MNE 1.13 the old ones were.
+
+- ``mne-rt baseline`` and ``mne-rt run`` gain ``--stream-name`` to select the
+  live LSL stream.
+
 Bug fixes
 ^^^^^^^^^
 
@@ -72,6 +91,53 @@ Bug fixes
   affected: the live raw viewer and the gallery example fit in band-filter mode,
   and :class:`~mne_rt.RTStream` selects GEDAI components by template
   correlation. Reported by Tomas Ros.
+
+- **The CLI and** ``connect_to_lsl()`` **could not reach a live device without a
+  stream name.** With no ``stream_name`` or ``stream_source_id``,
+  :meth:`~mne_rt.RTStream.connect_to_lsl` looked for the source ID of its own
+  mock player, which only exists with ``mock_lsl=True``, so the documented
+  ``nf.connect_to_lsl()`` — and every non-mock ``mne-rt baseline`` / ``run`` —
+  timed out. It now connects to the only signal stream on the network, leaving
+  out marker streams, and raises if there are several.
+
+- **The raw viewer stayed on "Waiting for data …" whenever** ``picks`` **was
+  set.** :class:`~mne_rt.viz.RawPlot` was built for the picked channels but fed
+  every channel, and ``push`` drops a chunk of the wrong shape without a word.
+  The viewer now shows every good channel, whatever ``picks`` the feature uses.
+
+- **The topomap raised** ``IndexError`` **on every update, and the brain display
+  stayed empty, whenever** ``picks`` **was set.** Both span every good channel but
+  were handed the feature's picked window. They now receive the full window, cut
+  from the same fetch as the analysed one.
+
+- **A channel-type** ``picks`` **(e.g.** ``"eeg"`` **) or a list out of recording
+  order described the wrong channels.** The stream returned only that type, or
+  the list in the order given, while every channel-dependent step (modalities,
+  baseline, inverse) was handed a description of all good channels in recording
+  order. Both now agree, and the baseline is cut to the same channels before
+  ERD/ERS, laterality, peak frequency, GEDAI and ASR compare or fit against it.
+  A name in ``picks`` that the stream does not have, or a list of only bad
+  channels, now raises instead of being dropped.
+
+- ``save(raw_data=True)`` after a run with ``picks``, or with bad channels,
+  raised in ``RawArray`` and wrote no raw FIF: the analysed windows were wrapped
+  in the info of every channel.
+
+- **Microvolt streams were treated as volts throughout.** Devices such as DSI
+  headsets stream µV and say so in the LSL metadata, which mne-lsl records as
+  ``unit_mul`` but does not apply. The raw viewer drew every trace a million
+  times too large, every window crossed the artifact threshold, band power was
+  off by 10¹², and the saved FIF files held µV labelled as V.
+  :meth:`~mne_rt.RTStream.connect_to_lsl` now converts such streams to SI units
+  as they are read, and declares them as SI; ``nf.get_data()`` returns SI too,
+  while ``nf.stream.get_data()`` still returns the samples as sent.
+
+- A failure while updating the raw viewer is logged once instead of being
+  swallowed, so an empty viewer can be told apart from a stream with no data.
+
+- The brain display band-passes each window with an IIR filter. The FIR it used
+  for an 8–13 Hz band was longer than a 1 s window, distorting it and warning
+  on every update.
 
 API changes
 ^^^^^^^^^^^

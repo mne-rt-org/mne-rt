@@ -45,7 +45,7 @@ from mne import (
     write_forward_solution,
     write_source_spaces,
 )
-from mne.channels import get_builtin_montages, read_dig_captrak
+from mne.channels import read_dig_captrak
 from mne.io import RawArray
 from mne.minimum_norm import (
     apply_inverse_raw,
@@ -57,6 +57,7 @@ from mne_lsl.stream import StreamLSL as Stream
 from pyqtgraph.Qt import QtWidgets
 
 from mne_rt._logging import logger, set_log_level, verbose
+from mne_rt._montage import builtin_montage
 from mne_rt._naming import MODALITY_SEP, osc_address_name, parse_modality, split_modality
 from mne_rt._stats import ema_variance, zscore
 from mne_rt.combiners import GeometricMeanCombiner, ZScoredNormCombiner
@@ -86,6 +87,81 @@ _REPO_ROOT = _PKG_DIR.parent.parent  # src/ant → src → repo root
 # How long record_main waits, past the end of a run, for the acquisition thread
 # to stop before it saves the session without it.
 _ACQ_STOP_TIMEOUT = 10.0
+
+
+#: dsi2lsl inputs that are not scalp EEG: trigger, auxiliary and ear-reference channels.
+_DSI_CHANNEL_TYPES = {
+    "TRG": "stim",
+    "X1": "misc",
+    "X2": "misc",
+    "X3": "misc",
+    "A1": "misc",
+    "A2": "misc",
+}
+
+
+def _setup_dsi_channels(stream: Any) -> None:
+    """Make a Wearable Sensing DSI stream (from ``dsi2lsl``) usable by MNE.
+
+    ``dsi2lsl`` names every channel after its reference, e.g.
+    ``"O1-A1/2-A2/2"``, which matches no montage, and declares its trigger and
+    auxiliary inputs as EEG. Strip the reference suffix and retype those
+    inputs, so a standard montage applies and ``pick_types="eeg"`` keeps only
+    scalp channels.
+    """
+    names = list(stream.info["ch_names"])
+    mapping = {ch: ch.split("-", 1)[0] for ch in names if "-" in ch}
+    renamed = [mapping.get(ch, ch) for ch in names]
+    if mapping:
+        if len(set(renamed)) != len(renamed):
+            raise RuntimeError(
+                "Cannot strip the DSI reference suffix: the plain channel names "
+                f"would not be unique ({names})."
+            )
+        stream.rename_channels(mapping)
+    types = {
+        ch: _DSI_CHANNEL_TYPES[ch.upper()] for ch in renamed if ch.upper() in _DSI_CHANNEL_TYPES
+    }
+    if types:
+        # TRG goes from V to no unit; that is the point of the retype.
+        stream.set_channel_types(types, on_unit_change="ignore")
+
+
+def _si_scale(info: Any) -> Optional[np.ndarray]:
+    """Per-channel factor taking a stream's declared units to SI, or None.
+
+    LSL outlets may declare µV, mV, …, and mne-lsl records that in ``unit_mul``
+    but leaves the samples as sent. Everything downstream — artifact
+    thresholds, feature scales, saved FIF files — assumes SI units.
+    """
+    mul = np.array([ch["unit_mul"] for ch in info["chs"]], dtype=float)
+    return 10.0**mul if np.any(mul) else None
+
+
+def _find_signal_stream(timeout: float) -> dict:
+    """``name`` and ``source_id`` of the only regular-rate LSL stream around.
+
+    Irregular-rate streams are left out: they are marker outlets (PsychoPy,
+    a paradigm), which commonly run next to the EEG and are never what a
+    connection without an identifier means.
+    """
+    from mne_lsl.lsl import resolve_streams
+
+    # Polled in short scans, since without an identifier liblsl waits the whole
+    # of each one: the first scan that finds a stream ends the wait, and an
+    # outlet started a few seconds late is still found within `timeout`.
+    deadline = local_clock() + timeout
+    while True:
+        found = [s for s in resolve_streams(timeout=1.0) if s.sfreq > 0]
+        if found or local_clock() >= deadline:
+            break
+    if len(found) != 1:
+        listed = ", ".join(f"{s.name!r} ({s.stype})" for s in found) or "none"
+        raise RuntimeError(
+            f"Expected one LSL signal stream on the network, found {len(found)}: "
+            f"{listed}. Pass `stream_name` or `stream_source_id` to choose one."
+        )
+    return {"name": found[0].name, "source_id": found[0].source_id}
 
 
 def _make_demo_raw_fif(
@@ -732,11 +808,14 @@ class RTStream(ModalityMixin):
             raise ValueError(
                 f"`data_type` must be one of {self._VALID_DATA_TYPES}, got {data_type!r}."
             )
-        if montage is not None and not (
-            montage in get_builtin_montages()
-            or (montage.endswith(".bvct") and Path(montage).is_file())
-        ):
-            raise ValueError("`montage` must be a built-in name, a valid '.bvct' path, or None.")
+        if montage is not None and not (montage.endswith(".bvct") and Path(montage).is_file()):
+            # Either name of a montage MNE 1.13 renamed, as this MNE calls it.
+            builtin = builtin_montage(montage)
+            if builtin is None:
+                raise ValueError(
+                    "`montage` must be a built-in name, a valid '.bvct' path, or None."
+                )
+            montage = builtin
         if not isinstance(mri, bool):
             raise ValueError("`mri` must be a boolean.")
         if not subject_fs_id or not isinstance(subject_fs_id, str):
@@ -834,9 +913,9 @@ class RTStream(ModalityMixin):
         # clocksync check in connect_marker_stream answer for the wrong stream.
         self._processing_flags = None
 
-    def _acquired_info(self) -> Any:
+    def _acquired_info(self, use_picks: bool = True) -> Any:
         """``rec_info`` restricted to :meth:`_acquired_ch_names`."""
-        names = self._acquired_ch_names()
+        names = self._acquired_ch_names(use_picks=use_picks)
         if names == list(self.rec_info["ch_names"]):
             return self.rec_info
         keep = [self.rec_info["ch_names"].index(ch) for ch in names]
@@ -847,6 +926,9 @@ class RTStream(ModalityMixin):
         self.stream = stream
         # A fresh stream carries no filters, whatever the last one had.
         self._filters_applied = False
+        # See connect_to_lsl; an in-memory array is taken to be in SI units.
+        self._si_scale = None
+        self._si_rows: dict = {}
         self.sfreq = stream.info["sfreq"]
         self.rec_info = stream.info
         self.rec_info["subject_info"] = {"his_id": self.subject_id}
@@ -873,6 +955,7 @@ class RTStream(ModalityMixin):
         stream_source_id: Optional[str] = None,
         pick_types: Optional[str] = None,
         processing_flags: Union[str, Sequence[str], None] = None,
+        device: Optional[str] = None,
         verbose: Union[bool, str, None] = None,
     ) -> None:
         """Connect to an LSL M/EEG stream.
@@ -907,7 +990,9 @@ class RTStream(ModalityMixin):
         stream_name : str | None, default None
             Connect by stream name (e.g. ``neuromag2lsl`` for MEG devices).
         stream_source_id : str | None, default None
-            Connect by stream source ID.
+            Connect by stream source ID.  With neither this nor
+            ``stream_name`` (and ``mock_lsl=False``), connect to the only LSL
+            stream on the network; an error is raised if there are several.
         pick_types : str | None, default None
             Channel type to keep (e.g. ``"eeg"``, ``"mag"``).
             ``None`` keeps all available channels.
@@ -916,6 +1001,22 @@ class RTStream(ModalityMixin):
             ``"all"`` to enable ``clocksync``, which is required when a marker
             stream published from another machine has to be aligned against
             this one — see :meth:`connect_marker_stream`.
+        device : str | None, default None
+            Apply the channel conventions of a specific acquisition system
+            before the montage and ``pick_types`` are applied:
+
+            * ``"dsi"`` — Wearable Sensing DSI headsets streamed with
+              ``dsi2lsl``. The reference suffix is stripped from every channel
+              name (``"O1-A1/2-A2/2"`` → ``"O1"``), ``TRG`` is typed as
+              ``stim`` and ``X1``–``X3``, ``A1``, ``A2`` as ``misc``. Combine
+              with ``pick_types="eeg"`` and a montage that knows the
+              DSI-24's ``T3``/``T4``/``T5``/``T6`` labels, such as
+              ``"colin27_1020"`` (``"standard_1020"`` before MNE 1.13; either
+              name works).
+
+            ``None`` leaves the stream as published.
+
+            .. versionadded:: 1.3.0
         verbose : bool | str | None, default None
             Override the instance-level verbosity for this call.
 
@@ -924,6 +1025,8 @@ class RTStream(ModalityMixin):
         RuntimeError
             If no LSL stream matching the given criteria is found within
             ``timeout`` seconds.
+        ValueError
+            If ``device`` is not a supported acquisition system.
 
         Notes
         -----
@@ -941,6 +1044,12 @@ class RTStream(ModalityMixin):
 
             nf.connect_to_lsl(mock_lsl=True, fname="path/to/data.fif")
             nf.connect_to_lsl(mock_lsl=True, fname="path/to/data.edf")
+
+        A Wearable Sensing DSI-24 headset streamed with
+        ``dsi2lsl --lsl-stream-name=DSI``::
+
+            nf = RTStream(..., montage="colin27_1020")
+            nf.connect_to_lsl(stream_name="DSI", device="dsi", pick_types="eeg")
         """
         if bufsize_baseline is not None:
             warn(
@@ -950,6 +1059,10 @@ class RTStream(ModalityMixin):
                 FutureWarning,
                 stacklevel=3,
             )
+        if device is not None:
+            if not isinstance(device, str) or device.lower() != "dsi":
+                raise ValueError(f"`device` must be None or 'dsi', got {device!r}.")
+            device = device.lower()
         self._teardown_existing_stream()
 
         if mock_lsl and fname is None:
@@ -980,8 +1093,13 @@ class RTStream(ModalityMixin):
             stream = Stream(bufsize=self.bufsize, name=stream_name)
         elif stream_source_id is not None:
             stream = Stream(bufsize=self.bufsize, source_id=stream_source_id)
-        else:
+        elif mock_lsl:
             stream = Stream(bufsize=self.bufsize, source_id=self.source_id)
+        else:
+            # A live device with no identifier given: the one signal stream on
+            # the network. Matching self.source_id here, as before, could only
+            # ever find a mock player.
+            stream = Stream(bufsize=self.bufsize, **_find_signal_stream(timeout))
 
         stream.connect(
             acquisition_delay=acquisition_delay,
@@ -993,13 +1111,30 @@ class RTStream(ModalityMixin):
         # share a clock.
         self._processing_flags = processing_flags
 
+        if device == "dsi":
+            # Before the montage: the published names match none.
+            _setup_dsi_channels(stream)
         if self.montage is not None:
             stream.set_montage(self.montage, on_missing="warn")
         if pick_types is not None:
             stream.pick(pick_types)
 
         stream.set_meas_date(datetime.datetime.now().replace(tzinfo=datetime.timezone.utc))
+        # Read before _finalize_stream, which resets it. The samples are scaled
+        # where mne-rt reads them (_read_window), and the units then declared
+        # as SI, which is what everything recorded from here on is in.
+        scale = _si_scale(stream.info)
+        if scale is not None:
+            stream.set_channel_units(
+                {ch["ch_name"]: 0 for ch in stream.info["chs"] if ch["unit_mul"] != 0}
+            )
         self._finalize_stream(stream)
+        self._si_scale = scale
+        if scale is not None:
+            # In place of the stream's own, which _finalize_stream exposed: the
+            # info now says V, so what nf.get_data returns has to be V too.
+            # nf.stream.get_data still returns the samples as sent.
+            self.get_data = self._get_data_si
 
     @verbose
     def connect_to_array(
@@ -1429,11 +1564,13 @@ class RTStream(ModalityMixin):
         t_start = local_clock()
         chunks: list[np.ndarray] = []
         while local_clock() < t_start + baseline_duration:
-            chunks.append(self.stream.get_data(winsize)[0])
+            chunks.append(self._read_window(winsize)[0])
             time.sleep(winsize)
 
         data = np.concatenate(chunks, axis=1)
-        raw_baseline = RawArray(data, self._acquired_info())
+        # use_picks=False: the chunks hold every good channel, whatever the
+        # `picks` of an earlier record_main.
+        raw_baseline = RawArray(data, self._acquired_info(use_picks=False))
 
         self._ensure_dirs()
         _stem = f"sub-{self.subject_id}_ses-{self.session}"
@@ -2103,6 +2240,38 @@ class RTStream(ModalityMixin):
         # report that, since a failure there must not kill acquisition.
         _osc_names = [osc_address_name(m) for m in _display_mods]
         _send_warned = [False, False]  # OSC, LSL — log the first failure only
+        _raw_feed_warned = [False]
+        # Timestamp of the last sample sent to the raw viewer. Every read resets
+        # the stream's new-sample count, so the count alone loses whatever the
+        # analysis fetch took; sending what is newer than this loses nothing.
+        _raw_last_ts = [-np.inf]
+
+        def _feed_raw(win: np.ndarray, ts: np.ndarray) -> None:
+            new = ts > _raw_last_ts[0]
+            if not new.any():
+                return
+            _raw_last_ts[0] = float(ts[new][-1])
+            try:
+                raw_queue.put_nowait(win[:, new])
+            except _queue.Full:
+                pass
+
+        # Rows of a full fetch (`_read_window(all_channels=True)`, every channel in
+        # rec_info order) holding the analysed channels and the displayed ones.
+        _all_names = list(self.rec_info["ch_names"])
+        _pick_rows = [_all_names.index(ch) for ch in self._acquired_ch_names()]
+        _good_rows = [_all_names.index(ch) for ch in self._acquired_ch_names(use_picks=False)]
+        _picks_all = _pick_rows == _good_rows
+        if (
+            not _picks_all
+            and self.artifact_correction is not None
+            and (show_topo or show_brain_activation)
+        ):
+            logger.info(
+                "The topomap and brain displays cover every good channel, but "
+                "artifact correction runs on `picks` only, so they show the "
+                "uncorrected signal."
+            )
         if osc_sender is not None:
             if len(set(_osc_names)) != len(_osc_names):
                 _clash = sorted({n for n in _osc_names if _osc_names.count(n) > 1})
@@ -2159,7 +2328,7 @@ class RTStream(ModalityMixin):
 
         if show_topo:
             topo_plot = TopomapPlot(
-                info=self.rec_info,
+                info=self._acquired_info(use_picks=False),
                 sfreq=self._sfreq,
                 bands=topo_bands,
                 display_smoothing=topo_display_smoothing,
@@ -2177,10 +2346,12 @@ class RTStream(ModalityMixin):
             )
 
         if show_raw_signal:
+            # Every good channel, not just `picks`: the viewer is for checking
+            # the whole recording, and its feed below fetches without picks.
             raw_plot = RawPlot(
-                ch_names=self._acquired_ch_names(),
+                ch_names=self._acquired_ch_names(use_picks=False),
                 sfreq=self._sfreq,
-                info=self._acquired_info(),
+                info=self._acquired_info(use_picks=False),
             )
             raw_plot.show()
 
@@ -2444,12 +2615,15 @@ class RTStream(ModalityMixin):
                 return
 
             def _compute_and_enqueue(w: np.ndarray) -> None:
-                raw_d = self._prepare_raw_array(w)
+                # The inverse covers every good channel; `w` is the full window.
+                raw_d = self._prepare_raw_array(w, use_picks=False)
                 if brain_mode == "power":
+                    # IIR: an FIR for an 8-13 Hz band is longer than a 1 s
+                    # window, which distorts the window and warns every time.
                     raw_d.filter(
                         l_freq=brain_freq_range[0],
                         h_freq=brain_freq_range[1],
-                        fir_design="firwin",
+                        method="iir",
                         verbose=False,
                     )
                 stc = apply_inverse_raw(raw_d, self.inv, lambda2=1.0 / 9, pick_ori="normal")
@@ -2556,18 +2730,34 @@ class RTStream(ModalityMixin):
                             n_avail = self.stream.n_new_samples
                             if n_avail >= max(1, int(0.033 * self._sfreq)):
                                 try:
-                                    raw_chunk = self.stream.get_data(n_avail / self._sfreq)[0]
-                                    if raw_chunk.shape[1] > 0:
-                                        raw_queue.put_nowait(raw_chunk)
-                                except (_queue.Full, Exception):
-                                    pass
+                                    # No picks: all good channels, matching RawPlot's
+                                    # _acquired_ch_names(use_picks=False). A little
+                                    # more than is new; _feed_raw keeps what is.
+                                    _n_read = n_avail + max(1, int(0.05 * self._sfreq))
+                                    _feed_raw(*self._read_window(_n_read / self._sfreq))
+                                except Exception:
+                                    # Display only, but an empty viewer must not be
+                                    # the only sign: report the first failure.
+                                    if not _raw_feed_warned[0]:
+                                        _raw_feed_warned[0] = True
+                                        logger.warning(
+                                            "Feeding the raw viewer failed.", exc_info=True
+                                        )
                         # Outside the raw_queue guard: markers must be drained even
                         # with no viewer open, or the ring buffer overflows.
                         _poll_markers()
                         time.sleep(0.005)
 
                     tic = time.time()
-                    data, _ts = self.stream.get_data(winsize, picks=picks)
+                    # One fetch of every channel, which the analysis (`picks`) and
+                    # the displays (every good channel) are then cut from. A second
+                    # get_data for the displays, as before, came a computation
+                    # later and reset the count the raw feed reads, losing those
+                    # samples from the viewer every window.
+                    _win_all, _ts = self._read_window(winsize, all_channels=True)
+                    data = _win_all[_pick_rows]
+                    if raw_queue is not None:
+                        _feed_raw(_win_all[_good_rows], _ts)  # what this read took
                     if estimate_delays:
                         _acq_delays.append(time.time() - tic)
                     if data.shape[1] != self.window_size_s:
@@ -2793,8 +2983,15 @@ class RTStream(ModalityMixin):
                     # is part of the record from here on, whatever the displays
                     # below do.
                     _commit()
-                    _push_topo(data)
-                    _push_brain(data)
+                    if topo_queue is not None or brain_queue is not None:
+                        # Both displays span every good channel. When `picks` is
+                        # all of them that is `data`, corrected; otherwise it is
+                        # the newest window uncorrected, since the corrector was
+                        # fitted on `picks` only (said once, at setup). With
+                        # causal GEDAI, `data` then lags it by GEDAI's delay.
+                        _full = data if _picks_all else _win_all[_good_rows]
+                        _push_topo(_full)
+                        _push_brain(_full)
 
             except BaseException as exc:
                 with _commit_lock:
@@ -2943,6 +3140,7 @@ class RTStream(ModalityMixin):
 
             raw_timer: Optional[QTimer] = None
             if raw_plot is not None:
+                _raw_warned = [False]
 
                 def _pump_raw() -> None:
                     try:
@@ -2950,7 +3148,11 @@ class RTStream(ModalityMixin):
                             chunk = raw_queue.get_nowait()
                             raw_plot.push(chunk)
                     except Exception:
-                        pass
+                        # Report the first failure; an empty viewer is otherwise
+                        # indistinguishable from a stream with no data.
+                        if not _raw_warned[0]:
+                            _raw_warned[0] = True
+                            logger.warning("Raw viewer update failed.", exc_info=True)
 
                 raw_timer = QTimer()
                 raw_timer.setInterval(33)  # ~30 fps
@@ -3119,6 +3321,44 @@ class RTStream(ModalityMixin):
                 "window without it. Something it waits on — the stream or a modality — "
                 "is stuck."
             )
+
+    def _read_window(
+        self, winsize: Optional[float], all_channels: bool = False
+    ) -> tuple[np.ndarray, np.ndarray]:
+        """The latest ``winsize`` seconds from the stream, in SI units.
+
+        Every good channel, or with ``all_channels`` every channel, bads
+        included, in ``rec_info`` order. The only way mne-rt reads the stream,
+        so that a stream declared in µV is converted once, here (see
+        :func:`_si_scale`).
+        """
+        return self._get_data_si(winsize, exclude=() if all_channels else "bads")
+
+    def _get_data_si(
+        self,
+        winsize: Optional[float] = None,
+        picks: Any = None,
+        exclude: Any = "bads",
+    ) -> tuple[np.ndarray, np.ndarray]:
+        """``stream.get_data``, converted to SI units if the stream is not in them."""
+        data, ts = self.stream.get_data(winsize, picks=picks, exclude=exclude)
+        scale = getattr(self, "_si_scale", None)
+        if scale is None:
+            return data, ts
+        # Which channels came back, resolved as mne-lsl resolves them. Memoised
+        # for the reads mne-rt makes many times a second (no picks).
+        key = (
+            tuple(exclude) if not isinstance(exclude, str) else exclude,
+            tuple(self.stream.info["bads"]),
+        )
+        rows = self._si_rows.get(key) if picks is None else None
+        if rows is None:
+            from mne._fiff.pick import _picks_to_idx
+
+            rows = _picks_to_idx(self.stream.info, picks, none="all", exclude=exclude)
+            if picks is None:
+                self._si_rows[key] = rows
+        return data * scale[rows, np.newaxis], ts
 
     def _disconnect(self, *, announce: bool = False) -> None:
         """Stop the M/EEG stream, the marker stream and the mock player.
@@ -3440,9 +3680,9 @@ class RTStream(ModalityMixin):
     # Preprocessing helpers
     # ------------------------------------------------------------------
 
-    def _prepare_raw_array(self, data: np.ndarray) -> RawArray:
+    def _prepare_raw_array(self, data: np.ndarray, use_picks: bool = True) -> RawArray:
         """Wrap data in a RawArray; set average EEG reference for EEG data."""
-        raw = RawArray(data, self._acquired_info(), verbose=False)
+        raw = RawArray(data, self._acquired_info(use_picks=use_picks), verbose=False)
         if self.data_type == "eeg":
             raw.set_eeg_reference("average", projection=True)
         return raw
@@ -3735,7 +3975,15 @@ class RTStream(ModalityMixin):
                 "Falling back to band-filter mode. "
                 "Call compute_inv_operator() first to enable leadfield mode."
             )
-        L = self.fwd["sol"]["data"] if have_leadfield else None  # (n_ch, n_sources)
+        L = None
+        if have_leadfield:
+            # The rows of the channels GEDAI is fitted on and will clean, which
+            # are `picks`, not necessarily every channel of the forward model.
+            L = self.fwd["sol"]["data"]  # (n_ch, n_sources)
+            fwd_names = self.fwd["sol"].get("row_names")
+            if fwd_names is not None:
+                fwd_names = list(fwd_names)
+                L = L[[fwd_names.index(ch) for ch in self._acquired_ch_names()]]
 
         if multiband:
             self.gedai = AdaptiveMultibandGEDAIDenoiser(
@@ -3749,7 +3997,7 @@ class RTStream(ModalityMixin):
                 prefilter_mode=causal_prefilter_mode,
                 broadband_pass=causal_broadband_pass,
             )
-            self.gedai.fit(data=self.raw_baseline.get_data(), leadfield=L)
+            self.gedai.fit(data=self._baseline_data(), leadfield=L)
             logger.info(
                 "GEDAI fitted in delayed Haar multiband mode (%d bands, %s, %.3f s output delay).",
                 self.gedai.n_bands,
@@ -3760,11 +4008,11 @@ class RTStream(ModalityMixin):
 
         self.gedai = GEDAIDenoiser(n_channels=n_channels, shrinkage=shrinkage)
         if have_leadfield:
-            self.gedai.fit_from_leadfield(data=self.raw_baseline.get_data(), leadfield=L)
+            self.gedai.fit_from_leadfield(data=self._baseline_data(), leadfield=L)
             logger.info("GEDAI fitted in leadfield mode (Ros et al., 2025).")
         else:
             self.gedai.fit_from_raw(
-                data=self.raw_baseline.get_data(),
+                data=self._baseline_data(),
                 sfreq=self._sfreq,
                 band=band,
             )
@@ -3830,7 +4078,7 @@ class RTStream(ModalityMixin):
             max_dropout_fraction=max_dropout_fraction,
         )
         self.asr.fit(
-            self.raw_baseline.get_data(),
+            self._baseline_data(),
             sfreq=float(self.raw_baseline.info["sfreq"]),
             window_len=window_len,
         )
@@ -4513,7 +4761,8 @@ class RTStream(ModalityMixin):
             chunks = getattr(self, "_raw_chunks", None)
             if chunks:
                 raw_all = np.concatenate(chunks, axis=1)
-                raw_nf = RawArray(raw_all, self.rec_info, verbose=False)
+                # The chunks are the analysed windows: `picks`, bads left out.
+                raw_nf = RawArray(raw_all, self._acquired_info(), verbose=False)
                 p = self.subject_dir / "eeg" / f"{stem}_eeg.fif"
                 raw_nf.save(p, overwrite=True, verbose=False)
                 saved["raw"] = p

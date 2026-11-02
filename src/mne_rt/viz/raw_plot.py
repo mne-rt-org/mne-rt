@@ -34,6 +34,8 @@ from qtpy.QtWidgets import (
     QWidget,
 )
 
+from mne_rt._logging import logger
+
 # ---------------------------------------------------------------------------
 # Per-channel trace colours — 20 visually distinct hues for a dark background
 # ---------------------------------------------------------------------------
@@ -280,6 +282,7 @@ class RawPlot(QMainWindow):
         self._n_shown = min(int(n_shown), self._n_ch)
         self._scale = float(scale_uv) * 1e-6
         self._info = info
+        self._shape_warned = False
         self._page_start = 0
         self._paused = False
         self._dc_remove = False
@@ -1530,9 +1533,19 @@ class RawPlot(QMainWindow):
         if self._paused:
             return
         if data.shape[0] != self._n_ch:
+            # Dropped, but not silently: this is what left the viewer on
+            # "Waiting for data" when it was fed another channel set.
+            if not self._shape_warned:
+                self._shape_warned = True
+                logger.warning(
+                    "RawPlot: dropping chunks of %d channels; the viewer shows %d.",
+                    data.shape[0],
+                    self._n_ch,
+                )
             return
 
-        chunk = data.copy()
+        # Float, so that the filters and scaling below work on integer streams.
+        chunk = np.array(data, dtype=float)
 
         # 1. Online causal filter (sosfilt with persistent state)
         if self._filter_sos is not None and self._filter_zi is not None:

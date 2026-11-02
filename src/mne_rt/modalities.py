@@ -167,7 +167,7 @@ class ModalityMixin:
     # Shared helpers
     # ------------------------------------------------------------------
 
-    def _acquired_ch_names(self) -> list:
+    def _acquired_ch_names(self, use_picks: bool = True) -> list:
         """Channels present in the array ``stream.get_data()`` returns.
 
         This is **not** ``rec_info["ch_names"]``: ``get_data()`` defaults to
@@ -189,13 +189,38 @@ class ModalityMixin:
         """
         bads = set(self.rec_info["bads"])
         names = [ch for ch in self.rec_info["ch_names"] if ch not in bads]
-        picks = getattr(self, "picks", None)
-        if picks is None or isinstance(picks, str):
-            # A channel-type string is resolved by the stream itself; the
-            # ordering it returns still follows rec_info.
+        picks = getattr(self, "picks", None) if use_picks else None
+        if picks is None:
             return names
-        wanted = set(picks)
-        return [ch for ch in names if ch in wanted]
+        if isinstance(picks, str):
+            # A channel type ("eeg", "data", …), resolved as mne-lsl resolves it.
+            # Returning every good channel here, as before, described a window
+            # of all types while the stream returned only this one.
+            from mne._fiff.pick import _picks_to_idx
+
+            idx = _picks_to_idx(self.rec_info, picks, none="all", exclude="bads")
+            return [self.rec_info["ch_names"][i] for i in idx]
+        # A name the stream does not have is an error, as it was when get_data
+        # resolved the picks: dropping it silently ran on the rest, or on none.
+        unknown = [ch for ch in picks if ch not in self.rec_info["ch_names"]]
+        if unknown:
+            raise ValueError(f"`picks` names channels the stream does not have: {unknown}.")
+        # In the order given, as get_data returns them; once each, bads left out.
+        good = set(names)
+        picked = list(dict.fromkeys(ch for ch in picks if ch in good))
+        if not picked:
+            raise ValueError(f"Every channel in `picks` is marked bad: {list(picks)}.")
+        return picked
+
+    def _baseline_data(self) -> np.ndarray:
+        """``raw_baseline`` cut to the analysed channels, in their order.
+
+        The baseline holds every good channel, while a window holds ``picks``:
+        anything compared or fitted against the windows has to see the same rows.
+        """
+        if getattr(self, "rec_info", None) is None:  # no stream: nothing to cut to
+            return self.raw_baseline.get_data()
+        return self.raw_baseline.get_data(picks=self._acquired_ch_names())
 
     def _get_source_model(self, *, method: str, atlas: str):
         """Return a :class:`~mne_rt.SourceModel`, building it at most once.
@@ -876,7 +901,7 @@ class ModalityMixin:
                 "erd_ers requires a completed baseline recording. Call record_baseline() first."
             )
         baseline_power = compute_bandpower(
-            self.raw_baseline.get_data(),
+            self._baseline_data(),
             sfreq=self._sfreq,
             band=tuple(self.params["frange"]),
             method=self.params["method"],
@@ -1199,7 +1224,7 @@ class ModalityMixin:
             lh_idx = list(range(mid))
             rh_idx = list(range(mid, len(ch_names)))
 
-        baseline_data = self.raw_baseline.get_data()
+        baseline_data = self._baseline_data()
         frange = tuple(self.params["frange"])
         method = self.params["method"]
         baseline_lh = float(
@@ -1330,7 +1355,7 @@ class ModalityMixin:
 
         # Compute initial PAF from baseline if available; else use band midpoint
         if hasattr(self, "raw_baseline") and self.raw_baseline is not None:
-            baseline_data = self.raw_baseline.get_data()  # (n_ch, n_samples)
+            baseline_data = self._baseline_data()  # (n_ch, n_samples)
             mean_sig = baseline_data.mean(axis=0)  # (n_samples,)
             if method == "welch":
                 freqs_bl, psd_bl = welch(mean_sig, fs=sfreq, nperseg=min(256, mean_sig.shape[-1]))

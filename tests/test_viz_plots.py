@@ -372,6 +372,26 @@ class TestRawPlot:
         assert np.any(w._buf != 0.0)
         w.close()
 
+    def test_push_does_not_rescale_by_unit_mul(self, qt_app):
+        """Data reaching RawPlot is already SI: RTStream converts a µV stream
+        where it reads it (``_read_window``). Scaling again here by
+        ``unit_mul`` would shrink it a million times, and in MNE ``unit_mul``
+        never scales data anyway.
+        """
+        import mne
+
+        from mne_rt.viz.raw_plot import RawPlot
+
+        info = mne.create_info(CH_NAMES, SFREQ, "eeg")
+        with info._unlock():
+            for ch in info["chs"]:
+                ch["unit_mul"] = -6  # FIFF_UNITM_MU
+        w = RawPlot(CH_NAMES, sfreq=SFREQ, info=info)
+        w.push(np.full((N_CH, 64), 50e-6))
+        w._flush_data_queue()
+        assert np.allclose(w._buf[:, -64:], 50e-6)
+        w.close()
+
     def test_push_respects_pause(self, qt_app):
         from mne_rt.viz.raw_plot import RawPlot
 
@@ -1159,3 +1179,20 @@ def test_brain_display_smoothing_survives_a_nan():
     ema = np.array([1.0, np.nan, 1.0])
     out = _ema_step(ema, np.array([np.nan, 2.0, 2.0]), 0.5)
     np.testing.assert_allclose(out, [1.0, 2.0, 1.5])
+
+
+def test_raw_plot_takes_integer_chunks_and_says_when_it_drops_one(qt_app, monkeypatch):
+    """A chunk of another channel set was dropped without a word, which is how
+    the viewer sat on "Waiting for data" when fed the wrong channels."""
+    from mne_rt.viz import raw_plot
+
+    seen = []
+    monkeypatch.setattr(raw_plot.logger, "warning", lambda msg, *a, **k: seen.append(msg))
+    w = raw_plot.RawPlot(["C3", "C4"], sfreq=100.0)
+    w.push(np.ones((2, 10), dtype=np.int16))
+    w._flush_data_queue()
+    assert np.any(w._buf != 0)
+    w.push(np.ones((3, 10)))
+    w.push(np.ones((3, 10)))
+    assert len(seen) == 1 and "dropping" in seen[0]
+    w.close()
