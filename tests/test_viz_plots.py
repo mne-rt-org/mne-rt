@@ -26,6 +26,8 @@ import numpy as np
 import pyqtgraph as pg
 import pytest
 
+from mne_rt._montage import make_standard_montage
+
 # ---------------------------------------------------------------------------
 # Shared fixtures
 # ---------------------------------------------------------------------------
@@ -156,7 +158,7 @@ def topo_info():
     import mne
 
     info = mne.create_info(TOPO_CH_NAMES, sfreq=SFREQ, ch_types="eeg")
-    montage = mne.channels.make_standard_montage("standard_1020")
+    montage = make_standard_montage("colin27_1020")  # standard_1020 before MNE 1.13
     info.set_montage(montage, on_missing="ignore")
     return info
 
@@ -1282,7 +1284,7 @@ def _bad_p3_info():
 
     names = "P3 C3 F3 Fz F4 C4 P4 Cz Pz Fp1 Fp2 T3 T5 O1 O2 F7 F8 T6 T4".split()
     info = mne.create_info(names, SFREQ, "eeg")
-    info.set_montage("standard_1020")
+    info.set_montage(make_standard_montage("colin27_1020"))
     info["bads"] = ["P3"]
     return info
 
@@ -1329,7 +1331,7 @@ def test_sensor_positions_tolerate_channels_without_a_position():
 
     names = ["Fz", "Cz", "Oz", "HEOG", "VEOG"]
     info = mne.create_info(names, SFREQ, "eeg")
-    info.set_montage("standard_1020", on_missing="ignore")
+    info.set_montage(make_standard_montage("colin27_1020"), on_missing="ignore")
     pos = dict(zip(names, sensor_positions(names, info, montage=None)))
     assert pos["Fz"][1] < pos["Cz"][1] < pos["Oz"][1]  # a real layout, not the circle
     assert pos["HEOG"][0] == pos["VEOG"][0] == 0.02  # the edge column
@@ -1349,4 +1351,118 @@ def test_raw_plot_takes_integer_chunks_and_says_when_it_drops_one(qt_app, monkey
     w.push(np.ones((3, 10)))
     w.push(np.ones((3, 10)))
     assert len(seen) == 1 and "dropping" in seen[0]
+    w.close()
+
+
+# ---------------------------------------------------------------------------
+# From the review of #57
+# ---------------------------------------------------------------------------
+
+
+class _Click:
+    """Just enough of a pyqtgraph click event for mouseClickEvent."""
+
+    def __init__(self, button, pos):
+        self._button, self._pos, self.accepted = button, pos, False
+
+    def button(self):
+        return self._button
+
+    def pos(self):
+        return self._pos
+
+    def accept(self):
+        self.accepted = True
+
+    def ignore(self):
+        pass
+
+
+def test_sensor_selector_right_click_reaches_the_handler(qt_app):
+    """pyqtgraph's scatter emits clicks for the left button only, so "right
+    click: bad" never fired from a real click."""
+    from qtpy.QtCore import Qt
+
+    from mne_rt.viz._sensor_selector import SensorSelector, sensor_positions
+
+    names = ["Fz", "Cz", "Pz"]
+    w = SensorSelector(names, sensor_positions(names))
+    got = []
+    w.channelRightClicked.connect(got.append)
+    pos = w._scatter.points()[0].pos()
+    # Offscreen the view has no real pixel size, so let the scatter say which
+    # dot is under the click rather than assume it.
+    expected = w._scatter.pointsAt(pos)[0].data()
+    ev = _Click(Qt.MouseButton.RightButton, pos)
+    w._scatter.mouseClickEvent(ev)
+    w.close()
+    assert ev.accepted and got == [expected]
+
+
+def test_sensor_positions_keep_many_unplaced_channels_in_view():
+    """A single column put the 21st unplaced channel and later below the view."""
+    from mne_rt.viz._sensor_selector import sensor_positions
+
+    placed = (
+        "Fp1 Fp2 F7 F3 Fz F4 F8 T7 C3 Cz C4 T8 P7 P3 Pz P4 P8 O1 Oz O2 Fpz AFz FCz CPz POz".split()
+    )
+    unplaced = [f"AUX{i}" for i in range(24)]
+    names = placed + unplaced  # 25 placed: a layout, not the circle
+    pos = dict(zip(names, sensor_positions(names)))
+    assert pos["Fz"][1] < pos["Cz"][1] < pos["Oz"][1]
+    assert abs(pos["C3"][1] - pos["C4"][1]) < 0.02  # left and right, not on a ring
+    assert all(0.0 <= pos[ch][1] <= 1.0 for ch in unplaced)
+
+
+def test_raw_plot_picker_uses_the_standard_montage_without_info(qt_app):
+    """With montage=None, a RawPlot without info put 10-20 channels on a circle."""
+    from mne_rt.viz.raw_plot import RawPlot
+
+    names = ["Fz", "Cz", "Pz", "Oz", "C3", "C4"]
+    w = RawPlot(names, sfreq=SFREQ)
+    pos = dict(zip(names, w._selector._positions))
+    w.close()
+    assert pos["Fz"][1] < pos["Cz"][1] < pos["Oz"][1]
+    # The test a circle fails: C3 and C4 level with each other, either side of Cz.
+    assert abs(pos["C3"][1] - pos["C4"][1]) < 0.02
+    assert pos["C3"][0] < pos["Cz"][0] < pos["C4"][0]
+
+
+def test_topomap_without_any_position_builds_and_ignores_pushes(qt_app):
+    """pick_info of no channel raised, so the window, and record_main with it,
+    failed at setup."""
+    import mne
+
+    from mne_rt.viz.topomap_plot import TopomapPlot
+
+    info = mne.create_info(["A", "B", "C"], SFREQ, "eeg")  # no montage: NaN positions
+    w = TopomapPlot(info=info, sfreq=SFREQ)
+    w.push(np.zeros((3, 64)))  # no-op, not a crash
+    w.close()
+
+
+def test_topomap_with_every_eeg_channel_bad_builds(qt_app, topo_info):
+    """The fallback picks included the bads, which the interpolation added a
+    second time: pick_info refused the duplicates."""
+    from mne_rt.viz.topomap_plot import TopomapPlot
+
+    info = topo_info.copy()
+    info["bads"] = list(info["ch_names"])
+    w = TopomapPlot(info=info, sfreq=SFREQ)
+    topo_picks = list(w._topo_picks)
+    w.close()
+    assert topo_picks == []  # the fallback no longer draws bad channels as good
+
+
+def test_topomap_takes_a_window_of_the_good_channels(qt_app, topo_info):
+    """What mne-lsl's get_data returns by default; each caller had to pad it."""
+    from mne_rt.viz.topomap_plot import TopomapPlot
+
+    info = topo_info.copy()
+    info["bads"] = [info["ch_names"][2]]
+    w = TopomapPlot(info=info, sfreq=SFREQ)
+    seen = []
+    w._update_topomaps = lambda data: seen.append(data.shape[0])
+    w.push(RNG.standard_normal((N_TOPO - 1, 64)))
+    assert seen == [N_TOPO]
     w.close()

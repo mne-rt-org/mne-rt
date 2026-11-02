@@ -45,7 +45,7 @@ from mne import (
     write_forward_solution,
     write_source_spaces,
 )
-from mne.channels import get_builtin_montages, read_dig_captrak
+from mne.channels import read_dig_captrak
 from mne.io import RawArray
 from mne.minimum_norm import (
     apply_inverse_raw,
@@ -57,6 +57,7 @@ from mne_lsl.stream import StreamLSL as Stream
 from pyqtgraph.Qt import QtWidgets
 
 from mne_rt._logging import logger, set_log_level, verbose
+from mne_rt._montage import builtin_montage
 from mne_rt._naming import MODALITY_SEP, osc_address_name, parse_modality, split_modality
 from mne_rt._stats import ema_variance, zscore
 from mne_rt.combiners import GeometricMeanCombiner, ZScoredNormCombiner
@@ -811,11 +812,14 @@ class RTStream(ModalityMixin):
             raise ValueError(
                 f"`data_type` must be one of {self._VALID_DATA_TYPES}, got {data_type!r}."
             )
-        if montage is not None and not (
-            montage in get_builtin_montages()
-            or (montage.endswith(".bvct") and Path(montage).is_file())
-        ):
-            raise ValueError("`montage` must be a built-in name, a valid '.bvct' path, or None.")
+        if montage is not None and not (montage.endswith(".bvct") and Path(montage).is_file()):
+            # Either name of a montage MNE 1.13 renamed, as this MNE calls it.
+            builtin = builtin_montage(montage)
+            if builtin is None:
+                raise ValueError(
+                    "`montage` must be a built-in name, a valid '.bvct' path, or None."
+                )
+            montage = builtin
         if not isinstance(mri, bool):
             raise ValueError("`mri` must be a boolean.")
         if not subject_fs_id or not isinstance(subject_fs_id, str):
@@ -1011,7 +1015,8 @@ class RTStream(ModalityMixin):
               ``stim`` and ``X1``–``X3``, ``A1``, ``A2`` as ``misc``. Combine
               with ``pick_types="eeg"`` and a montage that knows the
               DSI-24's ``T3``/``T4``/``T5``/``T6`` labels, such as
-              ``"standard_1020"``.
+              ``"colin27_1020"`` (``"standard_1020"`` before MNE 1.13; either
+              name works).
 
             ``None`` leaves the stream as published.
 
@@ -1047,7 +1052,7 @@ class RTStream(ModalityMixin):
         A Wearable Sensing DSI-24 headset streamed with
         ``dsi2lsl --lsl-stream-name=DSI``::
 
-            nf = RTStream(..., montage="standard_1020")
+            nf = RTStream(..., montage="colin27_1020")
             nf.connect_to_lsl(stream_name="DSI", device="dsi", pick_types="eeg")
         """
         if bufsize_baseline is not None:
@@ -2329,24 +2334,11 @@ class RTStream(ModalityMixin):
             )
             nf_plot.show()
 
-        # Rows of the acquired window in the topomap's info, when that info also
-        # holds the bad channels it interpolates; None when the two match.
-        topo_rows: Optional[list[int]] = None
         if show_topo:
-            topo_info = self._acquired_info(use_picks=False)
-            if self.rec_info["bads"]:
-                acquired = topo_info["ch_names"]
-                names = [
-                    ch
-                    for ch in self.rec_info["ch_names"]
-                    if ch in acquired or ch in self.rec_info["bads"]
-                ]
-                topo_info = mne.pick_info(
-                    self.rec_info, [self.rec_info["ch_names"].index(ch) for ch in names]
-                )
-                topo_rows = [names.index(ch) for ch in acquired]
+            # Every channel, bads included, which the topomap interpolates; it
+            # is fed windows of the good ones and puts them in place itself.
             topo_plot = TopomapPlot(
-                info=topo_info,
+                info=self.rec_info,
                 sfreq=self._sfreq,
                 bands=topo_bands,
                 display_smoothing=topo_display_smoothing,
@@ -3122,12 +3114,6 @@ class RTStream(ModalityMixin):
                     except Exception:
                         pass
                     if topo_data is not None:
-                        if topo_rows is not None:
-                            # Bad channels are not acquired: give them rows,
-                            # which the topomap interpolates over.
-                            full = np.zeros((len(topo_info["ch_names"]), topo_data.shape[1]))
-                            full[topo_rows] = topo_data
-                            topo_data = full
                         topo_plot.push(topo_data)
 
                 topo_timer = QTimer()

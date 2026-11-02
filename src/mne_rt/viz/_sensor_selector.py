@@ -23,6 +23,7 @@ from qtpy.QtCore import Qt, Signal
 from qtpy.QtGui import QFont
 
 from mne_rt._logging import logger
+from mne_rt._montage import make_standard_montage
 
 
 def _from_layout(ch_names: list[str], layout) -> Optional[list[tuple[float, float]]]:
@@ -42,7 +43,9 @@ def _from_layout(ch_names: list[str], layout) -> Optional[list[tuple[float, floa
         if ch in name_xy:
             positions.append(name_xy[ch])
         else:
-            positions.append((0.02, fb * 0.05))
+            # Columns of 20 at the left edge: in a single one, the 21st and
+            # later fell below the view, where they could not be clicked.
+            positions.append((0.02 + 0.05 * (fb // 20), (fb % 20) * 0.05))
             fb += 1
     return positions
 
@@ -98,11 +101,12 @@ def sensor_positions(
         if montage is not None:
             try:
                 tmp = mne.create_info(ch_names, sfreq=1.0, ch_types="eeg", verbose=False)
-                mont = mne.channels.make_standard_montage(montage)
+                mont = make_standard_montage(montage)
                 tmp.set_montage(mont, on_missing="ignore", verbose=False)
-                pos = _from_layout(ch_names, mne.channels.find_layout(tmp))
-                if pos is not None:
-                    return pos
+                # Through the info branch, which sets aside channels the montage
+                # does not place; find_layout refuses them, and a direct call
+                # here fell back to the circle as soon as there was one.
+                return sensor_positions(ch_names, tmp, montage=None)
             except Exception as exc:
                 logger.debug("Sensor layout from montage %r failed: %s", montage, exc)
     logger.warning("No sensor positions found: falling back to a circular layout.")
@@ -114,6 +118,23 @@ def sensor_positions(
         )
         for i in range(n)
     ]
+
+
+class _ClickableScatter(pg.ScatterPlotItem):
+    """A scatter that emits :attr:`sigClicked` for right clicks as well.
+
+    pyqtgraph's own emits it for the left button only, so a right click on a
+    dot never reached :meth:`SensorSelector._on_click`.
+    """
+
+    def mouseClickEvent(self, ev) -> None:
+        if ev.button() == Qt.MouseButton.RightButton:
+            points = self.pointsAt(ev.pos())
+            if len(points) > 0:
+                ev.accept()
+                self.sigClicked.emit(self, points, ev)
+                return
+        super().mouseClickEvent(ev)
 
 
 class SensorSelector(pg.PlotWidget):
@@ -202,7 +223,7 @@ class SensorSelector(pg.PlotWidget):
                 pen=pen,
             )
 
-        self._scatter = pg.ScatterPlotItem(
+        self._scatter = _ClickableScatter(
             hoverable=True, tip=lambda x, y, data: str(data) if data else ""
         )
         self._scatter.sigClicked.connect(self._on_click)

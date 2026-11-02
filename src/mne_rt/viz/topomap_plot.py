@@ -231,10 +231,24 @@ class TopomapPlot(QMainWindow):
         self._interp_matrix: Optional[np.ndarray] = None
         if interpolate_bads:
             self._make_bads_interpolation()
-        self._plot_info = mne.pick_info(
-            self._info, np.concatenate([self._topo_picks, self._interp_picks])
+        shown = np.concatenate([self._topo_picks, self._interp_picks]).astype(int)
+        self._plot_info = None  # nothing to draw: no channel has a position
+        if len(shown):
+            self._plot_info = mne.pick_info(self._info, shown)
+            self._plot_info["bads"] = []
+        else:
+            logger.warning("TopomapPlot: no channel has a sensor position; nothing to draw.")
+        # Interpolated channels are marked with a cross. Fixed for the window's
+        # life, so built once rather than on every frame.
+        self._interp_mask = np.zeros(len(shown), dtype=bool)
+        self._interp_mask[len(self._topo_picks) :] = True
+        self._mask_params = dict(marker="x", markeredgecolor="w", markersize=6, markeredgewidth=1.5)
+        # Rows of a window holding only the good channels (what mne-lsl's
+        # get_data returns), in the full info: push() puts them back in place.
+        bads = set(self._info["bads"])
+        self._good_rows = np.array(
+            [i for i, ch in enumerate(self._info["ch_names"]) if ch not in bads], dtype=int
         )
-        self._plot_info["bads"] = []
 
         self._build_ui()
         self.setWindowTitle("MNE-RT — Topomap")
@@ -265,9 +279,16 @@ class TopomapPlot(QMainWindow):
         else:
             picks = mne.pick_types(self._info, meg="grad", eeg=False, exclude="bads")
         if len(picks) == 0:
-            picks = np.arange(len(self._info["ch_names"]))
+            # Every channel but the bads: including them duplicated the bad
+            # picks the interpolation adds, which pick_info refuses.
+            bads = set(self._info["bads"])
+            picks = np.array(
+                [i for i, ch in enumerate(self._info["ch_names"]) if ch not in bads], dtype=int
+            )
         # Drop channels whose 3D position is NaN (e.g. TP9/TP10 not in biosemi64 montage)
-        valid = np.array([not np.any(np.isnan(self._info["chs"][p]["loc"][:3])) for p in picks])
+        valid = np.array(
+            [not np.any(np.isnan(self._info["chs"][p]["loc"][:3])) for p in picks], dtype=bool
+        )  # bool even when empty, where numpy would otherwise make it float
         picks = picks[valid]
         return picks
 
@@ -615,9 +636,6 @@ class TopomapPlot(QMainWindow):
                         self._display_alpha * pw + (1.0 - self._display_alpha) * self._bp_ema[band]
                     )
                 band_powers[band] = self._bp_ema[band]
-        mask = np.zeros(len(self._plot_info["ch_names"]), dtype=bool)
-        mask[len(self._topo_picks) :] = True
-        mask_params = dict(marker="x", markeredgecolor="w", markersize=6, markeredgewidth=1.5)
 
         freeze = getattr(self, "_freeze_clim", False)
 
@@ -654,8 +672,8 @@ class TopomapPlot(QMainWindow):
                     contours=self._contours,
                     res=32,
                     extrapolate="auto",
-                    mask=mask if mask.any() else None,
-                    mask_params=mask_params,
+                    mask=self._interp_mask if self._interp_mask.any() else None,
+                    mask_params=self._mask_params,
                 )
             except Exception as _e:
                 ax.text(
@@ -686,7 +704,10 @@ class TopomapPlot(QMainWindow):
         Parameters
         ----------
         data : ndarray of shape (n_channels, n_times)
-            Raw EEG/MEG data for the current analysis window.
+            Raw EEG/MEG data for the current analysis window: a row per
+            channel of ``info``, or a row per good channel only, as
+            :meth:`mne_lsl.stream.StreamLSL.get_data` returns by default. Bad
+            channels' rows are ignored either way.
 
         Notes
         -----
@@ -694,8 +715,13 @@ class TopomapPlot(QMainWindow):
         is estimated via FFT and the topomaps are redrawn via
         :func:`mne.viz.plot_topomap`.
         """
-        if self._paused:
+        if self._paused or self._plot_info is None:
             return
+        n_ch = len(self._info["ch_names"])
+        if data.shape[0] != n_ch and data.shape[0] == len(self._good_rows):
+            full = np.zeros((n_ch, data.shape[1]))
+            full[self._good_rows] = data
+            data = full
         self._last_data = data
         self._update_topomaps(data)
         now = datetime.datetime.now().strftime("%H:%M:%S.%f")[:-3]

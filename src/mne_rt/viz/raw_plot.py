@@ -489,7 +489,10 @@ class RawPlot(QMainWindow):
         lay = QVBoxLayout(grp)
         self._selector = SensorSelector(
             self._ch_names,
-            sensor_positions(self._ch_names, self._info, montage=None),
+            # The standard montage when `info` has no positions, as in
+            # CompareEvoked and TFRPlot: 10-20 names then sit where they belong
+            # instead of on a circle.
+            sensor_positions(self._ch_names, self._info),
             self._ch_names,
             min_selected=0,
             size=196,
