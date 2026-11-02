@@ -13,6 +13,8 @@ os.environ.setdefault("QT_QPA_PLATFORM", "offscreen")
 import numpy as np
 import pytest
 
+from mne_rt._montage import make_standard_montage
+
 DSI24_SCALP = "P3 C3 F3 Fz F4 C4 P4 Cz Pz Fp1 Fp2 T3 T5 O1 O2 F7 F8 T6 T4".split()
 DSI24_NAMES = [f"{c}-A1/2-A2/2" for c in DSI24_SCALP[:17]] + [
     "X3",
@@ -91,7 +93,7 @@ def dsi_fif(tmp_path):
 def test_connect_to_lsl_dsi_device(tmp_path, dsi_fif):
     from mne_rt import RTStream
 
-    nf = RTStream("sub01", "01", str(tmp_path), montage="standard_1020")
+    nf = RTStream("sub01", "01", str(tmp_path), montage="colin27_1020")
     try:
         nf.connect_to_lsl(
             mock_lsl=True, fname=str(dsi_fif), device="dsi", pick_types="eeg", timeout=15.0
@@ -117,7 +119,7 @@ def test_viewers_cover_all_channels_when_picks_is_set(tmp_path, monkeypatch):
     import mne_rt.rt_stream as rs
     from mne_rt import RTStream
 
-    montage = mne.channels.make_standard_montage("standard_1020")
+    montage = make_standard_montage("colin27_1020")
     names = DSI24_SCALP
     info = mne.create_info(names, 250.0, "eeg")
     info.set_montage(montage)
@@ -165,7 +167,7 @@ def test_cli_device_dsi_defaults():
     from mne_rt.cli import _resolve_montage, _stream_kwargs
 
     dsi = Namespace(montage=None, device="dsi", mock=False, stream_name="DSI")
-    assert _resolve_montage(dsi) == "standard_1020"
+    assert _resolve_montage(dsi) == "colin27_1020"
     assert _stream_kwargs(dsi) == {"stream_name": "DSI", "device": "dsi", "pick_types": "eeg"}
 
     plain = Namespace(montage=None, device=None, mock=True, stream_name="DSI")
@@ -298,11 +300,11 @@ def test_baseline_describes_every_good_channel_whatever_the_picks(tmp_path):
 
     from mne_rt import RTStream
 
-    montage = mne.channels.make_standard_montage("standard_1020")
+    montage = make_standard_montage("colin27_1020")
     info = mne.create_info(DSI24_SCALP, 250.0, "eeg")
     info.set_montage(montage)
     data = np.random.default_rng(1).standard_normal((len(DSI24_SCALP), 2500)) * 1e-6
-    nf = RTStream("sub01", "01", str(tmp_path), montage="standard_1020")
+    nf = RTStream("sub01", "01", str(tmp_path), montage="colin27_1020")
     try:
         nf.connect_to_array(data, info, n_repeat=np.inf)
         nf.picks = ["O1", "O2"]  # left by an earlier record_main
@@ -371,11 +373,11 @@ def test_baseline_is_cut_to_the_picks_for_the_modalities(tmp_path):
 
     from mne_rt import RTStream
 
-    montage = mne.channels.make_standard_montage("standard_1020")
+    montage = make_standard_montage("colin27_1020")
     info = mne.create_info(DSI24_SCALP, 250.0, "eeg")
     info.set_montage(montage)
     data = np.random.default_rng(2).standard_normal((len(DSI24_SCALP), 2500)) * 1e-6
-    nf = RTStream("sub01", "01", str(tmp_path), montage="standard_1020")
+    nf = RTStream("sub01", "01", str(tmp_path), montage="colin27_1020")
     try:
         nf.connect_to_array(data, info, n_repeat=np.inf)
         nf.record_baseline(baseline_duration=1.0, winsize=0.5)
@@ -395,11 +397,11 @@ def test_save_raw_with_picks_writes_the_analysed_channels(tmp_path):
 
     from mne_rt import RTStream
 
-    montage = mne.channels.make_standard_montage("standard_1020")
+    montage = make_standard_montage("colin27_1020")
     info = mne.create_info(DSI24_SCALP, 250.0, "eeg")
     info.set_montage(montage)
     data = np.random.default_rng(3).standard_normal((len(DSI24_SCALP), 5000)) * 1e-6
-    nf = RTStream("sub01", "01", str(tmp_path), montage="standard_1020")
+    nf = RTStream("sub01", "01", str(tmp_path), montage="colin27_1020")
     try:
         nf.connect_to_array(data, info, n_repeat=np.inf)
         nf.record_baseline(baseline_duration=1.0, winsize=0.5)
@@ -415,3 +417,18 @@ def test_save_raw_with_picks_writes_the_analysed_channels(tmp_path):
         assert mne.io.read_raw_fif(fif, verbose=False).ch_names == ["O1", "O2"]
     finally:
         nf.save()
+
+
+@pytest.mark.parametrize("name", ["standard_1020", "colin27_1020"])
+def test_either_name_of_a_renamed_montage_works(tmp_path, name):
+    """MNE 1.13 renamed standard_1020 to colin27_1020: the old name is no
+    longer a listed built-in there, and the new one does not exist before."""
+    import mne
+
+    from mne_rt import RTStream
+    from mne_rt._montage import builtin_montage
+
+    resolved = builtin_montage(name)
+    assert resolved in mne.channels.get_builtin_montages()
+    nf = RTStream("sub01", "01", str(tmp_path), montage=name)
+    assert nf.montage == resolved

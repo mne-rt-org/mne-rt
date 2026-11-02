@@ -39,9 +39,15 @@ New features
   montage, and declares its trigger and auxiliary inputs as EEG. With
   ``device="dsi"`` the suffix is stripped and ``TRG``, ``X1``–``X3``, ``A1``
   and ``A2`` are retyped, so ``pick_types="eeg"`` keeps the scalp channels and
-  a montage that knows the DSI-24's ``T3``–``T6`` labels (``standard_1020``)
+  a montage that knows the DSI-24's ``T3``–``T6`` labels (``colin27_1020``)
   applies. ``mne-rt baseline`` and ``mne-rt run`` gain ``--device dsi``, which
-  also defaults the montage to ``standard_1020``.
+  also defaults the montage to ``colin27_1020``.
+
+- :class:`~mne_rt.RTStream` accepts either name of the montages MNE 1.13
+  renamed (``"standard_1020"`` is now ``"colin27_1020"``, and likewise for
+  ``standard_1005``, ``_alphabetic``, ``_postfixed``, ``_prefixed`` and
+  ``_primed``) and uses the one the installed MNE has. Before, the new names
+  were refused on MNE < 1.13, and on MNE 1.13 the old ones were.
 
 - ``mne-rt baseline`` and ``mne-rt run`` gain ``--stream-name`` to select the
   live LSL stream.

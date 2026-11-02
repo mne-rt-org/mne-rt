@@ -18,6 +18,8 @@ from typing import Optional, Union
 
 import numpy as np
 
+from mne_rt._montage import make_standard_montage
+
 try:
     from qtpy.QtCore import Qt, Signal
     from qtpy.QtGui import QColor, QFont
@@ -304,7 +306,7 @@ class ButterflyPlot(QMainWindow):
                     return pos
             try:
                 tmp = mne.create_info(self.ch_names, sfreq=1.0, ch_types="eeg", verbose=False)
-                mont = mne.channels.make_standard_montage(montage_name)
+                mont = make_standard_montage(montage_name)
                 tmp.set_montage(mont, on_missing="ignore", verbose=False)
                 pos = self._from_layout(mne.channels.find_layout(tmp))
                 if pos is not None:
