@@ -60,8 +60,8 @@ New features
 
 - :class:`~mne_rt.viz.TopomapPlot` takes ``interpolate_bads`` (default
   ``True``): bad channels are estimated from the good ones by spherical-spline
-  interpolation and drawn with a cross. Its ``push`` accepts a window of the
-  good channels only, as ``StreamLSL.get_data`` returns by default.
+  interpolation and drawn like the other sensors. Its ``push`` accepts a window
+  of the good channels only, as ``StreamLSL.get_data`` returns by default.
 
 Bug fixes
 ^^^^^^^^^
