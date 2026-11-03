@@ -12,9 +12,8 @@ BrainPlot
 from __future__ import annotations
 
 import datetime
-import time
 from pathlib import Path
-from typing import Union
+from typing import Optional, Union
 
 import numpy as np
 
@@ -36,6 +35,7 @@ except ImportError:
 
 from mne_rt._logging import logger
 from mne_rt.tools import setup_surface
+from mne_rt.viz._smoothing import check_smoothing, ema_step
 
 # ---------------------------------------------------------------------------
 # Constants
@@ -55,15 +55,20 @@ _DISPLAY_MODES = [
     "SMR Power    (12–15 Hz)",
 ]
 
-# Suggested clim ranges for each display mode
-_DISPLAY_CLIM_HINTS: dict[str, tuple[float, float]] = {
-    "Source Activation": (0.0, 0.6),
-    "Alpha Power  (8–13 Hz)": (0.0, 0.5),
-    "Beta Power   (13–30 Hz)": (0.0, 0.3),
-    "Theta Power  (4–8 Hz)": (0.0, 0.5),
-    "Gamma Power  (30–80 Hz)": (0.0, 0.2),
-    "SMR Power    (12–15 Hz)": (0.0, 0.4),
+# The band each display mode shows; None is the broadband activation.
+# :attr:`BrainPlot.band` hands it to the computation in record_main.
+_MODE_BANDS: dict[str, Optional[tuple[float, float]]] = {
+    "Source Activation": None,
+    "Alpha Power  (8–13 Hz)": (8.0, 13.0),
+    "Beta Power   (13–30 Hz)": (13.0, 30.0),
+    "Theta Power  (4–8 Hz)": (4.0, 8.0),
+    "Gamma Power  (30–80 Hz)": (30.0, 80.0),
+    "SMR Power    (12–15 Hz)": (12.0, 15.0),
 }
+
+# Sulcal depth is drawn in grey under the activity, light on gyri.
+_SULC_CLIM = (-1.0, 1.5)
+_SULC_GREYS = (0.30, 0.82)  # grey levels of sulci and gyri
 
 _VIEW_PRESETS: dict[str, dict] = {
     "lateral_lh": {"position": (-450, 0, 0), "focal": (0, 0, 0), "up": (0, 0, 1)},
@@ -182,16 +187,30 @@ _BACKGROUNDS: dict[str, tuple[str, str]] = {
 _DEFAULT_BG = "Midnight"
 
 
-def _ema_step(ema: np.ndarray, x: np.ndarray, a: float) -> np.ndarray:
-    """One display-smoothing step that a non-finite value cannot poison.
+#: Vertices per hemisphere of the ico-5 cortex the display draws.
+N_ICO5 = 10242
 
-    A vertex whose new value is not finite keeps its average; one whose average
-    is not finite restarts from its new value. A plain blend would turn the
-    vertex NaN for good and leave it blank until the next reset.
+
+def to_display(values: np.ndarray, vertices: list[np.ndarray]) -> tuple[np.ndarray, np.ndarray]:
+    """One value per source, as ``(lh, rh)`` arrays over the display's vertices.
+
+    ``vertices`` are the source estimate's vertex numbers per hemisphere; a
+    display vertex without a source is NaN, drawn without activity.
     """
-    out = a * x + (1.0 - a) * ema
-    out = np.where(np.isfinite(ema), out, x)
-    return np.where(np.isfinite(x), out, ema)
+    n_lh = len(vertices[0])
+    out = []
+    for vertno, part in zip(vertices, (values[:n_lh], values[n_lh:])):
+        full = np.full(N_ICO5, np.nan)
+        full[vertno] = part
+        out.append(full)
+    return out[0], out[1]
+
+
+def _lut(cmap: str) -> np.ndarray:
+    """256 RGB rows of a matplotlib colormap, in [0, 1]."""
+    import matplotlib
+
+    return matplotlib.colormaps[cmap](np.linspace(0.0, 1.0, 256))[:, :3]
 
 
 class BrainPlot:
@@ -224,9 +243,9 @@ class BrainPlot:
         Width × height of the render window in pixels.
     display_smoothing : float, default 0.3
         EMA factor applied to the per-vertex activation arrays before each
-        render.  ``1.0`` disables smoothing; lower values blend consecutive
-        frames so the cortical map transitions smoothly instead of jumping
-        between analysis windows.
+        render, in ``(0, 1]``.  ``1.0`` disables smoothing; lower values blend
+        consecutive frames so the cortical map transitions smoothly instead of
+        jumping between analysis windows.
     verbose : bool | str | None, default None
         Verbosity level.
 
@@ -237,9 +256,11 @@ class BrainPlot:
 
     Notes
     -----
-    Activity values are spread from the 10 242 ico-5 source vertices to all
-    163 842 fsaverage surface vertices via nearest-neighbour interpolation,
-    giving a smooth spatial appearance.
+    The cortex is drawn at the resolution of an ico-5 source space: the 10 242
+    vertices per hemisphere the activity is estimated on, which are the first
+    10 242 of fsaverage's. Values are interpolated across each triangle. The
+    full 163 842-vertex surface made every update upload sixteen times more
+    data to the GPU for no extra information, about 0.2 s per frame.
 
     .. versionadded:: 1.0.0
     """
@@ -269,6 +290,7 @@ class BrainPlot:
             raise ValueError(f"cmap {cmap!r} not recognised.  Choose from {_CMAPS}.")
         if surf not in _SURFACES:
             raise ValueError(f"surf {surf!r} not recognised.  Choose from {_SURFACES}.")
+        display_smoothing = check_smoothing(display_smoothing)
 
         self._subjects_fs_dir = Path(subjects_fs_dir)
         self._clim = list(clim)
@@ -283,7 +305,7 @@ class BrainPlot:
         self._recording = False
         self._video_writer = None
         self._video_path: Path | None = None
-        self._display_alpha = float(np.clip(display_smoothing, 0.0, 1.0))
+        self._display_alpha = float(display_smoothing)
         self._lh_ema: np.ndarray | None = None
         self._rh_ema: np.ndarray | None = None
 
@@ -299,7 +321,6 @@ class BrainPlot:
         self._load_surface(surf)
 
         self._plotter = self._build_plotter(window_size)
-        self._sync_scalar_bar_lut()  # link scalar bar to activity actor's LUT
         self._add_key_bindings()
         self._add_overlays()
         logger.info("BrainPlot ready.")
@@ -319,8 +340,13 @@ class BrainPlot:
             str(self._subjects_fs_dir),
             hemi_distance=self._hemi_distance,
             surf=surf,
+            grade=5,
         )
         self._n_lh = int(self._hemi_offsets["rh"])
+        t = np.clip((self._mesh["base"] - _SULC_CLIM[0]) / np.ptp(_SULC_CLIM), 0.0, 1.0)
+        grey = _SULC_GREYS[0] + (_SULC_GREYS[1] - _SULC_GREYS[0]) * (1.0 - t)
+        self._base_rgb = np.repeat(grey[:, np.newaxis], 3, axis=1)
+        self._mesh["rgb"] = (self._base_rgb * 255).astype(np.uint8)
 
     # ------------------------------------------------------------------
     # Plotter construction
@@ -334,62 +360,62 @@ class BrainPlot:
             toolbar=False,
             menu_bar=False,
             editor=False,
+            # Rendered when there is something new (record_main's brain timer),
+            # not also on pyvistaqt's own timer, five times a second regardless.
+            auto_update=False,
         )
 
-        # Background gradient
         bg_bot, bg_top = _BACKGROUNDS[_DEFAULT_BG]
         p.set_background(bg_bot, top=bg_top)
 
-        # ── Base sulcal-depth mesh ────────────────────────────────────────
-        # sulc values: negative = gyri (light), positive = sulci (dark)
-        # "Greys_r" maps low→white, high→black → correct neuroimaging convention
-        self._base_actor = p.add_mesh(
-            self._mesh,
-            scalars="base",
-            cmap="Greys_r",
-            clim=[-1.0, 1.5],
-            smooth_shading=True,
-            show_scalar_bar=False,
-        )
+        self._add_cortex_actor(p)
+        self._add_scalar_bar(p)
 
-        # ── Activity overlay ──────────────────────────────────────────────
-        self._act_actor = p.add_mesh(
-            self._mesh,
-            scalars="activity",
-            cmap=_CMAPS[self._cmap_idx],
-            opacity=self._opacity,
-            clim=self._clim,
-            smooth_shading=True,
-            show_scalar_bar=False,
-            interpolate_before_map=True,
-            nan_opacity=0.0,
-        )
-
-        # ── Scalar bar (no title, no tick numbers) ───────────────────────
-        p.add_scalar_bar(
-            title="",
-            italic=False,
-            vertical=True,
-            position_x=0.02,
-            position_y=0.20,
-            height=0.38,
-            width=0.04,
-            color="white",
-            title_font_size=0,
-            label_font_size=10,
-            n_labels=0,
-        )
-
-        # ── Lighting & post-processing ────────────────────────────────────
-        p.enable_eye_dome_lighting()
-        p.enable_ssao(radius=0.5, bias=0.005, kernel_size=256)
-        p.enable_anti_aliasing("ssaa")
+        # FXAA only: SSAO (a 256-sample kernel), SSAA (the frame rendered several
+        # times over) and eye-dome lighting (made for point clouds) cost a weak
+        # GPU far more than they add, and made offscreen VTK report errors.
+        p.enable_anti_aliasing("fxaa")
         p.add_camera_orientation_widget()
         p.camera_position = "yz"
         p.camera.azimuth = 45
 
         self._add_control_panel(p)
         return p
+
+    def _add_cortex_actor(self, p: "_BackgroundPlotter") -> None:
+        """One actor, coloured on the CPU: the sulcal grey blended with activity.
+
+        Two overlapping actors, one translucent, doubled the geometry, needed
+        transparency sorting and flickered where the two coincided.
+        """
+        self._actor = p.add_mesh(
+            self._mesh, scalars="rgb", rgb=True, smooth_shading=True, show_scalar_bar=False
+        )
+        # The array the actor draws from, written in place on each update.
+        self._rgb = self._actor.mapper.dataset.point_data["rgb"]
+        self._refresh_scalars(deferred=True)
+
+    def _add_scalar_bar(self, p: "_BackgroundPlotter") -> None:
+        from vtkmodules.vtkCommonCore import vtkLookupTable
+        from vtkmodules.vtkRenderingAnnotation import vtkScalarBarActor
+
+        self._bar_lut = vtkLookupTable()
+        self._bar = vtkScalarBarActor()
+        self._bar.SetLookupTable(self._bar_lut)
+        self._bar.SetPosition(0.02, 0.20)
+        self._bar.SetWidth(0.04)
+        self._bar.SetHeight(0.38)
+        self._bar.SetNumberOfLabels(0)
+        p.add_actor(self._bar)
+        self._update_scalar_bar()
+
+    def _update_scalar_bar(self) -> None:
+        lut = _lut(_CMAPS[self._cmap_idx])
+        self._bar_lut.SetNumberOfTableValues(len(lut))
+        for i, (r, g, b) in enumerate(lut):
+            self._bar_lut.SetTableValue(i, r, g, b, 1.0)
+        self._bar_lut.SetRange(*self._clim)
+        self._bar_lut.Build()
 
     # ------------------------------------------------------------------
     # Qt control panel
@@ -493,8 +519,8 @@ class BrainPlot:
             if idx == self._cmap_idx:
                 return
             self._cmap_idx = idx
-            self._sync_scalar_bar_lut()
-            p.render()
+            self._update_scalar_bar()
+            self._refresh_scalars()
 
         cmap_combo.currentTextChanged.connect(_on_cmap)
         ly.addWidget(cmap_combo)
@@ -510,14 +536,14 @@ class BrainPlot:
         def _on_clim_max(v: int) -> None:
             self._clim[1] = v / 100.0
             clim_max_lbl.setText(f"max  {self._clim[1]:.2f}")
-            self._act_actor.GetMapper().SetScalarRange(*self._clim)
-            p.render()
+            self._update_scalar_bar()
+            self._refresh_scalars()
 
         def _on_clim_min(v: int) -> None:
             self._clim[0] = v / 100.0
             clim_min_lbl.setText(f"min  {self._clim[0]:.2f}")
-            self._act_actor.GetMapper().SetScalarRange(*self._clim)
-            p.render()
+            self._update_scalar_bar()
+            self._refresh_scalars()
 
         clim_max_sl.valueChanged.connect(_on_clim_max)
         clim_min_sl.valueChanged.connect(_on_clim_min)
@@ -535,8 +561,7 @@ class BrainPlot:
         def _on_opacity(v: int) -> None:
             self._opacity = v / 100.0
             op_lbl.setText(f"{self._opacity:.2f}")
-            self._act_actor.GetProperty().SetOpacity(self._opacity)
-            p.render()
+            self._refresh_scalars()
 
         op_sl.valueChanged.connect(_on_opacity)
         ly.addWidget(op_lbl)
@@ -594,12 +619,13 @@ class BrainPlot:
 
         # ── Display Mode ──────────────────────────────────────────────────
         grp, ly = _group("Display Mode")
-        mode_combo = QComboBox()
+        mode_combo = self._mode_combo = QComboBox()
         mode_combo.addItems(_DISPLAY_MODES)
         mode_combo.setCurrentText(self._display_mode)
         mode_lbl = QLabel(
             "<span style='color:#8b949e;font-size:9px;'>"
-            "Configure RTStream modality to match selected mode"
+            "Activation, or source power in the chosen band; "
+            "applies from the next window"
             "</span>"
         )
         mode_lbl.setWordWrap(True)
@@ -634,9 +660,15 @@ class BrainPlot:
 
         btn_band_row = QHBoxLayout()
         btn_set_band = QPushButton("Set")
-        btn_set_band.clicked.connect(self._set_custom_band)
+
+        def _on_set_band() -> None:
+            lo, hi = self._custom_lo_spin.value(), self._custom_hi_spin.value()
+            if lo < hi:  # an empty band is ignored, as before
+                self.set_custom_band(lo, hi)
+
+        btn_set_band.clicked.connect(_on_set_band)
         btn_clr_band = QPushButton("Clear")
-        btn_clr_band.clicked.connect(self._clear_custom_band)
+        btn_clr_band.clicked.connect(self.clear_custom_band)
         btn_band_row.addWidget(btn_set_band)
         btn_band_row.addWidget(btn_clr_band)
         ly.addLayout(btn_band_row)
@@ -704,14 +736,24 @@ class BrainPlot:
     # ------------------------------------------------------------------
 
     def _refresh_scalars(self, deferred: bool = False) -> None:
-        """Recompute display scalars respecting threshold and hemisphere masks."""
-        display = self._scalars_full.copy()
-        display[display < self._threshold] = np.nan
+        """Colour the cortex: activity over the sulcal grey, where it is shown.
+
+        Activity is shown where it is finite, at least the threshold, and in a
+        visible hemisphere; the opacity sets how much of the grey it covers.
+        """
+        v = self._scalars_full
+        lo, hi = self._clim
+        with np.errstate(invalid="ignore"):
+            shown = np.isfinite(v) & (v >= self._threshold)
+            t = np.clip((v - lo) / ((hi - lo) or 1.0), 0.0, 1.0)
         if not self._hemi_visible["lh"]:
-            display[: self._n_lh] = np.nan
+            shown[: self._n_lh] = False
         if not self._hemi_visible["rh"]:
-            display[self._n_lh :] = np.nan
-        self._mesh["activity"] = display
+            shown[self._n_lh :] = False
+        idx = np.nan_to_num(t * 255.0).astype(np.intp)
+        w = (self._opacity * shown)[:, np.newaxis]
+        rgb = self._base_rgb * (1.0 - w) + _lut(_CMAPS[self._cmap_idx])[idx] * w
+        self._rgb[:] = (rgb * 255.0).astype(np.uint8)
         if not deferred:
             self._plotter.render()
 
@@ -723,51 +765,17 @@ class BrainPlot:
         self._plotter.render()
 
     def _rebuild_actors(self) -> None:
-        """Remove and re-add mesh actors after a surface swap."""
+        """Remove and re-add the cortex actor after a surface swap."""
         p = self._plotter
-        p.remove_actor(self._base_actor)
-        p.remove_actor(self._act_actor)
+        p.remove_actor(self._actor)
         self._remove_parc_actor()
-
-        self._base_actor = p.add_mesh(
-            self._mesh,
-            scalars="base",
-            cmap="Greys_r",
-            clim=[-1.0, 1.5],
-            smooth_shading=True,
-            show_scalar_bar=False,
-        )
-        self._act_actor = p.add_mesh(
-            self._mesh,
-            scalars="activity",
-            cmap=_CMAPS[self._cmap_idx],
-            opacity=self._opacity,
-            clim=self._clim,
-            smooth_shading=True,
-            show_scalar_bar=False,
-            interpolate_before_map=True,
-            nan_opacity=0.0,
-        )
-        self._sync_scalar_bar_lut()
+        self._add_cortex_actor(p)
 
         # Re-overlay parcellation borders on the new surface geometry
         if self._parc_edges is not None:
             self._build_parc_actor()
 
         p.render()
-
-    def _sync_scalar_bar_lut(self) -> None:
-        """Sync the scalar bar LUT with the current activity actor's mapper."""
-        import matplotlib
-
-        cmap_obj = matplotlib.colormaps[_CMAPS[self._cmap_idx]]
-        lut = self._act_actor.GetMapper().GetLookupTable()
-        lut.SetNumberOfColors(256)
-        for i in range(256):
-            r, g, b, a = cmap_obj(i / 255.0)
-            lut.SetTableValue(i, r, g, b, a)
-        lut.Build()
-        self._plotter.scalar_bar.SetLookupTable(lut)
 
     # ------------------------------------------------------------------
     # Parcellation border overlay
@@ -884,33 +892,71 @@ class BrainPlot:
     # Custom frequency band
     # ------------------------------------------------------------------
 
-    def _set_custom_band(self) -> None:
-        lo = self._custom_lo_spin.value()
-        hi = self._custom_hi_spin.value()
-        if lo >= hi:
-            return
-        self._custom_band_hz = (lo, hi)
-        self._display_mode = f"Custom  {lo:.1f}–{hi:.1f} Hz"
-        self._custom_band_lbl.setText(f"Active: {lo:.1f}–{hi:.1f} Hz")
-        self._custom_band_lbl.setStyleSheet("color:#80d8ff; font-size:10px;")
+    def set_custom_band(self, lo: float, hi: float) -> None:
+        """Show source power in ``lo``–``hi`` Hz, from the next window on.
+
+        Parameters
+        ----------
+        lo, hi : float
+            Band edges in Hz, ``lo < hi``.
+        """
+        if not 0 < lo < hi:
+            raise ValueError(f"Need 0 < lo < hi, got ({lo}, {hi}).")
+        # On top of the display mode, which stays as it was: Clear goes back to it.
+        self._custom_band_hz = (float(lo), float(hi))
+        if hasattr(self, "_custom_band_lbl"):
+            self._custom_band_lbl.setText(f"Active: {lo:.1f}–{hi:.1f} Hz")
+            self._custom_band_lbl.setStyleSheet("color:#80d8ff; font-size:10px;")
+        self._reset_smoothing()
         logger.info("BrainPlot custom band → %.1f–%.1f Hz", lo, hi)
 
-    def _clear_custom_band(self) -> None:
+    def set_band(self, band: tuple[float, float] | None) -> None:
+        """Show activation (``None``) or source power in ``band``, in Hz.
+
+        A band that one of the display modes covers selects that mode; any
+        other becomes a custom band.
+        """
+        if band is None:
+            self.set_display_mode("Source Activation")
+            return
+        band = (float(band[0]), float(band[1]))
+        for mode, mode_band in _MODE_BANDS.items():
+            if mode_band == band:
+                self.set_display_mode(mode)
+                return
+        self.set_custom_band(*band)
+
+    def clear_custom_band(self) -> None:
+        """Go back to the display mode's own band."""
         self._custom_band_hz = None
-        self._display_mode = _DISPLAY_MODES[0]
-        self._custom_band_lbl.setText("No custom band set")
-        self._custom_band_lbl.setStyleSheet("color:#8b949e; font-size:10px;")
+        if hasattr(self, "_custom_band_lbl"):
+            self._custom_band_lbl.setText("No custom band set")
+            self._custom_band_lbl.setStyleSheet("color:#8b949e; font-size:10px;")
+        self._reset_smoothing()
         logger.info("BrainPlot custom band cleared")
 
     @property
     def custom_band(self) -> tuple[float, float] | None:
-        """Active custom frequency band ``(lo, hi)`` in Hz, or ``None``.
-
-        Read this in the acquisition loop alongside :attr:`display_mode` to
-        decide which frequency range to pass to :meth:`update_from_arrays`.
-        When not ``None`` it overrides the built-in band labels.
-        """
+        """Active custom frequency band ``(lo, hi)`` in Hz, or ``None``."""
         return self._custom_band_hz
+
+    @property
+    def band(self) -> tuple[float, float] | None:
+        """What to compute for the display: a band in Hz, or ``None`` for activation.
+
+        The custom band when one is set, else the display mode's.
+        :meth:`~mne_rt.RTStream.record_main` reads it for every window, so the
+        controls change what is computed, not just the label.
+        """
+        if self._custom_band_hz is not None:
+            return self._custom_band_hz
+        return _MODE_BANDS.get(self._display_mode)
+
+    def _reset_smoothing(self) -> None:
+        # What is shown changes meaning: blending in the old values would put
+        # the previous band's map under the new label for the next frames.
+        self._lh_ema = None
+        self._rh_ema = None
 
     # ------------------------------------------------------------------
     # Public interface
@@ -936,7 +982,6 @@ class BrainPlot:
 
         if len(saved_scalars) == len(self._scalars_full):
             self._scalars_full[:] = saved_scalars
-            self._mesh["activity"] = saved_scalars
 
         self._rebuild_actors()
         logger.info("Surface changed to %r.", surf)
@@ -948,132 +993,101 @@ class BrainPlot:
         mode: str = "power",
         deferred: bool = False,
     ) -> None:
-        """Update the brain display from pre-computed per-source-vertex scalars.
-
-        Source values (10 242 per hemisphere) are spread to all 163 842
-        surface vertices via nearest-neighbour interpolation.
+        """Update the brain display from per-source-vertex values.
 
         Parameters
         ----------
-        lh_scalars : ndarray, shape (10242,)
-            Activity values for left-hemisphere source vertices.
-        rh_scalars : ndarray, shape (10242,)
-            Activity values for right-hemisphere source vertices.
+        lh_scalars, rh_scalars : ndarray, shape (10242,)
+            One value per ico-5 vertex of each hemisphere (NaN where there is
+            none, which is drawn without activity).
         mode : str, default "power"
             Kept for API symmetry; unused internally.
         deferred : bool, default False
             If ``True``, skip the immediate ``render()`` call.
         """
+        lh_scalars = np.asarray(lh_scalars, dtype=float)
+        rh_scalars = np.asarray(rh_scalars, dtype=float)
         if self._display_alpha < 1.0:
             if self._lh_ema is None:
-                self._lh_ema = lh_scalars.copy()
-                self._rh_ema = rh_scalars.copy()
+                self._lh_ema, self._rh_ema = lh_scalars.copy(), rh_scalars.copy()
             else:
                 a = self._display_alpha
-                self._lh_ema = _ema_step(self._lh_ema, lh_scalars, a)
-                self._rh_ema = _ema_step(self._rh_ema, rh_scalars, a)
-            lh_scalars = self._lh_ema
-            rh_scalars = self._rh_ema
+                self._lh_ema = ema_step(self._lh_ema, lh_scalars, a)
+                self._rh_ema = ema_step(self._rh_ema, rh_scalars, a)
+            # A vertex with no value this frame is drawn blank, not with the
+            # average it had: what is shown is never older than the data.
+            lh_scalars = np.where(np.isfinite(lh_scalars), self._lh_ema, np.nan)
+            rh_scalars = np.where(np.isfinite(rh_scalars), self._rh_ema, np.nan)
 
         n_lh = self._n_lh
         self._scalars_full[:n_lh] = lh_scalars[self._nn_map["lh"]]
         self._scalars_full[n_lh:] = rh_scalars[self._nn_map["rh"]]
         self._refresh_scalars(deferred=deferred)
 
-    def update(
-        self,
-        stc,
-        mode: str = "power",
-        interval: float = 0.05,
-    ) -> None:
-        """Animate the brain from a source time-course estimate.
+    def update(self, stc, mode: str = "power") -> None:
+        """Show one frame of a surface source estimate on fsaverage.
 
         Parameters
         ----------
         stc : mne.SourceEstimate
-            Source estimate returned by ``apply_inverse_raw`` or similar.
+            On an fsaverage ico-5 (or coarser) surface source space.
         mode : {"power", "activation"}, default "power"
             ``"power"`` displays mean squared amplitude;
             ``"activation"`` displays the time-averaged amplitude.
-        interval : float, default 0.05
-            Seconds to pause between frame updates.
         """
-        n_times = stc.lh_data.shape[1]
-        block = max(n_times // 2, 1)
-        n_lh = self._n_lh
-
-        for b_start in range(0, n_times, block):
-            b_end = min(b_start + block, n_times)
-            for hemi in ("lh", "rh"):
-                raw_d = stc.rh_data if hemi == "rh" else stc.lh_data
-                chunk = raw_d[:, b_start:b_end]
-                src_vals = np.mean(chunk**2, axis=1) if mode == "power" else chunk.mean(axis=1)
-                nn = self._nn_map[hemi]
-                if hemi == "lh":
-                    self._scalars_full[:n_lh] = src_vals[nn]
-                else:
-                    self._scalars_full[n_lh:] = src_vals[nn]
-            self._refresh_scalars()
-            time.sleep(interval)
+        vals = np.mean(stc.data**2, axis=1) if mode == "power" else stc.data.mean(axis=1)
+        self.update_from_arrays(*to_display(vals, stc.vertices))
 
     def set_display_mode(self, mode: str) -> None:
-        """Switch the display mode label and reset clim to sensible defaults.
-
-        The display mode is a **label only** — it tells both the operator and
-        the visualisation what kind of values are being streamed in.  Configure
-        :meth:`~mne_rt.RTStream.record_main` with the matching ``modality`` to
-        pass the correct data.
+        """Choose what the display shows, from the next window on.
 
         Parameters
         ----------
         mode : str
-            One of :data:`_DISPLAY_MODES`.  Choosing a band-power mode will
-            also set the colour-range (clim) to a typical power scale;
-            choosing "Source Activation" restores the activation scale.
-
-        Notes
-        -----
-        For **band power** modes pass per-source-vertex spectral power (e.g.,
-        from ``modality="source_power"``) to :meth:`update_from_arrays`.
-        For **activation** mode pass eLORETA / dSPM amplitude values from
-        :meth:`update` (``stc`` from MNE inverse operator).
+            One of :data:`_DISPLAY_MODES`: ``"Source Activation"``, or source
+            power in one of the named bands (see :attr:`band`). Clears any
+            custom band.
         """
         if mode not in _DISPLAY_MODES:
             raise ValueError(f"mode {mode!r} not recognised.  Choose from {_DISPLAY_MODES}.")
+        # The mode first: `band` reads the custom band before the mode, so a
+        # window submitted in between still gets one of the two, not neither.
         self._display_mode = mode
-        clim_hint = _DISPLAY_CLIM_HINTS.get(mode, (0.0, 0.6))
-        self._clim[0] = clim_hint[0]
-        self._clim[1] = clim_hint[1]
-        self._act_actor.GetMapper().SetScalarRange(*self._clim)
-        self._plotter.render()
-        logger.info("BrainPlot display mode → %r  (clim %s)", mode, clim_hint)
+        self._custom_band_hz = None
+        if hasattr(self, "_custom_band_lbl"):
+            self._custom_band_lbl.setText("No custom band set")
+            self._custom_band_lbl.setStyleSheet("color:#8b949e; font-size:10px;")
+        combo = getattr(self, "_mode_combo", None)
+        if combo is not None and combo.currentText() != mode:
+            # Set from code (record_main): the menu has to say so, or picking
+            # what it shows would change nothing.
+            combo.blockSignals(True)
+            combo.setCurrentText(mode)
+            combo.blockSignals(False)
+        self._reset_smoothing()
+        logger.info("BrainPlot display mode → %r (band %s)", mode, self.band)
 
     @property
     def display_mode(self) -> str:
         """Current display mode string (e.g. ``"Alpha Power  (8–13 Hz)"``).
 
-        Read this in the acquisition loop to decide which modality to compute
-        and pass to :meth:`update_from_arrays`.
+        ``"Custom  lo–hi Hz"`` while a custom band is set. What is computed
+        is :attr:`band`.
         """
+        if self._custom_band_hz is not None:
+            lo, hi = self._custom_band_hz
+            return f"Custom  {lo:.1f}–{hi:.1f} Hz"
         return self._display_mode
 
     def reset_activity(self) -> None:
         """Zero out all activity scalars and refresh the display."""
         self._scalars_full[:] = 0.0
-        # Or the next update blends into the activity just cleared.
-        self._lh_ema = None
-        self._rh_ema = None
+        self._reset_smoothing()  # or the next update blends into what was cleared
         self._refresh_scalars()
 
     # ------------------------------------------------------------------
     # Video recording
     # ------------------------------------------------------------------
-
-    def _toggle_recording(self) -> None:
-        if self._recording:
-            self.stop_recording()
-        else:
-            self.record_video()
 
     def record_video(self, path: Union[str, Path, None] = None) -> Path:
         """Start recording the brain display to an MP4 video file.
@@ -1133,7 +1147,9 @@ class BrainPlot:
             frame = self._plotter.screenshot(return_img=True)
             self._video_writer.append_data(frame)
         except Exception:
-            pass
+            if not getattr(self, "_frame_warned", False):
+                self._frame_warned = True
+                logger.warning("Writing a video frame failed.", exc_info=True)
 
     def screenshot(self, path: Union[str, Path, None] = None) -> Path:
         """Save a PNG screenshot of the current brain view.

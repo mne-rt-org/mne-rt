@@ -28,15 +28,11 @@ _viz_required = pytest.mark.skipif(not _VIZ_AVAILABLE, reason="pyvista/pyvistaqt
 # ------------------------------------------------------------------
 
 
-def test_display_modes_have_clim_hints():
-    for mode in bp_module._DISPLAY_MODES:
-        assert mode in bp_module._DISPLAY_CLIM_HINTS
-
-
-def test_clim_hints_are_two_tuples():
-    for hint in bp_module._DISPLAY_CLIM_HINTS.values():
-        assert len(hint) == 2
-        assert hint[0] < hint[1]
+def test_every_display_mode_has_a_band():
+    """The mode chooses what record_main computes, so each needs one."""
+    assert set(bp_module._MODE_BANDS) == set(bp_module._DISPLAY_MODES)
+    for band in bp_module._MODE_BANDS.values():
+        assert band is None or band[0] < band[1]
 
 
 def test_view_presets_have_position_focal_up():
@@ -88,6 +84,14 @@ def test_invalid_cmap_raises():
 def test_invalid_surf_raises():
     with pytest.raises(ValueError, match="surf"):
         BrainPlot(subjects_fs_dir="/tmp", surf="not_a_surf")
+
+
+@_viz_required
+@pytest.mark.parametrize("value", [0.0, -0.1, 1.5])
+def test_display_smoothing_outside_0_1_raises(value):
+    """0 weighed every new frame by nothing, freezing the map on the first."""
+    with pytest.raises(ValueError, match="display_smoothing"):
+        BrainPlot(subjects_fs_dir="/tmp", display_smoothing=value)
 
 
 # ------------------------------------------------------------------
@@ -154,9 +158,94 @@ def test_brain_update_from_arrays_updates_scalars(brain):
 
 def test_brain_custom_band_set_and_clear(brain):
     assert brain.custom_band is None
-    brain._custom_lo_spin.setValue(13.0)
-    brain._custom_hi_spin.setValue(30.0)
-    brain._set_custom_band()
-    assert brain.custom_band == (13.0, 30.0)
-    brain._clear_custom_band()
-    assert brain.custom_band is None
+    brain.set_custom_band(13.0, 30.0)
+    assert brain.custom_band == (13.0, 30.0) == brain.band
+    brain.clear_custom_band()
+    assert brain.custom_band is None and brain.band is None
+
+
+def test_brain_band_follows_the_display_mode(brain):
+    """The controls used to change only a label: nothing read them."""
+    brain.set_display_mode("Alpha Power  (8–13 Hz)")
+    assert brain.band == (8.0, 13.0)
+    brain.set_display_mode("Source Activation")
+    assert brain.band is None
+
+
+def test_brain_set_band_picks_a_mode_or_a_custom_band(brain):
+    brain.set_band((13.0, 30.0))
+    assert brain.display_mode == "Beta Power   (13–30 Hz)" and brain.custom_band is None
+    brain.set_band((9.0, 11.0))
+    assert brain.custom_band == (9.0, 11.0)
+    brain.set_band(None)
+    assert brain.band is None
+
+
+def test_brain_mode_change_restarts_the_smoothing(brain):
+    """Or the next frames would show the previous band under the new label."""
+    brain.update_from_arrays(np.ones(10242), np.ones(10242), deferred=True)
+    assert brain._lh_ema is not None
+    brain.set_display_mode("Theta Power  (4–8 Hz)")
+    assert brain._lh_ema is None
+    brain.set_display_mode(bp_module._DISPLAY_MODES[0])
+
+
+def test_brain_draws_the_ico5_mesh(brain):
+    """The full surface uploaded 16 times more data per frame for nothing."""
+    assert brain._mesh.n_points == 2 * 10242
+
+
+def test_brain_colours_hidden_hemisphere_and_threshold_as_cortex(brain):
+    brain.update_from_arrays(np.full(10242, 0.5), np.full(10242, 0.5), deferred=True)
+    base = (brain._base_rgb * 255).astype(np.uint8)
+    n_lh = brain._n_lh
+    assert not np.array_equal(brain._rgb[:n_lh], base[:n_lh])  # activity drawn
+    brain._hemi_visible["lh"] = False
+    brain._refresh_scalars(deferred=True)
+    np.testing.assert_array_equal(brain._rgb[:n_lh], base[:n_lh])
+    brain._hemi_visible["lh"] = True
+    brain._threshold = 0.6  # above every value
+    brain._refresh_scalars(deferred=True)
+    np.testing.assert_array_equal(brain._rgb, base)
+    brain._threshold = 0.0
+    brain.reset_activity()
+
+
+def test_brain_blanks_a_vertex_with_no_value_this_frame(brain):
+    """Shown stale, a vertex without data looked like activity that was not there."""
+    lh = np.full(10242, 0.5)
+    brain.update_from_arrays(lh, lh, deferred=True)
+    lh = lh.copy()
+    lh[0] = np.nan
+    brain.update_from_arrays(lh, np.full(10242, 0.5), deferred=True)
+    assert np.isnan(brain._scalars_full[0])
+    assert np.isfinite(brain._lh_ema[0])  # its average is kept for the next frame
+    brain.reset_activity()
+
+
+def test_to_display_places_values_by_vertex_number():
+    from mne_rt.viz.brain_plot import N_ICO5, to_display
+
+    lh, rh = to_display(np.array([1.0, 2.0, 3.0]), [np.array([0, 5]), np.array([7])])
+    assert lh.shape == rh.shape == (N_ICO5,)
+    assert lh[0] == 1.0 and lh[5] == 2.0 and rh[7] == 3.0
+    assert np.isnan(lh[1]) and np.isnan(rh[0])
+
+
+def test_brain_menu_follows_a_band_set_from_code(brain):
+    """record_main sets the band after construction; the menu kept saying
+    "Source Activation", and choosing it then changed nothing."""
+    brain.set_band((8.0, 13.0))
+    assert brain._mode_combo.currentText() == "Alpha Power  (8–13 Hz)"
+    brain.set_band(None)
+    assert brain._mode_combo.currentText() == "Source Activation"
+
+
+def test_brain_clear_custom_band_goes_back_to_the_mode(brain):
+    """Clear always fell back to activation, whatever the menu said."""
+    brain.set_display_mode("Beta Power   (13–30 Hz)")
+    brain.set_custom_band(15.0, 20.0)
+    assert brain.band == (15.0, 20.0)
+    brain.clear_custom_band()
+    assert brain.band == (13.0, 30.0)
+    brain.set_display_mode(bp_module._DISPLAY_MODES[0])

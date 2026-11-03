@@ -1104,7 +1104,7 @@ def create_blink_template(
     return template_blink_comp
 
 
-def setup_surface(subjects_dir=None, hemi_distance=20.0, surf="inflated"):
+def setup_surface(subjects_dir=None, hemi_distance=20.0, surf="inflated", grade=None):
     """Prepare a PyVista mesh of the fsaverage brain for both hemispheres.
 
     Uses the MNE-bundled ``fsaverage`` subject (auto-downloaded on first
@@ -1122,6 +1122,14 @@ def setup_surface(subjects_dir=None, hemi_distance=20.0, surf="inflated"):
     surf : str, default "inflated"
             Surface geometry to load.  One of ``"inflated"``, ``"pial"``,
             ``"white"``, ``"sphere"``.
+    grade : int | None, default None
+            Build the mesh of the ico-``grade`` subdivision instead of the full
+            surface. fsaverage numbers its vertices hierarchically, so those
+            are its first vertices and MNE's icosahedron triangles join them.
+            ``5`` gives exactly the 10 242 vertices per hemisphere of an ico-5
+            source space, so ``nn_map`` is then the identity.
+
+            .. versionadded:: 1.3.0
 
     Returns
     -------
@@ -1167,6 +1175,11 @@ def setup_surface(subjects_dir=None, hemi_distance=20.0, surf="inflated"):
     for hemi in ["lh", "rh"]:
         surf_path = fs_dir / "surf" / f"{hemi}.{surf}"
         verts_surf, faces_surf = read_surface(surf_path)
+        if grade is not None:
+            from mne.surface import _get_ico_surface
+
+            faces_surf = _get_ico_surface(grade)["tris"]
+            verts_surf = verts_surf[: faces_surf.max() + 1]
 
         # Nearest-neighbour map: index of closest source vertex for every
         # full-surface vertex (computed before translation, same coord frame)
@@ -1199,6 +1212,9 @@ def setup_surface(subjects_dir=None, hemi_distance=20.0, surf="inflated"):
 
     # Create PyVista mesh
     mesh = pv.PolyData(verts_all, faces_all)
+    if grade is not None:
+        n = hemi_offsets["rh"]
+        sulc_all = np.hstack([lh_sulc[:n], rh_sulc[:n]])
     mesh["base"] = sulc_all
 
     verts_stc = {

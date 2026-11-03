@@ -641,9 +641,9 @@ all rendering happens on the main Qt thread via an internal 30 Hz timer.
              subjects_fs_dir="/path/to/freesurfer",
              surf="inflated",
              clim=[0, 0.6],
-             display_smoothing=5,
+             display_smoothing=0.3,
          )
-         brain.show()
-         brain.push(stc_data)   # source-space activity array
+         brain.set_band((8, 13))  # what record_main computes: alpha power
+         brain.update(stc)        # one frame of an fsaverage SourceEstimate
 
       See :class:`mne_rt.viz.BrainPlot` for the full API reference.

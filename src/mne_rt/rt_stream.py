@@ -76,6 +76,7 @@ from mne_rt.tools.gedai import GEDAIDenoiser
 from mne_rt.tools.maxwell import RTMaxwellFilter
 from mne_rt.tools.orica import ORICA
 from mne_rt.viz import BrainPlot, NFPlot, RawPlot, TopomapPlot
+from mne_rt.viz.brain_plot import N_ICO5, to_display
 
 # The report's axis labels come from the same tables the live NF window uses, so
 # the two cannot describe the same modality differently.
@@ -166,6 +167,47 @@ def _find_signal_stream(timeout: float) -> dict:
             f"{listed}. Pass `stream_name` or `stream_source_id` to choose one."
         )
     return {"name": found[0].name, "source_id": found[0].source_id}
+
+
+def _brain_source_values(
+    kernel: np.ndarray,
+    window: np.ndarray,
+    band: Optional[tuple[float, float]],
+    sfreq: float,
+    sos_cache: dict,
+) -> np.ndarray:
+    """One value per source for the brain display, scaled to its 98th percentile.
+
+    Source power in ``band``, or with ``None`` the mean amplitude
+    (activation). ``kernel`` is the inverse as a matrix (see
+    ``RTStream._brain_kernel``); filters are cached in ``sos_cache`` by band.
+    """
+    from scipy.signal import butter, sosfiltfilt
+
+    if band is not None:
+        sos = sos_cache.get(band)
+        if sos is None:
+            hi = min(band[1], 0.99 * sfreq / 2)  # below Nyquist
+            if band[0] >= hi:
+                raise ValueError(
+                    f"The brain display's band {band} Hz is above what a {sfreq:g} Hz "
+                    "recording holds; choose a lower one."
+                )
+            sos = sos_cache[band] = butter(
+                4, (band[0], hi), btype="bandpass", fs=sfreq, output="sos"
+            )
+        # Padding capped to the window, as MNE's IIR filter did: the default
+        # (27 samples here) is longer than a very short window.
+        padlen = min(3 * (2 * len(sos) + 1), window.shape[1] - 1)
+        window = sosfiltfilt(sos, window, axis=1, padlen=padlen)
+    src = kernel @ window  # (n_sources, n_times): the inverse, in one product
+    vals = np.mean(src**2, axis=1) if band is not None else np.abs(src.mean(axis=1))
+    # Relative to the 98th percentile, so the display's clim [0, 0.6] gives
+    # spatial contrast. Over finite values only: one NaN made every value NaN,
+    # through the percentile.
+    finite = vals[np.isfinite(vals)]
+    scale = float(np.percentile(finite, 98)) if finite.size else 0.0
+    return vals / scale if scale > 0 else vals
 
 
 def _make_demo_raw_fif(
@@ -1743,8 +1785,10 @@ class RTStream(ModalityMixin):
             ``"pial"`` shows the true cortical folding; ``"inflated"``
             unfolds gyri/sulci for easier label inspection.
         brain_mode : {"power", "activation"}, default "power"
-            Source-space display mode.  ``"power"`` shows mean squared
-            amplitude; ``"activation"`` shows mean amplitude.
+            What the brain display starts with: ``"power"`` shows source power
+            in ``brain_freq_range``; ``"activation"`` shows mean amplitude. Its
+            window's "Display Mode" and "Custom Band" controls change it during
+            the run.
         brain_freq_range : (float, float), default (8.0, 13.0)
             Frequency band in Hz used to band-pass the data before computing
             source power for the brain display.
@@ -2310,6 +2354,7 @@ class RTStream(ModalityMixin):
         raw_plot: Optional[RawPlot] = None
         topo_plot: Optional[TopomapPlot] = None
         brain_plot: Optional[BrainPlot] = None
+        brain_kernel: Optional[tuple[np.ndarray, list[np.ndarray]]] = None
 
         if show_brain_activation:
             # Before any window is shown: `_push_brain` returns early without an
@@ -2317,6 +2362,7 @@ class RTStream(ModalityMixin):
             # on a cold cache this fetches the anatomy, which should not happen
             # behind windows that are up but not yet painted.
             self._ensure_head_model("The brain-activation display", need_inverse=True)
+            brain_kernel = self._brain_kernel()
 
         needs_qt = show_nf_signal or show_brain_activation or show_raw_signal or show_topo
         app: Optional[QtWidgets.QApplication] = None
@@ -2354,6 +2400,7 @@ class RTStream(ModalityMixin):
                 surf=brain_surf,
                 display_smoothing=brain_display_smoothing,
             )
+            brain_plot.set_band(None if brain_mode == "activation" else tuple(brain_freq_range))
 
         if show_raw_signal:
             # Every good channel, not just `picks`: the viewer is for checking
@@ -2617,44 +2664,26 @@ class RTStream(ModalityMixin):
             except _queue.Full:
                 pass
 
+        _brain_sos: dict = {}
+
         def _push_brain(window: np.ndarray) -> None:
-            """Submit inverse computation to thread pool; enqueue scalars for UI."""
-            if brain_queue is None or brain_queue.full():
+            """Compute the brain display's values in the thread pool."""
+            if brain_queue is None or brain_queue.full() or brain_kernel is None:
                 return
-            if not hasattr(self, "inv") or self.inv is None:
-                return
-
-            def _compute_and_enqueue(w: np.ndarray) -> None:
-                # The inverse covers every good channel; `w` is the full window.
-                raw_d = self._prepare_raw_array(w, use_picks=False)
-                if brain_mode == "power":
-                    # IIR: an FIR for an 8-13 Hz band is longer than a 1 s
-                    # window, which distorts the window and warns every time.
-                    raw_d.filter(
-                        l_freq=brain_freq_range[0],
-                        h_freq=brain_freq_range[1],
-                        method="iir",
-                        verbose=False,
-                    )
-                stc = apply_inverse_raw(raw_d, self.inv, lambda2=1.0 / 9, pick_ori="normal")
-                if brain_mode == "power":
-                    lh = np.mean(stc.lh_data**2, axis=1)
-                    rh = np.mean(stc.rh_data**2, axis=1)
-                else:
-                    lh = np.abs(stc.lh_data.mean(axis=1))
-                    rh = np.abs(stc.rh_data.mean(axis=1))
-                # Normalise to [0, 1] relative to the 98th percentile so the
-                # BrainPlot clim [0, 0.6] gives meaningful spatial contrast.
-                p98 = float(np.percentile(np.concatenate([lh, rh]), 98)) or 1.0
-                lh = lh / p98
-                rh = rh / p98
-                try:
-                    brain_queue.put_nowait((lh, rh))
-                except _queue.Full:
-                    pass
-
-            fut = self.executor.submit(_compute_and_enqueue, window.copy())
+            # The band is read here, per window: the brain window's controls
+            # choose it while the run goes on.
+            fut = self.executor.submit(_brain_values, window.copy(), brain_plot.band)
             fut.add_done_callback(_report_brain_failure)
+
+        def _brain_values(w: np.ndarray, band: Optional[tuple[float, float]]) -> None:
+            kernel, vertices = brain_kernel
+            vals = _brain_source_values(kernel, w, band, self._sfreq, _brain_sos)
+            try:
+                # Tagged with its band: one computed before a mode change is
+                # not drawn after it.
+                brain_queue.put_nowait((band, *to_display(vals, vertices)))
+            except _queue.Full:
+                pass
 
         _brain_warned = [False]
 
@@ -3128,20 +3157,28 @@ class RTStream(ModalityMixin):
             # at the end of the callback so the signal timer can fire first.
             brain_timer: Optional[QTimer] = None
             if brain_plot is not None:
+                _brain_pump_warned = [False]
 
                 def _pump_brain() -> None:
-                    """Slow timer (~5 fps) — brain render only."""
+                    """Slow timer (~5 fps) — brain render only, newest frame only."""
+                    latest = None
                     try:
-                        updated = False
-                        while not brain_queue.empty():
-                            lh, rh = brain_queue.get_nowait()
-                            brain_plot.update_from_arrays(lh, rh, mode=brain_mode, deferred=True)
-                            updated = True
-                        if updated:
-                            brain_plot.plotter.render()
-                            brain_plot.write_frame_if_recording()
-                    except Exception:
+                        while True:
+                            latest = brain_queue.get_nowait()
+                    except _queue.Empty:
                         pass
+                    if latest is None or latest[0] != brain_plot.band:
+                        return
+                    try:
+                        brain_plot.update_from_arrays(*latest[1:], deferred=True)
+                        brain_plot.plotter.render()
+                        brain_plot.write_frame_if_recording()
+                    except Exception:
+                        # Display only, but a frozen brain must not be the only
+                        # sign: the first failure is reported.
+                        if not _brain_pump_warned[0]:
+                            _brain_pump_warned[0] = True
+                            logger.warning("Updating the brain display failed.", exc_info=True)
 
                 brain_timer = QTimer()
                 brain_timer.setInterval(200)  # 5 fps — brain doesn't need more
@@ -3331,6 +3368,30 @@ class RTStream(ModalityMixin):
                 "window without it. Something it waits on — the stream or a modality — "
                 "is stuck."
             )
+
+    def _brain_kernel(self) -> tuple[np.ndarray, list[np.ndarray]]:
+        """The inverse as one matrix, for the brain display, and its vertices.
+
+        ``apply_inverse_raw`` prepared the inverse operator from scratch for
+        every window, which was most of the brain display's cost. The inverse is
+        linear, so applying it once to an identity "recording" — one sample per
+        good channel — gives the matrix taking any window to its sources, the
+        average-reference projection included.
+        """
+        if self.subject_fs_id != "fsaverage" or self.source_space != "surface":
+            raise ValueError(
+                "The brain-activation display draws fsaverage's cortex, so it needs "
+                "subject_fs_id='fsaverage' and source_space='surface'."
+            )
+        n = len(self._acquired_ch_names(use_picks=False))
+        raw = self._prepare_raw_array(np.eye(n), use_picks=False)
+        stc = apply_inverse_raw(raw, self.inv, lambda2=1.0 / 9, pick_ori="normal", verbose=False)
+        if len(stc.vertices) != 2 or max(v.max() for v in stc.vertices) >= N_ICO5:
+            raise ValueError(
+                "The brain-activation display needs an ico-5 (or coarser) surface "
+                "source space on fsaverage."
+            )
+        return stc.data, stc.vertices
 
     def _read_window(
         self, winsize: Optional[float], all_channels: bool = False
