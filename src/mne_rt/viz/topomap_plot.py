@@ -147,8 +147,8 @@ class TopomapPlot(QMainWindow):
     interpolate_bads : bool, default True
         Estimate the channels in ``info["bads"]`` from the good ones by
         spherical-spline interpolation, as :meth:`mne.Evoked.interpolate_bads`
-        does, and draw them marked with a cross. Their rows in the pushed data
-        are ignored. With ``False`` they are left out of the map.
+        does, and draw them like the other sensors. Their rows in the pushed
+        data are ignored. With ``False`` they are left out of the map.
 
         .. versionadded:: 1.3.0
     verbose : bool | str | None, default None
@@ -239,11 +239,6 @@ class TopomapPlot(QMainWindow):
             self._plot_info["bads"] = []
         else:
             logger.warning("TopomapPlot: no channel has a sensor position; nothing to draw.")
-        # Interpolated channels are marked with a cross. Fixed for the window's
-        # life, so built once rather than on every frame.
-        self._interp_mask = np.zeros(len(shown), dtype=bool)
-        self._interp_mask[len(self._topo_picks) :] = True
-        self._mask_params = dict(marker="x", markeredgecolor="w", markersize=6, markeredgewidth=1.5)
         # Rows of a window holding only the good channels (what mne-lsl's
         # get_data returns), in the full info: push() puts them back in place.
         bads = set(self._info["bads"])
@@ -675,8 +670,6 @@ class TopomapPlot(QMainWindow):
                     contours=self._contours,
                     res=32,
                     extrapolate="auto",
-                    mask=self._interp_mask if self._interp_mask.any() else None,
-                    mask_params=self._mask_params,
                 )
             except Exception as _e:
                 ax.text(
