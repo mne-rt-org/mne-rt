@@ -672,10 +672,10 @@ class RTEpochs:
 
         Examples
         --------
-        >>> inv_op = mne.minimum_norm.read_inverse_operator("sample-inv.fif")
+        >>> inv_op = mne.minimum_norm.read_inverse_operator("fsaverage-inv.fif")
         >>> stc = rt.get_source(inv_op)
-        >>> brain = mne_rt.BrainPlot(subject="sample", subjects_dir=sd)
-        >>> brain.update(stc["auditory/left"].data.mean(-1))
+        >>> brain = mne_rt.viz.BrainPlot(subjects_fs_dir=sd)  # draws fsaverage
+        >>> brain.update(stc["auditory/left"])
         """
         import mne.minimum_norm
 

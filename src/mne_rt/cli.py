@@ -835,6 +835,15 @@ def _cmd_demo(args) -> None:
             Path("/Applications/freesurfer/dev/subjects"),
             Path("/usr/local/freesurfer/subjects"),
         ]
+
+        # Versioned installs, e.g. /Applications/freesurfer/8.2.0, newest first
+        # by version (as text, 8.2.0 would come before 8.10.0).
+        def _version(subjects: Path) -> tuple:
+            return tuple(int(x) if x.isdigit() else -1 for x in subjects.parent.name.split("."))
+
+        for _root in (Path("/Applications/freesurfer"), Path("/usr/local/freesurfer")):
+            if _root.is_dir():
+                _candidates += sorted(_root.glob("*/subjects"), key=_version, reverse=True)
         for _d in _candidates:
             if _d.is_dir() and (_d / "fsaverage5").is_dir():
                 subjects_fs_dir = str(_d)

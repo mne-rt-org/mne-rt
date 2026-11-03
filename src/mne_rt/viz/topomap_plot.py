@@ -38,6 +38,7 @@ from qtpy.QtWidgets import (
 )
 
 from mne_rt._logging import logger
+from mne_rt.viz._smoothing import check_smoothing, ema_step
 
 # ---------------------------------------------------------------------------
 # Constants
@@ -140,7 +141,7 @@ class TopomapPlot(QMainWindow):
         Number of contour lines.  Set to ``0`` to disable.
     display_smoothing : float, default 1.0
         EMA factor applied to the per-channel band-power maps before
-        rendering.  ``1.0`` disables smoothing (raw per-window estimate
+        rendering, in ``(0, 1]``.  ``1.0`` disables smoothing (raw per-window estimate
         shown directly — good for artifact monitoring); lower values
         progressively smooth the spatial maps across consecutive windows.
     interpolate_bads : bool, default True
@@ -221,7 +222,7 @@ class TopomapPlot(QMainWindow):
         self._paused = False
         self._last_data: Optional[np.ndarray] = None
         self._visible_bands: list[str] = list(self._bands.keys())
-        self._display_alpha = float(np.clip(display_smoothing, 0.0, 1.0))
+        self._display_alpha = check_smoothing(display_smoothing)
         self._bp_ema: dict[str, np.ndarray] = {}
 
         # Detect channel type for plot_topomap
@@ -632,10 +633,9 @@ class TopomapPlot(QMainWindow):
                 if band not in self._bp_ema:
                     self._bp_ema[band] = pw.copy()
                 else:
-                    self._bp_ema[band] = (
-                        self._display_alpha * pw + (1.0 - self._display_alpha) * self._bp_ema[band]
-                    )
-                band_powers[band] = self._bp_ema[band]
+                    # NaN-safe: one bad window used to blank a channel for good.
+                    self._bp_ema[band] = ema_step(self._bp_ema[band], pw, self._display_alpha)
+                band_powers[band] = np.where(np.isfinite(pw), self._bp_ema[band], np.nan)
 
         freeze = getattr(self, "_freeze_clim", False)
 
@@ -645,7 +645,10 @@ class TopomapPlot(QMainWindow):
                 continue
 
             if not freeze:
-                vmax = float(np.percentile(np.abs(powers), 97)) or 1e-20
+                # Over finite values: one NaN channel made the whole band's
+                # scale NaN (NaN is truthy, so `or` did not catch it).
+                finite = np.abs(powers[np.isfinite(powers)])
+                vmax = (float(np.percentile(finite, 97)) if finite.size else 0.0) or 1e-20
                 if self._cmap in ("RdBu_r", "RdYlBu_r", "bwr"):
                     vmin, vmax_use = -vmax, vmax
                 else:

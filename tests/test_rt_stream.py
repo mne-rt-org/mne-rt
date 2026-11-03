@@ -3299,3 +3299,77 @@ def test_mock_connects_to_the_data_not_the_annotations(tmp_path):
             assert set(nf.stream.get_channel_types()) == {"eeg"}
     finally:
         nf.save()
+
+
+@pytest.mark.parametrize(
+    "kwargs", [{"subject_fs_id": "sample"}, {"source_space": "volume"}], ids=["subject", "volume"]
+)
+def test_brain_kernel_refuses_what_the_display_cannot_draw(tmp_path, kwargs):
+    """The display draws fsaverage's cortex: other subjects or a volume source
+    space indexed out of range and left it blank, silently."""
+    nf = _make_rt_stream(tmp_path)
+    for key, value in kwargs.items():
+        setattr(nf, key, value)
+    with pytest.raises(ValueError, match="fsaverage"):
+        nf._brain_kernel()
+
+
+@pytest.mark.slow
+def test_brain_kernel_matches_apply_inverse_raw(tmp_path, array_info):
+    """The brain display applies the inverse as one precomputed matrix instead
+    of preparing it again for every window (73 ms -> under 1 ms)."""
+    import mne
+    from mne.minimum_norm import apply_inverse_raw
+
+    fs_dir = mne.datasets.fetch_fsaverage(verbose=False)
+    nf = _make_rt_stream(tmp_path, subjects_fs_dir=str(fs_dir.parent))
+    try:
+        nf.connect_to_array(_make_array_data(array_info, 20.0), array_info, n_repeat=np.inf)
+        nf.rec_info["bads"] = [array_info["ch_names"][2]]
+        nf.record_baseline(baseline_duration=4.0, winsize=1.0)
+        nf._ensure_head_model("test", need_inverse=True)
+        kernel, vertices = nf._brain_kernel()
+        w = np.random.default_rng(0).standard_normal((kernel.shape[1], 256)) * 1e-5
+        raw = nf._prepare_raw_array(w, use_picks=False)
+        ref = apply_inverse_raw(raw, nf.inv, lambda2=1.0 / 9, pick_ori="normal", verbose=False)
+        # Relative to the largest value: entries near zero differ by rounding only.
+        scale = np.abs(ref.data).max()
+        np.testing.assert_allclose(kernel @ w, ref.data, rtol=0, atol=1e-10 * scale)
+        assert [len(v) for v in vertices] == [10242, 10242]
+    finally:
+        nf.save()
+
+
+def test_brain_source_values_power_activation_and_edge_cases():
+    """Above Nyquist the band raised on every window; a very short window
+    raised in sosfiltfilt's default padding."""
+    from mne_rt.rt_stream import _brain_source_values
+
+    rng = np.random.default_rng(0)
+    kernel = rng.standard_normal((50, 4))
+    w = rng.standard_normal((4, 250))
+    cache = {}
+    power = _brain_source_values(kernel, w, (8.0, 13.0), 250.0, cache)
+    assert power.shape == (50,) and np.nanpercentile(power, 98) == pytest.approx(1.0)
+    assert (8.0, 13.0) in cache  # the filter is built once per band
+    act = _brain_source_values(kernel, w, None, 250.0, cache)
+    np.testing.assert_allclose(
+        act * np.percentile(np.abs((kernel @ w).mean(1)), 98), np.abs((kernel @ w).mean(1))
+    )
+    short = _brain_source_values(kernel, w[:, :12], (8.0, 13.0), 250.0, cache)
+    assert np.all(np.isfinite(short))
+    with pytest.raises(ValueError, match="above what"):
+        _brain_source_values(kernel, w, (150.0, 200.0), 250.0, cache)
+
+
+def test_brain_source_values_ignore_a_nan_source_for_the_scale():
+    """One NaN made every value NaN through the percentile."""
+    from mne_rt.rt_stream import _brain_source_values
+
+    kernel = np.eye(3)
+    kernel[2] = np.nan  # one source without a usable estimate
+    w = np.array([[1.0, 1.0], [2.0, 2.0], [3.0, 3.0]])
+    vals = _brain_source_values(kernel, w, None, 250.0, {})
+    assert np.isfinite(vals[:2]).all() and np.isnan(vals[2])
+    # Still scaled to the 98th percentile of the finite ones, not left raw.
+    assert np.nanpercentile(vals, 98) == pytest.approx(1.0)

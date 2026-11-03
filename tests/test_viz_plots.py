@@ -1176,10 +1176,10 @@ def test_nf_rescale_keeps_the_threshold_label(qt_app):
 
 
 def test_brain_display_smoothing_survives_a_nan():
-    from mne_rt.viz.brain_plot import _ema_step
+    from mne_rt.viz._smoothing import ema_step
 
     ema = np.array([1.0, np.nan, 1.0])
-    out = _ema_step(ema, np.array([np.nan, 2.0, 2.0]), 0.5)
+    out = ema_step(ema, np.array([np.nan, 2.0, 2.0]), 0.5)
     np.testing.assert_allclose(out, [1.0, 2.0, 1.5])
 
 
@@ -1466,3 +1466,50 @@ def test_topomap_takes_a_window_of_the_good_channels(qt_app, topo_info):
     w.push(RNG.standard_normal((N_TOPO - 1, 64)))
     assert seen == [N_TOPO]
     w.close()
+
+
+def test_topomap_smoothing_survives_a_nan(qt_app, topo_info):
+    """One NaN band power blanked that channel for the rest of the session."""
+    from mne_rt.viz.topomap_plot import TopomapPlot
+
+    w = TopomapPlot(info=topo_info, sfreq=SFREQ, display_smoothing=0.5)
+    shown = []
+    band = next(iter(w._bands))
+    w._compute_band_powers = lambda data: {band: data[:, 0].copy()}
+    import mne
+
+    monkey = mne.viz.plot_topomap
+    try:
+        mne.viz.plot_topomap = lambda powers, *a, **k: shown.append(np.array(powers))
+        for first in (1.0, np.nan, 3.0):
+            data = np.ones((N_TOPO, 4))
+            data[0, 0] = first
+            w._update_topomaps(data)
+    finally:
+        mne.viz.plot_topomap = monkey
+    w.close()
+    assert np.isnan(shown[1][0])  # drawn blank in the bad frame
+    assert shown[2][0] == pytest.approx(0.5 * 3.0 + 0.5 * 1.0)  # and back after it
+
+
+def test_topomap_smoothing_zero_raises(qt_app, topo_info):
+    """0 froze the map on its first frame, as it did the brain."""
+    from mne_rt.viz.topomap_plot import TopomapPlot
+
+    with pytest.raises(ValueError, match="display_smoothing"):
+        TopomapPlot(info=topo_info, sfreq=SFREQ, display_smoothing=0.0)
+
+
+def test_topomap_colour_scale_ignores_a_nan_channel(qt_app, topo_info):
+    """One NaN channel made the whole band's scale NaN."""
+    from mne_rt.viz.topomap_plot import TopomapPlot
+
+    w = TopomapPlot(info=topo_info, sfreq=SFREQ)
+    band = next(iter(w._bands))
+    powers = np.arange(1.0, N_TOPO + 1.0)
+    powers[0] = np.nan
+    w._compute_band_powers = lambda data: {band: powers}
+    w._update_topomaps(np.zeros((N_TOPO, 4)))
+    clim = w._clim_cache[band]
+    w.close()
+    assert np.all(np.isfinite(clim))
