@@ -1,7 +1,11 @@
 """Unit tests for NF modality computations with synthetic data."""
 
+from pathlib import Path
+
 import numpy as np
 import pytest
+
+import mne_rt
 
 # Synthetic EEG-like data: 64 channels, 500 Hz, 1 second
 RNG = np.random.default_rng(42)
@@ -62,7 +66,7 @@ def nf_obj(tmp_path):
 
     from mne_rt.modalities import ModalityMixin
 
-    config_file = Path(__file__).parent.parent / "src" / "mne_rt" / "config_methods.yml"
+    config_file = Path(mne_rt.__file__).parent / "config_methods.yml"
 
     # Minimal mne.Info-like object with the channel names
     ch_names = [f"EEG{i:03d}" for i in range(N_CHANNELS)]
@@ -548,9 +552,7 @@ def test_connectivity_ratio_imcoh_runs():
 
     data = _make_alpha_eeg()
     obj = _make_dummy_modality_mixin(data=data, ch_names=["C3", "C4", "F3", "F4"])
-    config_file = str(
-        __import__("pathlib").Path(__file__).parent.parent / "src" / "mne_rt" / "config_methods.yml"
-    )
+    config_file = str(Path(mne_rt.__file__).parent / "config_methods.yml")
     obj.params = get_params(config_file, "connectivity_ratio", {})
     obj.params["method"] = "imcoh"
     prep = obj._connectivity_ratio_prep()

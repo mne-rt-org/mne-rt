@@ -55,8 +55,14 @@ bound, say why in a comment next to it, as the existing bounds in
 - Work on a branch off `main` and open a pull request; `main` is not pushed to
   directly.
 - Keep one logical change per pull request.
-- Add or update tests in `tests/` for anything you change. The suite is large
-  (950+ tests across 38 modules) and it is what keeps the real-time paths honest.
+- Add or update tests for anything you change. As in MNE-Python, tests live
+  next to the code they test: `src/mne_rt/tests/` for the core,
+  `src/mne_rt/viz/tests/`, `src/mne_rt/tools/tests/` and
+  `src/mne_rt/protocols/tests/`, each test file named after the module it
+  tests. `rt_stream.py` is the exception: its tests are split by topic
+  (`test_rt_stream.py`, `test_connection.py`, `test_record_main.py`,
+  `test_markers.py`, `test_run_blocks.py`, `test_save_report.py`). The suite is large
+  (1100+ tests) and it is what keeps the real-time paths honest.
 - Add a line to `docs/source/whats_new.rst` under the current unreleased version.
 - Public functions and methods use NumPy-style docstrings and accept a
   `verbose=` keyword, following MNE-Python's conventions.

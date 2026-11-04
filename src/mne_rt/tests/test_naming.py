@@ -5,6 +5,7 @@ from pathlib import Path
 import pytest
 import yaml
 
+import mne_rt
 from mne_rt._naming import (
     MODALITY_SEP,
     ModalitySpec,
@@ -14,7 +15,7 @@ from mne_rt._naming import (
     split_modality,
 )
 
-CONFIG = Path(__file__).parent.parent / "src" / "mne_rt" / "config_methods.yml"
+CONFIG = Path(mne_rt.__file__).parent / "config_methods.yml"
 KNOWN_MODALITIES = sorted(yaml.safe_load(CONFIG.read_text(encoding="utf-8"))["NF_modality"])
 
 

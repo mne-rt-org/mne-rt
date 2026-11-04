@@ -28,8 +28,8 @@ jobs:
           python-version: "3.11"
           activate-environment: true
       - run: uv pip install -e ".[lint]"
-      - run: ruff check src tests
-      - run: ruff format --check src tests
+      - run: ruff check src
+      - run: ruff format --check src
 
   pytest:
     name: 'py${{ matrix.python }}'

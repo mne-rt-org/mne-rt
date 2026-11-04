@@ -6,6 +6,7 @@ from types import SimpleNamespace
 import numpy as np
 import pytest
 
+import mne_rt
 from mne_rt.tools.microstates import (
     METRICS,
     backfit,
@@ -15,7 +16,7 @@ from mne_rt.tools.microstates import (
     zscore_templates,
 )
 
-CONFIG = Path(__file__).parent.parent / "src" / "mne_rt" / "config_methods.yml"
+CONFIG = Path(mne_rt.__file__).parent / "config_methods.yml"
 SFREQ = 256.0
 CH = ["Fp1", "Fp2", "F3", "F4", "C3", "C4", "P3", "P4", "O1", "O2", "Fz", "Cz", "Pz", "T7", "T8"]
 
