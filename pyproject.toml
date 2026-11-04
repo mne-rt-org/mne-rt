@@ -222,13 +222,19 @@ ignore = [
 [tool.ruff.lint.per-file-ignores]
 "src/mne_rt/__init__.py" = ["F401"]
 "src/mne_rt/tools/__init__.py" = ["F401", "F403"]
-# standalone script (`python tests/test_rt_epochs_erp.py`) — imports are
-# deliberately interleaved with setup code, not collected as pytest cases
-"tests/test_rt_epochs_erp.py" = ["E402"]
+
+# ---------------------------------------------------------------------------
+# Coverage
+# ---------------------------------------------------------------------------
+
+[tool.coverage.run]
+# The tests are inside the package; measure the code they test, not them.
+omit = ["*/tests/*", "*/conftest.py"]
 
 # ---------------------------------------------------------------------------
 # Mypy (optional type checking)
 # ---------------------------------------------------------------------------
+
 
 [tool.mypy]
 python_version = "3.11"
@@ -240,7 +246,9 @@ warn_return_any = false
 # ---------------------------------------------------------------------------
 
 [tool.pytest.ini_options]
-testpaths = ["tests"]
+# Tests live next to the code they test (mne_rt/tests, mne_rt/viz/tests, …),
+# as in MNE-Python.
+testpaths = ["src/mne_rt"]
 addopts = "-v --tb=short"
 markers = [
     "slow: needs FreeSurfer anatomy (fetch_fsaverage) or is otherwise slow; deselect with -m 'not slow'",

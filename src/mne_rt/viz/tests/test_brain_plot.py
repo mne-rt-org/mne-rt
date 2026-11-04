@@ -9,11 +9,6 @@ and are skipped when it is not installed.
 
 from __future__ import annotations
 
-import os
-
-os.environ.setdefault("MPLBACKEND", "Agg")
-os.environ.setdefault("QT_QPA_PLATFORM", "offscreen")
-
 import numpy as np
 import pytest
 
@@ -21,6 +16,8 @@ from mne_rt.viz import brain_plot as bp_module
 from mne_rt.viz.brain_plot import BrainPlot
 
 _VIZ_AVAILABLE = bp_module._pyvista_available and bp_module._pyvistaqt_available
+
+
 _viz_required = pytest.mark.skipif(not _VIZ_AVAILABLE, reason="pyvista/pyvistaqt not installed")
 
 # ------------------------------------------------------------------

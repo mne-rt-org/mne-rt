@@ -6,6 +6,7 @@ from pathlib import Path
 import numpy as np
 import pytest
 
+import mne_rt
 from mne_rt.tools.tools import (
     butter_bandpass,
     compute_bandpower,
@@ -200,7 +201,7 @@ def test_get_canonical_freqs_unknown_raises():
 
 @pytest.fixture()
 def config_file():
-    return str(Path(__file__).parent.parent / "src" / "mne_rt" / "config_methods.yml")
+    return str(Path(mne_rt.__file__).parent / "config_methods.yml")
 
 
 def test_get_params_returns_defaults(config_file):

@@ -80,7 +80,10 @@ def test_gedai_not_a_core_or_full_dependency():
     import pathlib
     import tomllib
 
-    pyproject = pathlib.Path(__file__).resolve().parents[1] / "pyproject.toml"
+    # The repository's, from src/mne_rt/tests: not in an installed package.
+    pyproject = pathlib.Path(__file__).resolve().parents[3] / "pyproject.toml"
+    if not pyproject.is_file():
+        pytest.skip("needs a source checkout")
     project = tomllib.loads(pyproject.read_text())["project"]
     assert not any("gedai" in dep for dep in project["dependencies"])
     assert not any("gedai" in dep for dep in project["optional-dependencies"]["full"])
