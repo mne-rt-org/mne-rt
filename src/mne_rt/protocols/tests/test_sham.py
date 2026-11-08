@@ -6,9 +6,7 @@ import pytest
 from mne_rt.protocols import ThresholdProtocol, ZScoreProtocol
 from mne_rt.protocols.sham import ShamProtocol
 
-# ------------------------------------------------------------------
 # Constructor validation
-# ------------------------------------------------------------------
 
 
 def test_invalid_sham_rate_negative():
@@ -35,9 +33,7 @@ def test_invalid_buffer_len_negative():
         ShamProtocol(inner, buffer_len=-5)
 
 
-# ------------------------------------------------------------------
 # Defaults
-# ------------------------------------------------------------------
 
 
 def test_defaults():
@@ -51,9 +47,7 @@ def test_defaults():
     assert proto.sham_fraction == 0.0
 
 
-# ------------------------------------------------------------------
 # sham_rate extremes
-# ------------------------------------------------------------------
 
 
 def test_sham_rate_zero_never_shams():
@@ -76,9 +70,7 @@ def test_sham_rate_one_always_shams():
     assert all(s for s in proto.sham_log)
 
 
-# ------------------------------------------------------------------
 # Approximate sham rate behaviour
-# ------------------------------------------------------------------
 
 
 def test_sham_rate_approximate():
@@ -91,9 +83,7 @@ def test_sham_rate_approximate():
     assert abs(proto.sham_fraction - 0.4) < 0.1
 
 
-# ------------------------------------------------------------------
 # Inner protocol state always advances
-# ------------------------------------------------------------------
 
 
 def test_inner_state_advances_on_sham():
@@ -106,9 +96,7 @@ def test_inner_state_advances_on_sham():
     assert inner.n_evaluated == 20
 
 
-# ------------------------------------------------------------------
 # current_threshold
-# ------------------------------------------------------------------
 
 
 def test_current_threshold_passes_through_inner():
@@ -129,9 +117,7 @@ def test_current_threshold_none_when_inner_lacks_it():
     assert proto.current_threshold is None
 
 
-# ------------------------------------------------------------------
 # sham_log length
-# ------------------------------------------------------------------
 
 
 def test_sham_log_length():
@@ -142,9 +128,7 @@ def test_sham_log_length():
     assert len(proto.sham_log) == 30
 
 
-# ------------------------------------------------------------------
 # n_real + n_sham == total evaluations
-# ------------------------------------------------------------------
 
 
 def test_counts_sum_to_total():
@@ -156,9 +140,7 @@ def test_counts_sum_to_total():
     assert proto.n_real + proto.n_sham == n
 
 
-# ------------------------------------------------------------------
 # sham_fraction property
-# ------------------------------------------------------------------
 
 
 def test_sham_fraction_equals_n_sham_over_total():
@@ -170,9 +152,7 @@ def test_sham_fraction_equals_n_sham_over_total():
     assert abs(proto.sham_fraction - expected) < 1e-12
 
 
-# ------------------------------------------------------------------
 # Reproducibility with rng_seed
-# ------------------------------------------------------------------
 
 
 def test_rng_seed_reproducibility():
@@ -190,9 +170,7 @@ def test_rng_seed_reproducibility():
     assert r1 == r2
 
 
-# ------------------------------------------------------------------
 # reset
-# ------------------------------------------------------------------
 
 
 def test_reset_clears_state():
@@ -223,9 +201,7 @@ def test_reset_preserves_params():
     assert proto.buffer_len == 20
 
 
-# ------------------------------------------------------------------
 # repr
-# ------------------------------------------------------------------
 
 
 def test_repr():

@@ -39,12 +39,12 @@ pytest -m "not slow"
 CI runs exactly these, so run them locally first:
 
 ```bash
-ruff check src tests
-ruff format --check src tests
+ruff check src
+ruff format --check src
 pytest -m "not slow"
 ```
 
-`ruff format src tests` fixes formatting in place. CI additionally runs the full
+`ruff format src` fixes formatting in place. CI additionally runs the full
 suite on Python 3.11, 3.12 and 3.13, and a `minimum` job that installs every
 dependency at its declared lower bound — if you add a dependency or raise a
 bound, say why in a comment next to it, as the existing bounds in

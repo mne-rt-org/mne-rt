@@ -707,11 +707,8 @@ def _compute_inv_operator(
     if missing_loc:
         raw_fwd.drop_channels(missing_loc)
 
-    # EEG source modelling requires an average reference: mne.apply_inverse_raw
-    # rejects data without one, and RTStream._prepare_raw_array duly applies the
-    # projection to every analysis window. Estimating the covariances and building
-    # the operator without it leaves the two inconsistent, and MNE warns that the
-    # covariance is adversely affected.
+    # EEG needs the average reference: apply_inverse_raw requires it, and the
+    # covariances must match the windows, which all get it.
     if data_type == "eeg" and not any(
         proj["desc"].startswith("Average EEG") for proj in raw_fwd.info["projs"]
     ):
@@ -753,11 +750,8 @@ def _compute_inv_operator(
             raw_fwd.info, fwd, noise_cov, loose=loose, depth=depth
         )
 
-    # `src` may have been a path; return what the forward actually used, so
-    # callers can map atlas labels onto source estimates.  `raw_fwd` is returned
-    # too: it is the recording the forward model and covariances were actually
-    # built from (channels dropped, average reference applied), so a caller
-    # estimating a data covariance can do it consistently.
+    # fwd["src"], as `src` may have been a path. `raw_fwd` is the recording the
+    # forward and covariances were built from, to estimate a data covariance on.
     return inverse_operator, fwd, noise_cov, fwd["src"], raw_fwd
 
 

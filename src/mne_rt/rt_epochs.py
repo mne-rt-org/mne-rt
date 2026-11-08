@@ -163,9 +163,7 @@ class RTEpochs:
         self._cond_list_: list[str] = []
         self._code_list_: list[int] = []
 
-    # ------------------------------------------------------------------
     # Connection
-    # ------------------------------------------------------------------
 
     def connect_to_lsl(
         self,
@@ -400,9 +398,7 @@ class RTEpochs:
             wanted,
         )
 
-    # ------------------------------------------------------------------
     # Main loop
-    # ------------------------------------------------------------------
 
     def run(
         self,
@@ -542,9 +538,7 @@ class RTEpochs:
         self._connected = False
         logger.info("RTEpochs: disconnected.")
 
-    # ------------------------------------------------------------------
     # Offline analysis helpers
-    # ------------------------------------------------------------------
 
     def get_epochs(self) -> "mne.EpochsArray":
         """Return accumulated epochs as :class:`mne.EpochsArray`.

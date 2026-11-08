@@ -22,10 +22,8 @@ __all__ = [
     "TransferProtocol",
 ]
 
-# Sphinx autodoc resolves cross-references against the objects inventory using
-# cls.__module__.  Patching to the package namespace ensures that
-# :class:`~mne_rt.protocols.ZScoreProtocol` (and siblings) are registered as
-# ``mne_rt.protocols.*`` py:class entries, not ``mne_rt.protocols.zscores.*``.
+# So Sphinx registers mne_rt.protocols.X, not mne_rt.protocols.zscores.X,
+# and cross-references to them resolve.
 for _cls in [
     ThresholdProtocol,
     ZScoreProtocol,

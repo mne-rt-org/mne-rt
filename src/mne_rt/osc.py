@@ -118,9 +118,7 @@ class OSCSender:
         self._client = SimpleUDPClient(host, port)
         self._lock = threading.Lock()
 
-    # ------------------------------------------------------------------
     # Public interface
-    # ------------------------------------------------------------------
 
     def send(self, modality: str, value: float) -> None:
         """Send a single NF value immediately.
@@ -204,9 +202,7 @@ class OSCSender:
         except Exception:
             pass
 
-    # ------------------------------------------------------------------
     # Properties
-    # ------------------------------------------------------------------
 
     @property
     def target(self) -> str:
@@ -225,9 +221,7 @@ class OSCSender:
     def __exit__(self, *_) -> None:
         self.close()
 
-    # ------------------------------------------------------------------
     # Internal helpers
-    # ------------------------------------------------------------------
 
     def _send_bundle(
         self,

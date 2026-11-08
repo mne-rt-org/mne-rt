@@ -22,9 +22,7 @@ from mne_rt.source import (
     resolve_rois,
 )
 
-# ===================================================================
 # Tier 1 — no anatomy required
-# ===================================================================
 
 
 class _FakeSrc(list):
@@ -49,9 +47,7 @@ def _fake_filters(n_src, n_ch, *, free_ori=False, seed=0, whitener=True):
     return filters
 
 
-# ------------------------------------------------------------------
 # atlas helpers
-# ------------------------------------------------------------------
 
 
 @pytest.mark.parametrize(
@@ -88,9 +84,7 @@ def test_volume_atlas_path_found(tmp_path):
     assert _volume_atlas_path("aparc+aseg", "fsaverage", tmp_path) == mri / "aparc+aseg.mgz"
 
 
-# ------------------------------------------------------------------
 # ROI resolution
-# ------------------------------------------------------------------
 
 
 @pytest.fixture()
@@ -155,9 +149,7 @@ def test_resolve_rois_surface_kind(monkeypatch):
     assert roi.kind == "surface"
 
 
-# ------------------------------------------------------------------
 # SourceModel — operators
-# ------------------------------------------------------------------
 
 
 def test_source_model_requires_an_inverse_or_filters():
@@ -202,9 +194,7 @@ def test_n_sources_sums_over_source_spaces():
     assert model.n_sources == 10
 
 
-# ------------------------------------------------------------------
 # Label operator merging
-# ------------------------------------------------------------------
 
 
 def test_merge_rows_weights_members_by_size():
@@ -289,9 +279,7 @@ def test_apply_without_kernel_or_label_operator_raises():
         model.apply(np.zeros((2, 4)))
 
 
-# ===================================================================
 # Tier 2 — needs fsaverage anatomy
-# ===================================================================
 
 
 @pytest.fixture(scope="module")
@@ -457,9 +445,7 @@ def test_multi_label_roi_equals_mean_over_all_its_sources(fsaverage_volume_model
     np.testing.assert_allclose(merged, weights @ separate, atol=1e-12)
 
 
-# ------------------------------------------------------------------
 # _compute_inv_operator — source-space plumbing
-# ------------------------------------------------------------------
 
 
 @pytest.fixture(scope="module")
@@ -601,9 +587,7 @@ def test_compute_inv_operator_rejects_bad_src_type(baseline_raw):
         _compute_inv_operator(baseline_raw, src_type="mixed")
 
 
-# ===================================================================
 # Source modalities on ROIs (the configurations that used to be impossible)
-# ===================================================================
 
 
 def _modality_obj(tmp_path, params, **attrs):

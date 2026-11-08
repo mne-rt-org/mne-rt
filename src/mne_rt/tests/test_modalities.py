@@ -14,9 +14,7 @@ N_CHANNELS = 64
 N_TIMES = int(SFREQ)  # 1 second
 DATA = RNG.standard_normal((N_CHANNELS, N_TIMES)).astype(np.float64)
 
-# ─────────────────────────────────────────────────────────────────────────────
 # Helpers for SCP / PAF / connectivity_ratio (synthetic alpha-band signal)
-# ─────────────────────────────────────────────────────────────────────────────
 
 _SFREQ_ALPHA = 256.0
 _DURATION_ALPHA = 2.0
@@ -177,9 +175,7 @@ def test_laterality_needs_channels(nf_obj):
     assert isinstance(val, float)
 
 
-# ─────────────────────────────────────────────────────────────────────────────
 # decode — RTDecode-backed "decode" modality
-# ─────────────────────────────────────────────────────────────────────────────
 
 
 def _fit_decoder_for(nf_obj, n_channels=N_CHANNELS, n_times=N_TIMES, n_components=2):
@@ -243,9 +239,7 @@ class TestDecodeModality:
             nf_obj._decode_prep()
 
 
-# ─────────────────────────────────────────────────────────────────────────────
 # SCP — Slow Cortical Potentials
-# ─────────────────────────────────────────────────────────────────────────────
 
 
 class TestSCPModality:
@@ -304,9 +298,7 @@ class TestSCPModality:
         assert abs(val) > 1.0
 
 
-# ─────────────────────────────────────────────────────────────────────────────
 # PAF — Peak Alpha Frequency tracking
-# ─────────────────────────────────────────────────────────────────────────────
 
 
 class TestPAFModality:
@@ -373,9 +365,7 @@ class TestPAFModality:
         assert abs(val_s - 8.0) < abs(val_i - 8.0)
 
 
-# ─────────────────────────────────────────────────────────────────────────────
 # Connectivity Ratio
-# ─────────────────────────────────────────────────────────────────────────────
 
 
 class TestConnectivityRatioModality:
@@ -423,9 +413,7 @@ class TestConnectivityRatioModality:
             obj._connectivity_ratio_prep()
 
 
-# ─────────────────────────────────────────────────────────────────────────────
 # Connectivity: imcoh and n_cycles
-# ─────────────────────────────────────────────────────────────────────────────
 
 
 def _connectivity_channels(nf_obj):
@@ -563,9 +551,7 @@ def test_connectivity_ratio_imcoh_runs():
     assert np.isfinite(val)
 
 
-# ─────────────────────────────────────────────────────────────────────────────
 # Source modalities: inverse-operator lookup
-# ─────────────────────────────────────────────────────────────────────────────
 
 
 def test_get_inverse_operator_prefers_in_memory(nf_obj):
@@ -608,9 +594,7 @@ def test_get_inverse_operator_reads_bids_stem(nf_obj, tmp_path, monkeypatch):
     assert str(seen["fname"]) == str(expected)
 
 
-# ------------------------------------------------------------------
 # ROI-kernel caching
-# ------------------------------------------------------------------
 
 
 class _FakeROI:

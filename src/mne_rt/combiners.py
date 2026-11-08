@@ -49,9 +49,7 @@ from typing import Any, Optional
 
 from mne_rt._stats import usable_std, zscore
 
-# ---------------------------------------------------------------------------
 # Base class
-# ---------------------------------------------------------------------------
 
 
 class FeatureCombiner:
@@ -108,9 +106,7 @@ class FeatureCombiner:
         return f"{type(self).__name__}(features={feat})"
 
 
-# ---------------------------------------------------------------------------
 # Concrete combiners
-# ---------------------------------------------------------------------------
 
 
 class WeightedSumCombiner(FeatureCombiner):

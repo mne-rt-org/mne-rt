@@ -132,9 +132,7 @@ def save_as_bids(
     return output_dir
 
 
-# ---------------------------------------------------------------------------
 # mne-bids backend
-# ---------------------------------------------------------------------------
 
 
 def _save_with_mne_bids(
@@ -178,9 +176,7 @@ def _save_with_mne_bids(
     logger.info("Session saved via mne-bids to %s", output_dir)
 
 
-# ---------------------------------------------------------------------------
 # Minimal (manual) BIDS backend
-# ---------------------------------------------------------------------------
 
 
 def _save_minimal_bids(
@@ -218,9 +214,7 @@ def _save_minimal_bids(
     )
 
 
-# ---------------------------------------------------------------------------
 # Shared helpers
-# ---------------------------------------------------------------------------
 
 
 def _build_entity_dir(output_dir: Path, subject: str, session: Optional[str]) -> Path:

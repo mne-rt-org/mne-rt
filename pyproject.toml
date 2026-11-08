@@ -2,9 +2,7 @@
 requires = ["setuptools>=68", "setuptools-scm>=8"]
 build-backend = "setuptools.build_meta"
 
-# ---------------------------------------------------------------------------
 # Project metadata
-# ---------------------------------------------------------------------------
 
 [project]
 name = "mne-rt"
@@ -73,9 +71,7 @@ dependencies = [
     "imageio[ffmpeg]>=2.28",
 ]
 
-# ---------------------------------------------------------------------------
 # Optional dependency groups
-# ---------------------------------------------------------------------------
 
 [project.optional-dependencies]
 
@@ -102,21 +98,13 @@ bids = [
     "mne-bids>=0.14",
 ]
 
-# Adaptive multiband GEDAI (AdaptiveMultibandGEDAIDenoiser, fit_gedai(multiband=...)).
-#
-# LICENSE: `gedai` is PolyForm Noncommercial 1.0.0, not BSD-3-Clause, and the
-# GEDAI algorithm is patent-pending with no commercial patent grant. It is
-# therefore opt-in only: not a core dependency and deliberately NOT part of
-# `full`, so `pip install mne-rt` and `pip install "mne-rt[full]"` stay
-# BSD-3-Clause. See README.md "License" before commercial use.
-#
-# PIN: mne-rt calls private gedai functions, so this is pinned to the release
-# it is tested against.
-#   - 0.6.1 removed the `T1` and `percentile` parameters of
-#     `_clean_continuous_dual_stream`, which breaks calibration.
-#   - "0.60" on PyPI sorts ABOVE 0.6.x under PEP 440 (0.60 = 0.sixty), so an
-#     open `>=0.60` could never resolve to 0.6.0 or later; `<0.6.1` excludes it.
-# Widen deliberately, with CI, when adapting to a newer gedai API.
+# Adaptive multiband GEDAI (AdaptiveMultibandGEDAIDenoiser).
+# LICENSE: gedai is PolyForm Noncommercial 1.0.0 and patent-pending, so it is
+# opt-in and not in `full`: mne-rt and mne-rt[full] stay BSD-3-Clause. See
+# README.md "License" before commercial use.
+# PIN: mne-rt calls private gedai functions. 0.6.1 removed parameters that
+# calibration needs, and `<0.6.1` also excludes "0.60" on PyPI, which sorts
+# above 0.6.x (PEP 440). Widen only with CI, when adapting to a newer API.
 gedai = [
     "gedai>=0.6.0,<0.6.1",
 ]
@@ -174,16 +162,12 @@ full = [
     "seaborn>=0.12",
 ]
 
-# ---------------------------------------------------------------------------
 # Entry points
-# ---------------------------------------------------------------------------
 
 [project.scripts]
 mne-rt = "mne_rt.cli:main"
 
-# ---------------------------------------------------------------------------
 # URLs
-# ---------------------------------------------------------------------------
 
 [project.urls]
 Homepage      = "https://github.com/mne-rt-org/mne-rt"
@@ -191,9 +175,7 @@ Documentation = "https://mne-rt-org.github.io/mne-rt/"
 Repository    = "https://github.com/mne-rt-org/mne-rt"
 "Bug Tracker" = "https://github.com/mne-rt-org/mne-rt/issues"
 
-# ---------------------------------------------------------------------------
 # Package discovery
-# ---------------------------------------------------------------------------
 
 [tool.setuptools.packages.find]
 where = ["src"]
@@ -203,9 +185,7 @@ where = ["src"]
     "config_methods.yml",   # bundled default NF modality config
 ]
 
-# ---------------------------------------------------------------------------
 # Ruff (linter / formatter)
-# ---------------------------------------------------------------------------
 
 [tool.ruff]
 line-length = 100
@@ -223,17 +203,13 @@ ignore = [
 "src/mne_rt/__init__.py" = ["F401"]
 "src/mne_rt/tools/__init__.py" = ["F401", "F403"]
 
-# ---------------------------------------------------------------------------
 # Coverage
-# ---------------------------------------------------------------------------
 
 [tool.coverage.run]
 # The tests are inside the package; measure the code they test, not them.
 omit = ["*/tests/*", "*/conftest.py"]
 
-# ---------------------------------------------------------------------------
 # Mypy (optional type checking)
-# ---------------------------------------------------------------------------
 
 
 [tool.mypy]
@@ -241,9 +217,7 @@ python_version = "3.11"
 ignore_missing_imports = true
 warn_return_any = false
 
-# ---------------------------------------------------------------------------
 # Pytest
-# ---------------------------------------------------------------------------
 
 [tool.pytest.ini_options]
 # Tests live next to the code they test (mne_rt/tests, mne_rt/viz/tests, …),

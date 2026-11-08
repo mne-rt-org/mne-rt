@@ -1,7 +1,5 @@
-# ══════════════════════════════════════════════════════════════════════════════
 # MNE-RT
 # Default parameters for NF modalities and reward protocols
-# ══════════════════════════════════════════════════════════════════════════════
 #
 # Usage:
 #   nf = NFRealtime(..., config_file="config_methods.yml")
@@ -12,16 +10,13 @@
 #   beta  : 13 – 30   gamma : 30 – 80   SMR    : 12 – 15
 #
 # All frange values are [low_hz, high_hz].
-# ══════════════════════════════════════════════════════════════════════════════
 
-# ─────────────────────────────────────────────────────────────────────────────
 # NF_modality
 #   Parameters used by record_main(modality=[...])
 #   Sensor-space modalities require no FreeSurfer; source-space require MRI.
-# ─────────────────────────────────────────────────────────────────────────────
 NF_modality:
 
-  # ── Sensor-space power ─────────────────────────────────────────────────────
+  # Sensor-space power
 
   sensor_power:
     # Spectral power of selected electrodes within frange.
@@ -107,7 +102,7 @@ NF_modality:
     frange: [8, 13]          # Hz — bandpass before Hilbert transform
     channel_indices: null    # null = average all channels; or list of ints
 
-  # ── Sensor-space microstates ───────────────────────────────────────────────
+  # Sensor-space microstates
 
   microstates:
     # EEG microstate metric of one target state. Each sample of the band-passed,
@@ -128,7 +123,7 @@ NF_modality:
                              # does; off by default because a 1 s window that is a single
                              # segment would then be rejected entirely
 
-  # ── Sensor-space connectivity ──────────────────────────────────────────────
+  # Sensor-space connectivity
 
   sensor_connectivity:
     # Functional connectivity between sensor pairs within frange.
@@ -169,7 +164,7 @@ NF_modality:
     frange_2: [30, 45]       # Hz — amplitude-providing (faster) band
     method: "tort"           # modulation index method
 
-  # ── Sensor-space graph ─────────────────────────────────────────────────────
+  # Sensor-space graph
 
   sensor_graph:
     # Graph-theoretic connectivity: learns a smooth graph from sensor signals.
@@ -182,7 +177,7 @@ NF_modality:
     alpha: 1                 # smoothness regularisation (log-degree barrier)
     beta: 1                  # degree-density regularisation
 
-  # ── Source-space power ─────────────────────────────────────────────────────
+  # Source-space power
   # All source-space modalities require:
   #   • A FreeSurfer reconstruction (subjects_dir)
   #   • A completed record_baseline(). The head model itself (forward solution,
@@ -213,7 +208,7 @@ NF_modality:
     method: "dSPM"           # inverse: "dSPM" | "MNE" | "sLORETA" | "eLORETA" | "LCMV"
     mri_resolution: true     # evaluate volume labels at MRI resolution
 
-  # ── Source-space connectivity ──────────────────────────────────────────────
+  # Source-space connectivity
 
   source_connectivity:
     # Functional connectivity between ROI pairs — within or across hemispheres,
@@ -232,7 +227,7 @@ NF_modality:
                              # the magnitude, usually what a reward signal wants
     mri_resolution: true
 
-  # ── Source-space graph ─────────────────────────────────────────────────────
+  # Source-space graph
 
   source_graph:
     # Graph-theoretic connectivity: learns a graph over the ROIs and reports
@@ -247,7 +242,7 @@ NF_modality:
     beta: 1
     mri_resolution: true
 
-  # ── Decoding ────────────────────────────────────────────────────────────────
+  # Decoding
 
   decode:
     # Probability of decoder.classes_[class_index] from a fitted RTDecode
@@ -257,11 +252,9 @@ NF_modality:
     class_index: 1           # which class probability to report (0-based)
 
 
-# ─────────────────────────────────────────────────────────────────────────────
 # NF_protocol
 #   Parameters for the reward / threshold logic applied to each NF value.
 #   Select a protocol in record_main() with protocol="ZScoreProtocol" etc.
-# ─────────────────────────────────────────────────────────────────────────────
 NF_protocol:
 
   ThresholdProtocol:

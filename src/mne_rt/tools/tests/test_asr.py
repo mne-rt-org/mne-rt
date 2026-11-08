@@ -19,9 +19,7 @@ def asr():
     return a
 
 
-# ------------------------------------------------------------------
 # Constructor validation
-# ------------------------------------------------------------------
 
 
 def test_invalid_cutoff():
@@ -45,9 +43,7 @@ def test_invalid_window_overlap():
         ASRDenoiser(window_overlap=1.0)
 
 
-# ------------------------------------------------------------------
 # Fit
-# ------------------------------------------------------------------
 
 
 def test_fit_returns_self():
@@ -67,9 +63,7 @@ def test_eigenvectors_shape(asr):
     assert asr.eigenvectors.shape == (N_CH, N_CH)
 
 
-# ------------------------------------------------------------------
 # Pre-fit guards
-# ------------------------------------------------------------------
 
 
 def test_thresholds_before_fit():
@@ -89,9 +83,7 @@ def test_transform_before_fit():
         a.transform(data)
 
 
-# ------------------------------------------------------------------
 # Transform
-# ------------------------------------------------------------------
 
 
 def test_transform_clean_data_noop(asr):
@@ -123,9 +115,7 @@ def test_transform_output_shape(asr):
     assert out.shape == data.shape
 
 
-# ------------------------------------------------------------------
 # Repr & properties
-# ------------------------------------------------------------------
 
 
 def test_repr(asr):

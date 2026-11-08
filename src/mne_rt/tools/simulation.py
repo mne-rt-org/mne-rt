@@ -155,14 +155,10 @@ def simulate_raw(
 
     mne.set_log_level(verbose=verbose)
 
-    # ------------------------------------------------------------------
     # Build sensor info
-    # ------------------------------------------------------------------
     raw_info = _make_sensor_info(data_type, sfreq, n_eeg_channels)
 
-    # ------------------------------------------------------------------
     # fsaverage source space + forward solution
-    # ------------------------------------------------------------------
     fs_dir = fetch_fsaverage(verbose=verbose)
     subjects_dir = os.path.dirname(fs_dir)
     subject = "fsaverage"
@@ -181,9 +177,7 @@ def simulate_raw(
     )
     src = fwd["src"]
 
-    # ------------------------------------------------------------------
     # Source time series
-    # ------------------------------------------------------------------
     tstep = 1.0 / raw_info["sfreq"]
     n_samples = int(duration * raw_info["sfreq"])
     t = np.arange(n_samples) * tstep
@@ -214,18 +208,14 @@ def simulate_raw(
     source_sim = SourceSimulator(src, tstep=tstep)
     source_sim.add_data(label, source_time_series, events)
 
-    # ------------------------------------------------------------------
     # Project to sensors and add noise
-    # ------------------------------------------------------------------
     raw = _mne_simulate_raw(raw_info, source_sim, forward=fwd, verbose=verbose)
     cov = mne.make_ad_hoc_cov(raw.info, verbose=verbose)
     add_noise(raw, cov, iir_filter=iir_filter, verbose=verbose)
     if add_eog_artifacts:
         add_eog(raw, verbose=verbose)
 
-    # ------------------------------------------------------------------
     # Save
-    # ------------------------------------------------------------------
     if fname_save is None:
         sim_dir = Path.cwd() / "data" / "simulated"
         sim_dir.mkdir(parents=True, exist_ok=True)
@@ -332,7 +322,7 @@ def simulate_nf_session(
     info = _make_sensor_info("eeg", sfreq, n_channels)
     ch_names = info["ch_names"]
 
-    # ── Spatial weight vectors ─────────────────────────────────────────────
+    # Spatial weight vectors
     occipital_names = {"O1", "Oz", "O2", "POz", "PO3", "PO4", "PO7", "PO8"}
     frontal_names = {"Fp1", "Fp2", "AF7", "AF8"}
 
@@ -354,13 +344,13 @@ def simulate_nf_session(
     if blink_weights.max() > 0:
         blink_weights /= blink_weights.max()
 
-    # ── NF state mask (consecutive block in the middle of the recording) ──
+    # NF state mask (consecutive block in the middle of the recording)
     nf_state = np.zeros(n_samples, dtype=bool)
     nf_n = int(nf_epoch_fraction * n_samples)
     nf_start = (n_samples - nf_n) // 2
     nf_state[nf_start : nf_start + nf_n] = True
 
-    # ── 1. Pink noise (all channels) ──────────────────────────────────────
+    # 1. Pink noise (all channels)
     def _pink_noise(n: int) -> np.ndarray:
         white = rng.standard_normal(n)
         fft_vals = np.fft.rfft(white)
@@ -378,7 +368,7 @@ def simulate_nf_session(
     for c in range(n_channels):
         data[c] = _pink_noise(n_samples) * background_amplitude
 
-    # ── 2. Alpha oscillations ──────────────────────────────────────────────
+    # 2. Alpha oscillations
     iaf = (alpha_frange[0] + alpha_frange[1]) / 2.0  # individual alpha frequency
     t = np.arange(n_samples) / sfreq
     # Random phase offset per channel to avoid perfectly synchronous oscillations
@@ -392,7 +382,7 @@ def simulate_nf_session(
             alpha_signal = alpha_signal * amplitude_mod
         data[c] += alpha_weights[c] * alpha_amplitude * alpha_signal
 
-    # ── 3. Eye blink artefacts ────────────────────────────────────────────
+    # 3. Eye blink artefacts
     if n_blinks > 0:
         blink_duration_s = 0.2  # 200 ms Gaussian envelope
         blink_sigma_samples = int(blink_duration_s / 2 * sfreq)
@@ -413,7 +403,7 @@ def simulate_nf_session(
                     blink_weights[c] * blink_amplitude * blink_template[tmpl_start:tmpl_end]
                 )
 
-    # ── 4. Muscle bursts ──────────────────────────────────────────────────
+    # 4. Muscle bursts
     window_size = int(sfreq)  # 1-second windows
     n_windows = n_samples // window_size
     n_muscle_windows = int(muscle_rate * n_windows)
@@ -437,7 +427,7 @@ def simulate_nf_session(
         burst /= rms_burst + 1e-30
         data[:, ws:we] += muscle_amplitude * burst
 
-    # ── 5. Slow electrode drift ───────────────────────────────────────────
+    # 5. Slow electrode drift
     drift_raw = rng.standard_normal((n_channels, n_samples))
     sos_drift = butter(
         2,
@@ -456,9 +446,7 @@ def simulate_nf_session(
     return raw, nf_state
 
 
-# ---------------------------------------------------------------------------
 # Internal helpers
-# ---------------------------------------------------------------------------
 
 
 def _make_sensor_info(data_type: str, sfreq: float, n_eeg_channels: int) -> mne.Info:

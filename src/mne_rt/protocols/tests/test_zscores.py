@@ -5,9 +5,7 @@ import pytest
 
 from mne_rt.protocols import ZScoreProtocol
 
-# ------------------------------------------------------------------
 # Constructor validation
-# ------------------------------------------------------------------
 
 
 def test_invalid_direction():
@@ -35,9 +33,7 @@ def test_invalid_zscore_threshold():
         ZScoreProtocol(zscore_threshold=-0.5)
 
 
-# ------------------------------------------------------------------
 # Defaults
-# ------------------------------------------------------------------
 
 
 def test_defaults():
@@ -52,9 +48,7 @@ def test_defaults():
     assert proto.mean_ == 0.0
 
 
-# ------------------------------------------------------------------
 # Warmup suppresses reward
-# ------------------------------------------------------------------
 
 
 def test_warmup_suppresses_reward():
@@ -65,9 +59,7 @@ def test_warmup_suppresses_reward():
         assert mag == 0.0
 
 
-# ------------------------------------------------------------------
 # Post-warmup upward crossing
-# ------------------------------------------------------------------
 
 
 def test_up_crossing_after_warmup():
@@ -90,9 +82,7 @@ def test_up_no_crossing_negative_spike():
     assert not crossed
 
 
-# ------------------------------------------------------------------
 # Downward crossing
-# ------------------------------------------------------------------
 
 
 def test_down_crossing_after_warmup():
@@ -104,9 +94,7 @@ def test_down_crossing_after_warmup():
     assert mag > 0.5
 
 
-# ------------------------------------------------------------------
 # Running statistics accuracy
-# ------------------------------------------------------------------
 
 
 def test_running_mean_converges():
@@ -126,9 +114,7 @@ def test_running_std_converges():
     assert abs(proto.std_ - np.std(values, ddof=1)) < 0.01
 
 
-# ------------------------------------------------------------------
 # magnitude
-# ------------------------------------------------------------------
 
 
 def test_magnitude_equals_abs_zscore_when_crossed():
@@ -140,9 +126,7 @@ def test_magnitude_equals_abs_zscore_when_crossed():
         assert abs(mag - abs(proto.zscore)) < 1e-9
 
 
-# ------------------------------------------------------------------
 # Smoothing
-# ------------------------------------------------------------------
 
 
 def test_smoothing_does_not_crash():
@@ -152,9 +136,7 @@ def test_smoothing_does_not_crash():
     assert proto.n_evaluated == 15
 
 
-# ------------------------------------------------------------------
 # reset
-# ------------------------------------------------------------------
 
 
 def test_reset_clears_state():
@@ -175,9 +157,7 @@ def test_reset_preserves_params():
     assert proto.zscore_threshold == 1.0
 
 
-# ------------------------------------------------------------------
 # current_threshold
-# ------------------------------------------------------------------
 
 
 def test_current_threshold_none_during_warmup():
@@ -203,9 +183,7 @@ def test_current_threshold_after_warmup_down():
     assert proto.current_threshold == pytest.approx(expected)
 
 
-# ------------------------------------------------------------------
 # repr
-# ------------------------------------------------------------------
 
 
 def test_repr():
@@ -215,9 +193,7 @@ def test_repr():
     assert "direction" in r
 
 
-# ------------------------------------------------------------------
 # Scale-free standardisation (the property that was missing)
-# ------------------------------------------------------------------
 
 # (mean, std) at the native magnitude of real modalities. See the display-scale
 # table in rt_stream.py.

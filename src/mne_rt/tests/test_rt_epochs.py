@@ -129,9 +129,7 @@ def _rt(**kwargs):
     return RTEpochs(**kwargs)
 
 
-# ------------------------------------------------------------------
 # No event stream: the pre-existing path must be untouched
-# ------------------------------------------------------------------
 
 
 def test_without_event_stream_only_one_stream_is_opened(rec):
@@ -149,9 +147,7 @@ def test_without_event_stream_no_processing_flags_are_set(rec):
     assert rec.streams[0].connect_kwargs["processing_flags"] is None
 
 
-# ------------------------------------------------------------------
 # With an event stream
-# ------------------------------------------------------------------
 
 
 def test_event_stream_is_built_from_name_and_source_id(rec):
@@ -201,9 +197,7 @@ def test_event_stream_is_connected_before_the_epochs_stream(rec):
     assert rec.events.index("connect:markers") < rec.events.index("build:epochs")
 
 
-# ------------------------------------------------------------------
 # Clock synchronisation
-# ------------------------------------------------------------------
 
 
 def test_clocksync_is_enabled_on_both_streams(rec):
@@ -224,9 +218,7 @@ def test_explicit_processing_flags_win(rec):
     ]
 
 
-# ------------------------------------------------------------------
 # Event channel validation
-# ------------------------------------------------------------------
 
 
 def test_unknown_event_channel_names_what_is_available(rec):
@@ -252,9 +244,7 @@ def test_event_channels_may_be_a_list(rec):
     assert rt.event_stream_ is rec.streams[1]
 
 
-# ------------------------------------------------------------------
 # Teardown
-# ------------------------------------------------------------------
 
 
 def test_disconnect_tears_down_the_event_stream_after_the_epochs_stream(rec):
@@ -313,9 +303,7 @@ def test_string_event_stream_is_reported_against_the_event_stream(rec, monkeypat
         _rt().connect_to_lsl(stream_name="eeg", event_stream_name="markers")
 
 
-# ------------------------------------------------------------------
 # The doubles above are only worth anything if they match the real API
-# ------------------------------------------------------------------
 
 
 def test_the_calls_this_module_makes_bind_against_real_mne_lsl():
@@ -344,9 +332,7 @@ def test_the_calls_this_module_makes_bind_against_real_mne_lsl():
     inspect.signature(EpochsStream.connect).bind(None, acquisition_delay=0.005)
 
 
-# ------------------------------------------------------------------
 # Epoch buffer geometry
-# ------------------------------------------------------------------
 
 
 def test_epoch_buffer_is_as_wide_as_the_epochs_stream(rec):

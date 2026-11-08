@@ -319,9 +319,7 @@ class ArrayStream:
         state = "connected" if self._connected else "disconnected"
         return f"<ArrayStream | {self._info['nchan']} channels, {state}>"
 
-    # ------------------------------------------------------------------
     # Connection lifecycle
-    # ------------------------------------------------------------------
 
     def connect(self) -> "ArrayStream":
         """Start the simulated real-time acquisition thread."""
@@ -366,9 +364,7 @@ class ArrayStream:
         """Number of new samples available since the last :meth:`get_data` call."""
         return self._n_new_samples
 
-    # ------------------------------------------------------------------
     # Acquisition thread
-    # ------------------------------------------------------------------
 
     def _stream_loop(self) -> None:
         sfreq = self._info["sfreq"]
@@ -396,11 +392,8 @@ class ArrayStream:
         k = chunk.shape[1]
         if k == 0:
             return
-        # `local_clock`, not `time.time`: a real LSL stream timestamps its samples
-        # on this clock, and window onsets are derived from those timestamps. The
-        # two are ~1.8e9 seconds apart (seconds-since-boot against the Unix
-        # epoch), so mixing them would put every onset computed under this test
-        # double on a different time base from the live one.
+        # local_clock, not time.time: LSL timestamps, and so window onsets, use it,
+        # and the two clocks are ~1.8e9 s apart.
         now = local_clock()
         with self._lock:
             sfreq = self._info["sfreq"]
@@ -422,9 +415,7 @@ class ArrayStream:
                 self._timestamps[-k:] = timestamps
             self._n_new_samples = min(self._n_new_samples + k, n_buf)
 
-    # ------------------------------------------------------------------
     # Data access
-    # ------------------------------------------------------------------
 
     def get_data(
         self,
@@ -472,9 +463,7 @@ class ArrayStream:
                 idx.append(int(p))
         return np.array(idx, dtype=int)
 
-    # ------------------------------------------------------------------
     # In-place channel / signal operations
-    # ------------------------------------------------------------------
 
     def set_montage(self, montage: Any, on_missing: str = "warn") -> "ArrayStream":
         self._info.set_montage(montage, on_missing=on_missing, verbose=False)
@@ -603,9 +592,7 @@ class MarkerArrayStream:
     def __repr__(self) -> str:  # pragma: no cover - debugging aid
         return f"<MarkerArrayStream | {self._codes.size} markers | connected={self._connected}>"
 
-    # ------------------------------------------------------------------
     # Connection
-    # ------------------------------------------------------------------
 
     def connect(self, acquisition_delay: float = 0.005) -> "MarkerArrayStream":
         """Start publishing the schedule on a background thread."""
@@ -645,9 +632,7 @@ class MarkerArrayStream:
         """Markers pushed since the last :meth:`get_data` call."""
         return self._n_new_samples
 
-    # ------------------------------------------------------------------
     # Publishing
-    # ------------------------------------------------------------------
 
     def _stream_loop(self) -> None:
         t0 = local_clock()
@@ -669,9 +654,7 @@ class MarkerArrayStream:
             self._timestamps[-1] = now
             self._n_new_samples = min(self._n_new_samples + 1, self._bufsize)
 
-    # ------------------------------------------------------------------
     # Reading
-    # ------------------------------------------------------------------
 
     def get_data(
         self,
@@ -936,9 +919,7 @@ class RTStream(ModalityMixin):
 
         set_log_level(verbose)
 
-    # ------------------------------------------------------------------
     # LSL connection
-    # ------------------------------------------------------------------
 
     def _teardown_session_streams(self) -> None:
         """Disconnect the acquisition stream, if one is connected."""
@@ -1288,9 +1269,7 @@ class RTStream(ModalityMixin):
         stream.connect()
         self._finalize_stream(stream)
 
-    # ------------------------------------------------------------------
     # Marker stream
-    # ------------------------------------------------------------------
 
     @verbose
     def connect_marker_stream(
@@ -1536,9 +1515,7 @@ class RTStream(ModalityMixin):
                 pass
         self.marker_stream = None
 
-    # ------------------------------------------------------------------
     # Directory helpers
-    # ------------------------------------------------------------------
 
     def _ensure_dirs(self, include_delays: bool = False) -> None:
         """Create BIDS-aligned session subdirectories under ``subject_dir``."""
@@ -1547,9 +1524,7 @@ class RTStream(ModalityMixin):
         if include_delays:
             (self.subject_dir / "delays").mkdir(parents=True, exist_ok=True)
 
-    # ------------------------------------------------------------------
     # Recording
-    # ------------------------------------------------------------------
 
     @verbose
     def record_baseline(
@@ -2011,10 +1986,8 @@ class RTStream(ModalityMixin):
         self.picks = picks
         self.modality_params = modality_params
         self.winsize = winsize
-        # ceil, matching what `Stream.get_data(winsize)` actually returns. With
-        # int() the two disagreed by one sample whenever winsize*sfreq was not a
-        # whole number, and the length check below then discarded every window —
-        # a silently empty session.
+        # ceil, the length Stream.get_data(winsize) returns: with any other, the
+        # length check below drops every window.
         self.window_size_s = int(np.ceil(winsize * self.rec_info["sfreq"]))
         self.estimate_delays = estimate_delays
         self._sfreq = self.rec_info["sfreq"]
@@ -2060,14 +2033,9 @@ class RTStream(ModalityMixin):
                     "Call fit_maxwell() before record_main() to initialise Maxwell filtering."
                 )
 
-        # Modality preparation
-        #
-        # A name may carry an instance label ("source_connectivity@theta"), so the
-        # same measure can run several times over with different parameters.  The
-        # *base* drives config lookup and method dispatch; the *full name* keys
-        # every piece of per-instance state and every output channel.  A plain
-        # name is just an instance with an empty label, so nothing below changes
-        # behaviour for a session that does not use labels.
+        # Modality preparation. A name may carry an instance label
+        # ("source_connectivity@theta"): the base picks the config and method, the
+        # full name keys the per-instance state and output channels.
         specs = [parse_modality(m) for m in ([modality] if isinstance(modality, str) else modality)]
         mods = [s.name for s in specs]
         _dupes = sorted({m for m in mods if mods.count(m) > 1})
@@ -2089,11 +2057,8 @@ class RTStream(ModalityMixin):
             for _key in protocol:
                 if _key in _valid_keys:
                     continue
-                # Protocols carry state -- ZScoreProtocol's running mean and
-                # variance, StaircaseProtocol's step, PercentileProtocol's
-                # buffer.  Fanning one object across N instances would feed it
-                # N different values per window and corrupt all of it, so a
-                # base name that has instances is refused rather than expanded.
+                # Protocols are stateful, so one object cannot serve several instances:
+                # refuse a base name that has instances rather than expand it.
                 _insts = sorted({s.name for s in specs if s.is_instanced and s.base == _key})
                 if _insts:
                     raise ValueError(
@@ -2128,11 +2093,8 @@ class RTStream(ModalityMixin):
                     "matches would mute the whole session silently."
                 )
 
-        # Snapshot the marker buffer *before* the expensive setup below.
-        # Feature preparation can build forward and inverse operators, and the
-        # Qt windows take a moment more; a marker arriving inside that gap
-        # belongs to this run, so the boundary has to be drawn here rather than
-        # once the acquisition thread finally starts.
+        # Snapshot the marker high-water mark here, before the slow setup below,
+        # not when the thread starts: markers arriving during setup are this run's.
         _marker_start_hwm = 0.0
         _marker_start_condition: Optional[str] = None
         if getattr(self, "marker_stream", None) is not None:
@@ -2177,7 +2139,7 @@ class RTStream(ModalityMixin):
         # them to anything that read it at window time.
         self.params = None
 
-        # ---- Visualization setup (main thread) ----
+        # Visualization setup (main thread)
 
         scales_dict = {
             "sensor_power": self._SENSOR_POWER_SCALE[self.data_type],
@@ -2210,11 +2172,8 @@ class RTStream(ModalityMixin):
             if s.name not in scales_dict and s.base in scales_dict:
                 scales_dict[s.name] = scales_dict[s.base]
         if zscore_normalize:
-            # The traces are no longer in native units — a z-score sits around 1
-            # whatever the feature. Dividing one by a 1e-12 band-power scale
-            # would put it twelve orders off-screen. During the warmup windows
-            # the raw value is still passed through, so the trace sits flat near
-            # the axis origin until normalisation engages.
+            # Normalised traces are unitless: scale 1, not a 1e-12 band-power scale.
+            # During warmup the raw value passes through and sits near 0.
             scales_dict = dict.fromkeys(scales_dict, 1.0)
         # NFPlot looks every displayed modality up in scales_dict, so the
         # combined trace needs an entry of its own.
@@ -2286,10 +2245,8 @@ class RTStream(ModalityMixin):
         # feedback outputs and the saved data are concerned.
         _display_mods = mods + [combined_name] if combiner is not None else list(mods)
 
-        # OSC addresses are built once here rather than per window.  The
-        # separator is mapped to something an OSC receiver will tolerate, which
-        # can in principle make two names collide — and the send path cannot
-        # report that, since a failure there must not kill acquisition.
+        # Built once. The OSC-safe separator can make two names collide, which the
+        # send path cannot report without risking acquisition.
         _osc_names = [osc_address_name(m) for m in _display_mods]
         _send_warned = [False, False]  # OSC, LSL — log the first failure only
         _raw_feed_warned = [False]
@@ -2357,10 +2314,8 @@ class RTStream(ModalityMixin):
         brain_kernel: Optional[tuple[np.ndarray, list[np.ndarray]]] = None
 
         if show_brain_activation:
-            # Before any window is shown: `_push_brain` returns early without an
-            # inverse operator, so the display would stay empty otherwise -- and
-            # on a cold cache this fetches the anatomy, which should not happen
-            # behind windows that are up but not yet painted.
+            # Before any window shows: without an inverse operator _push_brain draws
+            # nothing, and a cold cache would fetch the anatomy behind open windows.
             self._ensure_head_model("The brain-activation display", need_inverse=True)
             brain_kernel = self._brain_kernel()
 
@@ -2412,10 +2367,8 @@ class RTStream(ModalityMixin):
             )
             raw_plot.show()
 
-        # Once per connection, not once per call: mne-lsl *appends* to the
-        # stream's filter chain and ArrayStream rewrites its source array in
-        # place, so a second record_main() on the same stream would run the data
-        # through a second band-pass, a third through a third.
+        # Once per connection: mne-lsl appends to the filter chain and ArrayStream
+        # filters its array in place, so each record_main would filter again.
         if not getattr(self, "_filters_applied", False):
             if self.bandpass_freq is not None:
                 self.stream.filter(l_freq=self.bandpass_freq[0], h_freq=self.bandpass_freq[1])
@@ -2425,7 +2378,7 @@ class RTStream(ModalityMixin):
                     self.stream.notch_filter(freqs=_f)
             self._filters_applied = True
 
-        # ---- Thread-safe queues between acquisition thread and UI ----
+        # Thread-safe queues between acquisition thread and UI
 
         # small caps: drop stale frames rather than accumulate backlog
         nf_queue: _queue.Queue = _queue.Queue(maxsize=4)
@@ -2439,10 +2392,8 @@ class RTStream(ModalityMixin):
             _queue.Queue(maxsize=4) if raw_plot is not None else None
         )
         done_event = threading.Event()
-        # Set when record_main is finishing, so an acquisition thread that
-        # outlives the join -- the Qt windows closed early, say -- stops instead
-        # of running on into the next block, where it would steal samples from
-        # its successor and submit into a pool that no longer exists.
+        # Stops an acquisition thread that outlives the join (windows closed early)
+        # from stealing the next block's samples or submitting to a shut-down pool.
         stop_event = threading.Event()
         nf_data: dict[str, list] = {m: [] for m in _display_mods}
         _ema: dict[str, float] = {}  # EMA state, seeded on first window
@@ -2462,23 +2413,16 @@ class RTStream(ModalityMixin):
         _meth_delays: dict[str, list] = {s.name: [] for s in specs}
         _plot_delays: list[float] = []  # only used when viz runs inline
 
-        # ---- Artifact rate tracking ----
+        # Artifact rate tracking
         _n_total_windows: list[int] = [0]
         _n_artifact_windows: list[int] = [0]
         _artifact_threshold_raw = artifact_threshold_uv * 1e-6  # V for EEG, T for MEG
 
-        # ---- SNR tracking ----
+        # SNR tracking
         _snr_data: list[float] = []
 
-        # ---- Per-window timing ----
-        # The hop is a busy-wait that re-reads the clock *after* the previous
-        # window's feature computation, so realised onsets drift from the
-        # nominal index*hop grid — several seconds over a long run. Record the
-        # real onset instead of letting readers infer it.
-        # ---- Marker state ----
-        # `_marker_latch` is a running variable rather than something recomputed
-        # per window from `_markers`: a window whose onset is NaN has no interval
-        # to search, and recomputing would un-latch it.
+        # Marker state. `_marker_latch` is kept running: a window with a NaN onset
+        # has no interval to search, so recomputing would un-latch it.
         _marker_stream = getattr(self, "marker_stream", None)
         _marker_labels = dict(getattr(self, "_marker_labels", {}) or {})
         _marker_ch = int(getattr(self, "_marker_ch_idx", 0))
@@ -2549,11 +2493,8 @@ class RTStream(ModalityMixin):
                 elif ts == _marker_hwm[0]:
                     _marker_hwm_n[0] += 1
 
-        # `_marker_start_hwm` was taken at the top of record_main, before the
-        # feature preparation and the Qt windows: anything already in the buffer
-        # then predates this run — a previous block, or the paradigm warming up.
-        # Seeding the mark rather than draining here is what stops a marker that
-        # arrives *during* setup from being consumed and thrown away.
+        # Seeded with the mark taken before setup, not drained: a marker arriving
+        # during setup belongs to this run.
         _marker_hwm[0] = float(_marker_start_hwm)
         _marker_latch[0] = _marker_start_condition
 
@@ -2569,11 +2510,9 @@ class RTStream(ModalityMixin):
             )
         )
 
-        # ---- Z-score normalisation state ----
-        # The warmup buffer is dropped once its statistics are taken; `_z_n` is
-        # the window counter, kept separately because the combiner warm-gate
-        # below reads it after the buffer is gone. Variance rather than standard
-        # deviation, so the adaptive update composes correctly.
+        # Z-score normalisation state. `_z_n` counts windows and outlives the warmup
+        # buffer, for the protocol and combiner gates. Variance, so the adaptive
+        # update composes.
         _z_buf: dict[str, list] = {s.name: [] for s in specs}
         _z_n: dict[str, int] = {s.name: 0 for s in specs}
         _z_mean: dict[str, float] = {}
@@ -2607,7 +2546,7 @@ class RTStream(ModalityMixin):
             # divided by an arbitrary constant. See mne_rt._stats.
             return zscore(val, _z_mean[mod], math.sqrt(_z_var[mod]))
 
-        # ---- Shared artifact-correction helper ----
+        # Shared artifact-correction helper
 
         _causal_gedai = (
             _CausalGEDAIWindow(self.gedai, self.window_size_s)
@@ -2698,7 +2637,7 @@ class RTStream(ModalityMixin):
                 "The brain display failed; continuing without it.", exc_info=fut.exception()
             )
 
-        # ---- Acquisition thread ----
+        # Acquisition thread
 
         # Filled by the acquisition thread when it fails. An exception raised in a
         # thread cannot reach the caller by itself, so it is kept here and
@@ -2711,10 +2650,8 @@ class RTStream(ModalityMixin):
         # Holds the KeyboardInterrupt that ended a headless run early, if any.
         _interrupted: list[BaseException] = []
         _raw_chunks: list[np.ndarray] = []
-        # Everything the loop appends to, or counts, once per window. A window
-        # that fails part-way is rolled back to the last commit, so a failed run
-        # is saved with whole windows only: every column the same length, the
-        # counters agreeing with them.
+        # What the loop appends to per window. A failed window is rolled back, so a
+        # failed run saves whole windows only.
         _window_lists = [
             _raw_chunks,
             _acq_delays,
@@ -2756,10 +2693,9 @@ class RTStream(ModalityMixin):
 
                 while local_clock() < t_start + duration and not stop_event.is_set():
                     _commit()
-                    # Block until half a window of new samples has arrived, then
-                    # fetch the latest winsize seconds (50 % overlap with prev window).
-                    # While waiting, flush any accumulated raw samples to the display
-                    # queue at ~30 fps so RawPlot scrolls smoothly.
+                    # Busy-wait half a window of clock time (50 % overlap), flushing raw
+                    # samples to the display at ~30 fps. The wait starts after the last
+                    # window's computation, so real onsets drift from index * hop.
                     _t_hop = local_clock()
                     _hop_dur = _hop / self._sfreq
                     while local_clock() < _t_hop + _hop_dur:
@@ -2788,11 +2724,8 @@ class RTStream(ModalityMixin):
                         time.sleep(0.005)
 
                     tic = time.time()
-                    # One fetch of every channel, which the analysis (`picks`) and
-                    # the displays (every good channel) are then cut from. A second
-                    # get_data for the displays, as before, came a computation
-                    # later and reset the count the raw feed reads, losing those
-                    # samples from the viewer every window.
+                    # One fetch for the analysis and the displays: a second get_data would reset
+                    # the count the raw feed reads and drop samples from the viewer.
                     _win_all, _ts = self._read_window(winsize, all_channels=True)
                     data = _win_all[_pick_rows]
                     if raw_queue is not None:
@@ -2827,19 +2760,14 @@ class RTStream(ModalityMixin):
                         if estimate_delays:
                             _art_delays.append(time.time() - art_tic)
 
-                    # The timestamp buffer is preallocated with zeros, so `_ts[0]` can
-                    # be a literal 0.0 rather than a clock value early in a session.
-                    # Derive the onset from the tail, which the hop wait guarantees is
-                    # real, and fall back to the wall clock if even that is unfilled.
+                    # `_ts` is preallocated with zeros: take the onset from the tail, which the
+                    # hop wait guarantees is real.
                     _t_end = float(_ts[-1]) if _ts.size else 0.0
                     _win_dur = data.shape[1] / self._sfreq
                     if _t_end > 0.0:
                         _onset = _t_end - (data.shape[1] - 1) / self._sfreq
                     else:
-                        # Still on the preallocated zeros. Substituting this host's
-                        # local_clock() would put one window on a different clock
-                        # from the rest whenever the sender's differs, quietly
-                        # shifting every session-relative onset. Unknown is honest.
+                        # Still zeros: NaN, as another clock would shift this window's onset.
                         _onset = float("nan")
                     _win_onsets.append(_onset)
                     _win_durations.append(_win_dur)
@@ -2848,13 +2776,8 @@ class RTStream(ModalityMixin):
                     # the hop wait can be 5 ms stale, and a marker arriving in that
                     # gap belongs to this window, not the next one.
                     _poll_markers()
-                    # From the newest marker at or before this window's end, not
-                    # from the free-running latch: the poll above also consumes
-                    # markers that arrived after `_t_end` (the M/EEG buffer lags
-                    # on chunked devices), and letting one of those label this
-                    # window would open the gate a window early and disagree with
-                    # `n_markers`. A window with an unknown end has no interval
-                    # to search, so it keeps the latch.
+                    # The newest marker at or before this window's end, not the latch: the poll
+                    # also takes markers past `_t_end`. An unknown end keeps the latch.
                     if _t_end > 0.0:
                         _condition = _marker_start_condition
                         for _t_m, _c_m in reversed(_markers):
@@ -2863,12 +2786,8 @@ class RTStream(ModalityMixin):
                                 break
                     else:
                         _condition = _marker_latch[0]
-                    # Count over `(previous window end, this window end]`, not
-                    # over the window itself. Windows overlap by half, so a
-                    # contained marker would be counted twice; this partitions
-                    # the run, and the column sums to the number received.
-                    # `_t_end` rather than `_onset + _win_dur`, which overshoots
-                    # by one sample.
+                    # Over (previous end, this end]: windows overlap, so each marker counts once.
+                    # `_t_end`, as `_onset + _win_dur` overshoots by a sample.
                     if _t_end > 0.0:
                         _lo = _prev_win_end[0] if _prev_win_end[0] > 0.0 else _onset
                         _n_win_markers = sum(1 for _t_m, _ in _markers if _lo < _t_m <= _t_end)
@@ -2930,12 +2849,8 @@ class RTStream(ModalityMixin):
                             _ema[m] = nf_val
                         nf_data[m].append(nf_val)
                         if m in _proto_map:
-                            # `_apply_zscore` passes the raw value through until this
-                            # modality has `zscore_warmup` windows behind it, so
-                            # evaluating during that period rewards native-unit values
-                            # against a z-score-calibrated threshold. The gate is
-                            # per-modality: `all(...)` would block one band's protocol
-                            # because another band had not warmed yet.
+                            # Per modality: before its zscore_warmup windows the value is still in
+                            # native units and must not meet a z-score threshold.
                             _m_warm = not zscore_normalize or _z_n[m] >= zscore_warmup
                             if _in_gate and _m_warm:
                                 _crossed, _mag = _proto_map[m].evaluate(nf_val)
@@ -2950,14 +2865,8 @@ class RTStream(ModalityMixin):
                             _meth_delays[m].append(m_delay)
 
                     if combiner is not None:
-                        # _apply_zscore passes values through unchanged until each
-                        # modality has `zscore_warmup` windows behind it. Combining
-                        # during that period would mix native units — the very thing
-                        # zscore_normalize=True is meant to prevent — and the combined
-                        # trace would then jump by orders of magnitude the moment
-                        # normalisation engaged, fitting any attached protocol's
-                        # baseline on meaningless numbers. Hold at 0.0 until every
-                        # feature is normalised, as ZScoredNormCombiner does.
+                        # Hold at 0.0 until every feature is normalised, as ZScoredNormCombiner
+                        # does: combining during warmup would mix native units.
                         _warm = not zscore_normalize or all(_z_n[m] >= zscore_warmup for m in mods)
                         if _warm:
                             try:
@@ -3023,11 +2932,8 @@ class RTStream(ModalityMixin):
                     # below do.
                     _commit()
                     if topo_queue is not None or brain_queue is not None:
-                        # Both displays span every good channel. When `picks` is
-                        # all of them that is `data`, corrected; otherwise it is
-                        # the newest window uncorrected, since the corrector was
-                        # fitted on `picks` only (said once, at setup). With
-                        # causal GEDAI, `data` then lags it by GEDAI's delay.
+                        # Both displays show every good channel: `data` if picks are all of them,
+                        # else the uncorrected window, as the corrector was fitted on picks only.
                         _full = data if _picks_all else _win_all[_good_rows]
                         _push_topo(_full)
                         _push_brain(_full)
@@ -3057,21 +2963,18 @@ class RTStream(ModalityMixin):
             finally:
                 done_event.set()
 
-        # ---- Start acquisition thread ----
+        # Start acquisition thread
 
         acq_thread = threading.Thread(target=_acquire, daemon=True)
         acq_thread.start()
 
-        # ---- Event loop or blocking join ----
+        # Event loop or blocking join
 
         if needs_qt:
             from qtpy.QtCore import QTimer
 
-            # Interpolation state: [prev_vals, curr_vals, step_index]
-            # Linearly interpolates between consecutive NF estimates so the
-            # display ramps smoothly. With 50 % overlap the acquisition produces
-            # values every winsize/2 s, so we ramp over winsize/2 s worth of
-            # 30-fps ticks.
+            # Interpolation state [prev_vals, curr_vals, step_index]: the display ramps
+            # between NF values over winsize/2 s of 30-fps ticks.
             _interp: list = [[], [], [0]]
             _n_steps: int = max(1, int(30 * winsize // 2))
             # Threshold lines and reward zones update once per analysis
@@ -3151,10 +3054,8 @@ class RTStream(ModalityMixin):
                 topo_timer.start()
                 topo_plot.closed.connect(topo_timer.stop)
 
-            # Separate slow timer for the brain plot so its render never
-            # blocks the signal pump.  Scalars are updated without an
-            # immediate render (deferred=True); a single render() is issued
-            # at the end of the callback so the signal timer can fire first.
+            # Its own slower timer, so brain renders never block the signal pump: one
+            # render() at the end, after deferred updates.
             brain_timer: Optional[QTimer] = None
             if brain_plot is not None:
                 _brain_pump_warned = [False]
@@ -3215,10 +3116,8 @@ class RTStream(ModalityMixin):
             try:
                 acq_thread.join(timeout=duration + _ACQ_STOP_TIMEOUT)
             except KeyboardInterrupt as exc:
-                # Ending here would leave the thread reading a stream that the
-                # caller, run_blocks included, then disconnects, and nothing
-                # saved. End the run as for a failure instead: stop the thread
-                # below, save what was recorded, then re-raise.
+                # End as for a failure: stop the thread, save what was recorded, re-raise.
+                # Returning would leave the thread reading a disconnected stream.
                 logger.warning("Interrupted; saving what was recorded so far.")
                 _interrupted.append(exc)
 
@@ -3245,16 +3144,13 @@ class RTStream(ModalityMixin):
         else:
             _final = {id(x): x for x in _window_lists}
             _final_n = {id(c): c[0] for c in _window_counters}
-        # After the join, so the brain-plot task submitted from the acquisition
-        # thread cannot still be running `apply_inverse_raw` while the session
-        # is serialised below. Left in place rather than set to None, because a
-        # thread that outlived the join would then submit into `None`. Not
-        # waited on when the thread was abandoned: the modality task it is
-        # stuck on runs here too, and waiting on it would hang this method.
+        # After the join, so no brain task runs while the session is saved. Kept,
+        # not set to None, for a thread that outlived the join; not waited on when
+        # the thread was abandoned, as its stuck task would hang here.
         if getattr(self, "executor", None) is not None:
             self.executor.shutdown(wait=not abandoned, cancel_futures=abandoned)
 
-        # ---- Persist results ----
+        # Persist results
 
         n_tot = _final_n[id(_n_total_windows)]
         n_gated = _final_n[id(_n_gated)]
@@ -3342,10 +3238,8 @@ class RTStream(ModalityMixin):
                 if _interrupted:
                     exc.add_note("The run had been interrupted (KeyboardInterrupt).")
                 raise
-            # Saving a run that had already failed can fail in turn. The
-            # acquisition error, which is why the run failed, is still the one
-            # raised, below and not from here: raised inside this handler, it
-            # would have its own context replaced by the save error.
+            # Log, don't raise: the acquisition error is the one to raise, and raising
+            # here would replace its context.
             logger.error("Saving the failed run failed too.", exc_info=True)
             _acq_error[0].add_note(f"Saving the run then failed too: {exc!r}")
             saved_files = {}
@@ -3446,9 +3340,7 @@ class RTStream(ModalityMixin):
                 pass
             self._mock_player = None
 
-    # ------------------------------------------------------------------
     # Offline replay
-    # ------------------------------------------------------------------
 
     @verbose
     def replay(
@@ -3527,9 +3419,7 @@ class RTStream(ModalityMixin):
             **record_main_kwargs,
         )
 
-    # ------------------------------------------------------------------
     # Multi-run session
-    # ------------------------------------------------------------------
 
     @verbose
     def run_blocks(
@@ -3643,10 +3533,7 @@ class RTStream(ModalityMixin):
         all_snr_data: list[list] = []
         all_results: list[dict] = []
 
-        # Bound before the loop, not after: record_main raises when a block's
-        # acquisition fails, and the blocks that finished must survive that. The
-        # lists are appended to in place, so each block is visible here as soon as
-        # it ends. The failed block's partial data is in nf_data and on disk.
+        # Bound before the loop, so the finished blocks survive a failing one.
         self.block_nf_data = all_nf_data
         self.block_artifact_rates = all_artifact_rates
         self.block_snr_data = all_snr_data
@@ -3664,12 +3551,9 @@ class RTStream(ModalityMixin):
                     len(blocks),
                     block_kwargs.get("duration", 0),
                 )
-                # Popped before the call rather than inside it: relying on argument
-                # evaluation order to run these before `**block_kwargs` is expanded
-                # would be a duplicate-keyword TypeError waiting to happen.
-                # Each block writes its own files instead of overwriting the previous
-                # block's, and the stream stays up between blocks -- `save()` stops
-                # the mock player, which reconnecting the stream alone cannot undo.
+                # Popped first, or `**block_kwargs` could repeat a keyword. Each block
+                # writes its own files. Only the last disconnects: save() stops the mock
+                # player, which reconnecting the stream cannot undo.
                 block_run = block_kwargs.pop("run", i + 1)
                 block_disconnect = block_kwargs.pop("disconnect", _last)
                 self.record_main(
@@ -3722,9 +3606,7 @@ class RTStream(ModalityMixin):
 
         return all_nf_data
 
-    # ------------------------------------------------------------------
     # Modality-params property
-    # ------------------------------------------------------------------
 
     @property
     def modality_params(self) -> dict:
@@ -3747,9 +3629,7 @@ class RTStream(ModalityMixin):
             raise ValueError("`modality_params` must be a dict or None.")
         self._modality_params = params or {}
 
-    # ------------------------------------------------------------------
     # Preprocessing helpers
-    # ------------------------------------------------------------------
 
     def _prepare_raw_array(self, data: np.ndarray, use_picks: bool = True) -> RawArray:
         """Wrap data in a RawArray; set average EEG reference for EEG data."""
@@ -4021,10 +3901,8 @@ class RTStream(ModalityMixin):
         if not isinstance(multiband, bool) and multiband != "causal":
             raise ValueError("multiband must be False, True, or 'causal'")
         if multiband and self.data_type == "meg":
-            # SENSAI has a distinct MEG objective (component-count prescan and a
-            # different noise-subspace score); AdaptiveMultibandGEDAIDenoiser
-            # only implements the EEG one. Refuse rather than return a
-            # plausible-looking, EEG-calibrated result for MEG data.
+            # SENSAI's MEG objective differs: refuse rather than return an
+            # EEG-calibrated result for MEG.
             raise ValueError(
                 "multiband GEDAI is calibrated for EEG only; use the single-band "
                 "fit_gedai(multiband=False) for MEG data."
@@ -4423,10 +4301,8 @@ class RTStream(ModalityMixin):
         if data_cov is not None:
             self.data_cov = data_cov
         else:
-            # Estimate on `_raw_fwd`, the recording the forward model and noise
-            # covariance were built from — same channels, same average-reference
-            # projection. Using self.raw_baseline here would hand make_lcmv a
-            # projected info together with an unprojected covariance.
+            # On `_raw_fwd`, like the forward and noise covariance, so make_lcmv gets
+            # matching channels and projection.
             self.data_cov = compute_raw_covariance(_raw_fwd, method=data_cov_method, verbose=False)
 
         # The cached SourceModels were built from the previous baseline's forward
@@ -4471,9 +4347,7 @@ class RTStream(ModalityMixin):
             overwrite=True,
         )
 
-    # ------------------------------------------------------------------
     # LSL stream viewer
-    # ------------------------------------------------------------------
 
     def open_stream_viewer(self, bufsize: float = 0.2) -> None:
         """Open the mne-lsl StreamViewer for raw M/EEG monitoring.
@@ -4510,9 +4384,7 @@ class RTStream(ModalityMixin):
         subprocess.Popen([sys.executable, "-c", code])
         time.sleep(0.5)  # give the viewer process time to connect to the stream
 
-    # ------------------------------------------------------------------
     # Data I/O
-    # ------------------------------------------------------------------
 
     def _session_windows(self, *, with_t0: bool = False):
         """The per-window table: onsets, durations, and the marker columns.
@@ -4527,10 +4399,7 @@ class RTStream(ModalityMixin):
         ``TransferProtocol`` alike.
         """
         nf_data = getattr(self, "nf_data", {}) or {}
-        # Truncated to the rows already snapshotted into `data`: the acquisition
-        # thread is a daemon and keeps appending if the Qt window is closed
-        # early, which would otherwise leave onset rows with no features beside
-        # them.
+        # Only rows already in `data`: the daemon acquisition thread may still append.
         n_rows = max((len(v) for v in nf_data.values()), default=0)
 
         def _take(name):
@@ -4705,7 +4574,7 @@ class RTStream(ModalityMixin):
         )
         saved: dict[str, Path] = {}
 
-        # ── helpers ──────────────────────────────────────────────────────
+        # helpers
 
         def _summarize(vals: list, include_trace: bool = False) -> dict:
             """Convert a list of wall-clock seconds to a ms summary dict."""
@@ -4731,7 +4600,7 @@ class RTStream(ModalityMixin):
                 return float(v)
             return v
 
-        # ── feature time-series ───────────────────────────────────────
+        # feature time-series
 
         if nf_data and hasattr(self, "nf_data"):
             start_iso = (
@@ -4743,13 +4612,8 @@ class RTStream(ModalityMixin):
                 "meta": self._session_meta(start_iso=start_iso),
                 "data": {m: [_ser(v) for v in vals] for m, vals in self.nf_data.items()},
             }
-            # Per-window timing, kept out of `data`: everything there is treated
-            # as a modality — by meta["modalities"], meta["n_windows"], the TSV
-            # columns and TransferProtocol alike.
-            # Truncated to the rows already snapshotted into `data` above: the
-            # acquisition thread is a daemon and keeps appending if the Qt window
-            # is closed early, which would otherwise leave onset rows with no
-            # feature values beside them.
+            # Per-window timing, kept out of `data`, where everything is a modality.
+            # Truncated to the rows in `data`: the acquisition thread may still append.
             _windows, _t0 = self._session_windows(with_t0=True)
             if _t0 is not None:
                 payload["meta"]["t0_lsl"] = _t0
@@ -4789,10 +4653,8 @@ class RTStream(ModalityMixin):
 
             if bids_tsv:
                 tsv_p = self.subject_dir / "beh" / f"{stem}_beh.tsv"
-                # `sidecar=False`: BIDS would put the descriptions in
-                # `<stem>_beh.json`, which is the session payload's own filename.
-                # They go into that payload instead, under "columns", so the one
-                # file serves as both record and sidecar.
+                # sidecar=False: BIDS would name it `<stem>_beh.json`, the payload's own
+                # filename, so the descriptions go into the payload, under "columns".
                 write_nf_beh_tsv(
                     tsv_p,
                     nf_data=self.nf_data,
@@ -4804,7 +4666,7 @@ class RTStream(ModalityMixin):
                 )
                 saved["nf_tsv"] = tsv_p
 
-        # ── Timing / delay statistics ────────────────────────────────────
+        # Timing / delay statistics
 
         if getattr(self, "estimate_delays", False) and (
             acq_delay or artifact_delay or method_delay
@@ -4826,7 +4688,7 @@ class RTStream(ModalityMixin):
                 json.dump(delays_payload, fh, indent=2)
             saved["delays"] = p
 
-        # ── Raw M/EEG (pre-correction) ───────────────────────────────────
+        # Raw M/EEG (pre-correction)
 
         if raw_data:
             chunks = getattr(self, "_raw_chunks", None)
@@ -4877,11 +4739,9 @@ class RTStream(ModalityMixin):
         with open(Path(path)) as fh:
             return json.load(fh)
 
-    # ------------------------------------------------------------------
     # Reporting
-    # ------------------------------------------------------------------
 
-    # ── report helpers ───────────────────────────────────────────────────
+    # report helpers
 
     @staticmethod
     def _html_table(rows: list, *, header: Optional[tuple] = None) -> str:
@@ -4929,10 +4789,8 @@ class RTStream(ModalityMixin):
         onsets = list(getattr(self, "window_onsets", []) or [])[:n_rows]
         finite = [t for t in onsets if np.isfinite(t)]
         if finite:
-            # Any finite onset is enough, and individual unknown ones stay NaN
-            # rather than discarding the rest — a window whose onset the stream
-            # had not timestamped yet is routine at session start, and `save()`
-            # keeps the same origin and writes `None` for just that row.
+            # One finite onset is enough: the unknown ones (routine at session start)
+            # stay NaN rather than discard the measured times; save() writes None.
             t0 = finite[0]
             return np.asarray([t - t0 for t in onsets], dtype=float), True
         hop = float(getattr(self, "winsize", 1.0)) / 2.0
@@ -5194,7 +5052,7 @@ class RTStream(ModalityMixin):
         title = f"Neurofeedback — sub-{self.subject_id} ses-{self.session}"
         report = Report(title=title, image_format="png")
 
-        # ── Session summary ──────────────────────────────────────────────
+        # Session summary
         gate = meta["gate_conditions"]
         n_total = int(getattr(self, "n_total_windows", 0))
         # `n_gated_windows` counts the windows that were gated *out* -- the ones
@@ -5231,7 +5089,7 @@ class RTStream(ModalityMixin):
             self._html_table(summary), title="Session summary", section="Summary", tags=("summary",)
         )
 
-        # ── Neurofeedback traces ─────────────────────────────────────────
+        # Neurofeedback traces
         if include_nf_signal and (getattr(self, "nf_data", None) or None) and modalities:
             fig_nf, measured = self._report_nf_figure(modalities)
             caption = (
@@ -5251,7 +5109,7 @@ class RTStream(ModalityMixin):
             )
             plt.close(fig_nf)
 
-        # ── Markers and gating ───────────────────────────────────────────
+        # Markers and gating
         if include_markers and (getattr(self, "markers", None) or meta["gate_conditions"]):
             notes = []
             if gate and n_total and n_delivered == 0:
@@ -5310,7 +5168,7 @@ class RTStream(ModalityMixin):
                 )
                 plt.close(fig_markers)
 
-        # ── Data quality ─────────────────────────────────────────────────
+        # Data quality
         if include_quality:
             rows = [
                 ("Windows analysed", n_total or "—"),
@@ -5373,7 +5231,7 @@ class RTStream(ModalityMixin):
                 report.add_figure(fig=fig_snr, title="SNR", section="Quality", tags=("quality",))
                 plt.close(fig_snr)
 
-        # ── Source space ─────────────────────────────────────────────────
+        # Source space
         # Tables, not renderings: a 3-D view needs pyvista/vtk, which is an
         # optional extra, and would make the whole report fail to build without it.
         if include_source:
@@ -5389,7 +5247,7 @@ class RTStream(ModalityMixin):
                     tags=("source",),
                 )
 
-        # ── Baseline ─────────────────────────────────────────────────────
+        # Baseline
         report.add_raw(
             self.raw_baseline,
             title="Baseline recording",
@@ -5399,10 +5257,8 @@ class RTStream(ModalityMixin):
         )
         if include_psd:
             spectrum = self.raw_baseline.compute_psd(fmax=40.0)
-            # One axes per channel type, counted from the spectrum rather than
-            # from the raw: compute_psd drops ECG, EMG, misc and bad channels,
-            # so deriving the count from the raw over-counts and the plot then
-            # refuses the axes list. MEG legitimately needs two (mag + grad).
+            # One axes per channel type in the spectrum (compute_psd drops ECG, EMG,
+            # misc and bads), or the plot refuses the axes list.
             n_axes = max(1, len(set(spectrum.info.get_channel_types(unique=True))))
             # constrained_layout, not tight_layout: MNE's PSD plot adds an inset
             # axes that tight_layout cannot place, and warns about it every time.
@@ -5411,17 +5267,14 @@ class RTStream(ModalityMixin):
             )
             axes = list(np.atleast_1d(ax_psd))
             spectrum.plot(axes=axes, show=False)
-            # On the figure, not on the first axes: MNE titles each panel with
-            # its channel type, and overwriting the first leaves an MEG report
-            # with an unlabelled magnetometer panel beside a labelled gradiometer
-            # one. The upper bound is the only one compute_psd was given.
+            # On the figure: MNE titles each panel with its channel type.
             fig_psd.suptitle("Baseline PSD (up to 40 Hz)")
             report.add_figure(
                 fig=fig_psd, title="Baseline PSD", section="Baseline", tags=("baseline",)
             )
             plt.close(fig_psd)
 
-        # ── Column dictionary ────────────────────────────────────────────
+        # Column dictionary
         if include_columns and (getattr(self, "nf_data", None) or None):
             columns = describe_nf_columns(
                 nf_data=self.nf_data,
@@ -5460,10 +5313,8 @@ class RTStream(ModalityMixin):
             stem = _build_bids_stem(
                 self.subject_id, self.session, "neurofeedback", f"{int(run):02d}"
             )
-            # `run_blocks` rebinds nf_data, the onsets and the window counts on
-            # every block, so this object only ever holds the *last* one. Naming
-            # an earlier run would write that block's data under another block's
-            # filename, which is worse than refusing.
+            # run_blocks rebinds nf_data per block, so only the last run is held:
+            # refuse another name rather than save it under the wrong file.
             current = getattr(self, "_session_stem", None)
             if current is not None and current != stem:
                 raise ValueError(

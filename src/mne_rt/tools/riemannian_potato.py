@@ -117,9 +117,7 @@ class RiemannianPotatoDetector:
         self.n_channels_: int = 0
         self.n_calibration_windows_: int = 0
 
-    # ------------------------------------------------------------------
     # Internal helpers
-    # ------------------------------------------------------------------
 
     @staticmethod
     def _check_pyriemann() -> None:
@@ -145,9 +143,7 @@ class RiemannianPotatoDetector:
             threshold=self.threshold,
         )
 
-    # ------------------------------------------------------------------
     # Public API
-    # ------------------------------------------------------------------
 
     def fit(self, windows: np.ndarray) -> "RiemannianPotatoDetector":
         """Calibrate the potato on clean data windows.

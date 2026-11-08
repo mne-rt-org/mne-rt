@@ -128,10 +128,6 @@ class ASRDenoiser:
         self._T: Optional[np.ndarray] = None  # per-component RMS thresholds
         self._fitted: bool = False
 
-    # ------------------------------------------------------------------
-    # Fit
-    # ------------------------------------------------------------------
-
     def fit(
         self,
         data: np.ndarray,
@@ -201,10 +197,6 @@ class ASRDenoiser:
         self._fitted = True
         return self
 
-    # ------------------------------------------------------------------
-    # Transform
-    # ------------------------------------------------------------------
-
     def transform(self, data: np.ndarray) -> np.ndarray:
         """Remove artifact-dominated components from a data window.
 
@@ -234,9 +226,7 @@ class ASRDenoiser:
         Z[bad] = 0.0
         return self._U @ Z + mean  # back-project + restore mean
 
-    # ------------------------------------------------------------------
     # Properties & helpers
-    # ------------------------------------------------------------------
 
     @property
     def thresholds(self) -> np.ndarray:

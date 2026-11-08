@@ -29,9 +29,7 @@ import os
 import sys
 import textwrap
 
-# ---------------------------------------------------------------------------
 # Top-level parser
-# ---------------------------------------------------------------------------
 
 
 def _build_parser() -> argparse.ArgumentParser:
@@ -70,9 +68,7 @@ def _build_parser() -> argparse.ArgumentParser:
     return parser
 
 
-# ---------------------------------------------------------------------------
 # Sub-command parsers
-# ---------------------------------------------------------------------------
 
 
 def _add_info_parser(sub):
@@ -693,9 +689,7 @@ def _stream_kwargs(args) -> dict:
     return kwargs
 
 
-# ---------------------------------------------------------------------------
 # Command handlers
-# ---------------------------------------------------------------------------
 
 
 def _build_protocol_from_args(args):
@@ -1310,7 +1304,7 @@ def _cmd_run(args) -> None:
 
     protocol = _build_protocol_from_args(args)
 
-    # -- Epoch plot windows (RTEpochs side-channel) ------------------------
+    # Epoch plot windows (RTEpochs side-channel)
     rt_epochs = None
     epoch_w = topo_w = butt_w = comp_w = tfr_w = None
 
@@ -1451,9 +1445,7 @@ def _cmd_run(args) -> None:
     print(f"Session complete.  Data saved to: {nf.subject_dir}")
 
 
-# ---------------------------------------------------------------------------
 # Entry point
-# ---------------------------------------------------------------------------
 
 
 def main(argv=None) -> None:

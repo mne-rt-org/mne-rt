@@ -20,9 +20,7 @@ _VIZ_AVAILABLE = bp_module._pyvista_available and bp_module._pyvistaqt_available
 
 _viz_required = pytest.mark.skipif(not _VIZ_AVAILABLE, reason="pyvista/pyvistaqt not installed")
 
-# ------------------------------------------------------------------
 # Module-level constant consistency (no pyvista required)
-# ------------------------------------------------------------------
 
 
 def test_every_display_mode_has_a_band():
@@ -48,9 +46,7 @@ def test_default_background_is_valid_key():
     assert bp_module._DEFAULT_BG in bp_module._BACKGROUNDS
 
 
-# ------------------------------------------------------------------
 # Missing optional dependency
-# ------------------------------------------------------------------
 
 
 def test_raises_import_error_when_pyvista_unavailable(monkeypatch):
@@ -65,10 +61,8 @@ def test_raises_import_error_when_pyvistaqt_unavailable(monkeypatch):
         BrainPlot(subjects_fs_dir="/tmp")
 
 
-# ------------------------------------------------------------------
 # Validation that fires before any pyvista/Qt object is constructed
 # (only reachable when both optional deps are actually importable)
-# ------------------------------------------------------------------
 
 
 @_viz_required
@@ -91,9 +85,7 @@ def test_display_smoothing_outside_0_1_raises(value):
         BrainPlot(subjects_fs_dir="/tmp", display_smoothing=value)
 
 
-# ------------------------------------------------------------------
 # Full instantiation (requires viz extra + fsaverage; offscreen rendering)
-# ------------------------------------------------------------------
 
 
 @pytest.fixture(scope="module")

@@ -37,9 +37,7 @@ from mne_rt._logging import logger
 from mne_rt.tools import setup_surface
 from mne_rt.viz._smoothing import check_smoothing, ema_step
 
-# ---------------------------------------------------------------------------
 # Constants
-# ---------------------------------------------------------------------------
 
 _CMAPS = ["hot", "plasma", "viridis", "Reds", "YlOrRd", "RdBu_r"]
 
@@ -325,9 +323,7 @@ class BrainPlot:
         self._add_overlays()
         logger.info("BrainPlot ready.")
 
-    # ------------------------------------------------------------------
     # Surface management
-    # ------------------------------------------------------------------
 
     def _load_surface(self, surf: str) -> None:
         (
@@ -348,9 +344,7 @@ class BrainPlot:
         self._base_rgb = np.repeat(grey[:, np.newaxis], 3, axis=1)
         self._mesh["rgb"] = (self._base_rgb * 255).astype(np.uint8)
 
-    # ------------------------------------------------------------------
     # Plotter construction
-    # ------------------------------------------------------------------
 
     def _build_plotter(self, window_size: tuple[int, int]) -> "_BackgroundPlotter":
         p = _BackgroundPlotter(
@@ -417,9 +411,7 @@ class BrainPlot:
         self._bar_lut.SetRange(*self._clim)
         self._bar_lut.Build()
 
-    # ------------------------------------------------------------------
     # Qt control panel
-    # ------------------------------------------------------------------
 
     def _add_control_panel(self, p: "_BackgroundPlotter") -> None:
         """Dock a Qt control panel on the right side of the brain window."""
@@ -438,7 +430,7 @@ class BrainPlot:
             QWidget,
         )
 
-        # ── helpers ──────────────────────────────────────────────────────
+        # helpers
         def _hslider(lo: int = 0, hi: int = 100, val: int = 0) -> QSlider:
             sl = QSlider(Qt_.Orientation.Horizontal)
             sl.setRange(lo, hi)
@@ -452,7 +444,7 @@ class BrainPlot:
             ly.setContentsMargins(6, 12, 6, 6)
             return grp, ly
 
-        # ── root panel ────────────────────────────────────────────────────
+        # root panel
         panel = QWidget()
         panel.setMinimumWidth(210)
         panel.setMaximumWidth(260)
@@ -461,7 +453,7 @@ class BrainPlot:
         root.setSpacing(6)
         root.setContentsMargins(6, 6, 6, 6)
 
-        # ── Surface ───────────────────────────────────────────────────────
+        # Surface
         grp, ly = _group("Surface")
         surf_combo = QComboBox()
         surf_combo.addItems(_SURFACES)
@@ -472,7 +464,7 @@ class BrainPlot:
         ly.addWidget(surf_combo)
         root.addWidget(grp)
 
-        # ── Parcellation ──────────────────────────────────────────────────
+        # Parcellation
         grp, ly = _group("Parcellation")
         _PARC_ITEMS = ["None", "aparc  (Desikan)", "aparc.a2009s  (Destrieux)"]
         self._parc_combo = QComboBox()
@@ -485,7 +477,7 @@ class BrainPlot:
         ly.addWidget(self._parc_status_lbl)
         root.addWidget(grp)
 
-        # ── Hemispheres ───────────────────────────────────────────────────
+        # Hemispheres
         grp, ly = _group("Hemispheres")
         hl = QHBoxLayout()
         lh_cb = QCheckBox("Left")
@@ -508,7 +500,7 @@ class BrainPlot:
         ly.addLayout(hl)
         root.addWidget(grp)
 
-        # ── Colormap ──────────────────────────────────────────────────────
+        # Colormap
         grp, ly = _group("Colormap")
         cmap_combo = QComboBox()
         cmap_combo.addItems(_CMAPS)
@@ -526,7 +518,7 @@ class BrainPlot:
         ly.addWidget(cmap_combo)
         root.addWidget(grp)
 
-        # ── Color range (clim) ────────────────────────────────────────────
+        # Color range (clim)
         grp, ly = _group("Color Range")
         clim_max_lbl = QLabel(f"max  {self._clim[1]:.2f}")
         clim_max_sl = _hslider(0, 100, int(self._clim[1] * 100))
@@ -553,7 +545,7 @@ class BrainPlot:
         ly.addWidget(clim_min_sl)
         root.addWidget(grp)
 
-        # ── Opacity ───────────────────────────────────────────────────────
+        # Opacity
         grp, ly = _group("Opacity")
         op_lbl = QLabel(f"{self._opacity:.2f}")
         op_sl = _hslider(0, 100, int(self._opacity * 100))
@@ -568,7 +560,7 @@ class BrainPlot:
         ly.addWidget(op_sl)
         root.addWidget(grp)
 
-        # ── Threshold ─────────────────────────────────────────────────────
+        # Threshold
         grp, ly = _group("Threshold  (0 → 1)")
         thr_lbl = QLabel(f"{self._threshold:.3f}")
         thr_sl = _hslider(0, 100, 0)
@@ -583,7 +575,7 @@ class BrainPlot:
         ly.addWidget(thr_sl)
         root.addWidget(grp)
 
-        # ── Background ────────────────────────────────────────────────────
+        # Background
         grp, ly = _group("Background")
         bg_combo = QComboBox()
         bg_combo.addItems(list(_BACKGROUNDS.keys()))
@@ -599,7 +591,7 @@ class BrainPlot:
         ly.addWidget(bg_combo)
         root.addWidget(grp)
 
-        # ── View presets ──────────────────────────────────────────────────
+        # View presets
         grp, ly = _group("View Presets")
         btn_row = QHBoxLayout()
         for label, key, tip in [
@@ -617,7 +609,7 @@ class BrainPlot:
         ly.addLayout(btn_row)
         root.addWidget(grp)
 
-        # ── Display Mode ──────────────────────────────────────────────────
+        # Display Mode
         grp, ly = _group("Display Mode")
         mode_combo = self._mode_combo = QComboBox()
         mode_combo.addItems(_DISPLAY_MODES)
@@ -638,7 +630,7 @@ class BrainPlot:
         ly.addWidget(mode_lbl)
         root.addWidget(grp)
 
-        # ── Custom frequency band ─────────────────────────────────────────
+        # Custom frequency band
         grp, ly = _group("Custom Band  (Hz)")
         band_row = QHBoxLayout()
         self._custom_lo_spin = QDoubleSpinBox()
@@ -679,7 +671,7 @@ class BrainPlot:
         ly.addWidget(self._custom_band_lbl)
         root.addWidget(grp)
 
-        # ── Actions ───────────────────────────────────────────────────────
+        # Actions
         grp, ly = _group("Actions")
         reset_btn = QPushButton("Reset activity  (r)")
         reset_btn.clicked.connect(self.reset_activity)
@@ -691,7 +683,7 @@ class BrainPlot:
 
         root.addStretch()
 
-        # ── Keyboard hint ─────────────────────────────────────────────────
+        # Keyboard hint
         hint = QLabel(
             "<span style='color:#8b949e; font-size:10px;'>"
             "Keys: 1-5 views · i/p/w/h surface · s screenshot · r reset"
@@ -700,7 +692,7 @@ class BrainPlot:
         hint.setWordWrap(True)
         root.addWidget(hint)
 
-        # ── Dock widget ───────────────────────────────────────────────────
+        # Dock widget
         dock = QDockWidget("Brain Controls")
         dock.setWidget(panel)
         dock.setFeatures(
@@ -731,9 +723,7 @@ class BrainPlot:
             color="#FF4444",
         )
 
-    # ------------------------------------------------------------------
     # Internal helpers
-    # ------------------------------------------------------------------
 
     def _refresh_scalars(self, deferred: bool = False) -> None:
         """Colour the cortex: activity over the sulcal grey, where it is shown.
@@ -777,9 +767,7 @@ class BrainPlot:
 
         p.render()
 
-    # ------------------------------------------------------------------
     # Parcellation border overlay
-    # ------------------------------------------------------------------
 
     def _set_parcellation(self, parc_label: str) -> None:
         """Load annotation and draw parcel boundary edges on the surface."""
@@ -888,9 +876,7 @@ class BrainPlot:
             self._plotter.remove_actor(self._parc_actor)
             self._parc_actor = None
 
-    # ------------------------------------------------------------------
     # Custom frequency band
-    # ------------------------------------------------------------------
 
     def set_custom_band(self, lo: float, hi: float) -> None:
         """Show source power in ``lo``–``hi`` Hz, from the next window on.
@@ -958,9 +944,7 @@ class BrainPlot:
         self._lh_ema = None
         self._rh_ema = None
 
-    # ------------------------------------------------------------------
     # Public interface
-    # ------------------------------------------------------------------
 
     def set_surface(self, surf: str) -> None:
         """Switch the cortical surface geometry.
@@ -1085,9 +1069,7 @@ class BrainPlot:
         self._reset_smoothing()  # or the next update blends into what was cleared
         self._refresh_scalars()
 
-    # ------------------------------------------------------------------
     # Video recording
-    # ------------------------------------------------------------------
 
     def record_video(self, path: Union[str, Path, None] = None) -> Path:
         """Start recording the brain display to an MP4 video file.

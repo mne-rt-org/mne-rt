@@ -11,9 +11,7 @@ RNG = np.random.default_rng(0)
 N_CH = 6
 N_T = 500
 
-# ------------------------------------------------------------------
 # Constructor validation
-# ------------------------------------------------------------------
 
 
 def test_invalid_mu_raises():
@@ -39,9 +37,7 @@ def test_default_params():
     assert filt.weights_ is None
 
 
-# ------------------------------------------------------------------
 # fit (no-op)
-# ------------------------------------------------------------------
 
 
 def test_fit_returns_self():
@@ -50,9 +46,7 @@ def test_fit_returns_self():
     assert filt.fit(raw_info="ignored", extra=1) is filt
 
 
-# ------------------------------------------------------------------
 # transform
-# ------------------------------------------------------------------
 
 
 def test_transform_shape_preserved():
@@ -109,9 +103,7 @@ def test_attenuates_correlated_artifact():
     assert np.std(cleaned[1, tail]) < np.std(data[1, tail]) * 0.5
 
 
-# ------------------------------------------------------------------
 # reset
-# ------------------------------------------------------------------
 
 
 def test_reset_clears_weights():
@@ -135,9 +127,7 @@ def test_reset_then_transform_restarts_adaptation():
     np.testing.assert_allclose(filt.weights_, fresh.weights_)
 
 
-# ------------------------------------------------------------------
 # repr
-# ------------------------------------------------------------------
 
 
 def test_repr_unfitted():

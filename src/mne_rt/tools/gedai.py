@@ -70,9 +70,7 @@ class GEDAIDenoiser:
         self._eigenvalues: np.ndarray | None = None
         self._reference_is_leadfield: bool = False
 
-    # ------------------------------------------------------------------
     # Fitting
-    # ------------------------------------------------------------------
 
     def fit(
         self,
@@ -200,9 +198,7 @@ class GEDAIDenoiser:
         data_band = sosfiltfilt(sos, data)
         return self.fit(data, data_band)
 
-    # ------------------------------------------------------------------
     # Transform / reconstruct
-    # ------------------------------------------------------------------
 
     def transform(self, data: np.ndarray) -> np.ndarray:
         """Project data into component space.
@@ -232,9 +228,7 @@ class GEDAIDenoiser:
         self._check_fitted()
         return self._A @ components
 
-    # ------------------------------------------------------------------
     # Artifact identification and removal
-    # ------------------------------------------------------------------
 
     def find_artifact_components(
         self,
@@ -338,9 +332,7 @@ class GEDAIDenoiser:
         artifact_idx, _ = self.find_artifact_components(template_map, threshold)
         return self.denoise(data, artifact_idx)
 
-    # ------------------------------------------------------------------
     # Properties
-    # ------------------------------------------------------------------
 
     @property
     def eigenvalues(self) -> np.ndarray:
@@ -360,9 +352,7 @@ class GEDAIDenoiser:
         self._check_fitted()
         return self._A
 
-    # ------------------------------------------------------------------
     # Internal helpers
-    # ------------------------------------------------------------------
 
     def _check_fitted(self) -> None:
         if self._W is None:

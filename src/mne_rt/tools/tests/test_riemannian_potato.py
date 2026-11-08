@@ -13,9 +13,7 @@ requires_pyriemann = pytest.mark.skipif(
     reason="pyriemann not installed (install with: pip install 'mne-rt[riemann]')",
 )
 
-# ---------------------------------------------------------------------------
 # Helpers / fixtures
-# ---------------------------------------------------------------------------
 
 RNG = np.random.default_rng(42)
 N_CH = 8
@@ -54,9 +52,7 @@ def fitted_detector():
     return det
 
 
-# ---------------------------------------------------------------------------
 # Construction
-# ---------------------------------------------------------------------------
 
 
 @requires_pyriemann
@@ -98,9 +94,7 @@ def test_importerror_when_pyriemann_missing():
             mod.RiemannianPotatoDetector._check_pyriemann()
 
 
-# ---------------------------------------------------------------------------
 # fit()
-# ---------------------------------------------------------------------------
 
 
 def test_fit_sets_attributes(detector):
@@ -130,9 +124,7 @@ def test_fit_minimum_windows(detector):
     assert detector.n_calibration_windows_ == 2
 
 
-# ---------------------------------------------------------------------------
 # detect()
-# ---------------------------------------------------------------------------
 
 
 def test_detect_before_fit_raises(detector):
@@ -185,9 +177,7 @@ def test_detect_returns_tuple(fitted_detector):
     assert z_score >= 0.0
 
 
-# ---------------------------------------------------------------------------
 # Attributes after fit
-# ---------------------------------------------------------------------------
 
 
 def test_not_fitted_initially(detector):
@@ -203,9 +193,7 @@ def test_refit_updates_attributes(detector):
     assert detector.n_calibration_windows_ == 40
 
 
-# ---------------------------------------------------------------------------
 # __repr__
-# ---------------------------------------------------------------------------
 
 
 def test_repr_before_fit(detector):

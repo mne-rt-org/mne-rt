@@ -116,7 +116,7 @@ class TransferProtocol:
         adapt_rate: float = 0.0,
         smoothing: float = 0.0,
     ) -> None:
-        # --- Parameter validation --------------------------------------------
+        # Parameter validation
         if direction not in ("up", "down"):
             raise ValueError(f"direction must be 'up' or 'down', got {direction!r}")
         if zscore_threshold < 0.0:
@@ -126,7 +126,7 @@ class TransferProtocol:
         if not (0.0 <= smoothing < 1.0):
             raise ValueError(f"smoothing must be in [0, 1), got {smoothing}")
 
-        # --- Load prior data from file ---------------------------------------
+        # Load prior data from file
         fname = Path(fname)
         if not fname.exists():
             raise FileNotFoundError(f"Prior-session file not found: {fname}")
@@ -153,7 +153,7 @@ class TransferProtocol:
                 f"with at least 2 elements; got shape {prior_data.shape}."
             )
 
-        # --- Store constructor parameters ------------------------------------
+        # Store constructor parameters
         self.fname: Path = fname
         self.modality: str = modality
         self.direction: str = direction
@@ -161,7 +161,7 @@ class TransferProtocol:
         self.adapt_rate: float = adapt_rate
         self.smoothing: float = smoothing
 
-        # --- Compute and cache prior statistics ------------------------------
+        # Compute and cache prior statistics
         self._prior_data: np.ndarray = prior_data
         self._prior_mean: float = float(np.mean(prior_data))
         self._prior_std: float = float(np.std(prior_data, ddof=1))
@@ -177,7 +177,7 @@ class TransferProtocol:
                 "the prior session recorded this modality correctly."
             )
 
-        # --- Initialise Welford accumulators from prior ----------------------
+        # Initialise Welford accumulators from prior
         self._n_evaluated: int = 0
         self._smoothed: Optional[float] = None
         self._zscore: float = 0.0
@@ -215,7 +215,7 @@ class TransferProtocol:
         mean/std.  When ``adapt_rate > 0`` new samples gradually shift the
         running statistics toward the current session distribution.
         """
-        # --- EMA smoothing ---------------------------------------------------
+        # EMA smoothing
         if self.smoothing > 0.0:
             if self._smoothed is None:
                 self._smoothed = float(value)
@@ -227,12 +227,10 @@ class TransferProtocol:
         smoothed = self._smoothed
         self._n_evaluated += 1
 
-        # --- Welford update --------------------------------------------------
+        # Welford update
         if self.adapt_rate > 0.0:
-            # Weighted Welford: new sample has effective weight adapt_rate
-            # relative to the accumulated mean.
-            # Equivalent to treating each new observation as contributing
-            # adapt_rate / (adapt_rate + existing_weight) fractionally.
+            # Weighted Welford: the new sample has weight adapt_rate relative to the
+            # accumulated mean.
             old_mean = self._welford_mean
             old_m2 = self._welford_m2
             old_n = self._welford_n
@@ -251,10 +249,10 @@ class TransferProtocol:
             # Frozen prior: no state update; z-score is purely against prior
             pass
 
-        # --- Compute std and z-score -----------------------------------------
+        # Compute std and z-score
         self._zscore = zscore(smoothed, self._welford_mean, self._current_std())
 
-        # --- Reward criterion ------------------------------------------------
+        # Reward criterion
         if self.direction == "up":
             crossed = self._zscore > self.zscore_threshold
         else:
@@ -279,9 +277,7 @@ class TransferProtocol:
         self._welford_mean = self._prior_mean
         self._welford_m2 = self._prior_std**2 * (self._n_prior - 1)
 
-    # ------------------------------------------------------------------
     # Properties
-    # ------------------------------------------------------------------
 
     @property
     def prior_mean(self) -> float:

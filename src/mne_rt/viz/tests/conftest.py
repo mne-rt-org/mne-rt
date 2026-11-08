@@ -26,20 +26,17 @@ _TORN_DOWN: set[int] = set()
 
 
 def _qt_handle(widget):
-    """A stable identity for a Qt object, surviving Python wrapper churn.
+    """The C++ pointer, a stable identity for a Qt object (PyQt6, PySide6).
 
-    ``id()`` is not usable here: a widget whose C++ object outlives its Python
-    wrapper gets a fresh wrapper the next time ``topLevelWidgets()`` returns it
-    (which is why the same window shows up as ``RawPlot`` in one sweep and
-    ``QMainWindow`` in the next), and CPython recycles the address of the
-    collected wrapper. The underlying C++ pointer does not move.
+    ``id()`` only as a last resort: a widget whose wrapper was collected gets a
+    new one from ``topLevelWidgets()``, and CPython reuses freed addresses.
     """
-    try:  # PyQt5 / PyQt6
+    try:  # PyQt6
         from PyQt6 import sip
 
         return sip.unwrapinstance(widget)
     except Exception:
-        try:  # PySide2 / PySide6
+        try:  # PySide6
             import shiboken6
 
             return shiboken6.getCppPointer(widget)[0]
@@ -49,41 +46,19 @@ def _qt_handle(widget):
 
 @pytest.fixture()
 def _destroy_widgets(qt_app):
-    """Tear each test's Qt widgets down deterministically, exactly once each.
+    """Tear each test's Qt widgets down deterministically, once each.
 
-    Used by every viewer test module that builds widgets, through
-    ``pytestmark = pytest.mark.usefixtures("_destroy_widgets")``; not autouse,
-    because a module that shares one window between its tests (BrainPlot's)
-    must not have it closed after the first.
+    Opt-in per module (``pytestmark``), not autouse: BrainPlot's tests share
+    one window, which must not close after the first.
 
-    ``widget.close()`` only hides a widget; the C++ object is destroyed later —
-    either when Python garbage-collects the wrapper or when the event loop runs
-    a deferred deletion. Leaving those two to race is what made the viewer
-    tests (then one file, test_viz_plots.py) abort
-    intermittently in CI (``Fatal Python error``, exit 134) on every Python
-    version: the event loop would process an event belonging to an object whose
-    wrapper had just been collected.
+    ``close()`` only hides a widget; leaving its deletion to race between the
+    garbage collector and the event loop aborted CI runs (exit 134). Handing
+    the widgets to Qt and collecting *before* draining prevents that: with a
+    fixture that only calls ``processEvents()``, these tests segfault.
 
-    Verified against a deliberate reproduction (an autouse fixture calling only
-    ``processEvents()`` crashes 3/3 runs under
-    ``QT_QPA_PLATFORM=offscreen``): handing the widgets to Qt for deletion and
-    collecting before draining brings that to 0/3.
-
-    Each widget is handled **once**, tracked by C++ pointer. This matters for
-    wall-clock, not correctness: every ``RawPlot`` leaves 16 parentless
-    top-level widgets behind (its window plus pyqtgraph's ``ViewBox``/
-    ``PlotItem`` context menus), and they are never freed — ``processEvents()``
-    does not dispatch ``DeferredDelete``, and forcing it to
-    (``sendPostedEvents(None, QEvent.Type.DeferredDelete)``) segfaults, because
-    pyqtgraph still references those menus. The leak is load-bearing.
-
-    Re-sweeping the survivors on every test made teardown O(widgets alive), so
-    the tests cost O(n^2) overall: 38,912 close/deleteLater pairs across what
-    were then 54 tests, against 1,313 live widgets. Offscreen raster hid that locally at
-    ~0.06 s per teardown, but under CI's Xvfb/xcb each close is real X11
-    traffic, and `TestRawPlot` grew from ~2 s for the whole class to
-    52 s -> 105 s -> 212 s -> 423 s per test until the job hit its 30-minute
-    timeout. Handling each widget once restores 1,313 calls, one per widget.
+    Each widget is handled once, by C++ pointer: pyqtgraph's context menus are
+    never freed (forcing ``DeferredDelete`` segfaults), and re-sweeping them
+    every test made teardown quadratic, timing CI out under Xvfb.
     """
     yield
     from qtpy.QtWidgets import QApplication
@@ -102,17 +77,6 @@ def _destroy_widgets(qt_app):
     qt_app.processEvents()
 
 
-# Reproducing the abort `_destroy_widgets` prevents: replace it, in the viewer
-# test modules, with a fixture that only drains the event queue,
-#
-#     @pytest.fixture(autouse=True)
-#     def _drain(qt_app):
-#         yield
-#         qt_app.processEvents()
-#
-# and `pytest src/mne_rt/viz/tests` segfaults on every run (measured when they
-# were one file, test_viz_plots.py). Collecting garbage *before* draining, rather than after, is what
-# makes the difference — which is how the GC/event-loop race was identified.
 @pytest.fixture(scope="module")
 def topo_info():
     """mne.Info with standard 10-20 montage for TopomapPlot tests."""

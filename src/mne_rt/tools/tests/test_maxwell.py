@@ -8,9 +8,7 @@ RNG = np.random.default_rng(0)
 # `meg_info` fixture is shared via conftest.py
 
 
-# ------------------------------------------------------------------
 # Group A — interface tests (no MEG data needed)
-# ------------------------------------------------------------------
 
 
 def test_invalid_int_order():
@@ -97,9 +95,7 @@ def test_default_params():
     assert filt.mag_scale == 100.0
 
 
-# ------------------------------------------------------------------
 # Group B — integration tests (skip if MNE sample data absent)
-# ------------------------------------------------------------------
 
 
 def test_fit_sss_sets_fitted(meg_info):

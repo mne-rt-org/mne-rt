@@ -122,9 +122,7 @@ class LSLSender:
 
         self._outlet = self._make_outlet(n_channels, self._channel_labels)
 
-    # ------------------------------------------------------------------
     # Internal helpers
-    # ------------------------------------------------------------------
 
     @staticmethod
     def _import_lsl():
@@ -156,10 +154,8 @@ class LSLSender:
             source_id=self.source_id,
         )
         if labels:
-            # Subscribers should be able to find a value by name rather than by
-            # position -- which matters most when two channels share a base
-            # modality and differ only by instance label.  Pad, because the
-            # outlet may carry more channels than there are active modalities.
+            # Labels, so subscribers can find a value by name. Padded, as the outlet
+            # may be wider than the active modalities.
             names = list(labels)[:n_channels]
             names += [f"ch{i}" for i in range(len(names), n_channels)]
             try:
@@ -190,9 +186,7 @@ class LSLSender:
         self._names_published = self._names_published or name_it
         self._outlet = self._make_outlet(self._n_channels, self._channel_labels)
 
-    # ------------------------------------------------------------------
     # Public interface
-    # ------------------------------------------------------------------
 
     def push(
         self,
@@ -225,11 +219,8 @@ class LSLSender:
             # Labels first: they are published in the StreamInfo, so the outlet
             # has to carry them before the sample goes out, not after.
             self._ensure_channels(n, modalities)
-            # mne-lsl asserts a NumPy array for numeric streams -- a list raises,
-            # on every version this package supports -- and the outlet is
-            # float32, so the sample is built directly in that dtype rather than
-            # converted from a list. Entries past `n` stay zero: that is the
-            # existing padding for an outlet wider than the active modalities.
+            # mne-lsl needs a NumPy array (a list raises), in the outlet's float32.
+            # Entries past `n` stay zero: the padding of a wider outlet.
             sample = np.zeros(self._n_channels, dtype=np.float32)
             sample[:n] = values
             self._outlet.push_sample(sample)
@@ -261,9 +252,7 @@ class LSLSender:
                     pass
                 self._outlet = None
 
-    # ------------------------------------------------------------------
     # Properties
-    # ------------------------------------------------------------------
 
     @property
     def n_channels(self) -> int:

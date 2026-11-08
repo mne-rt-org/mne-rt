@@ -10,9 +10,7 @@ import pytest
 
 from mne_rt.tools.bids_io import save_as_bids
 
-# ------------------------------------------------------------------
 # Fixture: minimal raw + nf_data
-# ------------------------------------------------------------------
 
 
 @pytest.fixture
@@ -34,9 +32,7 @@ def nf_data():
     }
 
 
-# ------------------------------------------------------------------
 # Files created
-# ------------------------------------------------------------------
 
 
 def test_creates_expected_files(tmp_path, minimal_raw, nf_data):
@@ -64,9 +60,7 @@ def test_with_session_level(tmp_path, minimal_raw, nf_data):
     assert len(ses_dirs) == 1
 
 
-# ------------------------------------------------------------------
 # TSV content
-# ------------------------------------------------------------------
 
 
 def test_beh_tsv_columns(tmp_path, minimal_raw, nf_data):
@@ -99,9 +93,7 @@ def test_beh_tsv_na_for_missing_values(tmp_path, minimal_raw):
     assert rows[2]["beta_power"] == "n/a"
 
 
-# ------------------------------------------------------------------
 # dataset_description.json
-# ------------------------------------------------------------------
 
 
 def test_dataset_description_content(tmp_path, minimal_raw, nf_data):
@@ -111,9 +103,7 @@ def test_dataset_description_content(tmp_path, minimal_raw, nf_data):
     assert any(g["Name"] == "MNE-RT" for g in desc["GeneratedBy"])
 
 
-# ------------------------------------------------------------------
 # participants.tsv
-# ------------------------------------------------------------------
 
 
 def test_participants_tsv_updated(tmp_path, minimal_raw, nf_data):
@@ -135,9 +125,7 @@ def test_participants_tsv_no_duplicate(tmp_path, minimal_raw, nf_data):
     assert ids.count("sub-09") == 1
 
 
-# ------------------------------------------------------------------
 # overwrite=False raises
-# ------------------------------------------------------------------
 
 
 def test_overwrite_false_raises(tmp_path, minimal_raw, nf_data):
@@ -152,9 +140,7 @@ def test_overwrite_true_succeeds(tmp_path, minimal_raw, nf_data):
     save_as_bids(minimal_raw, nf_data, tmp_path, subject="11", session="nf", overwrite=True)
 
 
-# ------------------------------------------------------------------
 # Return value
-# ------------------------------------------------------------------
 
 
 def test_returns_output_dir_path(tmp_path, minimal_raw, nf_data):
@@ -163,9 +149,7 @@ def test_returns_output_dir_path(tmp_path, minimal_raw, nf_data):
     assert result == tmp_path
 
 
-# ------------------------------------------------------------------
 # empty nf_data
-# ------------------------------------------------------------------
 
 
 def test_empty_nf_data_skips_tsv(tmp_path, minimal_raw):
@@ -174,9 +158,7 @@ def test_empty_nf_data_skips_tsv(tmp_path, minimal_raw):
     assert len(tsv_files) == 0
 
 
-# ------------------------------------------------------------------
 # Shared NF behavioural TSV writer
-# ------------------------------------------------------------------
 
 
 def test_write_nf_beh_tsv_without_windows_is_modality_only(tmp_path):

@@ -132,9 +132,7 @@ class BadChannelDetector:
     .. versionadded:: 1.0.0
     """
 
-    # ------------------------------------------------------------------
     # Construction
-    # ------------------------------------------------------------------
 
     def __init__(
         self,
@@ -190,9 +188,7 @@ class BadChannelDetector:
         if "correlation" in self._methods:
             self._neighbor_idx = self._build_neighbor_index()
 
-    # ------------------------------------------------------------------
     # Public API
-    # ------------------------------------------------------------------
 
     def update(self, data: np.ndarray) -> list[str]:
         """Process one data window and return current bad-channel list.
@@ -273,9 +269,7 @@ class BadChannelDetector:
         self.scores_ = {ch: 0.0 for ch in self._ch_names}
         self.n_windows_ = 0
 
-    # ------------------------------------------------------------------
     # Criteria
-    # ------------------------------------------------------------------
 
     def _criterion_flat(self, data: np.ndarray) -> np.ndarray:
         """Flag channels whose RMS is below flat_threshold."""
@@ -327,9 +321,7 @@ class BadChannelDetector:
         z = (hf_ratio - median) / mad
         return z > self.hf_threshold
 
-    # ------------------------------------------------------------------
     # Internals
-    # ------------------------------------------------------------------
 
     def _update_bad_list(self) -> None:
         """Recompute bad_channels_ and scores_ from current rolling history."""
@@ -385,9 +377,7 @@ class BadChannelDetector:
 
         return neighbor_idx
 
-    # ------------------------------------------------------------------
     # Dunder
-    # ------------------------------------------------------------------
 
     def __repr__(self) -> str:
         return (

@@ -5,9 +5,7 @@ import pytest
 
 from mne_rt.protocols import PercentileProtocol
 
-# ------------------------------------------------------------------
 # Constructor validation
-# ------------------------------------------------------------------
 
 
 def test_invalid_percentile_zero():
@@ -35,9 +33,7 @@ def test_invalid_smoothing():
         PercentileProtocol(smoothing=1.0)
 
 
-# ------------------------------------------------------------------
 # Default constructor
-# ------------------------------------------------------------------
 
 
 def test_defaults():
@@ -50,9 +46,7 @@ def test_defaults():
     assert proto.hit_rate == 0.0
 
 
-# ------------------------------------------------------------------
 # Single-sample behaviour (degenerate buffer)
-# ------------------------------------------------------------------
 
 
 def test_single_sample_no_reward():
@@ -63,9 +57,7 @@ def test_single_sample_no_reward():
     assert np.isnan(proto.current_threshold)
 
 
-# ------------------------------------------------------------------
 # Threshold adapts to history
-# ------------------------------------------------------------------
 
 
 def test_threshold_updates():
@@ -76,9 +68,7 @@ def test_threshold_updates():
     assert abs(proto.current_threshold - 3.0) < 0.5
 
 
-# ------------------------------------------------------------------
 # Upward crossing
-# ------------------------------------------------------------------
 
 
 def test_up_crossing_high_value():
@@ -101,9 +91,7 @@ def test_up_no_crossing_low_value():
     assert not crossed
 
 
-# ------------------------------------------------------------------
 # Downward crossing
-# ------------------------------------------------------------------
 
 
 def test_down_crossing_low_value():
@@ -123,9 +111,7 @@ def test_down_no_crossing_high_value():
     assert not crossed
 
 
-# ------------------------------------------------------------------
 # hit_rate
-# ------------------------------------------------------------------
 
 
 def test_hit_rate_range():
@@ -144,9 +130,7 @@ def test_hit_rate_approximately_correct():
     assert 0.2 < proto.hit_rate < 0.8
 
 
-# ------------------------------------------------------------------
 # Smoothing
-# ------------------------------------------------------------------
 
 
 def test_smoothing_does_not_crash():
@@ -156,9 +140,7 @@ def test_smoothing_does_not_crash():
     assert proto.n_evaluated == 20
 
 
-# ------------------------------------------------------------------
 # rolling buffer cap
-# ------------------------------------------------------------------
 
 
 def test_history_len_limits_buffer():
@@ -169,9 +151,7 @@ def test_history_len_limits_buffer():
     assert 15.0 <= proto.current_threshold <= 19.0
 
 
-# ------------------------------------------------------------------
 # reset
-# ------------------------------------------------------------------
 
 
 def test_reset_clears_state():
@@ -192,9 +172,7 @@ def test_reset_preserves_params():
     assert proto.history_len == 50
 
 
-# ------------------------------------------------------------------
 # repr
-# ------------------------------------------------------------------
 
 
 def test_repr():

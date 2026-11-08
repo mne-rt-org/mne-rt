@@ -163,9 +163,7 @@ class ModalityMixin:
     ``_<name>_prep`` / ``_<name>`` pair following the same pattern.
     """
 
-    # ------------------------------------------------------------------
     # Shared helpers
-    # ------------------------------------------------------------------
 
     def _acquired_ch_names(self, use_picks: bool = True) -> list:
         """Channels present in the array ``stream.get_data()`` returns.
@@ -399,9 +397,7 @@ class ModalityMixin:
             )
         return inv
 
-    # ------------------------------------------------------------------
     # Prep methods  (run once before the main loop, return kwargs dict)
-    # ------------------------------------------------------------------
 
     def _sensor_power_prep(self) -> dict:
         return {
@@ -499,10 +495,7 @@ class ModalityMixin:
     def _sensor_connectivity_prep(self) -> dict:
         ch_names = self._acquired_ch_names()  # data excludes bads; rec_info does not
         chs = self.params["channels"]
-        # `channels` is a list of [ch_A, ch_B] pairs; build mne-connectivity's
-        # (seeds, targets) form.  The previous zip(chs[0], chs[1]) happened to
-        # give the same answer for exactly two pairs, but raised IndexError for
-        # one pair and silently ignored the third onwards.
+        # `channels` is a list of [ch_A, ch_B] pairs; build (seeds, targets).
         missing = sorted({c for pair in chs for c in pair} - set(ch_names))
         if missing:
             raise ValueError(
@@ -655,9 +648,7 @@ class ModalityMixin:
         )
         return {"comod": comod}
 
-    # ------------------------------------------------------------------
     # Feature-extraction methods  (decorated with @timed)
-    # ------------------------------------------------------------------
 
     @timed
     def _sensor_power(
@@ -891,9 +882,7 @@ class ModalityMixin:
         comod.fit(data)
         return float(comod.comod_.mean())
 
-    # ------------------------------------------------------------------
     # ERD/ERS
-    # ------------------------------------------------------------------
 
     def _erd_ers_prep(self) -> dict:
         if not hasattr(self, "raw_baseline") or self.raw_baseline is None:
@@ -932,9 +921,7 @@ class ModalityMixin:
         ).mean()
         return float((current_power - baseline_power) / (baseline_power + 1e-300) * 100.0)
 
-    # ------------------------------------------------------------------
     # Laterality
-    # ------------------------------------------------------------------
 
     def _laterality_prep(self) -> dict:
         ch_names = self._acquired_ch_names()  # data excludes bads; rec_info does not
@@ -996,9 +983,7 @@ class ModalityMixin:
         ).mean()
         return float(np.log(rh_power + 1e-300) - np.log(lh_power + 1e-300))
 
-    # ------------------------------------------------------------------
     # Hjorth parameters
-    # ------------------------------------------------------------------
 
     def _hjorth_prep(self) -> dict:
         sos = butter_bandpass(
@@ -1030,9 +1015,7 @@ class ModalityMixin:
 
         return float(0.5 * (mobility.mean() + complexity.mean()))
 
-    # ------------------------------------------------------------------
     # Spectral centroid
-    # ------------------------------------------------------------------
 
     def _spectral_centroid_prep(self) -> dict:
         return {
@@ -1064,9 +1047,7 @@ class ModalityMixin:
         centroid_per_ch = (psd_band * freqs_band[np.newaxis, :]).sum(axis=1) / total.squeeze()
         return float(centroid_per_ch.mean())
 
-    # ------------------------------------------------------------------
     # Instantaneous phase
-    # ------------------------------------------------------------------
 
     def _instantaneous_phase_prep(self) -> dict:
         return {
@@ -1096,9 +1077,7 @@ class ModalityMixin:
         )
         return float(phase)
 
-    # ------------------------------------------------------------------
     # Microstates
-    # ------------------------------------------------------------------
 
     def _microstates_prep(self) -> dict:
         """Align the template maps with the acquired channels, once per session."""
@@ -1186,9 +1165,7 @@ class ModalityMixin:
             labels = microstate_tools.reject_edge_segments(labels)
         return microstate_tools.microstate_parameters(labels, corr, gfp, sfreq, target)[metric]
 
-    # ------------------------------------------------------------------
     # ERD/ERS laterality index
-    # ------------------------------------------------------------------
 
     def _laterality_erd_ers_prep(self) -> dict:
         """Prep: detect hemispheric channel indices + compute baseline powers."""
@@ -1285,9 +1262,7 @@ class ModalityMixin:
         erd_rh = (rh_now - baseline_rh) / (baseline_rh + 1e-300) * 100.0
         return float(erd_rh - erd_lh)
 
-    # ------------------------------------------------------------------
     # Slow Cortical Potentials (SCP)
-    # ------------------------------------------------------------------
 
     def _scp_prep(self) -> dict:
         """Prep: build SOS low-pass (and optional high-pass) Butterworth filters."""
@@ -1342,9 +1317,7 @@ class ModalityMixin:
 
         return float(channel_summary.mean())
 
-    # ------------------------------------------------------------------
     # Peak Alpha Frequency (PAF) tracker
-    # ------------------------------------------------------------------
 
     def _peak_alpha_freq_prep(self) -> dict:
         """Prep: initialise EMA state for the real-time PAF tracker."""
@@ -1422,9 +1395,7 @@ class ModalityMixin:
 
         return float(new_paf)
 
-    # ------------------------------------------------------------------
     # Connectivity Ratio
-    # ------------------------------------------------------------------
 
     def _connectivity_ratio_prep(self) -> dict:
         """Prep: build connectivity indices for numerator and denominator pairs."""
@@ -1500,9 +1471,7 @@ class ModalityMixin:
 
         return float(conn_num / (conn_den + 1e-30))
 
-    # ------------------------------------------------------------------
     # Decoding
-    # ------------------------------------------------------------------
 
     def _decode_prep(self) -> dict:
         decoder = getattr(self, "decoder", None)

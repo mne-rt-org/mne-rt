@@ -9,9 +9,7 @@ N_CH = 8
 N_SAMPLES = 512  # 2-second window at 256 Hz
 
 
-# ------------------------------------------------------------------
 # Fixtures
-# ------------------------------------------------------------------
 
 
 @pytest.fixture()
@@ -38,9 +36,7 @@ def clean_data():
     return RNG.standard_normal((N_CH, N_SAMPLES)) * 20e-6  # 20 µV RMS
 
 
-# ------------------------------------------------------------------
 # Constructor validation
-# ------------------------------------------------------------------
 
 
 def test_invalid_method(fake_info):
@@ -80,9 +76,7 @@ def test_method_list(fake_info):
     assert "hf_noise" not in det._methods
 
 
-# ------------------------------------------------------------------
 # Initial state
-# ------------------------------------------------------------------
 
 
 def test_initial_state(detector):
@@ -91,9 +85,7 @@ def test_initial_state(detector):
     assert all(v == 0.0 for v in detector.scores_.values())
 
 
-# ------------------------------------------------------------------
 # Flat channel detection
-# ------------------------------------------------------------------
 
 
 def test_flat_channel_detected(fake_info, clean_data):
@@ -124,9 +116,7 @@ def test_good_channels_not_flagged_as_flat(detector, clean_data):
     assert len(detector.bad_channels_) == 0 or True  # allow for numerical edge cases
 
 
-# ------------------------------------------------------------------
 # Variance (noisy) channel detection
-# ------------------------------------------------------------------
 
 
 def test_noisy_channel_detected(fake_info, clean_data):
@@ -150,9 +140,7 @@ def test_noisy_channel_detected(fake_info, clean_data):
     assert ch_names[3] in bad
 
 
-# ------------------------------------------------------------------
 # HF noise detection
-# ------------------------------------------------------------------
 
 
 def test_hf_noise_channel_detected(fake_info):
@@ -179,9 +167,7 @@ def test_hf_noise_channel_detected(fake_info):
     assert ch_names[5] in bad
 
 
-# ------------------------------------------------------------------
 # update() shape mismatch
-# ------------------------------------------------------------------
 
 
 def test_update_wrong_shape(detector):
@@ -189,9 +175,7 @@ def test_update_wrong_shape(detector):
         detector.update(np.zeros((N_CH + 1, N_SAMPLES)))
 
 
-# ------------------------------------------------------------------
 # n_windows_ counter
-# ------------------------------------------------------------------
 
 
 def test_n_windows_increments(detector, clean_data):
@@ -200,9 +184,7 @@ def test_n_windows_increments(detector, clean_data):
     assert detector.n_windows_ == 5
 
 
-# ------------------------------------------------------------------
 # Scores in [0, 1]
-# ------------------------------------------------------------------
 
 
 def test_scores_range(detector, clean_data):
@@ -212,9 +194,7 @@ def test_scores_range(detector, clean_data):
         assert 0.0 <= score <= 1.0
 
 
-# ------------------------------------------------------------------
 # get_bad_channels / get_scores
-# ------------------------------------------------------------------
 
 
 def test_get_bad_channels_returns_list(detector, clean_data):
@@ -230,9 +210,7 @@ def test_get_scores_returns_dict(detector, clean_data):
     assert set(scores.keys()) == set(fake_info["ch_names"]) if False else True
 
 
-# ------------------------------------------------------------------
 # Rolling vote — min_bad_frac
-# ------------------------------------------------------------------
 
 
 def test_single_bad_window_does_not_flag_with_high_threshold(fake_info, clean_data):
@@ -258,9 +236,7 @@ def test_single_bad_window_does_not_flag_with_high_threshold(fake_info, clean_da
     assert ch_names[0] not in det.bad_channels_
 
 
-# ------------------------------------------------------------------
 # reset
-# ------------------------------------------------------------------
 
 
 def test_reset_clears_state(detector, clean_data):
@@ -284,9 +260,7 @@ def test_reset_preserves_params(fake_info):
     assert det.min_bad_frac == 0.3
 
 
-# ------------------------------------------------------------------
 # repr
-# ------------------------------------------------------------------
 
 
 def test_repr(detector):
