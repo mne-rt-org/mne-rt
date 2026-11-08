@@ -3,11 +3,8 @@ import sys
 import warnings
 from unittest.mock import MagicMock
 
-# Suppress third-party warnings that are irrelevant to our docs build:
-#
-# 1. numpydoc uses Sphinx's deprecated dict interface on Options objects.
-#    RemovedInSphinx11Warning (a PendingDeprecationWarning subclass) fires
-#    on every documented member with Sphinx 9.x — nothing actionable here.
+# Third-party warnings with nothing to act on:
+# 1. numpydoc uses Sphinx's deprecated Options dict interface (Sphinx 9).
 warnings.filterwarnings(
     "ignore",
     message=".*mapping interface for autodoc options.*",
@@ -39,11 +36,9 @@ os.environ.setdefault("MPLBACKEND", "Agg")
 _here = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, os.path.join(_here, '..', '..', 'src'))
 
-# ---------------------------------------------------------------------------
 # Mock heavy GUI / hardware dependencies so autodoc works without them.
 # These are installed into sys.modules HERE (at conf.py load time) so that
 # autosummary's module-import phase finds them before autodoc's own mocking.
-# ---------------------------------------------------------------------------
 _MOCK_MODULES = [
     "qtpy",
     "qtpy.QtCore",
@@ -74,10 +69,8 @@ _MOCK_MODULES = [
 for _mod in _MOCK_MODULES:
     sys.modules.setdefault(_mod, MagicMock())
 
-# SignalPlot and TopoPlot inherit from QMainWindow.  When QMainWindow is a
-# MagicMock instance, autodoc resolves those classes as "alias of <MagicMock>"
-# and drops the docstring entirely.  Replacing QMainWindow with a real (dummy)
-# Python class lets autodoc see the proper class hierarchy and renders the docs.
+# A real class, not a MagicMock: autodoc renders subclasses of a mocked
+# QMainWindow as "alias of <MagicMock>" and drops their docstrings.
 class _MockQMainWindow:
     """Placeholder used during Sphinx docs build for qtpy.QtWidgets.QMainWindow."""
     def __init__(self, *args, **kwargs): pass
@@ -87,18 +80,14 @@ sys.modules["qtpy.QtWidgets"].QMainWindow = _MockQMainWindow
 # Also tell autodoc to mock them (belt-and-suspenders)
 autodoc_mock_imports = _MOCK_MODULES
 
-# ---------------------------------------------------------------------------
 # Project information
-# ---------------------------------------------------------------------------
 
 project = 'MNE-RT'
 copyright = '2024-2026, Payam S. Shabestari'
 author = 'Payam S. Shabestari'
 release = '1.2.0'
 
-# ---------------------------------------------------------------------------
 # General configuration
-# ---------------------------------------------------------------------------
 
 extensions = [
     "sphinx.ext.autodoc",
@@ -138,9 +127,7 @@ numpydoc_class_members_toctree = False
 numpydoc_xref_param_type = True       # makes types clickable cross-references
 numpydoc_xref_ignore = {"optional", "default", "or"}
 
-# ---------------------------------------------------------------------------
 # HTML output
-# ---------------------------------------------------------------------------
 
 html_theme = "pydata_sphinx_theme"
 html_title = "MNE-RT"
@@ -165,9 +152,7 @@ html_sidebars = {
     "**": ["sidebar-nav-bs"],
 }
 
-# ---------------------------------------------------------------------------
 # Intersphinx
-# ---------------------------------------------------------------------------
 
 intersphinx_mapping = {
     "python":  ("https://docs.python.org/3/", None),
@@ -177,16 +162,12 @@ intersphinx_mapping = {
     "mne_lsl": ("https://mne.tools/mne-lsl/stable/", None),
 }
 
-# ---------------------------------------------------------------------------
 # Bibliography
-# ---------------------------------------------------------------------------
 
 bibtex_bibfiles = ['references.bib']
 bibtex_default_style = 'unsrt'
 
-# ---------------------------------------------------------------------------
 # Sphinx Gallery
-# ---------------------------------------------------------------------------
 
 _examples_root = os.path.abspath(os.path.join(_here, '..', '..', 'examples'))
 

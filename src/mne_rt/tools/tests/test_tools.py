@@ -35,9 +35,7 @@ def _sine_data(freq_hz, sfreq=SFREQ, n_samples=N_SAMPLES, n_channels=N_CHANNELS,
     return np.tile(signal, (n_channels, 1))
 
 
-# ------------------------------------------------------------------
 # Phase is in [-π, π]
-# ------------------------------------------------------------------
 
 
 def test_phase_range_random():
@@ -53,9 +51,7 @@ def test_phase_range_pure_sine():
     assert -math.pi <= phase <= math.pi
 
 
-# ------------------------------------------------------------------
 # Amplitude is non-negative
-# ------------------------------------------------------------------
 
 
 def test_amplitude_non_negative_random():
@@ -71,9 +67,7 @@ def test_amplitude_non_negative_sine():
     assert amplitude >= 0.0
 
 
-# ------------------------------------------------------------------
 # Amplitude scales with input amplitude
-# ------------------------------------------------------------------
 
 
 def test_amplitude_proportional_to_input():
@@ -84,9 +78,7 @@ def test_amplitude_proportional_to_input():
     assert amp_10 == pytest.approx(amp_1 * 10.0, rel=0.05)
 
 
-# ------------------------------------------------------------------
 # Out-of-band signal produces near-zero amplitude
-# ------------------------------------------------------------------
 
 
 def test_out_of_band_signal_low_amplitude():
@@ -97,9 +89,7 @@ def test_out_of_band_signal_low_amplitude():
     assert amp < 10.0
 
 
-# ------------------------------------------------------------------
 # channel_indices parameter
-# ------------------------------------------------------------------
 
 
 def test_channel_indices_single_channel():
@@ -133,9 +123,7 @@ def test_channel_indices_none_uses_all():
     assert amp_none == pytest.approx(amp_all, abs=1e-10)
 
 
-# ------------------------------------------------------------------
 # Return types
-# ------------------------------------------------------------------
 
 
 def test_return_types():
@@ -145,9 +133,7 @@ def test_return_types():
     assert isinstance(amp, float)
 
 
-# ------------------------------------------------------------------
 # timed
-# ------------------------------------------------------------------
 
 
 def test_timed_returns_value_and_elapsed():
@@ -169,9 +155,7 @@ def test_timed_preserves_exceptions():
         boom()
 
 
-# ------------------------------------------------------------------
 # get_canonical_freqs
-# ------------------------------------------------------------------
 
 
 @pytest.mark.parametrize(
@@ -194,9 +178,7 @@ def test_get_canonical_freqs_unknown_raises():
         get_canonical_freqs("not_a_band")
 
 
-# ------------------------------------------------------------------
 # get_params
-# ------------------------------------------------------------------
 
 
 @pytest.fixture()
@@ -264,9 +246,7 @@ def test_get_params_does_not_mutate_config_between_calls(config_file):
     assert params2["frange"] == [8, 13]
 
 
-# ------------------------------------------------------------------
 # get_params — instanced modalities ("base@label")
-# ------------------------------------------------------------------
 
 
 def test_get_params_instanced_name_uses_base_defaults(config_file):
@@ -332,9 +312,7 @@ def test_get_params_unknown_base_of_instance_raises(config_file):
         get_params(config_file, "not_a_modality@alpha", {})
 
 
-# ------------------------------------------------------------------
 # compute_bandpower
-# ------------------------------------------------------------------
 
 _BP_SFREQ = 256.0
 _BP_N_SAMPLES = int(_BP_SFREQ * 2)
@@ -373,9 +351,7 @@ def test_compute_bandpower_unsupported_method_raises():
         compute_bandpower(data, _BP_SFREQ, (8.0, 13.0), method="not_a_method")
 
 
-# ------------------------------------------------------------------
 # compute_fft
-# ------------------------------------------------------------------
 
 
 def test_compute_fft_shapes():
@@ -392,9 +368,7 @@ def test_compute_fft_freq_band_within_range():
     assert np.all(freq_band >= 8.0) and np.all(freq_band <= 13.0)
 
 
-# ------------------------------------------------------------------
 # butter_bandpass
-# ------------------------------------------------------------------
 
 
 def test_butter_bandpass_sos_shape():
@@ -415,9 +389,7 @@ def test_butter_bandpass_filters_out_of_band_signal():
     assert np.std(filtered) < np.std(signal) * 0.1
 
 
-# ------------------------------------------------------------------
 # remove_blinks_lms
-# ------------------------------------------------------------------
 
 
 def test_remove_blinks_lms_shape_preserved():
@@ -449,9 +421,7 @@ def test_remove_blinks_lms_attenuates_correlated_artifact():
     assert np.std(cleaned[1, tail]) < np.std(data[1, tail]) * 0.5
 
 
-# ------------------------------------------------------------------
 # weight_to_degree_map
-# ------------------------------------------------------------------
 
 
 def test_weight_to_degree_map_shapes():
@@ -475,9 +445,7 @@ def test_weight_to_degree_map_unit_weights_give_complete_graph_degree():
     np.testing.assert_allclose(d, np.full(n_nodes, n_nodes - 1))
 
 
-# ------------------------------------------------------------------
 # log_degree_barrier (2-node analytic fast path — no pyunlocbox needed)
-# ------------------------------------------------------------------
 
 
 def test_log_degree_barrier_two_node_shape():
@@ -499,9 +467,7 @@ def test_log_degree_barrier_two_node_nonnegative():
     assert np.all(mat >= 0.0)
 
 
-# ------------------------------------------------------------------
 # resolve_connectivity_method
-# ------------------------------------------------------------------
 
 
 def test_resolve_connectivity_method_maps_imcoh_to_cohy():
@@ -620,9 +586,7 @@ def test_cohy_imag_matches_epochs_imcoh():
     assert abs(got - expected) < 0.1
 
 
-# ------------------------------------------------------------------
 # resolve_n_cycles
-# ------------------------------------------------------------------
 
 
 def test_resolve_n_cycles_scalar_broadcasts():

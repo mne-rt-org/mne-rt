@@ -140,9 +140,7 @@ class OperantProtocol:
         self._clock_start: Optional[float] = None
         self._next_interval_end: Optional[float] = None
 
-    # ------------------------------------------------------------------
     # Public interface
-    # ------------------------------------------------------------------
 
     def evaluate(self, value: float) -> tuple[bool, float]:
         """Evaluate one NF value and apply the reinforcement schedule.
@@ -202,9 +200,7 @@ class OperantProtocol:
         self._clock_start = None
         self._next_interval_end = None
 
-    # ------------------------------------------------------------------
     # Properties
-    # ------------------------------------------------------------------
 
     @property
     def n_hits(self) -> int:
@@ -239,9 +235,7 @@ class OperantProtocol:
             return self.base_protocol.current_threshold
         return getattr(self.base_protocol, "threshold", None)
 
-    # ------------------------------------------------------------------
     # Schedule implementation
-    # ------------------------------------------------------------------
 
     def _apply_schedule(self) -> bool:
         """Apply the active schedule and return True if a reward is released."""

@@ -5,9 +5,7 @@ import pytest
 
 from mne_rt.protocols.staircase import UpDownStaircaseProtocol
 
-# ------------------------------------------------------------------
 # Constructor validation
-# ------------------------------------------------------------------
 
 
 def test_invalid_direction():
@@ -65,9 +63,7 @@ def test_invalid_max_reversals_zero():
         UpDownStaircaseProtocol(0.5, max_reversals=0)
 
 
-# ------------------------------------------------------------------
 # Defaults
-# ------------------------------------------------------------------
 
 
 def test_defaults():
@@ -81,9 +77,7 @@ def test_defaults():
     assert proto._n_evaluated == 0
 
 
-# ------------------------------------------------------------------
 # Basic up crossing
-# ------------------------------------------------------------------
 
 
 def test_up_crossing():
@@ -114,9 +108,7 @@ def test_down_no_crossing():
     assert mag == 0.0
 
 
-# ------------------------------------------------------------------
 # Threshold adjustment: n_up=1 rule
-# ------------------------------------------------------------------
 
 
 def test_threshold_increases_after_success():
@@ -135,9 +127,7 @@ def test_threshold_decreases_after_two_failures():
     assert proto.threshold == pytest.approx(0.4)
 
 
-# ------------------------------------------------------------------
 # Reversal counting
-# ------------------------------------------------------------------
 
 
 def test_reversal_detected():
@@ -162,9 +152,7 @@ def test_reversal_thresholds_recorded():
     assert proto.reversal_thresholds[0] == pytest.approx(threshold_before)
 
 
-# ------------------------------------------------------------------
 # Step size halving
-# ------------------------------------------------------------------
 
 
 def test_step_halving_after_n_reversals():
@@ -186,9 +174,7 @@ def test_step_halving_after_n_reversals():
     assert proto._step_size < 0.1
 
 
-# ------------------------------------------------------------------
 # max_reversals freezes threshold
-# ------------------------------------------------------------------
 
 
 def test_max_reversals_freezes_threshold():
@@ -212,9 +198,7 @@ def test_max_reversals_freezes_threshold():
     assert proto.threshold == frozen_threshold
 
 
-# ------------------------------------------------------------------
 # Smoothing
-# ------------------------------------------------------------------
 
 
 def test_smoothing_does_not_crash():
@@ -224,9 +208,7 @@ def test_smoothing_does_not_crash():
     assert proto._n_evaluated == 20
 
 
-# ------------------------------------------------------------------
 # current_threshold
-# ------------------------------------------------------------------
 
 
 def test_current_threshold_matches_threshold():
@@ -242,9 +224,7 @@ def test_current_threshold_tracks_adaptation():
     assert proto.current_threshold > 0.5
 
 
-# ------------------------------------------------------------------
 # reset
-# ------------------------------------------------------------------
 
 
 def test_reset_restores_initial_state():
@@ -268,9 +248,7 @@ def test_reset_preserves_params():
     assert proto.n_down == 3
 
 
-# ------------------------------------------------------------------
 # repr
-# ------------------------------------------------------------------
 
 
 def test_repr():

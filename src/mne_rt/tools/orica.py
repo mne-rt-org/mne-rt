@@ -59,9 +59,7 @@ class ORICA:
         self._mixing_matrix: np.ndarray | None = None  # cached pinv(W)
         self._calibrated = False
 
-    # ------------------------------------------------------------------
     # Nonlinearities
-    # ------------------------------------------------------------------
 
     def _nonlinear_func(self, Y: np.ndarray) -> tuple[np.ndarray, np.ndarray]:
         if self.nonlinearity == "tanh":
@@ -77,9 +75,7 @@ class ORICA:
             raise ValueError(f"Unknown nonlinearity {self.nonlinearity!r}")
         return gY, gprime
 
-    # ------------------------------------------------------------------
     # Whitening
-    # ------------------------------------------------------------------
 
     def _update_whitening(self, X: np.ndarray) -> np.ndarray:
         """Update whitening matrix with forgetting factor and return whitened data."""
@@ -105,9 +101,7 @@ class ORICA:
         """Apply current whitening without updating statistics."""
         return self.whitening_ @ (X - self.mean_)
 
-    # ------------------------------------------------------------------
     # Fit
-    # ------------------------------------------------------------------
 
     def partial_fit(self, X: np.ndarray) -> "ORICA":
         """Update the unmixing matrix with a new block of EEG data.
@@ -149,9 +143,7 @@ class ORICA:
         self._mixing_matrix = None
         return self
 
-    # ------------------------------------------------------------------
     # Transform / reconstruct
-    # ------------------------------------------------------------------
 
     def transform(self, X: np.ndarray) -> np.ndarray:
         """Project data to source space without updating W.
@@ -198,9 +190,7 @@ class ORICA:
             return self.whitening_inv_ @ Xw_rec + self.mean_
         return Xw_rec + self.mean_
 
-    # ------------------------------------------------------------------
     # Artifact identification and removal
-    # ------------------------------------------------------------------
 
     def find_blink_ic(
         self, template_map: np.ndarray, threshold: float = 0.7
@@ -266,9 +256,7 @@ class ORICA:
         blink_idx, _ = self.find_blink_ic(template_map, threshold)
         return self.denoise(X, blink_idx)
 
-    # ------------------------------------------------------------------
     # Internal helpers
-    # ------------------------------------------------------------------
 
     def _get_mixing_matrix(self) -> np.ndarray:
         """Return cached pinv(W), recomputing only when W changed."""

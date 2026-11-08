@@ -5,9 +5,7 @@ import pytest
 
 from mne_rt.protocols import ThresholdProtocol
 
-# ------------------------------------------------------------------
 # Constructor validation
-# ------------------------------------------------------------------
 
 
 def test_invalid_direction():
@@ -35,9 +33,7 @@ def test_invalid_history_len():
         ThresholdProtocol(history_len=4)
 
 
-# ------------------------------------------------------------------
 # Defaults
-# ------------------------------------------------------------------
 
 
 def test_defaults():
@@ -49,9 +45,7 @@ def test_defaults():
     assert proto.hit_rate == 0.0
 
 
-# ------------------------------------------------------------------
 # Basic crossing behaviour
-# ------------------------------------------------------------------
 
 
 def test_up_crossing():
@@ -87,9 +81,7 @@ def test_down_no_crossing():
     assert not crossed
 
 
-# ------------------------------------------------------------------
 # Threshold get/set
-# ------------------------------------------------------------------
 
 
 def test_threshold_setter():
@@ -99,9 +91,7 @@ def test_threshold_setter():
     assert proto.current_threshold == 5.0
 
 
-# ------------------------------------------------------------------
 # current_threshold
-# ------------------------------------------------------------------
 
 
 def test_current_threshold_matches_threshold():
@@ -121,9 +111,7 @@ def test_current_threshold_tracks_adaptive_updates():
     assert proto.current_threshold > 0.0
 
 
-# ------------------------------------------------------------------
 # Adaptive mode
-# ------------------------------------------------------------------
 
 
 def test_adaptive_threshold_rises_with_high_hit_rate():
@@ -142,9 +130,7 @@ def test_non_adaptive_threshold_stays_fixed():
     assert proto.threshold == 1.0
 
 
-# ------------------------------------------------------------------
 # hit_rate
-# ------------------------------------------------------------------
 
 
 def test_hit_rate_all_hits():
@@ -161,9 +147,7 @@ def test_hit_rate_no_hits():
     assert proto.hit_rate == pytest.approx(0.0)
 
 
-# ------------------------------------------------------------------
 # reset
-# ------------------------------------------------------------------
 
 
 def test_reset_clears_history_preserves_threshold():
@@ -177,9 +161,7 @@ def test_reset_clears_history_preserves_threshold():
     assert proto.threshold == threshold_before_reset
 
 
-# ------------------------------------------------------------------
 # repr
-# ------------------------------------------------------------------
 
 
 def test_repr():

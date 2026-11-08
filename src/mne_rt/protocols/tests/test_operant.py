@@ -13,9 +13,7 @@ from mne_rt.protocols import (
     ThresholdProtocol,
 )
 
-# ─────────────────────────────────────────────────────────────────────────────
 # OperantProtocol
-# ─────────────────────────────────────────────────────────────────────────────
 
 
 class TestOperantProtocol:

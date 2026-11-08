@@ -34,9 +34,7 @@ from qtpy.QtWidgets import (
 
 from mne_rt._naming import split_modality
 
-# --------------------------------------------------------------------------
 # Constants
-# --------------------------------------------------------------------------
 
 _COLORS = [
     "#5DA5A4",  # teal
@@ -287,9 +285,7 @@ class NFPlot(QMainWindow):
         self.setWindowTitle("MNE-RT — NF Signal")
         self.resize(1440, max(500, 200 + self._n * 150))
 
-    # ------------------------------------------------------------------
     # UI construction
-    # ------------------------------------------------------------------
 
     def _build_ui(self) -> None:
         self.setStyleSheet(_QSS)
@@ -349,17 +345,10 @@ class NFPlot(QMainWindow):
             # Zero reference line
             pi.addItem(pg.InfiniteLine(pos=0, angle=0, pen=pg.mkPen("#252545", width=1)))
 
-            # Threshold line — hidden until push() supplies a real value.
-            # The label text is a static placeholder here: InfiniteLine's
-            # "{value}" would auto-fill from the line's *position* (a
-            # normalised/rescaled plot coordinate), not the physical
-            # threshold, so push() overwrites it with the real value on
-            # every update instead of relying on the placeholder.
+            # Threshold line, hidden until push() gives a value. push() sets the label:
+            # InfiniteLine's "{value}" would show the normalised position.
             thr_pen = pg.mkPen(_THRESHOLD_COLOR, width=2)
-            # Coarse, explicit dash pattern (long dash / gap in pixels) so
-            # the line reads as unmistakably dashed at any display DPI --
-            # Qt.PenStyle.DashLine's default pattern is fine-grained enough
-            # that thin anti-aliased strokes can look almost solid.
+            # Explicit dashes: Qt's default DashLine can look solid when thin.
             thr_pen.setDashPattern([8, 6])
             thr_line = pg.InfiniteLine(
                 pos=0,
@@ -529,9 +518,7 @@ class NFPlot(QMainWindow):
 
         return grp
 
-    # ------------------------------------------------------------------
     # Callbacks
-    # ------------------------------------------------------------------
 
     @staticmethod
     def _apply_x_tick_spacing(pi: pg.PlotItem, secs: float) -> None:
@@ -680,9 +667,7 @@ class NFPlot(QMainWindow):
         self._curves[idx].setData(self._time_axis, self._buf[idx])
         self._scale_labels[idx].setText(f"×{self._channel_scales[idx]:.3g}")
 
-    # ------------------------------------------------------------------
     # Public interface
-    # ------------------------------------------------------------------
 
     def push(
         self,
@@ -776,11 +761,7 @@ class NFPlot(QMainWindow):
                         thr_f / (_scale_for(self._scales, self._mods[i]) + 1e-300)
                     ) * self._channel_scales[i]
                     line.setPos(thr_norm)
-                    # InfiniteLine's "{value}" label placeholder auto-fills
-                    # from the line's *position* (thr_norm, the normalised/
-                    # rescaled plot coordinate) on every setPos() call, not
-                    # the physical threshold -- so the on-plot label is
-                    # overridden here with the real value every push().
+                    # Overwrite the label: "{value}" would show the normalised position.
                     line.label.setText(f"thr {thr_f:.3g}{f' {unit}' if unit else ''}")
                     self._threshold_active[i] = True
                     line.setVisible(self._show_threshold)

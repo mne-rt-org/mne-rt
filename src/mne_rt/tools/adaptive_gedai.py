@@ -194,9 +194,7 @@ class AdaptiveMultibandGEDAIDenoiser:
         self._broadband: dict | None = None
         self._delay_samples = 0
 
-    # ------------------------------------------------------------------
     # Fitting
-    # ------------------------------------------------------------------
 
     def fit(
         self, data: np.ndarray, leadfield: np.ndarray | None = None
@@ -509,9 +507,7 @@ class AdaptiveMultibandGEDAIDenoiser:
         A = self._reference_cov @ W
         return W, A, eigenvalues
 
-    # ------------------------------------------------------------------
     # Streaming denoise
-    # ------------------------------------------------------------------
 
     def update_and_denoise(
         self,
@@ -662,9 +658,7 @@ class AdaptiveMultibandGEDAIDenoiser:
             raise ValueError("Data must contain only finite values")
         return data
 
-    # ------------------------------------------------------------------
     # Properties
-    # ------------------------------------------------------------------
 
     @property
     def n_bands(self) -> int:

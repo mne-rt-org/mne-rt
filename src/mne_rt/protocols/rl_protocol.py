@@ -179,7 +179,7 @@ class RLProtocol:
         are counted in :attr:`n_explored` but are not recorded in the hit
         history used for the threshold-update rule.
         """
-        # --- EMA smoothing ---------------------------------------------------
+        # EMA smoothing
         if self.smoothing > 0.0:
             if self._smoothed is None:
                 self._smoothed = float(value)
@@ -204,13 +204,13 @@ class RLProtocol:
         if self._n_evaluated <= self.warmup_windows:
             return False, 0.0
 
-        # --- Threshold crossing check ----------------------------------------
+        # Threshold crossing check
         if self.direction == "up":
             real_crossed = smoothed > self._threshold
         else:
             real_crossed = smoothed < self._threshold
 
-        # --- Epsilon-greedy exploration ---------------------------------------
+        # Epsilon-greedy exploration
         is_explore = bool(self._rng.random() < self.epsilon)
 
         if is_explore:
@@ -222,7 +222,7 @@ class RLProtocol:
             # Record in hit history only for non-exploration windows
             self._hit_history.append(real_crossed)
 
-            # --- RL threshold update -----------------------------------------
+            # RL threshold update
             if self._hit_history:
                 current_hit_rate = sum(self._hit_history) / len(self._hit_history)
                 update = self.lr * (current_hit_rate - self.target_hit_rate) * running_std
@@ -233,10 +233,8 @@ class RLProtocol:
                 else:
                     self._threshold -= update
 
-        # --- Magnitude -------------------------------------------------------
-        # Divide by the std already vetted against the data's own mean; vetting
-        # it a second time against the threshold would zero every magnitude
-        # whenever the threshold sits on a different scale from the feature.
+        # Magnitude. The std was already vetted against the data's mean; vetting it
+        # against the threshold too would zero it when their scales differ.
         magnitude = (
             abs(smoothed - self._threshold) / running_std if crossed and running_std > 0.0 else 0.0
         )

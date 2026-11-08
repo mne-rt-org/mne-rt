@@ -53,15 +53,11 @@ __all__ = [
 ]
 
 
-# ---------------------------------------------------------------------------
 # ROI aliases
-# ---------------------------------------------------------------------------
 
-#: Friendly ROI names → the atlas labels they are composed of.
-#:
-#: These are *conventions*, not settled anatomy — the boundaries of "Broca's
-#: area" in particular are contested.  Pass explicit atlas label names instead
-#: if your protocol defines them differently.
+#: Friendly ROI names → the atlas labels they are composed of. Conventions,
+#: not settled anatomy (Broca's area especially is contested): pass explicit
+#: atlas label names if your protocol defines them differently.
 ROI_ALIASES: dict[str, dict[str, tuple[str, ...]]] = {
     "aparc+aseg": {
         # Broca ≈ BA44 + BA45 (pars opercularis + pars triangularis)
@@ -104,9 +100,7 @@ class ROI:
         return f"<ROI {self.name!r} ({self.kind}, {len(self.members)} label(s))>"
 
 
-# ---------------------------------------------------------------------------
 # Atlas helpers
-# ---------------------------------------------------------------------------
 
 
 def _row_supports(rows: dict) -> dict:
@@ -247,10 +241,8 @@ def resolve_rois(
         names = [names]
 
     kind = "volume" if _is_volume_atlas(atlas) else "surface"
-    # Validate against the atlas's own labels, not list_rois() — that also
-    # includes the alias names, which are not labels and would let an alias
-    # used inside an explicit mapping pass here and fail later in the label
-    # operator with a bare KeyError.
+    # The atlas's own labels, not list_rois(): that also lists the aliases,
+    # which would pass here and fail later with a bare KeyError.
     available = set(_atlas_label_names(atlas=atlas, subject=subject, subjects_dir=subjects_dir))
     alias_table = ROI_ALIASES.get(str(atlas), {})
 
@@ -289,11 +281,6 @@ def resolve_rois(
     if duplicates:
         raise ValueError(f"Duplicate ROI name(s): {sorted(duplicates)}.")
     return rois
-
-
-# ---------------------------------------------------------------------------
-# SourceModel
-# ---------------------------------------------------------------------------
 
 
 class SourceModel:
@@ -375,7 +362,7 @@ class SourceModel:
         if filters is None and inverse is None:
             raise ValueError("SourceModel needs either `filters` (LCMV) or `inverse` (min-norm).")
 
-    # -- introspection --------------------------------------------------
+    # introspection
 
     @property
     def kind(self) -> str:
@@ -433,7 +420,7 @@ class SourceModel:
         fast = "kernel" if self.supports_kernel else "fallback"
         return f"<SourceModel | {self.kind}, {self.n_sources} sources, {how}, {fast}>"
 
-    # -- operators ------------------------------------------------------
+    # operators
 
     def source_operator(self) -> np.ndarray:
         """Linear map from sensor data to source time courses, shape ``(n_src, n_ch)``.
@@ -506,7 +493,7 @@ class SourceModel:
         """
         return self.label_operator(rois, mri_resolution=mri_resolution) @ self.source_operator()
 
-    # -- application ----------------------------------------------------
+    # application
 
     def apply(
         self,
@@ -568,7 +555,7 @@ class SourceModel:
             )
         return stc.data
 
-    # -- internals ------------------------------------------------------
+    # internals
 
     def _volume_label_operator(self, rois, *, mri_resolution: bool) -> np.ndarray:
         try:
@@ -662,7 +649,7 @@ class SourceModel:
                     operator[i] += rows[member] * (counts[member] / total)
         return operator
 
-    # -- construction ---------------------------------------------------
+    # construction
 
     @classmethod
     def from_stream(
@@ -710,10 +697,8 @@ class SourceModel:
                     "first, or pass data_cov=... to compute_inv_operator()."
                 )
             filters = make_lcmv(
-                # `info` carries the average-reference projection that
-                # RTStream._prepare_raw_array applies to every analysis window;
-                # without it MNE warns that the covariance is adversely affected,
-                # and the whitener would not match the data it is applied to.
+                # With the average-reference projection every window gets, so the whitener
+                # matches the data.
                 info,
                 rt.fwd,
                 data_cov,  # data covariance, NOT the noise covariance

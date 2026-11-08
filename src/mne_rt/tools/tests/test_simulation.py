@@ -5,9 +5,7 @@ import pytest
 
 from mne_rt.tools.simulation import simulate_nf_session, simulate_raw
 
-# ------------------------------------------------------------------
 # Basic output shape and types
-# ------------------------------------------------------------------
 
 
 def test_output_types():
@@ -35,9 +33,7 @@ def test_sfreq_preserved():
     assert raw.info["sfreq"] == pytest.approx(512.0)
 
 
-# ------------------------------------------------------------------
 # nf_state properties
-# ------------------------------------------------------------------
 
 
 def test_nf_state_is_bool():
@@ -69,9 +65,7 @@ def test_nf_state_full_fraction():
     assert nf_state.all()
 
 
-# ------------------------------------------------------------------
 # Alpha reactivity
-# ------------------------------------------------------------------
 
 
 def test_alpha_reactivity_reduces_power():
@@ -102,9 +96,7 @@ def test_alpha_reactivity_reduces_power():
     assert var_react_on < var_no_on
 
 
-# ------------------------------------------------------------------
 # Reproducibility
-# ------------------------------------------------------------------
 
 
 def test_rng_seed_reproducibility():
@@ -122,9 +114,7 @@ def test_different_seeds_give_different_data():
     assert not np.allclose(raw1.get_data(), raw2.get_data())
 
 
-# ------------------------------------------------------------------
 # Data sanity
-# ------------------------------------------------------------------
 
 
 def test_data_has_no_nan_or_inf():
@@ -140,9 +130,7 @@ def test_data_amplitude_reasonable():
     assert np.max(np.abs(data)) < 1e-3  # < 1 mV
 
 
-# ------------------------------------------------------------------
 # simulate_raw
-# ------------------------------------------------------------------
 
 
 def test_simulate_raw_invalid_data_type():

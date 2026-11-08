@@ -41,9 +41,7 @@ from qtpy.QtWidgets import (
     QWidget,
 )
 
-# ---------------------------------------------------------------------------
 # Colour palettes
-# ---------------------------------------------------------------------------
 
 _TRACE_COLORS = [
     "#4fc3f7",
@@ -152,9 +150,7 @@ QScrollBar::add-page:vertical, QScrollBar::sub-page:vertical {
 """
 
 
-# ---------------------------------------------------------------------------
 # Wheel-event filter (same as RawPlot)
-# ---------------------------------------------------------------------------
 
 
 class _WheelFilter(QObject):
@@ -167,11 +163,6 @@ class _WheelFilter(QObject):
             self._cb(1 if event.angleDelta().y() > 0 else -1)
             return True
         return False
-
-
-# ---------------------------------------------------------------------------
-# EpochPlot
-# ---------------------------------------------------------------------------
 
 
 class EpochPlot(QMainWindow):
@@ -301,9 +292,7 @@ class EpochPlot(QMainWindow):
         self._render_timer.timeout.connect(self._process_pending)
         self._render_timer.start()
 
-    # ------------------------------------------------------------------
     # UI construction
-    # ------------------------------------------------------------------
 
     def _build_ui(self) -> None:
         self.setStyleSheet(_QSS)
@@ -391,7 +380,7 @@ class EpochPlot(QMainWindow):
         scroll.setWidget(panel)
         return scroll
 
-    # ── sidebar groups ─────────────────────────────────────────────────
+    # sidebar groups
 
     def _grp_playback(self) -> QGroupBox:
         grp = QGroupBox("Playback")
@@ -543,9 +532,7 @@ class EpochPlot(QMainWindow):
 
         return grp
 
-    # ------------------------------------------------------------------
     # Helpers
-    # ------------------------------------------------------------------
 
     def _fmt_scale(self) -> str:
         uv = self._scale * 1e6
@@ -576,9 +563,7 @@ class EpochPlot(QMainWindow):
     def _trigger_color(self, code: int) -> str:
         return self._code_colors.get(code, self._default_color)
 
-    # ------------------------------------------------------------------
     # Callbacks — scroll / wheel / click
-    # ------------------------------------------------------------------
 
     def _on_plot_wheel(self, direction: int) -> None:
         step = max(1, self._n_shown // 4)
@@ -650,9 +635,7 @@ class EpochPlot(QMainWindow):
         except Exception as exc:
             self._status.showMessage(f"Could not show sensor position: {exc}")
 
-    # ------------------------------------------------------------------
     # Callbacks — playback / display
-    # ------------------------------------------------------------------
 
     def _toggle_pause(self, checked: bool) -> None:
         self._paused = checked
@@ -741,9 +724,7 @@ class EpochPlot(QMainWindow):
         self._event_count_lbl.setText(text)
         self._event_count_lbl.setStyleSheet("color:#80d8ff; font-size:10px;")
 
-    # ------------------------------------------------------------------
     # Epoch overlay rendering
-    # ------------------------------------------------------------------
 
     #: Bad-epoch overlay colour (red) — overrides the per-code colour so a
     #: rejected epoch is unmistakable regardless of its event code.
@@ -775,7 +756,7 @@ class EpochPlot(QMainWindow):
             color = self._BAD_EPOCH_COLOR if is_bad else self._trigger_color(code)
             self._visible_epoch_spans.append((epoch_id, x_lo, x_hi))
 
-            # ── solid trigger line at t=0 ──────────────────────────────
+            # solid trigger line at t=0
             trig_line = pg.InfiniteLine(
                 pos=x0,
                 angle=90,
@@ -784,7 +765,7 @@ class EpochPlot(QMainWindow):
             self._pi.addItem(trig_line)
             self._epoch_overlay_items.append(trig_line)
 
-            # ── shaded epoch region ────────────────────────────────────
+            # shaded epoch region
             if self._show_epoch_region:
                 r, g, b = self._hex_to_rgb(color)
                 region = pg.LinearRegionItem(
@@ -796,7 +777,7 @@ class EpochPlot(QMainWindow):
                 self._pi.addItem(region)
                 self._epoch_overlay_items.append(region)
 
-            # ── dashed epoch boundary lines ────────────────────────────
+            # dashed epoch boundary lines
             if self._show_epoch_bounds:
                 for x_bnd in (x_lo, x_hi):
                     if 0 <= x_bnd <= self._time_window:
@@ -812,10 +793,6 @@ class EpochPlot(QMainWindow):
     def _hex_to_rgb(hex_color: str) -> tuple[int, int, int]:
         h = hex_color.lstrip("#")
         return int(h[0:2], 16), int(h[2:4], 16), int(h[4:6], 16)
-
-    # ------------------------------------------------------------------
-    # Redraw
-    # ------------------------------------------------------------------
 
     def _redraw(self) -> None:
         end = min(self._page_start + self._n_shown, self._n_ch)
@@ -835,9 +812,7 @@ class EpochPlot(QMainWindow):
 
         self._redraw_epoch_overlays()
 
-    # ------------------------------------------------------------------
     # Public interface
-    # ------------------------------------------------------------------
 
     @property
     def bad_epoch_ids(self) -> list[int]:

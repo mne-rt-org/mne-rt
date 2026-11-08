@@ -47,9 +47,7 @@ def _oscillating(maps, states, rng, noise=0.02, freq=10.0):
     return (x + noise * rng.standard_normal(x.shape)) * 1e-5
 
 
-# ─────────────────────────────────────────────────────────────────────────────
 # Core: backfitting and metrics
-# ─────────────────────────────────────────────────────────────────────────────
 
 
 def test_backfit_recovers_known_states():
@@ -197,9 +195,7 @@ def test_matches_pycrostates():
                     assert mine[metric] == pytest.approx(ref[f"{name}_{metric}"], abs=1e-12)
 
 
-# ─────────────────────────────────────────────────────────────────────────────
 # The modality
-# ─────────────────────────────────────────────────────────────────────────────
 
 
 def _session(ch_names, data_type="eeg", bads=()):

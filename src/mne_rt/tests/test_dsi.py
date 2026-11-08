@@ -238,9 +238,7 @@ def test_record_main_topomap_interpolates_bad_channels(tmp_path, monkeypatch):
         nf.save()
 
 
-# ---------------------------------------------------------------------------
 # From the review of #56
-# ---------------------------------------------------------------------------
 
 
 def test_connect_to_lsl_rejects_a_device_that_is_not_a_string(tmp_path):

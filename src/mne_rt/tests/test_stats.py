@@ -21,9 +21,7 @@ NATIVE_SCALES = [
 ]
 
 
-# ------------------------------------------------------------------
 # usable_std
-# ------------------------------------------------------------------
 
 
 @pytest.mark.parametrize("mean, std", NATIVE_SCALES)
@@ -72,9 +70,7 @@ def test_rel_tol_is_above_float64_eps():
     assert DEGENERATE_REL_TOL > 2.220446049250313e-16 * 1e3
 
 
-# ------------------------------------------------------------------
 # min_std: the backward-compatibility branch
-# ------------------------------------------------------------------
 
 
 def test_explicit_min_std_reproduces_the_old_floor():
@@ -89,9 +85,7 @@ def test_explicit_min_std_overrides_the_degeneracy_rule():
     assert zscore(2.0, 1.0, 0.0, min_std=1e-6) == pytest.approx(1e6)
 
 
-# ------------------------------------------------------------------
 # welford_std / ema_variance
-# ------------------------------------------------------------------
 
 
 def test_welford_std_needs_more_samples_than_ddof():

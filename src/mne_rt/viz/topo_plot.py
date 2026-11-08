@@ -61,9 +61,7 @@ except ImportError:
 
 from mne_rt._logging import logger, set_log_level
 
-# ---------------------------------------------------------------------------
 # Palette
-# ---------------------------------------------------------------------------
 _BG = "#0d1117"
 _SURFACE = "#161b22"
 _BORDER = "#30363d"
@@ -96,9 +94,7 @@ _PW, _PH = 76, 64
 _MASTOID_NAMES = frozenset(["M1", "M2", "TP9", "TP10", "A1", "A2", "Mastoid", "mastoid"])
 
 
-# ---------------------------------------------------------------------------
 # Sidebar helpers
-# ---------------------------------------------------------------------------
 
 
 def _sep(parent: QWidget) -> QFrame:
@@ -144,9 +140,7 @@ def _slider(parent, lo: int, hi: int, val: int) -> QSlider:
     return sl
 
 
-# ---------------------------------------------------------------------------
 # Main class
-# ---------------------------------------------------------------------------
 
 
 class TopoPlot(QMainWindow):
@@ -273,9 +267,7 @@ class TopoPlot(QMainWindow):
             "from info" if info is not None else "montage/fallback",
         )
 
-    # -----------------------------------------------------------------------
     # Unit / mastoid helpers
-    # -----------------------------------------------------------------------
 
     def _detect_unit(self, info) -> tuple[str, float]:
         if info is None or not _mne_available:
@@ -293,9 +285,7 @@ class TopoPlot(QMainWindow):
     def _find_mastoids(self) -> list[int]:
         return [i for i, ch in enumerate(self.ch_names) if ch in _MASTOID_NAMES]
 
-    # -----------------------------------------------------------------------
     # Scalp layout
-    # -----------------------------------------------------------------------
 
     def _compute_positions(self, info, montage_name: str) -> list[tuple[float, float]]:
         if _mne_available:
@@ -346,9 +336,7 @@ class TopoPlot(QMainWindow):
             for i in range(n)
         ]
 
-    # -----------------------------------------------------------------------
     # UI build
-    # -----------------------------------------------------------------------
 
     def _apply_styles(self) -> None:
         self.setStyleSheet(f"""
@@ -483,9 +471,7 @@ class TopoPlot(QMainWindow):
         super().resizeEvent(event)
         self._fit_view()
 
-    # -----------------------------------------------------------------------
     # Sidebar build
-    # -----------------------------------------------------------------------
 
     def _build_sidebar(self) -> QScrollArea:
         scroll = QScrollArea()
@@ -502,7 +488,7 @@ class TopoPlot(QMainWindow):
         ly.setSpacing(4)
         ly.setContentsMargins(10, 12, 10, 12)
 
-        # ── Header ───────────────────────────────────────────────────────
+        # Header
         hdr = QLabel("ERP CONTROLS")
         hdr.setStyleSheet(f"color:{_TEXT}; font-size:11px; font-weight:700; letter-spacing:1.5px;")
         ly.addWidget(hdr)
@@ -520,7 +506,7 @@ class TopoPlot(QMainWindow):
         ly.addWidget(row_hdr)
         ly.addWidget(_sep(sb))
 
-        # ── CONDITIONS ───────────────────────────────────────────────────
+        # CONDITIONS
         ly.addWidget(_section("CONDITIONS", sb))
         self._cond_checks: dict[str, QCheckBox] = {}
         self._cond_n_lbl: dict[str, QLabel] = {}
@@ -547,7 +533,7 @@ class TopoPlot(QMainWindow):
 
         ly.addWidget(_sep(sb))
 
-        # ── AMPLITUDE ────────────────────────────────────────────────────
+        # AMPLITUDE
         ly.addWidget(_section("AMPLITUDE", sb))
 
         r1, l1 = _row(sb)
@@ -577,7 +563,7 @@ class TopoPlot(QMainWindow):
 
         ly.addWidget(_sep(sb))
 
-        # ── SMOOTHING ────────────────────────────────────────────────────
+        # SMOOTHING
         ly.addWidget(_section("SMOOTHING", sb))
         r3, l3 = _row(sb)
         l3.addWidget(_key_lbl("Window", sb), stretch=1)
@@ -590,7 +576,7 @@ class TopoPlot(QMainWindow):
 
         ly.addWidget(_sep(sb))
 
-        # ── RE-REFERENCE ─────────────────────────────────────────────────
+        # RE-REFERENCE
         ly.addWidget(_section("RE-REFERENCE", sb))
 
         self._reref_cb = QComboBox(sb)
@@ -607,7 +593,7 @@ class TopoPlot(QMainWindow):
 
         ly.addWidget(_sep(sb))
 
-        # ── TIME WINDOW ──────────────────────────────────────────────────
+        # TIME WINDOW
         ly.addWidget(_section("TIME WINDOW", sb))
         tmin_ms = int(self.tmin * 1000)
         tmax_ms = int(self.tmax * 1000)
@@ -632,7 +618,7 @@ class TopoPlot(QMainWindow):
 
         ly.addWidget(_sep(sb))
 
-        # ── APPEARANCE ───────────────────────────────────────────────────
+        # APPEARANCE
         ly.addWidget(_section("APPEARANCE", sb))
 
         ly.addWidget(_key_lbl("Background", sb))
@@ -669,7 +655,7 @@ class TopoPlot(QMainWindow):
 
         ly.addWidget(_sep(sb))
 
-        # ── DATA ─────────────────────────────────────────────────────────
+        # DATA
         ly.addWidget(_section("DATA", sb))
         self._total_lbl = QLabel("Total: 0 trials")
         self._total_lbl.setStyleSheet(f"color:{_TEXT};font-size:11px;")
@@ -690,9 +676,7 @@ class TopoPlot(QMainWindow):
         scroll.setWidget(sb)
         return scroll
 
-    # -----------------------------------------------------------------------
     # Sidebar callbacks
-    # -----------------------------------------------------------------------
 
     def _toggle_cond(self, cond: str, visible: bool) -> None:
         for c in self._curves[cond]:
@@ -830,9 +814,7 @@ class TopoPlot(QMainWindow):
         if path:
             self.grab().save(path)
 
-    # -----------------------------------------------------------------------
     # Public API
-    # -----------------------------------------------------------------------
 
     def update(
         self,

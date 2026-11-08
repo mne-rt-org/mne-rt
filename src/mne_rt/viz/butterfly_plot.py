@@ -59,9 +59,7 @@ except ImportError:
 
 from mne_rt._logging import logger, set_log_level
 
-# ---------------------------------------------------------------------------
 # Palette
-# ---------------------------------------------------------------------------
 _BG = "#0d1117"
 _SURFACE = "#161b22"
 _BORDER = "#30363d"
@@ -92,9 +90,7 @@ _REGION_STOPS = [
 _SIDEBAR_W = 210  # px
 
 
-# ---------------------------------------------------------------------------
 # Sidebar helpers (mirrors erp_plot.py)
-# ---------------------------------------------------------------------------
 
 
 def _sep(parent: QWidget) -> QFrame:
@@ -140,9 +136,7 @@ def _slider(parent: QWidget, lo: int, hi: int, val: int) -> QSlider:
     return sl
 
 
-# ---------------------------------------------------------------------------
 # Colour helpers
-# ---------------------------------------------------------------------------
 
 
 def _region_color(xn: float, yn: float) -> tuple[int, int, int]:
@@ -176,9 +170,7 @@ def _region_color(xn: float, yn: float) -> tuple[int, int, int]:
     return (_REGION_STOPS[-1][1], _REGION_STOPS[-1][2], _REGION_STOPS[-1][3])
 
 
-# ---------------------------------------------------------------------------
 # Main class
-# ---------------------------------------------------------------------------
 
 
 class ButterflyPlot(QMainWindow):
@@ -290,9 +282,7 @@ class ButterflyPlot(QMainWindow):
             len(self._conditions),
         )
 
-    # -----------------------------------------------------------------------
     # Scalp layout (for region colouring only)
-    # -----------------------------------------------------------------------
 
     def _compute_positions(self, info, montage_name: str) -> list[tuple[float, float]]:
         """Return normalised (x, y) positions for each channel.
@@ -357,9 +347,7 @@ class ButterflyPlot(QMainWindow):
             for i in range(n)
         ]
 
-    # -----------------------------------------------------------------------
     # Styles
-    # -----------------------------------------------------------------------
 
     def _apply_styles(self) -> None:
         self.setStyleSheet(f"""
@@ -386,9 +374,7 @@ class ButterflyPlot(QMainWindow):
             QScrollBar::handle:vertical {{ background:{_BORDER}; border-radius:3px; }}
         """)
 
-    # -----------------------------------------------------------------------
     # UI build
-    # -----------------------------------------------------------------------
 
     def _build_ui(self) -> None:
         central = QWidget()
@@ -397,7 +383,7 @@ class ButterflyPlot(QMainWindow):
         root.setSpacing(0)
         root.setContentsMargins(0, 0, 0, 0)
 
-        # ── Canvas ──────────────────────────────────────────────────────
+        # Canvas
         pg.setConfigOptions(antialias=True, background=_BG, foreground=_DIM)
 
         self._glw = pg.GraphicsLayoutWidget()
@@ -405,10 +391,10 @@ class ButterflyPlot(QMainWindow):
         self._glw.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
         root.addWidget(self._glw, stretch=1)
 
-        # ── Sidebar ──────────────────────────────────────────────────────
+        # Sidebar
         root.addWidget(self._build_sidebar())
 
-        # ── Condition plots ──────────────────────────────────────────────
+        # Condition plots
         # curves[cond][ch_idx] → PlotCurveItem
         self._cond_plots: dict[str, pg.PlotItem] = {}
         self._curves: dict[str, list[pg.PlotCurveItem]] = {}
@@ -480,9 +466,7 @@ class ButterflyPlot(QMainWindow):
         plot.getViewBox().setBackgroundColor(_BG)
         plot.setXRange(self.tmin, self.tmax, padding=0)
 
-    # -----------------------------------------------------------------------
     # Sidebar build
-    # -----------------------------------------------------------------------
 
     def _build_sidebar(self) -> QScrollArea:
         scroll = QScrollArea()
@@ -499,13 +483,13 @@ class ButterflyPlot(QMainWindow):
         ly.setSpacing(4)
         ly.setContentsMargins(10, 12, 10, 12)
 
-        # ── Header ───────────────────────────────────────────────────────
+        # Header
         hdr = QLabel("BUTTERFLY CONTROLS")
         hdr.setStyleSheet(f"color:{_TEXT}; font-size:11px; font-weight:700; letter-spacing:1.5px;")
         ly.addWidget(hdr)
         ly.addWidget(_sep(sb))
 
-        # ── CONDITIONS ───────────────────────────────────────────────────
+        # CONDITIONS
         ly.addWidget(_section("CONDITIONS", sb))
         self._cond_checks: dict[str, QCheckBox] = {}
         self._cond_n_lbl: dict[str, QLabel] = {}
@@ -535,7 +519,7 @@ class ButterflyPlot(QMainWindow):
 
         ly.addWidget(_sep(sb))
 
-        # ── AMPLITUDE ────────────────────────────────────────────────────
+        # AMPLITUDE
         ly.addWidget(_section("AMPLITUDE", sb))
 
         r1, l1 = _row(sb)
@@ -556,7 +540,7 @@ class ButterflyPlot(QMainWindow):
 
         ly.addWidget(_sep(sb))
 
-        # ── TIME WINDOW ──────────────────────────────────────────────────
+        # TIME WINDOW
         ly.addWidget(_section("TIME WINDOW", sb))
 
         tmin_ms = int(self.tmin * 1000)
@@ -584,7 +568,7 @@ class ButterflyPlot(QMainWindow):
 
         ly.addWidget(_sep(sb))
 
-        # ── APPEARANCE ───────────────────────────────────────────────────
+        # APPEARANCE
         ly.addWidget(_section("APPEARANCE", sb))
 
         r2, l2 = _row(sb)
@@ -610,7 +594,7 @@ class ButterflyPlot(QMainWindow):
 
         ly.addWidget(_sep(sb))
 
-        # ── DATA ─────────────────────────────────────────────────────────
+        # DATA
         ly.addWidget(_section("DATA", sb))
 
         self._total_lbl = QLabel("Total: 0 trials")
@@ -628,9 +612,7 @@ class ButterflyPlot(QMainWindow):
         scroll.setWidget(sb)
         return scroll
 
-    # -----------------------------------------------------------------------
     # Sidebar callbacks
-    # -----------------------------------------------------------------------
 
     def _toggle_cond(self, cond: str, visible: bool) -> None:
         """Show/hide all channel curves for a condition."""
@@ -701,9 +683,7 @@ class ButterflyPlot(QMainWindow):
         if path:
             self.grab().save(path)
 
-    # -----------------------------------------------------------------------
     # Public API
-    # -----------------------------------------------------------------------
 
     def update(
         self,

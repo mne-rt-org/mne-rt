@@ -162,10 +162,6 @@ class RTMaxwellFilter:
         self._chunk_count: int = 0
         self._info = None
 
-    # ------------------------------------------------------------------
-    # Fit
-    # ------------------------------------------------------------------
-
     def fit(
         self,
         info,
@@ -270,10 +266,6 @@ class RTMaxwellFilter:
         self._fitted = True
         return self
 
-    # ------------------------------------------------------------------
-    # Transform
-    # ------------------------------------------------------------------
-
     def transform(self, data: np.ndarray) -> np.ndarray:
         """Apply Maxwell filtering to a streaming MEG window.
 
@@ -297,9 +289,7 @@ class RTMaxwellFilter:
             return self._apply_sss(data)
         return self._apply_tsss(data)
 
-    # ------------------------------------------------------------------
     # Internal: SSS
-    # ------------------------------------------------------------------
 
     def _apply_sss(self, data: np.ndarray) -> np.ndarray:
         """Apply the cached projector: P_sss maps good → all MEG channels.
@@ -311,9 +301,7 @@ class RTMaxwellFilter:
         out[self._meg_all_picks] = self._P_sss @ data[self._meg_good_picks]
         return out
 
-    # ------------------------------------------------------------------
     # Internal: rolling-buffer tSSS
-    # ------------------------------------------------------------------
 
     def _apply_tsss(self, data: np.ndarray) -> np.ndarray:
         """Two-stage tSSS: instant SSS then periodic MNE temporal correction."""
@@ -370,9 +358,7 @@ class RTMaxwellFilter:
             logger.warning("RTMaxwellFilter: tSSS step failed (%s) — SSS fallback.", exc)
             return sss_data
 
-    # ------------------------------------------------------------------
     # Internal: system-identification operator extraction
-    # ------------------------------------------------------------------
 
     def _extract_operator_sysid(
         self,
@@ -424,9 +410,7 @@ class RTMaxwellFilter:
         n_use_in = int(np.sum(sv > sv[0] * 1e-6))
         return P_sss, n_use_in
 
-    # ------------------------------------------------------------------
     # Properties & helpers
-    # ------------------------------------------------------------------
 
     @property
     def sss_projector(self) -> np.ndarray:

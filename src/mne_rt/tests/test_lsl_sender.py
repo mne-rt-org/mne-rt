@@ -21,9 +21,7 @@ requires_mne_lsl = pytest.mark.skipif(
     reason="mne-lsl not installed",
 )
 
-# ------------------------------------------------------------------
 # Helpers
-# ------------------------------------------------------------------
 
 
 def _make_mock_lsl():
@@ -43,9 +41,7 @@ def _make_sender(**kwargs):
     return sender, MockInfo, MockOutlet
 
 
-# ------------------------------------------------------------------
 # Instantiation
-# ------------------------------------------------------------------
 
 
 def test_default_construction():
@@ -61,9 +57,7 @@ def test_custom_params():
     assert sender.n_channels == 4
 
 
-# ------------------------------------------------------------------
 # push
-# ------------------------------------------------------------------
 
 
 def test_push_single_channel():
@@ -111,9 +105,7 @@ def test_push_length_mismatch_raises():
         sender.push(["alpha", "beta"], [1.0, 2.0, 3.0])
 
 
-# ------------------------------------------------------------------
 # push_value (single-channel convenience)
-# ------------------------------------------------------------------
 
 
 def test_push_value():
@@ -132,9 +124,7 @@ def test_push_value():
     assert args[0] == pytest.approx(3.14)
 
 
-# ------------------------------------------------------------------
 # n_channels property
-# ------------------------------------------------------------------
 
 
 def test_n_channels_property():
@@ -142,9 +132,7 @@ def test_n_channels_property():
     assert sender.n_channels == 6
 
 
-# ------------------------------------------------------------------
 # close
-# ------------------------------------------------------------------
 
 
 def test_close_sets_outlet_none():
@@ -168,9 +156,7 @@ def test_close_is_idempotent():
     sender.close()  # should not raise
 
 
-# ------------------------------------------------------------------
 # Context manager
-# ------------------------------------------------------------------
 
 
 def test_context_manager():
@@ -188,9 +174,7 @@ def test_context_manager():
     assert sender._outlet is None  # closed after context exit
 
 
-# ------------------------------------------------------------------
 # Thread safety — concurrent pushes
-# ------------------------------------------------------------------
 
 
 def test_concurrent_push_does_not_crash():
@@ -213,9 +197,7 @@ def test_concurrent_push_does_not_crash():
     assert errors == []
 
 
-# ------------------------------------------------------------------
 # repr
-# ------------------------------------------------------------------
 
 
 def test_repr():
@@ -225,9 +207,7 @@ def test_repr():
     assert "TestStream" in r
 
 
-# ------------------------------------------------------------------
 # Channel labels reach the StreamInfo
-# ------------------------------------------------------------------
 
 
 def test_push_publishes_channel_names():
@@ -300,9 +280,7 @@ def test_channel_names_given_up_front_avoid_any_rebuild():
     assert MockInfo.call_count == n_after_init  # outlet never rebuilt
 
 
-# ------------------------------------------------------------------
 # The backend's actual contract
-# ------------------------------------------------------------------
 
 
 def test_push_sends_an_ndarray_not_a_list():

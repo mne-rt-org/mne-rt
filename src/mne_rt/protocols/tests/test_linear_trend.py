@@ -5,9 +5,7 @@ import pytest
 
 from mne_rt.protocols import LinearTrendProtocol
 
-# ------------------------------------------------------------------
 # Constructor validation
-# ------------------------------------------------------------------
 
 
 def test_invalid_direction():
@@ -40,9 +38,7 @@ def test_invalid_warmup_less_than_window():
         LinearTrendProtocol(window=10, warmup_windows=5)
 
 
-# ------------------------------------------------------------------
 # Default constructor
-# ------------------------------------------------------------------
 
 
 def test_defaults():
@@ -56,9 +52,7 @@ def test_defaults():
     assert proto.r2 == 0.0
 
 
-# ------------------------------------------------------------------
 # Warmup behaviour
-# ------------------------------------------------------------------
 
 
 def test_warmup_suppresses_reward():
@@ -78,9 +72,7 @@ def test_warmup_completes():
     assert proto.n_evaluated == 6
 
 
-# ------------------------------------------------------------------
 # Upward trend detection
-# ------------------------------------------------------------------
 
 
 def test_up_trend_detected():
@@ -102,9 +94,7 @@ def test_down_trend_not_rewarded_when_up_direction():
     assert not crossed
 
 
-# ------------------------------------------------------------------
 # Downward trend detection
-# ------------------------------------------------------------------
 
 
 def test_down_trend_detected():
@@ -118,9 +108,7 @@ def test_down_trend_detected():
     assert proto.slope < 0
 
 
-# ------------------------------------------------------------------
 # slope_threshold gate
-# ------------------------------------------------------------------
 
 
 def test_slope_threshold_blocks_weak_trend():
@@ -137,9 +125,7 @@ def test_slope_threshold_passes_strong_trend():
     assert crossed
 
 
-# ------------------------------------------------------------------
 # min_r2 gate
-# ------------------------------------------------------------------
 
 
 def test_min_r2_blocks_noisy_trend():
@@ -151,9 +137,7 @@ def test_min_r2_blocks_noisy_trend():
     assert proto.r2 < 0.99 or True  # allow if data happened to be clean
 
 
-# ------------------------------------------------------------------
 # Smoothing
-# ------------------------------------------------------------------
 
 
 def test_smoothing_does_not_crash():
@@ -163,9 +147,7 @@ def test_smoothing_does_not_crash():
     assert proto.n_evaluated == 10
 
 
-# ------------------------------------------------------------------
 # magnitude is non-negative
-# ------------------------------------------------------------------
 
 
 def test_magnitude_nonnegative():
@@ -175,9 +157,7 @@ def test_magnitude_nonnegative():
         assert mag >= 0.0
 
 
-# ------------------------------------------------------------------
 # reset
-# ------------------------------------------------------------------
 
 
 def test_reset_clears_state():
@@ -199,9 +179,7 @@ def test_reset_preserves_params():
     assert proto.min_r2 == 0.5
 
 
-# ------------------------------------------------------------------
 # current_threshold
-# ------------------------------------------------------------------
 
 
 def test_current_threshold_always_none():
@@ -213,9 +191,7 @@ def test_current_threshold_always_none():
         assert proto.current_threshold is None
 
 
-# ------------------------------------------------------------------
 # repr
-# ------------------------------------------------------------------
 
 
 def test_repr():

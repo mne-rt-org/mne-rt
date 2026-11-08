@@ -35,9 +35,7 @@ def _make_window(n_channels=N_CHANNELS, n_times=N_TIMES, seed=1):
     return rng.standard_normal((n_channels, n_times))
 
 
-# ---------------------------------------------------------------------------
 # Construction
-# ---------------------------------------------------------------------------
 
 
 class TestRTDecodeConstruction:
@@ -66,9 +64,7 @@ class TestRTDecodeConstruction:
         assert "fitted" in repr(d)
 
 
-# ---------------------------------------------------------------------------
 # fit() validation
-# ---------------------------------------------------------------------------
 
 
 class TestRTDecodeFit:
@@ -100,9 +96,7 @@ class TestRTDecodeFit:
             d.fit(X, np.zeros(5))
 
 
-# ---------------------------------------------------------------------------
 # predict() / predict_proba() — csp path
-# ---------------------------------------------------------------------------
 
 
 class TestRTDecodeCSP:
@@ -136,9 +130,7 @@ class TestRTDecodeCSP:
             d.predict(np.zeros((1, N_CHANNELS, N_TIMES)))
 
 
-# ---------------------------------------------------------------------------
 # predict() / predict_proba() — scaler + vectorizer path
-# ---------------------------------------------------------------------------
 
 
 class TestRTDecodeScaler:
@@ -151,9 +143,7 @@ class TestRTDecodeScaler:
         assert np.sum(proba) == pytest.approx(1.0, abs=1e-6)
 
 
-# ---------------------------------------------------------------------------
 # predict_proba() without a probabilistic estimator
-# ---------------------------------------------------------------------------
 
 
 class TestRTDecodeNonProbabilisticEstimator:

@@ -35,9 +35,7 @@ class _FixedProtocol:
         return self._result
 
 
-# ------------------------------------------------------------------
 # Defaults
-# ------------------------------------------------------------------
 
 
 def test_defaults():
@@ -48,9 +46,7 @@ def test_defaults():
     assert proto.n_evaluated == 0
 
 
-# ------------------------------------------------------------------
 # AND logic (require_both=True)
-# ------------------------------------------------------------------
 
 
 def test_and_logic_both_cross():
@@ -80,9 +76,7 @@ def test_and_logic_neither_crosses():
     assert mag == 0.0
 
 
-# ------------------------------------------------------------------
 # OR logic (require_both=False)
-# ------------------------------------------------------------------
 
 
 def test_or_logic_both_cross():
@@ -110,9 +104,7 @@ def test_or_logic_neither_crosses():
     assert mag == 0.0
 
 
-# ------------------------------------------------------------------
 # magnitude — geometric mean when both > 0
-# ------------------------------------------------------------------
 
 
 def test_magnitude_geometric_mean():
@@ -133,9 +125,7 @@ def test_magnitude_geometric_mean_unequal():
     assert mag == pytest.approx(math.sqrt(4.0 * 0.5))
 
 
-# ------------------------------------------------------------------
 # magnitude — arithmetic mean fallback when one is zero
-# ------------------------------------------------------------------
 
 
 def test_magnitude_arithmetic_fallback_up_zero():
@@ -149,9 +139,7 @@ def test_magnitude_arithmetic_fallback_up_zero():
     assert mag == pytest.approx((0.0 + 1.0) / 2.0)
 
 
-# ------------------------------------------------------------------
 # n_evaluated counter
-# ------------------------------------------------------------------
 
 
 def test_n_evaluated_increments():
@@ -161,9 +149,7 @@ def test_n_evaluated_increments():
     assert proto.n_evaluated == 10
 
 
-# ------------------------------------------------------------------
 # reset
-# ------------------------------------------------------------------
 
 
 def test_reset_counter():
@@ -185,9 +171,7 @@ def test_reset_calls_inner_protocols():
     assert down.n_evaluated == 0
 
 
-# ------------------------------------------------------------------
 # Custom labels
-# ------------------------------------------------------------------
 
 
 def test_custom_labels():
@@ -196,9 +180,7 @@ def test_custom_labels():
     assert proto.down_label == "theta"
 
 
-# ------------------------------------------------------------------
 # repr
-# ------------------------------------------------------------------
 
 
 def test_repr():

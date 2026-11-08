@@ -17,9 +17,7 @@ from mne_rt.combiners import (
 VALS = {"sensor_power": 2.0, "laterality": 0.5, "connectivity_ratio": 1.0}
 
 
-# ---------------------------------------------------------------------------
 # FeatureCombiner base class
-# ---------------------------------------------------------------------------
 
 
 class TestFeatureCombiner:
@@ -37,9 +35,7 @@ class TestFeatureCombiner:
         assert "any" in repr(c)
 
 
-# ---------------------------------------------------------------------------
 # WeightedSumCombiner
-# ---------------------------------------------------------------------------
 
 
 class TestWeightedSumCombiner:
@@ -85,9 +81,7 @@ class TestWeightedSumCombiner:
         assert set(c.features) == set(w.keys())
 
 
-# ---------------------------------------------------------------------------
 # GeometricMeanCombiner
-# ---------------------------------------------------------------------------
 
 
 class TestGeometricMeanCombiner:
@@ -134,9 +128,7 @@ class TestGeometricMeanCombiner:
         assert result == 0.0
 
 
-# ---------------------------------------------------------------------------
 # ZScoredNormCombiner
-# ---------------------------------------------------------------------------
 
 
 class TestZScoredNormCombiner:
@@ -196,9 +188,7 @@ class TestZScoredNormCombiner:
         assert math.isfinite(result)
 
 
-# ---------------------------------------------------------------------------
 # LearnedCombiner
-# ---------------------------------------------------------------------------
 
 
 class _ConstantEstimator:
@@ -257,9 +247,7 @@ class TestLearnedCombiner:
         assert isinstance(result, float)
 
 
-# ------------------------------------------------------------------
 # Scale-free standardisation
-# ------------------------------------------------------------------
 
 
 @pytest.mark.parametrize("k", [1e-24, 1e-14, 1.0, 1e6])

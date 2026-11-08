@@ -40,9 +40,7 @@ from qtpy.QtWidgets import (
 from mne_rt._logging import logger
 from mne_rt.viz._smoothing import check_smoothing, ema_step
 
-# ---------------------------------------------------------------------------
 # Constants
-# ---------------------------------------------------------------------------
 
 _DEFAULT_BANDS: dict[str, tuple[float, float]] = {
     "δ  1–4 Hz": (1.0, 4.0),
@@ -250,9 +248,7 @@ class TopomapPlot(QMainWindow):
         self.setWindowTitle("MNE-RT — Topomap")
         self.resize(1200, 540)
 
-    # ------------------------------------------------------------------
     # Setup helpers
-    # ------------------------------------------------------------------
 
     def _detect_ch_type(self) -> str:
         n_eeg = len(mne.pick_types(self._info, eeg=True, meg=False))
@@ -329,9 +325,7 @@ class TopomapPlot(QMainWindow):
             ", ".join(names[p] for p in bad_picks),
         )
 
-    # ------------------------------------------------------------------
     # UI construction
-    # ------------------------------------------------------------------
 
     def _build_ui(self) -> None:
         self.setStyleSheet(_QSS)
@@ -467,7 +461,7 @@ class TopomapPlot(QMainWindow):
         for band_name in self._bands:
             self._add_band_checkbox(band_name)
 
-        # ── Custom frequency range ────────────────────────────────────────
+        # Custom frequency range
         self._bands_layout.addSpacing(6)
         lbl = QLabel("Custom band (Hz):")
         lbl.setStyleSheet("color:#8888aa; font-size:10px; font-weight:600;")
@@ -539,9 +533,7 @@ class TopomapPlot(QMainWindow):
         self._add_band_checkbox(band_name)
         self._rebuild_canvas()
 
-    # ------------------------------------------------------------------
     # Callbacks
-    # ------------------------------------------------------------------
 
     def _toggle_pause(self, checked: bool) -> None:
         self._paused = checked
@@ -587,9 +579,7 @@ class TopomapPlot(QMainWindow):
             self._visible_bands.remove(band_name)
         self._rebuild_canvas()
 
-    # ------------------------------------------------------------------
     # Core update logic
-    # ------------------------------------------------------------------
 
     def _compute_band_powers(self, data: np.ndarray) -> dict[str, np.ndarray]:
         """Compute per-channel FFT mean power for each frequency band.
@@ -687,9 +677,7 @@ class TopomapPlot(QMainWindow):
         self._fig.tight_layout(pad=1.2)
         self._canvas.draw_idle()
 
-    # ------------------------------------------------------------------
     # Public interface
-    # ------------------------------------------------------------------
 
     def push(self, data: np.ndarray) -> None:
         """Update all visible topomaps from a new raw data window.

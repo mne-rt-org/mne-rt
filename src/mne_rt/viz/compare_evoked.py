@@ -59,9 +59,7 @@ except ImportError:
 
 from mne_rt._logging import logger, set_log_level
 
-# ---------------------------------------------------------------------------
 # Palette
-# ---------------------------------------------------------------------------
 _BG = "#0d1117"
 _SURFACE = "#161b22"
 _BORDER = "#30363d"
@@ -84,9 +82,7 @@ _PREF_CHANNELS = ["cz", "pz", "oz", "fz", "fcz", "cpz"]
 _SIDEBAR_W = 210  # px
 
 
-# ---------------------------------------------------------------------------
 # Sidebar helpers (mirrors erp_plot.py)
-# ---------------------------------------------------------------------------
 
 
 def _sep(parent: QWidget) -> QFrame:
@@ -132,9 +128,7 @@ def _slider(parent: QWidget, lo: int, hi: int, val: int) -> QSlider:
     return sl
 
 
-# ---------------------------------------------------------------------------
 # Unit/scale helpers
-# ---------------------------------------------------------------------------
 
 
 def _detect_unit(info, ch_names: list[str]) -> tuple[str, float]:
@@ -167,9 +161,7 @@ def _auto_channels(ch_names: list[str]) -> list[str]:
     return selected
 
 
-# ---------------------------------------------------------------------------
 # Main class
-# ---------------------------------------------------------------------------
 
 
 class CompareEvoked(QMainWindow):
@@ -313,9 +305,7 @@ class CompareEvoked(QMainWindow):
             self._unit_label,
         )
 
-    # -----------------------------------------------------------------------
     # Styles
-    # -----------------------------------------------------------------------
 
     def _apply_styles(self) -> None:
         self.setStyleSheet(f"""
@@ -342,9 +332,7 @@ class CompareEvoked(QMainWindow):
             QScrollBar::handle:vertical {{ background:{_BORDER}; border-radius:3px; }}
         """)
 
-    # -----------------------------------------------------------------------
     # UI build
-    # -----------------------------------------------------------------------
 
     def _build_ui(self) -> None:
         central = QWidget()
@@ -487,9 +475,7 @@ class CompareEvoked(QMainWindow):
         plot.addItem(title)
         title.setPos(self.tmin * 1000.0, 0)
 
-    # -----------------------------------------------------------------------
     # Custom time axis ticks
-    # -----------------------------------------------------------------------
 
     def _update_x_ticks(self) -> None:
         if not self._disp_channels:
@@ -515,9 +501,7 @@ class CompareEvoked(QMainWindow):
             t += interval
         bottom_ax.setTicks([ticks])
 
-    # -----------------------------------------------------------------------
     # Topomap channel selector
-    # -----------------------------------------------------------------------
 
     def _build_topo_widget(self, parent: QWidget) -> pg.PlotWidget:
         """Return the clickable scalp map that picks the displayed channels."""
@@ -541,9 +525,7 @@ class CompareEvoked(QMainWindow):
         self._sel_lbl.setText(", ".join(self._disp_channels))
         self._rebuild_canvas()
 
-    # -----------------------------------------------------------------------
     # Sidebar build
-    # -----------------------------------------------------------------------
 
     def _build_sidebar(self) -> QScrollArea:
         scroll = QScrollArea()
@@ -560,13 +542,13 @@ class CompareEvoked(QMainWindow):
         ly.setSpacing(4)
         ly.setContentsMargins(10, 12, 10, 12)
 
-        # ── Header ───────────────────────────────────────────────────────
+        # Header
         hdr = QLabel("COMPARE EVOKED")
         hdr.setStyleSheet(f"color:{_TEXT}; font-size:11px; font-weight:700; letter-spacing:1.5px;")
         ly.addWidget(hdr)
         ly.addWidget(_sep(sb))
 
-        # ── CHANNEL SELECTOR (topomap) ────────────────────────────────────
+        # CHANNEL SELECTOR (topomap)
         ly.addWidget(_section("CHANNELS", sb))
 
         # Hint: how many selected / max
@@ -592,7 +574,7 @@ class CompareEvoked(QMainWindow):
 
         ly.addWidget(_sep(sb))
 
-        # ── CONDITIONS ───────────────────────────────────────────────────
+        # CONDITIONS
         ly.addWidget(_section("CONDITIONS", sb))
         self._cond_checks: dict[str, QCheckBox] = {}
         self._cond_n_lbl: dict[str, QLabel] = {}
@@ -622,7 +604,7 @@ class CompareEvoked(QMainWindow):
 
         ly.addWidget(_sep(sb))
 
-        # ── DISPLAY ──────────────────────────────────────────────────────
+        # DISPLAY
         ly.addWidget(_section("DISPLAY", sb))
 
         self._sem_chk = QCheckBox("SEM shading")
@@ -655,7 +637,7 @@ class CompareEvoked(QMainWindow):
 
         ly.addWidget(_sep(sb))
 
-        # ── DATA ─────────────────────────────────────────────────────────
+        # DATA
         ly.addWidget(_section("DATA", sb))
 
         self._total_lbl = QLabel("Total: 0 trials")
@@ -673,9 +655,7 @@ class CompareEvoked(QMainWindow):
         scroll.setWidget(sb)
         return scroll
 
-    # -----------------------------------------------------------------------
     # Sidebar callbacks
-    # -----------------------------------------------------------------------
 
     def _toggle_cond(self, cond: str, visible: bool) -> None:
         for ch in self._disp_channels:
@@ -740,9 +720,7 @@ class CompareEvoked(QMainWindow):
         if path:
             self.grab().save(path)
 
-    # -----------------------------------------------------------------------
     # Public API
-    # -----------------------------------------------------------------------
 
     def update(
         self,

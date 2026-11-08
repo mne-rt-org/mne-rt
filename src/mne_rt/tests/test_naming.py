@@ -19,9 +19,7 @@ CONFIG = Path(mne_rt.__file__).parent / "config_methods.yml"
 KNOWN_MODALITIES = sorted(yaml.safe_load(CONFIG.read_text(encoding="utf-8"))["NF_modality"])
 
 
-# ------------------------------------------------------------------
 # split_modality / parse_modality
-# ------------------------------------------------------------------
 
 
 @pytest.mark.parametrize(
@@ -75,9 +73,7 @@ def test_parse_rejects_non_string():
         parse_modality(None)
 
 
-# ------------------------------------------------------------------
 # resolve_by_base
-# ------------------------------------------------------------------
 
 
 def test_resolve_by_base_prefers_exact_then_base_then_default():
@@ -92,9 +88,7 @@ def test_resolve_by_base_returns_falsy_entries():
     assert resolve_by_base({"sensor_power": 0.0}, "sensor_power@a", 1.0) == 0.0
 
 
-# ------------------------------------------------------------------
 # osc_address_name
-# ------------------------------------------------------------------
 
 
 @pytest.mark.parametrize("name", KNOWN_MODALITIES + ["combined", "snr_db"])

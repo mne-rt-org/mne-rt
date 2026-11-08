@@ -8,9 +8,7 @@ import pytest
 
 from mne_rt._logging import logger, set_log_level, verbose
 
-# ------------------------------------------------------------------
 # set_log_level
-# ------------------------------------------------------------------
 
 
 @pytest.fixture(autouse=True)
@@ -67,9 +65,7 @@ def test_set_log_level_invalid_raises():
         set_log_level("not_a_level")
 
 
-# ------------------------------------------------------------------
 # verbose decorator
-# ------------------------------------------------------------------
 
 
 def test_verbose_sets_level_for_call_duration():

@@ -9,9 +9,7 @@ import pytest
 
 from mne_rt.protocols import TransferProtocol
 
-# ─────────────────────────────────────────────────────────────────────────────
 # TransferProtocol
-# ─────────────────────────────────────────────────────────────────────────────
 
 
 @pytest.fixture()

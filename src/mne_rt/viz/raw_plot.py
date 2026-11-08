@@ -36,9 +36,7 @@ from qtpy.QtWidgets import (
 
 from mne_rt._logging import logger
 
-# ---------------------------------------------------------------------------
 # Per-channel trace colours — 20 visually distinct hues for a dark background
-# ---------------------------------------------------------------------------
 
 _TRACE_COLORS = [
     "#4fc3f7",  # sky blue
@@ -142,9 +140,7 @@ QScrollBar::add-page:vertical, QScrollBar::sub-page:vertical {
 """
 
 
-# ---------------------------------------------------------------------------
 # Artifact-corrector adapter classes
-# ---------------------------------------------------------------------------
 
 
 class _GEDAIWrapper:
@@ -176,9 +172,7 @@ class _ORICAWrapper:
         return self._o.inverse_transform(S_clean)
 
 
-# ---------------------------------------------------------------------------
 # Event filter: intercepts wheel events on the plot viewport
-# ---------------------------------------------------------------------------
 
 
 class _WheelFilter(QObject):
@@ -191,11 +185,6 @@ class _WheelFilter(QObject):
             self._cb(1 if event.angleDelta().y() > 0 else -1)
             return True
         return False
-
-
-# ---------------------------------------------------------------------------
-# RawPlot
-# ---------------------------------------------------------------------------
 
 
 class RawPlot(QMainWindow):
@@ -348,9 +337,7 @@ class RawPlot(QMainWindow):
         self._flush_timer.timeout.connect(self._flush_data_queue)
         self._flush_timer.start()
 
-    # ------------------------------------------------------------------
     # Colour resolution
-    # ------------------------------------------------------------------
 
     def _resolve_colors(self) -> None:
         if self._info is not None:
@@ -367,9 +354,7 @@ class RawPlot(QMainWindow):
         # channels are always distinguishable even when all share one type.
         self._ch_colors = [_TRACE_COLORS[i % len(_TRACE_COLORS)] for i in range(self._n_ch)]
 
-    # ------------------------------------------------------------------
     # UI construction
-    # ------------------------------------------------------------------
 
     def _build_ui(self) -> None:
         self.setStyleSheet(_QSS)
@@ -466,7 +451,7 @@ class RawPlot(QMainWindow):
         scroll.setWidget(panel)
         return scroll
 
-    # --- sidebar groups ---
+    # sidebar groups
 
     def _grp_playback(self) -> QGroupBox:
         grp = QGroupBox("Playback")
@@ -913,9 +898,7 @@ class RawPlot(QMainWindow):
 
         return grp
 
-    # ------------------------------------------------------------------
     # Helpers
-    # ------------------------------------------------------------------
 
     def _fmt_scale(self) -> str:
         uv = self._scale * 1e6
@@ -960,17 +943,13 @@ class RawPlot(QMainWindow):
         ring on the DC offset of real EEG for seconds.
         """
 
-    # ------------------------------------------------------------------
     # Callbacks — scroll / wheel
-    # ------------------------------------------------------------------
 
     def _on_plot_wheel(self, direction: int) -> None:
         step = max(1, self._n_shown // 4)
         self._set_page_start(self._page_start - direction * step, source="wheel")
 
-    # ------------------------------------------------------------------
     # Callbacks — Y-axis right-click → sensor location
-    # ------------------------------------------------------------------
 
     def _on_scene_clicked(self, event) -> None:
         pos = event.scenePos()
@@ -978,7 +957,7 @@ class RawPlot(QMainWindow):
         axis = self._pi.getAxis("left")
         vb = self._pi.getViewBox()
 
-        # ── Y-axis clicks ──────────────────────────────────────────────
+        # Y-axis clicks
         if axis.sceneBoundingRect().contains(pos):
             y_val = vb.mapSceneToView(pos).y()
             visible = self._visible()
@@ -993,7 +972,7 @@ class RawPlot(QMainWindow):
                     QTimer.singleShot(0, lambda idx=ch_idx: self._toggle_bad_channel(idx))
             return
 
-        # ── Signal-area double-click: bad-segment marking ──────────────
+        # Signal-area double-click: bad-segment marking
         if btn == Qt.MouseButton.LeftButton and event.double():
             if vb.sceneBoundingRect().contains(pos):
                 x_val = vb.mapSceneToView(pos).x()
@@ -1025,9 +1004,7 @@ class RawPlot(QMainWindow):
         except Exception as exc:
             self._status.showMessage(f"Could not show sensor position: {exc}")
 
-    # ------------------------------------------------------------------
     # Callbacks — playback / display
-    # ------------------------------------------------------------------
 
     def _toggle_pause(self, checked: bool) -> None:
         self._paused = checked
@@ -1073,9 +1050,7 @@ class RawPlot(QMainWindow):
         self._reset_online_state()
         self._pi.setXRange(0.0, secs, padding=0.01)
 
-    # ------------------------------------------------------------------
     # Callbacks — filter
-    # ------------------------------------------------------------------
 
     def _on_filter_type_changed(self, idx: int) -> None:
         ftypes = ["none", "highpass", "lowpass", "bandpass", "notch"]
@@ -1150,9 +1125,7 @@ class RawPlot(QMainWindow):
         except Exception:
             self._ssp_proj = None
 
-    # ------------------------------------------------------------------
     # Callbacks — re-referencing
-    # ------------------------------------------------------------------
 
     def _on_reref_type_changed(self, idx: int) -> None:
         methods = ["none", "average", "mastoid", "linked_mastoid", "channel"]
@@ -1207,9 +1180,7 @@ class RawPlot(QMainWindow):
             self._reref_status.setText(f"Error: {exc}")
             self._reref_status.setStyleSheet("color:#ff8080; font-size:10px;")
 
-    # ------------------------------------------------------------------
     # Callbacks — artifact correction
-    # ------------------------------------------------------------------
 
     def _on_corr_type_changed(self, idx: int) -> None:
         methods = ["none", "lms", "asr", "gedai", "orica", "maxwell"]
@@ -1301,19 +1272,15 @@ class RawPlot(QMainWindow):
             self._corr_status.setText(f"Error: {exc}")
             self._corr_status.setStyleSheet("color:#ff8080; font-size:10px;")
 
-    # ------------------------------------------------------------------
     # Bad channels
-    # ------------------------------------------------------------------
 
     def _toggle_bad_channel(self, ch_idx: int) -> None:
         if ch_idx in self._bad_ch_idxs:
             self._bad_ch_idxs.discard(ch_idx)
         else:
             self._bad_ch_idxs.add(ch_idx)
-        # Do NOT write to self._info["bads"] here: mne_lsl's get_data() uses
-        # exclude="bads" by default, so syncing bads into the shared Info object
-        # causes the stream to return one fewer channel on the next get_data()
-        # call, which breaks the circular buffer write in _flush_data_queue.
+        # Not into self._info["bads"]: get_data() excludes bads, so the next window
+        # would be one channel short and break the buffer write.
         bads = sorted(self._bad_ch_idxs)
         if bads:
             self._status.showMessage(f"Bad channels: {', '.join(self._ch_names[i] for i in bads)}")
@@ -1323,15 +1290,11 @@ class RawPlot(QMainWindow):
         self._update_tick_labels()
         self._redraw()
 
-    # ------------------------------------------------------------------
     # Bad segments
-    # ------------------------------------------------------------------
 
     def _on_bad_seg_click(self, x_val: float) -> None:
-        # Convert plot x-coordinate to absolute session time immediately, so
-        # that a scrolling buffer between click 1 and click 2 doesn't shift it.
-        # Not clamped at 0: while the buffer fills, the data sits at its right
-        # end, so the buffer starts before the recording does.
+        # Session time now, so the buffer scrolling between clicks can't shift it.
+        # `buf_start_s` is negative while the buffer fills; only the click is clamped.
         buf_size = self._buf.shape[1]
         buf_start_s = (self._total_pushed - buf_size) / self._sfreq
         abs_time = max(0.0, buf_start_s + x_val)
@@ -1379,7 +1342,7 @@ class RawPlot(QMainWindow):
         buf_size = self._buf.shape[1]
         buf_start_s = (self._total_pushed - buf_size) / self._sfreq  # see _on_bad_seg_click
 
-        # ── pending start indicator ────────────────────────────────────
+        # pending start indicator
         def _remove_start_line() -> None:
             if self._bad_seg_start_line_on_plot and self._bad_seg_start_line is not None:
                 try:
@@ -1408,7 +1371,7 @@ class RawPlot(QMainWindow):
             _remove_start_line()
             self._bad_seg_start_line = None
 
-        # ── completed bad-segment regions ──────────────────────────────
+        # completed bad-segment regions
         for abs_start, abs_end in self._bad_segs:
             x_s = abs_start - buf_start_s
             x_e = abs_end - buf_start_s
@@ -1444,9 +1407,7 @@ class RawPlot(QMainWindow):
         self._bad_seg_status_lbl.setText("Ready")
         self._bad_seg_status_lbl.setStyleSheet("color:#505070; font-size:10px;")
 
-    # ------------------------------------------------------------------
     # Riemannian Potato auto-detection
-    # ------------------------------------------------------------------
 
     def _calibrate_potato(self) -> None:
         seg_s = self._rp_seg_spin.value()
@@ -1530,9 +1491,7 @@ class RawPlot(QMainWindow):
             self._bad_seg_count_lbl.setText(f"{n} bad segment{'s' if n > 1 else ''}")
             self._bad_seg_count_lbl.setStyleSheet("color:#ff8a65; font-size:10px;")
 
-    # ------------------------------------------------------------------
     # Redraw — purely displays whatever is in _buf
-    # ------------------------------------------------------------------
 
     def _redraw(self) -> None:
         visible = self._visible()
@@ -1559,9 +1518,7 @@ class RawPlot(QMainWindow):
 
         self._update_bad_seg_overlays()
 
-    # ------------------------------------------------------------------
     # Public interface
-    # ------------------------------------------------------------------
 
     def push(self, data: np.ndarray) -> None:
         """Append a chunk of raw data and refresh the display.
