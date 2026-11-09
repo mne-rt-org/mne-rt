@@ -109,6 +109,7 @@ def test_connect_to_lsl_dsi_device(tmp_path, dsi_fif):
         nf.save()
 
 
+@pytest.mark.real_time  # the viewers update on real-time Qt timers
 def test_viewers_cover_all_channels_when_picks_is_set(tmp_path, monkeypatch):
     """The raw and topo viewers span every good channel; NF uses only ``picks``.
 
@@ -198,6 +199,7 @@ def test_cli_parses_stream_name_and_device():
     assert args.stream_name == "DSI" and args.device == "dsi" and args.montage is None
 
 
+@pytest.mark.real_time  # the viewers update on real-time Qt timers
 def test_record_main_topomap_interpolates_bad_channels(tmp_path, monkeypatch):
     """A channel marked bad is not acquired, but the topomap still draws it."""
     import mne
@@ -461,6 +463,7 @@ def test_save_raw_with_picks_writes_the_analysed_channels(tmp_path):
         nf.save()
 
 
+@pytest.mark.real_time  # the viewers update on real-time Qt timers
 def test_record_main_topomap_with_a_type_string_picks_and_other_channel_types(
     tmp_path, monkeypatch
 ):
