@@ -10,6 +10,8 @@ import pytest
 
 from mne_rt.tests._helpers import _make_array_data, _make_baseline_raw, _make_rt_stream
 
+pytestmark = pytest.mark.usefixtures("fast_clock")
+
 
 def test_save_with_no_data_returns_empty_dict(tmp_path):
     nf = _make_rt_stream(tmp_path)
@@ -406,6 +408,7 @@ def _timed_session(tmp_path, array_info, **kwargs):
     return nf
 
 
+@pytest.mark.real_time
 def test_window_onsets_are_recorded_per_window(tmp_path, array_info):
     nf = _timed_session(tmp_path, array_info)
     onsets = nf.window_onsets

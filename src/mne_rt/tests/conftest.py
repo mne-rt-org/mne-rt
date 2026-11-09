@@ -2,8 +2,36 @@
 
 from __future__ import annotations
 
+import os
+
 import numpy as np
 import pytest
+
+# How many times faster than real time `fast_clock` runs a session; lower it
+# with MNE_RT_TEST_SPEED on a machine too slow to keep up.
+FAST = float(os.environ.get("MNE_RT_TEST_SPEED", "10"))
+
+
+@pytest.fixture()
+def fast_clock(request):
+    """Run the in-memory streams, and sessions on them, FAST times faster.
+
+    A session on a real LSL stream keeps the real clock regardless. Compute time
+    and thread jitter grow FAST times in session time too, so a test that checks
+    timing precisely is marked ``real_time``. Its own MonkeyPatch, so a test's
+    ``monkeypatch.undo()`` cannot drop the clock mid-session.
+    """
+    if request.node.get_closest_marker("real_time"):
+        yield
+        return
+    from mne_lsl.lsl import local_clock
+
+    from mne_rt import rt_stream
+
+    with pytest.MonkeyPatch.context() as mp:
+        mp.setattr(rt_stream, "_CLOCK_ORIGIN", local_clock())
+        mp.setattr(rt_stream, "_SPEED", FAST)
+        yield
 
 
 @pytest.fixture()

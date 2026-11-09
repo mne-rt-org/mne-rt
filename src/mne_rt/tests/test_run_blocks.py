@@ -9,6 +9,8 @@ import pytest
 
 from mne_rt.tests._helpers import _HEADLESS, _failing_after, _make_array_data, _make_rt_stream
 
+pytestmark = pytest.mark.usefixtures("fast_clock")
+
 
 def test_run_blocks_accepts_one_shot_iterables_as_blocks(tmp_path, array_info):
     """Reading the last block's ``disconnect`` up front used to consume it, so

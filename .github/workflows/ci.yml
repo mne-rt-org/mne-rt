@@ -6,9 +6,21 @@ concurrency:
 on:  # yamllint disable-line rule:truthy
   push:
     branches: ["main"]
+    paths-ignore:
+      - "docs/**"
+      - "examples/**"
+      - "paper/**"
+      - "**.md"
+      - "CITATION.cff"
   # No branch filter: a stacked pull request targets the branch below it rather
   # than main, and with `branches: ["main"]` those PRs ran no checks at all.
   pull_request:
+    paths-ignore:
+      - "docs/**"
+      - "examples/**"
+      - "paper/**"
+      - "**.md"
+      - "CITATION.cff"
   workflow_dispatch:
 
 permissions:
@@ -36,10 +48,17 @@ jobs:
     needs: style
     runs-on: ubuntu-latest
     timeout-minutes: 30
+    permissions:
+      contents: read
+      id-token: write  # Codecov upload by OIDC, no token secret
     strategy:
       fail-fast: false
       matrix:
         python: ["3.11", "3.12", "3.13"]
+        # Coverage on one job only: the C tracer slows the suite.
+        include:
+          - python: "3.12"
+            coverage: true
     steps:
       - uses: actions/checkout@v4
         with:
@@ -57,16 +76,23 @@ jobs:
       # gedai is opt-in; pycrostates is the microstates reference. The `minimum`
       # job leaves both out.
       - run: uv pip install -e ".[dev,pyqt6,gedai]" pycrostates
-      - run: pytest --cov=mne_rt --cov-report=xml
+      # fsaverage, fetched by the source-space tests.
+      - uses: actions/cache@v4
+        with:
+          path: ~/mne_data/MNE-fsaverage-data
+          key: mne-fsaverage-v1
+      - run: pytest --durations=20 ${{ matrix.coverage && '--cov=mne_rt --cov-report=xml' || '' }}
         env:
-          # coverage.py defaults to the sys.monitoring ("sysmon") tracer on
-          # Python 3.12+. Force the legacy C tracer, which avoids a separate
-          # sysmon interaction with numba jitclass code paths.
+          # The legacy C tracer: sys.monitoring, the 3.12+ default, interacts
+          # badly with numba jitclass code.
           COVERAGE_CORE: ctrace
       - uses: codecov/codecov-action@v5
+        if: matrix.coverage && (success() || failure())
         with:
-          token: ${{ secrets.CODECOV_TOKEN }}
-        if: success() || failure()
+          # A fork's pull request gets no OIDC token; Codecov takes it tokenless.
+          use_oidc: ${{ !github.event.pull_request.head.repo.fork }}
+          files: coverage.xml
+          disable_search: true
 
   # The matrix above always resolves the *newest* release of every dependency,
   # so the lower bounds in pyproject.toml are never exercised and can silently
@@ -92,6 +118,9 @@ jobs:
           activate-environment: true
       - run: uv pip install --resolution lowest-direct -e ".[dev,pyqt6]"
       - run: uv pip list
-      - run: pytest
-        env:
-          COVERAGE_CORE: ctrace
+      # fsaverage, fetched by the source-space tests.
+      - uses: actions/cache@v4
+        with:
+          path: ~/mne_data/MNE-fsaverage-data
+          key: mne-fsaverage-v1
+      - run: pytest --durations=20

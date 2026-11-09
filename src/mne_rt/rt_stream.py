@@ -89,6 +89,32 @@ _REPO_ROOT = _PKG_DIR.parent.parent  # src/ant → src → repo root
 # to stop before it saves the session without it.
 _ACQ_STOP_TIMEOUT = 10.0
 
+# How many times faster than real time the in-memory streams, and sessions on
+# them, run. Always 1 in use; the test suite raises it (the `fast_clock` fixture).
+_SPEED = 1.0
+_CLOCK_ORIGIN = 0.0
+
+
+def _clock() -> float:
+    """The in-memory streams' clock: LSL's ``local_clock``, ``_SPEED`` times faster."""
+    return _CLOCK_ORIGIN + (local_clock() - _CLOCK_ORIGIN) * _SPEED
+
+
+def _sleep(seconds: float) -> None:
+    """Sleep ``seconds`` on the in-memory streams' clock."""
+    time.sleep(seconds / _SPEED)
+
+
+def _session_timing(stream) -> tuple:
+    """The ``(now, sleep)`` a session on ``stream`` runs on.
+
+    The in-memory streams' clock for an :class:`ArrayStream`; LSL's for a real
+    stream, which stamps its samples on it, so a sped-up clock cannot reach it.
+    """
+    if isinstance(stream, ArrayStream):
+        return _clock, _sleep
+    return local_clock, time.sleep
+
 
 # Name of the stream the mock player publishes; its annotations stream is
 # "<name>-annotations", with the same source_id.
@@ -371,7 +397,7 @@ class ArrayStream:
         n_total = self._source.shape[1]
         cursor = 0
         n_done = 0
-        started = time.perf_counter()
+        started = _clock()
         emitted = 0
         while not self._stop_event.is_set():
             with self._lock:
@@ -386,15 +412,15 @@ class ArrayStream:
                 if n_done >= self._n_repeat:
                     break
                 cursor = 0
-            self._stop_event.wait(max(0.0, started + emitted / sfreq - time.perf_counter()))
+            self._stop_event.wait(max(0.0, started + emitted / sfreq - _clock()) / _SPEED)
 
     def _push(self, chunk: np.ndarray) -> None:
         k = chunk.shape[1]
         if k == 0:
             return
-        # local_clock, not time.time: LSL timestamps, and so window onsets, use it,
+        # LSL's clock, not time.time: LSL timestamps, and so window onsets, use it,
         # and the two clocks are ~1.8e9 s apart.
-        now = local_clock()
+        now = _clock()
         with self._lock:
             sfreq = self._info["sfreq"]
             first = (
@@ -635,10 +661,10 @@ class MarkerArrayStream:
     # Publishing
 
     def _stream_loop(self) -> None:
-        t0 = local_clock()
+        t0 = _clock()
         i = 0
         while not self._stop_event.is_set() and i < self._codes.size:
-            if local_clock() - t0 >= self._onsets[i]:
+            if _clock() - t0 >= self._onsets[i]:
                 self._push(int(self._codes[i]))
                 i += 1
                 continue
@@ -646,7 +672,7 @@ class MarkerArrayStream:
 
     def _push(self, code: int) -> None:
         """Append one marker to the ring buffer, stamped on the LSL clock."""
-        now = local_clock()
+        now = _clock()
         with self._lock:
             self._buffer[:-1] = self._buffer[1:]
             self._buffer[-1, 0] = code
@@ -1586,11 +1612,12 @@ class RTStream(ModalityMixin):
         self.baseline_duration = baseline_duration
         logger.info("Recording baseline (%.0f s) …", baseline_duration)
 
-        t_start = local_clock()
+        _now, _wait = _session_timing(self.stream)
+        t_start = _now()
         chunks: list[np.ndarray] = []
-        while local_clock() < t_start + baseline_duration:
+        while _now() < t_start + baseline_duration:
             chunks.append(self._read_window(winsize)[0])
-            time.sleep(winsize)
+            _wait(winsize)
 
         data = np.concatenate(chunks, axis=1)
         # use_picks=False: the chunks hold every good channel, whatever the
@@ -2681,25 +2708,27 @@ class RTStream(ModalityMixin):
             with _commit_lock:
                 _committed[0] = _snapshot()
 
+        _now = _session_timing(self.stream)[0]
+
         def _acquire() -> None:
             # `done_event` is the only way the Qt event loop learns the run is
             # over (see `_pump_signal`), so anything raised in here would leave
             # record_main spinning forever with nothing saved.
             try:
-                t_start = local_clock()
+                t_start = _now()
                 # 50 % overlap: advance by half a window each step so consecutive
                 # NF estimates share data → smooth, correlated curve updates.
                 _hop = max(1, self.window_size_s // 2)
 
-                while local_clock() < t_start + duration and not stop_event.is_set():
+                while _now() < t_start + duration and not stop_event.is_set():
                     _commit()
                     # Busy-wait half a window of clock time (50 % overlap), flushing raw
                     # samples to the display at ~30 fps. The wait starts after the last
                     # window's computation, so real onsets drift from index * hop.
-                    _t_hop = local_clock()
+                    _t_hop = _now()
                     _hop_dur = _hop / self._sfreq
-                    while local_clock() < _t_hop + _hop_dur:
-                        if local_clock() >= t_start + duration or stop_event.is_set():
+                    while _now() < _t_hop + _hop_dur:
+                        if _now() >= t_start + duration or stop_event.is_set():
                             break
                         if raw_queue is not None:
                             n_avail = self.stream.n_new_samples
@@ -3592,7 +3621,7 @@ class RTStream(ModalityMixin):
 
                 if not _last and post_rest > 0:
                     logger.info("run_blocks: rest period %.0f s …", post_rest)
-                    time.sleep(post_rest)
+                    _session_timing(self.stream)[1](post_rest)
         except BaseException:
             # The remaining blocks will not run, and neither will the last
             # block's disconnect: do it here, as a finished sequence would. Its

@@ -20,6 +20,8 @@ from mne_rt.tests._helpers import (
     _make_rt_stream,
 )
 
+pytestmark = pytest.mark.usefixtures("fast_clock")
+
 
 def test_connect_to_array_record_main_end_to_end(tmp_path, array_info):
     nf = _make_rt_stream(tmp_path, montage="easycap-M1", bandpass_freq=(1.0, 40.0), notch_freq=50.0)
@@ -117,6 +119,7 @@ def test_a_failing_save_does_not_hide_the_acquisition_error(tmp_path, array_info
         nf.save()
 
 
+@pytest.mark.real_time
 def test_record_main_raises_when_the_acquisition_thread_hangs(tmp_path, array_info, monkeypatch):
     """A modality that never returns used to hang record_main for good: the
     headless join had no timeout, and the executor shutdown then waited on the
@@ -159,6 +162,7 @@ def test_record_main_raises_when_the_acquisition_thread_hangs(tmp_path, array_in
         nf.save()
 
 
+@pytest.mark.real_time
 def test_ctrl_c_during_a_headless_run_stops_saves_and_reraises(tmp_path, array_info, monkeypatch):
     """Ctrl-C used to leave record_main with the thread still reading the
     stream and nothing saved."""
@@ -243,6 +247,7 @@ def test_microstates_record_main_save_and_report(tmp_path, array_info):
     assert Path(nf.create_report(open_browser=False)).is_file()
 
 
+@pytest.mark.real_time
 def test_microstates_with_individual_maps_fitted_on_the_baseline(tmp_path, array_info):
     """#44's second approach, with no extra machinery: fit pycrostates on the
     session's own baseline, choose the state to train, pass the fitted model."""
@@ -293,6 +298,9 @@ def test_microstates_with_individual_maps_fitted_on_the_baseline(tmp_path, array
         nf.save()
 
 
+# Real time: GEDAI's per-window compute, 10x longer in session time, outran the
+# hop on CI runners and tripped its missing-samples check.
+@pytest.mark.real_time
 def test_causal_gedai_record_main_uses_sensai_and_delayed_windows(tmp_path, array_info):
     pytest.importorskip("gedai")
     from unittest.mock import patch

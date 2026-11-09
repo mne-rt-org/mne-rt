@@ -11,6 +11,8 @@ import pytest
 
 from mne_rt.tests._helpers import _make_array_data, _make_rt_stream
 
+pytestmark = pytest.mark.usefixtures("fast_clock")
+
 
 def test_connect_to_lsl_and_record_baseline(tmp_path, short_mock_fif):
     nf = _make_rt_stream(tmp_path, montage="easycap-M1")
@@ -234,6 +236,7 @@ class TestArrayStream:
             stream.disconnect()
 
 
+@pytest.mark.real_time
 def test_array_stream_timestamps_use_the_lsl_clock(array_info):
     """The test double must share a time base with a real LSL stream.
 

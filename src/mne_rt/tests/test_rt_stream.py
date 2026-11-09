@@ -12,6 +12,8 @@ import pytest
 
 from mne_rt.tests._helpers import _make_array_data, _make_baseline_raw, _make_rt_stream
 
+pytestmark = pytest.mark.usefixtures("fast_clock")
+
 
 def test_valid_instantiation(subjects_dir):
     from mne_rt import RTStream as RTStream
@@ -678,3 +680,24 @@ def test_brain_source_values_ignore_a_nan_source_for_the_scale():
     assert np.isfinite(vals[:2]).all() and np.isnan(vals[2])
     # Still scaled to the 98th percentile of the finite ones, not left raw.
     assert np.nanpercentile(vals, 98) == pytest.approx(1.0)
+
+
+def test_only_in_memory_streams_run_on_the_fast_clock(array_info):
+    """A sped-up clock must never pace a session on a real LSL stream."""
+    from mne_lsl.lsl import local_clock
+
+    from mne_rt import rt_stream
+    from mne_rt.rt_stream import ArrayStream, _session_timing
+
+    stream = ArrayStream(_make_array_data(array_info, duration=1.0), array_info)
+    assert _session_timing(stream) == (rt_stream._clock, rt_stream._sleep)
+    assert _session_timing(object())[0] is local_clock  # e.g. a StreamLSL
+
+
+@pytest.mark.real_time
+def test_the_in_memory_clock_is_lsl_s_at_speed_one():
+    from mne_lsl.lsl import local_clock
+
+    from mne_rt.rt_stream import _clock
+
+    assert abs(_clock() - local_clock()) < 1e-3

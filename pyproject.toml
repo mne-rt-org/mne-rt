@@ -224,6 +224,8 @@ warn_return_any = false
 # as in MNE-Python.
 testpaths = ["src/mne_rt"]
 addopts = "-v --tb=short"
+faulthandler_timeout = 300
 markers = [
     "slow: needs FreeSurfer anatomy (fetch_fsaverage) or is otherwise slow; deselect with -m 'not slow'",
+    "real_time: run on the real clock, not the fast_clock fixture's",
 ]

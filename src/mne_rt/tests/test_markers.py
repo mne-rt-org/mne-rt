@@ -11,6 +11,8 @@ import pytest
 
 from mne_rt.tests._helpers import _CountingProtocol, _make_array_data, _make_rt_stream
 
+pytestmark = pytest.mark.usefixtures("fast_clock")
+
 
 class _RecordingSender:
     """Stands in for an OSC or LSL sender, counting what actually goes out."""
@@ -26,7 +28,11 @@ class _RecordingSender:
 
 
 def _gated_session(tmp_path, array_info, *, codes, onsets, duration=12.0, **kwargs):
-    """Run a short gated session against an array stream and a marker schedule."""
+    """Run a short gated session against an array stream and a marker schedule.
+
+    Its tests are ``real_time``: the schedule starts at connect, before
+    record_main's setup, so a sped-up clock moves the markers into the setup.
+    """
     nf = _make_rt_stream(tmp_path, montage="easycap-M1")
     nf.connect_to_array(_make_array_data(array_info, duration=40.0), array_info, n_repeat=np.inf)
     nf.connect_marker_array(codes=codes, onsets=onsets, marker_id={"speech": 1, "rest": 2})
@@ -68,6 +74,7 @@ def test_marker_array_stream_delivers_each_marker_once():
     assert seen == [1, 2, 3]
 
 
+@pytest.mark.real_time
 def test_marker_array_stream_uses_the_lsl_clock():
     """Markers and window onsets must be comparable without conversion."""
     from mne_lsl.lsl import local_clock
@@ -183,6 +190,7 @@ def test_gate_condition_that_can_never_match_is_refused(tmp_path, array_info):
         nf.marker_stream.disconnect()
 
 
+@pytest.mark.real_time
 def test_condition_latches_and_switches_with_the_markers(tmp_path, array_info):
     """Latch, not containment: every window after the first marker is labelled.
 
@@ -202,6 +210,7 @@ def test_condition_latches_and_switches_with_the_markers(tmp_path, array_info):
     assert switches == [(None, "speech"), ("speech", "rest")]
 
 
+@pytest.mark.real_time
 def test_every_marker_is_counted_exactly_once(tmp_path, array_info):
     """Overlapping windows must not double-count a contained marker."""
     nf = _gated_session(
@@ -215,6 +224,7 @@ def test_every_marker_is_counted_exactly_once(tmp_path, array_info):
     assert sum(nf.window_marker_counts) == len(nf.markers)
 
 
+@pytest.mark.real_time
 def test_gating_mutes_the_protocol_and_the_senders(tmp_path, array_info):
     """A muted window still records a value, but drives nothing outward."""
     proto = _CountingProtocol(threshold=-1e30)
@@ -242,6 +252,7 @@ def test_gating_mutes_the_protocol_and_the_senders(tmp_path, array_info):
     assert sum(nf.window_gated) == nf.n_gated_windows
 
 
+@pytest.mark.real_time
 def test_muted_windows_keep_reward_data_aligned(tmp_path, array_info):
     """A missing placeholder would shift every later reward row silently."""
     proto = _CountingProtocol(threshold=-1e30)
@@ -263,6 +274,7 @@ def test_muted_windows_keep_reward_data_aligned(tmp_path, array_info):
     assert len(nf.window_marker_counts) == n_windows
 
 
+@pytest.mark.real_time
 def test_ungated_session_is_unchanged(tmp_path, array_info):
     """`gate_conditions=None` must behave exactly as it did before."""
     proto = _CountingProtocol(threshold=-1e30)
@@ -313,6 +325,7 @@ def test_warmup_no_longer_rewards_native_units(tmp_path, array_info):
     assert max(abs(v) for v in proto.values) > 1e-6
 
 
+@pytest.mark.real_time
 def test_markers_and_gate_round_trip_through_save(tmp_path, array_info):
     nf = _gated_session(
         tmp_path,
@@ -338,6 +351,7 @@ def test_markers_and_gate_round_trip_through_save(tmp_path, array_info):
     assert payload["markers"]["code"] == [1, 2]
 
 
+@pytest.mark.real_time
 def test_beh_tsv_carries_the_marker_columns(tmp_path, array_info):
     nf = _gated_session(
         tmp_path,
@@ -430,6 +444,7 @@ def test_marker_overflow_is_detectable_before_the_read():
         stream.disconnect()
 
 
+@pytest.mark.real_time
 def test_condition_ignores_markers_arriving_after_the_window_ends(tmp_path, array_info):
     """`condition` and `n_markers` must agree about which window a marker is in.
 

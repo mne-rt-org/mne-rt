@@ -63,6 +63,11 @@ bound, say why in a comment next to it, as the existing bounds in
   (`test_rt_stream.py`, `test_connection.py`, `test_record_main.py`,
   `test_markers.py`, `test_run_blocks.py`, `test_save_report.py`). The suite is large
   (1100+ tests) and it is what keeps the real-time paths honest.
+- A test that runs a session on `connect_to_array` / `connect_marker_array`
+  should use the `fast_clock` fixture (most `src/mne_rt/tests` modules opt in
+  through `pytestmark`), which runs it 10x faster than real time; sessions on a
+  real LSL stream keep the real clock. Mark a test that checks timing
+  precisely `real_time`.
 - Add a line to `docs/source/whats_new.rst` under the current unreleased version.
 - Public functions and methods use NumPy-style docstrings and accept a
   `verbose=` keyword, following MNE-Python's conventions.
