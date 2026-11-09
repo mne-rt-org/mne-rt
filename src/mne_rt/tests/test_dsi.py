@@ -26,6 +26,8 @@ DSI24_NAMES = [f"{c}-A1/2-A2/2" for c in DSI24_SCALP[:17]] + [
     "TRG",
 ]
 
+pytestmark = pytest.mark.usefixtures("fast_clock")
+
 
 class _FakeStream:
     """Records the calls _setup_dsi_channels makes on an mne-lsl stream."""

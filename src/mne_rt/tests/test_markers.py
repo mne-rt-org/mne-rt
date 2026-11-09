@@ -11,6 +11,8 @@ import pytest
 
 from mne_rt.tests._helpers import _CountingProtocol, _make_array_data, _make_rt_stream
 
+pytestmark = pytest.mark.usefixtures("fast_clock")
+
 
 class _RecordingSender:
     """Stands in for an OSC or LSL sender, counting what actually goes out."""
@@ -68,6 +70,7 @@ def test_marker_array_stream_delivers_each_marker_once():
     assert seen == [1, 2, 3]
 
 
+@pytest.mark.real_time
 def test_marker_array_stream_uses_the_lsl_clock():
     """Markers and window onsets must be comparable without conversion."""
     from mne_lsl.lsl import local_clock
