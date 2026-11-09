@@ -298,6 +298,9 @@ def test_microstates_with_individual_maps_fitted_on_the_baseline(tmp_path, array
         nf.save()
 
 
+# Real time: GEDAI's per-window compute, 10x longer in session time, outran the
+# hop on CI runners and tripped its missing-samples check.
+@pytest.mark.real_time
 def test_causal_gedai_record_main_uses_sensai_and_delayed_windows(tmp_path, array_info):
     pytest.importorskip("gedai")
     from unittest.mock import patch
