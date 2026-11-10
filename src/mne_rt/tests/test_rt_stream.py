@@ -302,7 +302,9 @@ def _bads_info(n_channels=16):
     """Info with digitised positions, no bads yet."""
     import mne
 
-    montage = mne.channels.make_standard_montage("standard_1020")
+    from mne_rt._montage import make_standard_montage
+
+    montage = make_standard_montage("colin27_1020")  # standard_1020 before MNE 1.13
     names = [c for c in montage.ch_names if c not in ("T3", "T4", "T5", "T6")][:n_channels]
     info = mne.create_info(names, 250.0, "eeg")
     info.set_montage(montage)

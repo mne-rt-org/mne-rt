@@ -57,7 +57,9 @@ files = mne.datasets.eegbci.load_data(SUBJECT, RUNS, update_path=True, verbose=F
 raws = [mne.io.read_raw_edf(f, preload=True, verbose=False) for f in files]
 raw = mne.concatenate_raws(raws)
 mne.datasets.eegbci.standardize(raw)
-raw.set_montage(mne.channels.make_standard_montage("standard_1005"), on_missing="ignore")
+# MNE 1.13 renamed "standard_1005" to "colin27_1005"; MNE 1.14 drops the old name.
+montage = "colin27_1005" if "colin27_1005" in mne.channels.get_builtin_montages() else "standard_1005"
+raw.set_montage(mne.channels.make_standard_montage(montage), on_missing="ignore")
 raw.filter(l_freq=1.0, h_freq=40.0, verbose=False)
 
 SFREQ = raw.info["sfreq"]

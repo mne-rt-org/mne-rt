@@ -44,21 +44,26 @@ jobs:
       - run: ruff format --check src
 
   pytest:
-    name: 'py${{ matrix.python }}'
+    name: '${{ matrix.os }} py${{ matrix.python }}'
     needs: style
-    runs-on: ubuntu-latest
-    timeout-minutes: 30
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 40
     permissions:
       contents: read
       id-token: write  # Codecov upload by OIDC, no token secret
     strategy:
       fail-fast: false
       matrix:
-        python: ["3.11", "3.12", "3.13"]
-        # Coverage on one job only: the C tracer slows the suite.
         include:
-          - python: "3.12"
-            coverage: true
+          - {os: ubuntu-latest, python: "3.11"}
+          # Coverage on one job only, as the C tracer slows the suite; with the
+          # optional extras, so BrainPlot, pyriemann, OSC and mne-bids are
+          # measured too.
+          - {os: ubuntu-latest, python: "3.12", coverage: true, extras: ",viz,riemann,osc,bids"}
+          - {os: ubuntu-latest, python: "3.13"}
+          - {os: ubuntu-latest, python: "3.14"}
+          - {os: macos-latest, python: "3.13"}
+          - {os: windows-latest, python: "3.13"}
     steps:
       - uses: actions/checkout@v4
         with:
@@ -67,7 +72,7 @@ jobs:
       - uses: pyvista/setup-headless-display-action@v4
         with:
           qt: true
-          pyvista: false
+          pyvista: ${{ contains(matrix.extras, 'viz') }}
           wm: false
       - uses: astral-sh/setup-uv@v8.3.1
         with:
@@ -75,7 +80,7 @@ jobs:
           activate-environment: true
       # gedai is opt-in; pycrostates is the microstates reference. The `minimum`
       # job leaves both out.
-      - run: uv pip install -e ".[dev,pyqt6,gedai]" pycrostates
+      - run: uv pip install -e ".[dev,pyqt6,gedai${{ matrix.extras }}]" pycrostates
       # fsaverage, fetched by the source-space tests.
       - uses: actions/cache@v4
         with:
@@ -117,6 +122,39 @@ jobs:
           python-version: "3.11"
           activate-environment: true
       - run: uv pip install --resolution lowest-direct -e ".[dev,pyqt6]"
+      - run: uv pip list
+      # fsaverage, fetched by the source-space tests.
+      - uses: actions/cache@v4
+        with:
+          path: ~/mne_data/MNE-fsaverage-data
+          key: mne-fsaverage-v1
+      - run: pytest --durations=20
+
+  pre:
+    name: Pre-release deps
+    needs: style
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    continue-on-error: true
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: pyvista/setup-headless-display-action@v4
+        with:
+          qt: true
+          pyvista: false
+          wm: false
+      - uses: astral-sh/setup-uv@v8.3.1
+        with:
+          python-version: "3.13"
+          activate-environment: true
+      - run: uv pip install -e ".[dev,pyqt6]"
+      - run: >-
+          uv pip install --upgrade --pre --index-strategy unsafe-best-match
+          --extra-index-url https://pypi.anaconda.org/scientific-python-nightly-wheels/simple
+          numpy scipy matplotlib pandas scikit-learn mne-lsl
+          "mne @ git+https://github.com/mne-tools/mne-python"
       - run: uv pip list
       # fsaverage, fetched by the source-space tests.
       - uses: actions/cache@v4

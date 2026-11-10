@@ -119,7 +119,7 @@ Optional extras
      - 3D brain visualisation (pyvista, pyvistaqt) — needed for BrainPlot
      - ``pip install "mne-rt[viz]"``
    * - ``dev``
-     - Testing only (pytest, pytest-cov)
+     - Testing only (pytest, pytest-cov, pytest-timeout)
      - ``pip install "mne-rt[dev]"``
    * - ``lint``
      - Linting and formatting (ruff, mypy, pre-commit)

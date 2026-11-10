@@ -268,3 +268,19 @@ def test_block_results_carry_the_delay_traces(tmp_path, array_info):
     res = nf.block_results[0]
     assert res["acq_delays"] and res["method_delays"]["sensor_power"]
     assert "n_artifact_windows" in res
+
+
+def test_run_blocks_rests_between_blocks_not_after_the_last(tmp_path, array_info, monkeypatch):
+    from mne_rt import rt_stream
+
+    rests = []
+    monkeypatch.setattr(rt_stream, "_sleep", rests.append)
+    nf = _make_rt_stream(tmp_path, montage="easycap-M1")
+    nf.connect_to_array(_make_array_data(array_info, duration=40.0), array_info, n_repeat=np.inf)
+    block = dict(duration=2.0, winsize=1.0, modality="sensor_power", **_HEADLESS)
+    try:
+        nf.run_blocks(blocks=[block, dict(block), dict(block)], rest_duration=5.0)
+    finally:
+        nf.save()
+
+    assert rests == [5.0, 5.0]

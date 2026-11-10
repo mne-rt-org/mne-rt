@@ -66,6 +66,21 @@ New features
 Bug fixes
 ^^^^^^^^^
 
+- **save_as_bids works with mne-bids installed**. With ``mne-bids`` installed,
+  every call failed: the recording, made live, is in memory, which
+  ``write_raw_bids`` refuses unless asked to convert it, and the subject was
+  already in the ``participants.tsv`` mne-rt had written first. It is now
+  written as BrainVision (BIDS-EEG does not take FIF), with ``pybv`` added to
+  the ``bids`` extra, and an ImportError from inside mne-bids is raised rather
+  than silently falling back to the minimal layout.
+
+- **mne-rt imports under SciPy 2.0 and MNE 1.14**. ``pactools`` imports
+  ``scipy.interpolate.interp2d``, which SciPy 2.0 removes, and was imported with
+  the package, so ``import mne_rt`` itself failed; it is now imported only by the
+  ``cfc_sensor`` modality, which says what to install if it cannot. The tests
+  and the motor-imagery example no longer use the ``"standard_1020"`` /
+  ``"standard_1005"`` montage names, which MNE 1.14 rejects.
+
 - **record_main now raises when the acquisition loop fails**
   (`#49 <https://github.com/mne-rt-org/mne-rt/issues/49>`__). An exception in
   the acquisition thread — a stream that stopped delivering data, a modality

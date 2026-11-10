@@ -1,7 +1,8 @@
-"""Tests for save_as_bids (minimal BIDS backend)."""
+"""Tests for save_as_bids: the minimal backend, and mne-bids where installed."""
 
 import csv
 import json
+import sys
 from pathlib import Path
 
 import mne
@@ -10,7 +11,18 @@ import pytest
 
 from mne_rt.tools.bids_io import save_as_bids
 
-# Fixture: minimal raw + nf_data
+
+@pytest.fixture(autouse=True)
+def _minimal_backend(request, monkeypatch):
+    """Hide mne-bids, so these test the minimal backend wherever they run."""
+    if "real_mne_bids" not in request.fixturenames:
+        monkeypatch.setitem(sys.modules, "mne_bids", None)
+
+
+@pytest.fixture
+def real_mne_bids():
+    pytest.importorskip("pybv")
+    return pytest.importorskip("mne_bids")
 
 
 @pytest.fixture
@@ -208,3 +220,37 @@ def test_write_nf_beh_tsv_sidecar(tmp_path):
     side = json.loads(path.with_suffix(".json").read_text())
     assert side["onset"]["Units"] == "s"
     assert side["sfreq_hz"] == 256.0
+
+
+def test_mne_bids_writes_brainvision_and_lists_the_subject(
+    tmp_path, minimal_raw, nf_data, real_mne_bids
+):
+    """A live recording is in memory, so mne-bids must convert it (it refuses a
+    preloaded raw by default), and BIDS-EEG takes BrainVision, not FIF."""
+    save_as_bids(minimal_raw, nf_data, tmp_path, subject="01", session="nf", task="neurofeedback")
+
+    assert len(list(tmp_path.rglob("*_eeg.vhdr"))) == 1
+    assert not list(tmp_path.rglob("*_eeg.fif"))
+    assert len(list(tmp_path.rglob("*_beh.tsv"))) == 1
+    assert "sub-01" in (tmp_path / "participants.tsv").read_text()
+
+
+def test_mne_bids_overwrite_true_succeeds(tmp_path, minimal_raw, nf_data, real_mne_bids):
+    for _ in range(2):
+        save_as_bids(minimal_raw, nf_data, tmp_path, subject="02", session="nf", overwrite=True)
+    assert len(list(tmp_path.rglob("*_eeg.vhdr"))) == 1
+
+
+def test_an_import_error_inside_mne_bids_is_not_hidden(
+    tmp_path, minimal_raw, nf_data, real_mne_bids, monkeypatch
+):
+    """Only importing mne-bids may pick the fallback, not a writer it lacks."""
+    from mne_rt.tools import bids_io
+
+    def _missing_writer(**_):
+        raise ImportError("pybv >= 0.7.3 is required")
+
+    monkeypatch.setattr(bids_io, "_save_with_mne_bids", _missing_writer)
+    with pytest.raises(ImportError, match="pybv"):
+        save_as_bids(minimal_raw, nf_data, tmp_path, subject="03")
+    assert not list(tmp_path.rglob("*_eeg.fif"))

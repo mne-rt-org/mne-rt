@@ -45,10 +45,11 @@ pytest -m "not slow"
 ```
 
 `ruff format src` fixes formatting in place. CI additionally runs the full
-suite on Python 3.11, 3.12 and 3.13, and a `minimum` job that installs every
-dependency at its declared lower bound — if you add a dependency or raise a
-bound, say why in a comment next to it, as the existing bounds in
-`pyproject.toml` do.
+suite on Linux (Python 3.11–3.14, one job with every optional extra), macOS and
+Windows; a `minimum` job that installs every dependency at its declared lower
+bound — if you add a dependency or raise a bound, say why in a comment next to
+it, as the existing bounds in `pyproject.toml` do; and a `pre` job against the
+unreleased numpy, scipy, MNE and friends, which reports without blocking.
 
 ## Workflow
 

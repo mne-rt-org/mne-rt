@@ -45,7 +45,6 @@ from mne_features.univariate import (
     compute_spect_entropy,
     compute_svd_entropy,
 )
-from pactools import Comodulogram
 from scipy.optimize import curve_fit
 from scipy.signal import butter, sosfiltfilt, welch
 
@@ -639,6 +638,17 @@ class ModalityMixin:
         }
 
     def _cfc_sensor_prep(self) -> dict:
+        # Here, not at module level: pactools imports scipy's interp2d, which
+        # SciPy 2.0 removes, and then `import mne_rt` itself would fail.
+        try:
+            from pactools import Comodulogram
+        except ImportError as err:
+            raise ImportError(
+                "The cfc_sensor modality needs pactools, which failed to import "
+                f"({err}). pactools uses scipy.interpolate.interp2d, removed in "
+                "SciPy 2.0: install scipy<2 to use this modality."
+            ) from err
+
         comod = Comodulogram(
             fs=self._sfreq,
             low_fq_range=np.linspace(self.params["frange_1"][0], self.params["frange_1"][1], 5),
