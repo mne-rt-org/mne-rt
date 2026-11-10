@@ -1,0 +1,40 @@
+﻿mne\_rt.tools.AdaptiveMultibandGEDAIDenoiser
+============================================
+
+.. currentmodule:: mne_rt.tools
+
+.. autoclass:: AdaptiveMultibandGEDAIDenoiser
+
+   
+   .. automethod:: __init__
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+   
+      ~AdaptiveMultibandGEDAIDenoiser.__init__
+      ~AdaptiveMultibandGEDAIDenoiser.fit
+      ~AdaptiveMultibandGEDAIDenoiser.update_and_denoise
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+   
+      ~AdaptiveMultibandGEDAIDenoiser.activation_patterns
+      ~AdaptiveMultibandGEDAIDenoiser.band_frequencies
+      ~AdaptiveMultibandGEDAIDenoiser.band_time_constants
+      ~AdaptiveMultibandGEDAIDenoiser.current_eigenvalue_thresholds
+      ~AdaptiveMultibandGEDAIDenoiser.delay_samples
+      ~AdaptiveMultibandGEDAIDenoiser.eigenvalue_thresholds
+      ~AdaptiveMultibandGEDAIDenoiser.eigenvalues
+      ~AdaptiveMultibandGEDAIDenoiser.latency
+      ~AdaptiveMultibandGEDAIDenoiser.n_bands
+      ~AdaptiveMultibandGEDAIDenoiser.retained_bands
+      ~AdaptiveMultibandGEDAIDenoiser.spatial_filters
+   
+   

@@ -1,0 +1,38 @@
+﻿mne\_rt.ArrayStream
+===================
+
+.. currentmodule:: mne_rt
+
+.. autoclass:: ArrayStream
+
+   
+   .. automethod:: __init__
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+   
+      ~ArrayStream.__init__
+      ~ArrayStream.connect
+      ~ArrayStream.disconnect
+      ~ArrayStream.filter
+      ~ArrayStream.get_data
+      ~ArrayStream.notch_filter
+      ~ArrayStream.pick
+      ~ArrayStream.set_meas_date
+      ~ArrayStream.set_montage
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+   
+      ~ArrayStream.connected
+      ~ArrayStream.info
+      ~ArrayStream.n_new_samples
+   
+   
