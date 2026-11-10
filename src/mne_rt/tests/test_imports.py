@@ -88,3 +88,14 @@ def test_gedai_not_a_core_or_full_dependency():
     assert not any("gedai" in dep for dep in project["dependencies"])
     assert not any("gedai" in dep for dep in project["optional-dependencies"]["full"])
     assert project["optional-dependencies"]["gedai"]
+
+
+def test_mne_rt_imports_when_pactools_cannot():
+    """pactools imports scipy's interp2d, which SciPy 2.0 removes: only the
+    cross-frequency-coupling modality may depend on it, not ``import mne_rt``."""
+    import subprocess
+    import sys
+
+    code = "import sys; sys.modules['pactools'] = None; import mne_rt"
+    result = subprocess.run([sys.executable, "-c", code], capture_output=True, text=True)
+    assert result.returncode == 0, result.stderr[-2000:]

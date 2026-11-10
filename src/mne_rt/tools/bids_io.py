@@ -96,12 +96,16 @@ def save_as_bids(
     output_dir = Path(output_dir)
     output_dir.mkdir(parents=True, exist_ok=True)
 
-    _write_dataset_description(output_dir, overwrite=overwrite)
-    _update_participants_tsv(output_dir, subject=subject)
-
+    # Only the import picks the backend: an ImportError from inside mne-bids (a
+    # missing writer, say) is the user's to see, not a cue to fall back.
     try:
         import mne_bids  # noqa: F401
+    except ImportError:
+        has_mne_bids = False
+    else:
+        has_mne_bids = True
 
+    if has_mne_bids:
         _save_with_mne_bids(
             raw=raw,
             nf_data=nf_data,
@@ -113,11 +117,14 @@ def save_as_bids(
             overwrite=overwrite,
             verbose=verbose,
         )
-    except ImportError:
+    else:
         logger.info(
             "mne-bids is not installed; falling back to minimal BIDS layout. "
             "Install with: pip install mne-bids"
         )
+        # mne-bids writes these itself, and refuses a subject already listed.
+        _write_dataset_description(output_dir, overwrite=overwrite)
+        _update_participants_tsv(output_dir, subject=subject)
         _save_minimal_bids(
             raw=raw,
             nf_data=nf_data,
@@ -157,9 +164,14 @@ def _save_with_mne_bids(
         root=output_dir,
         datatype="eeg",
     )
+    # A recording made live is in memory, not in a file mne-bids could copy, so
+    # it is converted; BIDS-EEG does not take FIF, and BrainVision is its usual
+    # format.
     mne_bids.write_raw_bids(
         raw,
         bids_path=bids_path,
+        allow_preload=True,
+        format="BrainVision",
         overwrite=overwrite,
         verbose=verbose,
     )

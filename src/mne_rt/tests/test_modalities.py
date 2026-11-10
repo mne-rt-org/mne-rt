@@ -679,3 +679,13 @@ def test_roi_kernel_cache_holds_its_model_alive():
     obj._get_roi_kernel(model, rois, True)
     # A cache keyed by id() could match a new model that reused the address.
     assert any(model is key[0] for key in obj._roi_kernels)
+
+
+def test_cfc_says_what_to_install_when_pactools_cannot_import(monkeypatch):
+    import sys
+
+    from mne_rt.modalities import ModalityMixin
+
+    monkeypatch.setitem(sys.modules, "pactools", None)
+    with pytest.raises(ImportError, match=r"scipy<2"):
+        ModalityMixin._cfc_sensor_prep(object.__new__(ModalityMixin))

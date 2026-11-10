@@ -304,7 +304,9 @@ def fsaverage_volume_model():
 
     subjects_dir = op.dirname(fs_dir)
     sfreq = 250.0
-    montage = mne.channels.make_standard_montage("standard_1020")
+    from mne_rt._montage import make_standard_montage
+
+    montage = make_standard_montage("colin27_1020")  # standard_1020 before MNE 1.13
     ch_names = [c for c in montage.ch_names if c not in ("T3", "T4", "T5", "T6")][:32]
     info = mne.create_info(ch_names, sfreq, "eeg")
     info.set_montage(montage)
@@ -453,7 +455,9 @@ def baseline_raw():
     """A short EEG recording with digitised positions, for forward modelling."""
     mne = pytest.importorskip("mne")
     sfreq = 250.0
-    montage = mne.channels.make_standard_montage("standard_1020")
+    from mne_rt._montage import make_standard_montage
+
+    montage = make_standard_montage("colin27_1020")  # standard_1020 before MNE 1.13
     ch_names = [c for c in montage.ch_names if c not in ("T3", "T4", "T5", "T6")][:32]
     info = mne.create_info(ch_names, sfreq, "eeg")
     info.set_montage(montage)

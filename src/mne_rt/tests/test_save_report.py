@@ -415,10 +415,11 @@ def test_window_onsets_are_recorded_per_window(tmp_path, array_info):
     assert len(onsets) == len(nf.nf_data["sensor_power"]) > 2
     assert all(b > a for a, b in zip(onsets, onsets[1:]))  # strictly increasing
     assert all(d == pytest.approx(1.0, rel=1e-3) for d in nf.window_durations)
-    # A band, not equality: the hop is a busy-wait that re-reads the clock after
-    # the previous window's compute, which is exactly the drift being recorded.
-    for a, b in zip(onsets, onsets[1:]):
-        assert 0.4 <= (b - a) <= 0.9
+    # The mean gap, not each one: an onset is the newest sample's timestamp, so a
+    # delivery the runner delays (macOS CI) shortens one gap and lengthens the
+    # next. A band, not equality: the hop re-reads the clock after each compute.
+    gaps = np.diff(onsets)
+    assert 0.4 <= gaps.mean() <= 0.9
 
 
 def test_window_timing_round_trips_through_save(tmp_path, array_info):

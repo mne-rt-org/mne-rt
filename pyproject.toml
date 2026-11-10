@@ -96,6 +96,7 @@ riemann = [
 # BIDS-format data export (save_as_bids)
 bids = [
     "mne-bids>=0.14",
+    "pybv>=0.7.3",  # the BrainVision writer mne-bids needs for a recording made live
 ]
 
 # Adaptive multiband GEDAI (AdaptiveMultibandGEDAIDenoiser).
@@ -113,6 +114,7 @@ gedai = [
 dev = [
     "pytest>=8.0",
     "pytest-cov>=5.0",
+    "pytest-timeout>=2.3",
 ]
 
 # Linting and formatting tools
@@ -144,9 +146,11 @@ full = [
     "pyriemann>=0.7",
     # bids
     "mne-bids>=0.14",
+    "pybv>=0.7.3",  # the BrainVision writer mne-bids needs for a recording made live
     # dev
     "pytest>=8.0",
     "pytest-cov>=5.0",
+    "pytest-timeout>=2.3",
     # lint
     "ruff",
     "mypy",
@@ -224,7 +228,10 @@ warn_return_any = false
 # as in MNE-Python.
 testpaths = ["src/mne_rt"]
 addopts = "-v --tb=short"
+# At 5 min a test's every thread stack is dumped, even inside a C or Qt hang;
+# at 15 min a test is failed (pytest-timeout) and the run goes on.
 faulthandler_timeout = 300
+timeout = 900
 markers = [
     "slow: needs FreeSurfer anatomy (fetch_fsaverage) or is otherwise slow; deselect with -m 'not slow'",
     "real_time: run on the real clock, not the fast_clock fixture's",
