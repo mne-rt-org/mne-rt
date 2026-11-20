@@ -557,6 +557,8 @@ class MarkerArrayStream:
     acquisition loop reads window onsets on, so a marker and a window can be
     compared directly.
 
+    .. versionadded:: 1.2.0
+
     Parameters
     ----------
     codes : array-like of int
@@ -575,8 +577,6 @@ class MarkerArrayStream:
     ArrayStream : The signal-side equivalent.
     RTStream.connect_marker_array : Attaches one of these to a session.
     RTStream.connect_marker_stream : The live LSL equivalent.
-
-    .. versionadded:: 1.2.0
     """
 
     def __init__(

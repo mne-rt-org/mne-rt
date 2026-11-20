@@ -21,6 +21,10 @@ on:  # yamllint disable-line rule:truthy
       - "paper/**"
       - "**.md"
       - "CITATION.cff"
+  # Weekly, so a new release or the pre-release job's nightlies break the build
+  # even in a week with no pushes.
+  schedule:
+    - cron: "0 5 * * 1"  # Mondays 05:00 UTC
   workflow_dispatch:
 
 permissions:
@@ -135,7 +139,9 @@ jobs:
     needs: style
     runs-on: ubuntu-latest
     timeout-minutes: 30
-    continue-on-error: true
+    # Red without blocking a pull request; on the weekly run it fails the
+    # workflow, so the breakage it found is reported.
+    continue-on-error: ${{ github.event_name != 'schedule' }}
     steps:
       - uses: actions/checkout@v4
         with:

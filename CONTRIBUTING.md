@@ -107,9 +107,12 @@ meet that bar exactly, prefer refusing it to returning an approximation — see
 ## Documentation
 
 ```bash
-pip install -e ".[docs]"
-cd docs && make html      # output in docs/_build/html
+pip install -e ".[docs,pyqt6]"
+cd docs && make html SPHINXOPTS="-j auto"                     # output in docs/_build/html
+MNE_RT_PLOT_GALLERY=0 make html SPHINXOPTS="-j auto -W"     # the pages only, as pull requests build them
 ```
 
 Examples in `examples/` are executed by sphinx-gallery, so they must run
-end-to-end without hardware.
+end-to-end without hardware. They run in parallel worker processes, without
+`conf.py`'s mocks, which is why a Qt binding is needed. A pull request's docs
+build skips them and fails on any warning.

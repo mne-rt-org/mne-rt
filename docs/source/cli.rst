@@ -127,7 +127,7 @@ Options:
        values above the boundary, ``down`` rewards values below it
    * - ``--zscore-threshold``
      - 0.5
-     - Minimum |z-score| required to reward; passing this or
+     - Minimum absolute z-score required to reward; passing this or
        ``--zscore-warmup`` alone enables
        :class:`~mne_rt.protocols.ZScoreProtocol`
    * - ``--zscore-warmup``
@@ -286,42 +286,42 @@ Options:
 Run a real-time M/EEG session with feature extraction, feedback protocols,
 and live visualisation.
 
-.. code-block:: console
+.. code-block:: bash
 
-    $ mne-rt run --subject sub01 --subjects-dir /data --duration 600 \
+    mne-rt run --subject sub01 --subjects-dir /data --duration 600 \
                  --modality sensor_power erd_ers
 
     # With epoch plots (requires a stimulus channel in the recording)
-    $ mne-rt run --subject sub01 --subjects-dir /data --duration 600 \
+    mne-rt run --subject sub01 --subjects-dir /data --duration 600 \
                  --modality sensor_power \
                  --topo --tfr --stim-ch "STI 014" \
                  --event-id left=1 right=2
 
     # With topomap display
-    $ mne-rt run --subject sub01 --subjects-dir /data --duration 600 \
+    mne-rt run --subject sub01 --subjects-dir /data --duration 600 \
                  --modality sensor_power --topomap
 
     # With OSC output to Max/MSP
-    $ mne-rt run --subject sub01 --subjects-dir /data --duration 600 \
+    mne-rt run --subject sub01 --subjects-dir /data --duration 600 \
                  --modality sensor_power --osc-host 127.0.0.1 --osc-port 9000
 
     # With LSL output (faster, same-machine integration)
-    $ mne-rt run --subject sub01 --subjects-dir /data --duration 600 \
+    mne-rt run --subject sub01 --subjects-dir /data --duration 600 \
                  --modality sensor_power --lsl-output
 
     # From a mock file with artifact correction
-    $ mne-rt run --subject sub01 --subjects-dir /data --duration 300 \
+    mne-rt run --subject sub01 --subjects-dir /data --duration 300 \
                  --mock --fname /data/sub01/session.fif \
                  --artifact-correction asr --topo
 
     # With a fixed reward threshold shown live on NFPlot
-    $ mne-rt run --subject sub01 --subjects-dir /data --duration 600 \
+    mne-rt run --subject sub01 --subjects-dir /data --duration 600 \
                  --modality sensor_power \
                  --threshold 2e-13 --threshold-direction up
 
     # With an adaptive z-score boundary shown live on NFPlot.  No scale
     # tuning needed -- z-scoring follows the feature's own magnitude.
-    $ mne-rt run --subject sub01 --subjects-dir /data --duration 600 \
+    mne-rt run --subject sub01 --subjects-dir /data --duration 600 \
                  --modality sensor_power \
                  --zscore-threshold 0.5 --zscore-warmup 20
 
@@ -370,7 +370,7 @@ Options (inherits all ``baseline`` flags above, plus):
        values above the boundary, ``down`` rewards values below it
    * - ``--zscore-threshold``
      - 0.5
-     - Minimum |z-score| required to reward; passing this or
+     - Minimum absolute z-score required to reward; passing this or
        ``--zscore-warmup`` alone enables
        :class:`~mne_rt.protocols.ZScoreProtocol`
    * - ``--zscore-warmup``
