@@ -171,15 +171,20 @@ bibtex_default_style = 'unsrt'
 
 _examples_root = os.path.abspath(os.path.join(_here, '..', '..', 'examples'))
 
+# MNE_RT_PLOT_GALLERY=0 builds the pages without running the examples (pull
+# requests do); a bool here, as `-D plot_gallery=0` arrives as a string.
+plot_gallery = os.environ.get("MNE_RT_PLOT_GALLERY", "1").lower() not in ("0", "false", "no", "off")
+
 sphinx_gallery_conf = {
     'examples_dirs':        _examples_root,
     'gallery_dirs':         'auto_examples',
     'filename_pattern':     r'ex_.*\.py',
     'run_stale_examples':   False,   # only re-run when source md5 changes
-    'plot_gallery':         True,
+    'plot_gallery':         plot_gallery,
     'download_all_examples': False,
     'show_memory':          False,
     'backreferences_dir':   None,
     'first_notebook_cell':  "import matplotlib\nmatplotlib.use('Agg')\n",
     'abort_on_example_error': False,
+    'parallel':             True,
 }

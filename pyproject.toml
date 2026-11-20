@@ -128,7 +128,7 @@ lint = [
 docs = [
     "sphinx>=7",
     "pydata-sphinx-theme>=0.14",
-    "sphinx-gallery>=0.15",
+    "sphinx-gallery>=0.17",  # its `parallel` option
     "numpydoc>=1.6",
     "sphinx-autodoc-typehints>=1.25",
     "sphinx-tabs>=3.4",
@@ -158,7 +158,7 @@ full = [
     # docs
     "sphinx>=7",
     "pydata-sphinx-theme>=0.14",
-    "sphinx-gallery>=0.15",
+    "sphinx-gallery>=0.17",  # its `parallel` option
     "numpydoc>=1.6",
     "sphinx-autodoc-typehints>=1.25",
     "sphinx-tabs>=3.4",

@@ -130,6 +130,7 @@ The diagram below shows how data flows inside MNE-RT during a processing window:
    :width: 75%
 
 |
+
 All modality computations run in a
 :class:`concurrent.futures.ThreadPoolExecutor`, so slow operations (e.g.
 source-space inverse) never block the feedback display.
@@ -140,7 +141,7 @@ Key Concepts
 ------------
 
 Feature Modality
-~~~~~~~~~~~
+~~~~~~~~~~~~~~~~
 
 A **modality** is the brain feature that is being fed back to the participant.
 MNE-RT implements 22 modalities across sensor space, connectivity, and source
@@ -191,7 +192,7 @@ space.  You select one or more per session:
 See :doc:`modalities` for the mathematical definition of each.
 
 Feedback Protocol
-~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~
 
 A **protocol** decides *when* to deliver a reward and *how much*.  It sits
 between the raw modality value and the feedback display.  MNE-RT ships ten
