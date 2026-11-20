@@ -34,23 +34,32 @@ jobs:
           python-version: "3.11"
           activate-environment: true
       - run: uv pip install -e ".[docs${{ github.event_name != 'pull_request' && ',pyqt6' || '' }}]"
-      # The datasets the examples use: MNE sample (1.5 GB) and EEGBCI. Bump the
-      # key when MNE moves to a new sample-data version, as a saved cache is
-      # never replaced.
+      # The datasets the examples use: MNE sample (1.5 GB), EEGBCI, and the
+      # fsaverage anatomy simulate_raw builds its recordings on. Bump the key
+      # when MNE moves to a new dataset version, as a saved cache is never
+      # replaced.
       - uses: actions/cache@v4
         if: github.event_name != 'pull_request'
         with:
           path: |
             ~/mne_data/MNE-sample-data
             ~/mne_data/MNE-eegbci-data
-          key: mne-docs-data-v1
+            ~/mne_data/MNE-fsaverage-data
+          key: mne-docs-data-v2
       # Fetched here, once, so the examples running in parallel only read them:
-      # left to the examples, several would download into one folder at once.
+      # left to them, three fetched fsaverage at once and one timed out. OSF is
+      # slow at times, so a failed fetch is tried again.
       - if: github.event_name != 'pull_request'
-        run: >-
-          python -c "import mne;
-          mne.datasets.sample.data_path(verbose=True);
-          mne.datasets.eegbci.load_data(1, [6, 10, 14], update_path=True)"
+        run: |
+          for attempt in 1 2 3; do
+            python -c "import mne
+          mne.datasets.sample.data_path(verbose=True)
+          mne.datasets.eegbci.load_data(1, [6, 10, 14], update_path=True)
+          mne.datasets.fetch_fsaverage(verbose=True)" && exit 0
+            echo "Dataset fetch failed (attempt $attempt); retrying in 30 s"
+            sleep 30
+          done
+          exit 1
       # A pull request skips the examples and fails on any warning; main runs
       # every example, four at a time, and deploys.
       - name: Build Sphinx docs
