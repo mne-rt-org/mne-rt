@@ -59,6 +59,7 @@ except ImportError:
     _mne_available = False
 
 from mne_rt._logging import logger, set_log_level
+from mne_rt.viz._layout import fit_to_screen
 
 # Palette  (shared with ERPPlot)
 _BG = "#0d1117"
@@ -298,7 +299,7 @@ class TFRPlot(QMainWindow):
 
         # Build window
         self.setWindowTitle("MNE-RT — TFR Plot")
-        self.resize(*window_size)
+        fit_to_screen(self, *window_size)
         self._apply_styles()
         self._build_ui()
 

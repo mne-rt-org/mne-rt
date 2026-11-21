@@ -32,6 +32,16 @@ import textwrap
 # Top-level parser
 
 
+def _show_epoch_windows(*windows) -> None:
+    """Show the epoch viewers that are open, tiled over the screen, EpochPlot first."""
+    windows = [w for w in windows if w is not None]
+    for w in windows:
+        w.show()  # first: a window's frame size is known once it is shown
+    from mne_rt.viz._layout import tile_windows
+
+    tile_windows(windows)  # not headless or on Wayland, where it cannot place them
+
+
 def _build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
         prog="mne-rt",
@@ -801,7 +811,6 @@ def _cmd_demo(args) -> None:
     set_log_level(args.verbose)
 
     print("MNE-RT Demo - simulating EEG ...")
-    import os
     import tempfile
     from pathlib import Path
 
@@ -894,7 +903,6 @@ def _cmd_demo(args) -> None:
 
 def _cmd_demo_erp(args) -> None:
     """Run an ERP demo using MNE sample data and the five epoch plot windows."""
-    import os
     import sys
     import threading
     import time
@@ -991,24 +999,7 @@ def _cmd_demo_erp(args) -> None:
     comp_w = CompareEvoked(**common_kw) if show_compare else None
     tfr_w = TFRPlot(**common_kw) if show_tfr else None
 
-    _interactive = os.environ.get("QT_QPA_PLATFORM") != "offscreen"
-    # EpochPlot gets a wider window at the top; the other four tile below it.
-    if epoch_w is not None:
-        if _interactive:
-            epoch_w.move(0, 0)
-            epoch_w.resize(1460, 440)
-        epoch_w.show()
-
-    positions = [(0, 460), (730, 460), (0, 980), (730, 980)]
-    idx = 0
-    for w in (topo_w, butt_w, comp_w, tfr_w):
-        if w is not None:
-            if _interactive:
-                x, y = positions[idx]
-                w.move(x, y)
-                w.resize(720, 500)
-            w.show()
-            idx += 1
+    _show_epoch_windows(epoch_w, topo_w, butt_w, comp_w, tfr_w)
     app.processEvents()
 
     # Number of samples before the trigger within each epoch
@@ -1371,22 +1362,7 @@ def _cmd_run(args) -> None:
         comp_w = CompareEvoked(**common_kw) if args.compare_evoked else None
         tfr_w = TFRPlot(**common_kw) if args.tfr else None
 
-        _interactive = os.environ.get("QT_QPA_PLATFORM") != "offscreen"
-        if epoch_w is not None:
-            if _interactive:
-                epoch_w.move(0, 0)
-                epoch_w.resize(1460, 440)
-            epoch_w.show()
-        positions = [(0, 460), (730, 460), (0, 980), (730, 980)]
-        idx = 0
-        for w in (topo_w, butt_w, comp_w, tfr_w):
-            if w is not None:
-                if _interactive:
-                    x, y = positions[idx]
-                    w.move(x, y)
-                    w.resize(720, 500)
-                w.show()
-                idx += 1
+        _show_epoch_windows(epoch_w, topo_w, butt_w, comp_w, tfr_w)
 
         _n_pre = int(round(abs(tmin) * _run_sfreq))
 

@@ -33,6 +33,7 @@ from qtpy.QtWidgets import (
 )
 
 from mne_rt._naming import split_modality
+from mne_rt.viz._layout import fit_to_screen
 
 # Constants
 
@@ -284,7 +285,7 @@ class NFPlot(QMainWindow):
         pg.setConfigOptions(antialias=True, foreground="#c0c0d8", background="#0d0d1a")
         self._build_ui()
         self.setWindowTitle("MNE-RT — NF Signal")
-        self.resize(1440, max(500, 200 + self._n * 150))
+        fit_to_screen(self, 1440, max(500, 200 + self._n * 150))
 
     # UI construction
 

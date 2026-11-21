@@ -58,6 +58,7 @@ except ImportError:
     _mne_available = False
 
 from mne_rt._logging import logger, set_log_level
+from mne_rt.viz._layout import fit_to_screen
 
 # Palette
 _BG = "#0d1117"
@@ -293,7 +294,7 @@ class CompareEvoked(QMainWindow):
         self._t0_lines: list[pg.InfiniteLine] = []
 
         self.setWindowTitle("MNE-RT — Compare Evoked")
-        self.resize(*window_size)
+        fit_to_screen(self, *window_size)
         self._apply_styles()
         self._build_ui()
 
