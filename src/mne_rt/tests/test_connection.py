@@ -41,6 +41,7 @@ def test_connect_to_array_channel_mismatch(tmp_path, array_info):
         nf.connect_to_array(np.zeros((4, 100)), array_info)
 
 
+@pytest.mark.real_time
 def test_connect_to_array_and_record_baseline(tmp_path, array_info):
     nf = _make_rt_stream(tmp_path, montage="easycap-M1")
     data = _make_array_data(array_info)
