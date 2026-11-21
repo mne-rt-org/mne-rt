@@ -630,7 +630,11 @@ def test_brain_kernel_matches_apply_inverse_raw(tmp_path, array_info):
     import mne
     from mne.minimum_norm import apply_inverse_raw
 
-    fs_dir = mne.datasets.fetch_fsaverage(verbose=False)
+    # As test_source's fsaverage tests do: OSF being slow is not a failure here.
+    try:
+        fs_dir = mne.datasets.fetch_fsaverage(verbose=False)
+    except Exception as exc:  # pragma: no cover - network/OSF dependent
+        pytest.skip(f"fsaverage unavailable: {exc}")
     nf = _make_rt_stream(tmp_path, subjects_fs_dir=str(fs_dir.parent))
     try:
         nf.connect_to_array(_make_array_data(array_info, 20.0), array_info, n_repeat=np.inf)
