@@ -41,6 +41,8 @@ from qtpy.QtWidgets import (
     QWidget,
 )
 
+from mne_rt.viz._decimate import peak_decimate
+
 # Colour palettes
 
 _TRACE_COLORS = [
@@ -357,6 +359,7 @@ class EpochPlot(QMainWindow):
         glw.scene().sigMouseClicked.connect(self._on_scene_clicked)
 
         self._glw = glw
+        self._pi.getViewBox().sigResized.connect(self._on_plot_resized)
         return glw
 
     def _build_control_panel(self) -> QScrollArea:
@@ -794,18 +797,32 @@ class EpochPlot(QMainWindow):
         h = hex_color.lstrip("#")
         return int(h[0:2], 16), int(h[2:4], 16), int(h[4:6], 16)
 
+    def _plot_px(self) -> int:
+        """The plot area's width in device pixels: one decimation bin each."""
+        px = self._pi.getViewBox().width() * self._glw.devicePixelRatioF()
+        return max(int(px), 100)  # before the first layout the width is 0
+
+    def _on_plot_resized(self) -> None:
+        # Redrawn at the new width now, not at the next push: a paused viewer
+        # would otherwise stay at its old, coarser decimation.
+        if self._plot_px() != getattr(self, "_drawn_px", None):
+            self._redraw()
+
     def _redraw(self) -> None:
         end = min(self._page_start + self._n_shown, self._n_ch)
         visible = list(range(self._page_start, end))
         n_actual = len(visible)
         gain = 1.0 / (self._scale + 1e-300)
 
+        # Two points per device pixel, as RawPlot does: every sample of the
+        # scrolling buffer was stroked, several per pixel column.
+        self._drawn_px = self._plot_px()
+        x, block = peak_decimate(self._time_axis, self._buf[visible], self._drawn_px)
         for vis_idx, ch_idx in enumerate(visible):
-            raw = self._buf[ch_idx].copy()
             color = self._ch_colors[ch_idx]
             self._curves[vis_idx].setPen(pg.mkPen(color=color, width=1))
             offset = float(n_actual - 1 - vis_idx)
-            self._curves[vis_idx].setData(self._time_axis, offset + raw * gain)
+            self._curves[vis_idx].setData(x, offset + block[vis_idx] * gain)
 
         for vis_idx in range(n_actual, self._n_shown):
             self._curves[vis_idx].setData([], [])

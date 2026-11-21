@@ -249,3 +249,59 @@ def test_nf_rescale_keeps_the_threshold_label(qt_app):
     w._scale_up(0)
     assert w._threshold_lines[0].label.textItem.toPlainText() == label
     w.close()
+
+
+def test_y_range_follows_the_data_without_moving_every_frame(qt_app):
+    """It shows what auto-range did (trace, zero line, threshold) but rescales
+    only when the data leaves the range: moving it rebuilt the axes each frame."""
+    from mne_rt.viz.nf_plot import NFPlot
+
+    w = NFPlot(
+        ["sensor_power"], {"sensor_power": 1.0}, sfreq=30.0, time_window=10.0, display_smoothing=1.0
+    )
+    w.show()
+    pi = w._plots[0]
+    moves = []
+    pi.sigYRangeChanged.connect(lambda *_: moves.append(1))
+    rng = np.random.default_rng(0)
+    for _ in range(300):
+        w.push([1.0 + 0.05 * rng.standard_normal()], thresholds=[2.0])
+    lo, hi = pi.viewRange()[1]
+    assert lo <= 0.0 and hi >= 2.0  # the zero line and the threshold stay in view
+    assert len(moves) < 10
+
+    w.push([50.0], thresholds=[2.0])  # the data leaves the range: it follows
+    assert pi.viewRange()[1][1] >= 50.0
+
+
+def test_auto_range_button_keeps_following(qt_app):
+    """setYRange once turned pyqtgraph's auto-range off for good: after a click
+    the range froze while the trace moved on."""
+    from mne_rt.viz.nf_plot import NFPlot
+
+    w = NFPlot(
+        ["sensor_power"], {"sensor_power": 1.0}, sfreq=30.0, time_window=10.0, display_smoothing=1.0
+    )
+    for _ in range(30):
+        w.push([1.0])
+    w._auto_range()
+    w.push([80.0])
+    assert w._plots[0].viewRange()[1][1] >= 80.0
+
+
+def test_a_scale_click_visibly_scales_the_trace(qt_app):
+    """Following the data refitted a ×2 trace to the same height: the click had
+    no visible effect. It now holds the range until Auto-range."""
+    from mne_rt.viz.nf_plot import NFPlot
+
+    w = NFPlot(
+        ["sensor_power"], {"sensor_power": 1.0}, sfreq=30.0, time_window=10.0, display_smoothing=1.0
+    )
+    for _ in range(30):
+        w.push([1.0])
+    before = w._plots[0].viewRange()[1]
+    w._scale_up(0)
+    w.push([1.0])
+    assert w._plots[0].viewRange()[1] == before  # the trace doubled inside it
+    w._auto_range()
+    assert w._plots[0].viewRange()[1][1] >= 2.0

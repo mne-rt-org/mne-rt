@@ -35,6 +35,7 @@ from qtpy.QtWidgets import (
 )
 
 from mne_rt._logging import logger
+from mne_rt.viz._decimate import peak_decimate
 
 # Per-channel trace colours — 20 visually distinct hues for a dark background
 
@@ -401,8 +402,11 @@ class RawPlot(QMainWindow):
         self._pi.setXRange(0.0, self._time_window, padding=0.01)
         self._pi.setYRange(-0.5, self._n_shown - 0.5, padding=0)
 
+        # Not antialiased by default, as in mne-qt-browser: 40% of a frame, for
+        # 1 px traces already drawn at two points per pixel. "Smooth lines" in
+        # the Display group turns it on.
         self._curves: list[pg.PlotCurveItem] = [
-            pg.PlotCurveItem(pen=pg.mkPen(color=_TRACE_COLORS[0], width=1))
+            pg.PlotCurveItem(pen=pg.mkPen(color=_TRACE_COLORS[0], width=1), antialias=False)
             for _ in range(self._n_shown)
         ]
         for c in self._curves:
@@ -424,6 +428,7 @@ class RawPlot(QMainWindow):
         glw.scene().sigMouseClicked.connect(self._on_scene_clicked)
 
         self._glw = glw
+        self._pi.getViewBox().sigResized.connect(self._on_plot_resized)
         return glw
 
     def _build_control_panel(self) -> QScrollArea:
@@ -550,7 +555,16 @@ class RawPlot(QMainWindow):
         chk_dc.setChecked(False)
         chk_dc.toggled.connect(self._set_dc_remove)
         lay.addWidget(chk_dc)
+        self._chk_smooth = QCheckBox("Smooth lines (slower)")
+        self._chk_smooth.setChecked(False)
+        self._chk_smooth.toggled.connect(self._set_antialias)
+        lay.addWidget(self._chk_smooth)
         return grp
+
+    def _set_antialias(self, on: bool) -> None:
+        for curve in self._curves:
+            curve.opts["antialias"] = bool(on)
+            curve.update()
 
     def _grp_filter(self) -> QGroupBox:
         grp = QGroupBox("Filter")
@@ -907,6 +921,17 @@ class RawPlot(QMainWindow):
         if uv >= 1:
             return f"{uv:.4g} µV / row"
         return f"{uv * 1000:.4g} nV / row"
+
+    def _plot_px(self) -> int:
+        """The plot area's width in device pixels: one decimation bin each."""
+        px = self._pi.getViewBox().width() * self._glw.devicePixelRatioF()
+        return max(int(px), 100)  # before the first layout the width is 0
+
+    def _on_plot_resized(self) -> None:
+        # Redrawn at the new width now, not at the next push: a paused viewer
+        # would otherwise stay at its old, coarser decimation.
+        if self._plot_px() != getattr(self, "_drawn_px", None):
+            self._redraw()
 
     def _visible(self) -> list[int]:
         """Indices of the channels on the current page."""
@@ -1498,20 +1523,26 @@ class RawPlot(QMainWindow):
         n_actual = len(visible)
         gain = 1.0 / (self._scale + 1e-300)
 
+        # Two points per device pixel, not every sample: a 10 s window at 500 Hz
+        # is 5,000 points per trace across ~1,000 px, and stroking them all was
+        # nearly all of a frame's cost.
+        self._drawn_px = self._plot_px()
+        x, block = peak_decimate(self._time_axis, self._buf[visible], self._drawn_px)
         for vis_idx, ch_idx in enumerate(visible):
-            raw = self._buf[ch_idx].copy()
+            raw = block[vis_idx]
 
             if self._dc_remove:
-                nz = raw[raw != 0]
+                # The mean of the full-rate samples, not of the decimated ones.
+                nz = self._buf[ch_idx][self._buf[ch_idx] != 0]
                 if nz.size > 0:
-                    raw -= nz.mean()
+                    raw = raw - nz.mean()
 
             is_bad = ch_idx in self._bad_ch_idxs
             color = "#505050" if is_bad else self._ch_colors[ch_idx]
             width = 1
             self._curves[vis_idx].setPen(pg.mkPen(color=color, width=width))
             offset = float(n_actual - 1 - vis_idx)
-            self._curves[vis_idx].setData(self._time_axis, offset + raw * gain)
+            self._curves[vis_idx].setData(x, offset + raw * gain)
 
         for vis_idx in range(n_actual, self._n_shown):
             self._curves[vis_idx].setData([], [])

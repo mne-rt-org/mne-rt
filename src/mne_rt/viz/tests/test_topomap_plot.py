@@ -179,3 +179,55 @@ def test_topomap_colour_scale_ignores_a_nan_channel(qt_app, topo_info):
     clim = w._clim_cache[band]
     w.close()
     assert np.all(np.isfinite(clim))
+
+
+def test_topomap_image_matches_plot_topomap_from_the_info(qt_app, topo_info):
+    """Sensor positions are worked out once, not on every frame: the map drawn
+    from them is the one plot_topomap draws from the Info."""
+    import mne
+    from matplotlib.figure import Figure
+
+    from mne_rt.viz.topomap_plot import TopomapPlot
+
+    w = TopomapPlot(topo_info, sfreq=SFREQ, display_smoothing=1.0)
+    data = RNG.standard_normal((N_TOPO, int(SFREQ))) * 1e-5
+    w.push(data)
+    w.push(data)
+    band = next(iter(w._axes))
+    powers = w._compute_band_powers(data)[band]
+    ax = Figure().add_subplot()
+    im, _ = mne.viz.plot_topomap(
+        powers, w._plot_info, axes=ax, show=False, contours=w._contours, res=32, extrapolate="auto"
+    )
+    np.testing.assert_allclose(w._axes[band].images[0].get_array(), im.get_array())
+    assert len(w._axes[band].images) == 1  # the previous frame's map was removed
+
+
+def test_meg_topomap_matches_plot_topomap_from_the_info(qt_app):
+    """Given positions, plot_topomap assumes EEG unless told the channel type,
+    and MEG's "auto" extrapolation (local, not to the head) would change."""
+    import mne
+    from matplotlib.figure import Figure
+
+    from mne_rt.viz.topomap_plot import TopomapPlot
+
+    rng = np.random.default_rng(1)
+    n = 30
+    theta = rng.uniform(0, np.pi / 2.2, n)
+    phi = rng.uniform(0, 2 * np.pi, n)
+    xyz = 0.1 * np.c_[np.sin(theta) * np.cos(phi), np.sin(theta) * np.sin(phi), np.cos(theta)]
+    info = mne.create_info([f"MEG{i:03d}" for i in range(n)], SFREQ, "mag")
+    for ch, pos in zip(info["chs"], xyz):
+        ch["loc"][:3] = pos
+        ch["loc"][3:12] = np.eye(3).ravel()
+    w = TopomapPlot(info, sfreq=SFREQ, display_smoothing=1.0)
+    assert w._ch_type == "mag"
+    data = rng.standard_normal((n, int(SFREQ))) * 1e-13
+    w.push(data)
+    band = next(iter(w._axes))
+    powers = w._compute_band_powers(data)[band]
+    ax = Figure().add_subplot()
+    im, _ = mne.viz.plot_topomap(
+        powers, w._plot_info, axes=ax, show=False, contours=w._contours, res=32, extrapolate="auto"
+    )
+    np.testing.assert_allclose(w._axes[band].images[0].get_array(), im.get_array())

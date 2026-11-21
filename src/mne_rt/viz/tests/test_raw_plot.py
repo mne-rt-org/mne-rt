@@ -229,3 +229,47 @@ def test_raw_plot_picker_uses_the_standard_montage_without_info(qt_app):
     # The test a circle fails: C3 and C4 level with each other, either side of Cz.
     assert abs(pos["C3"][1] - pos["C4"][1]) < 0.02
     assert pos["C3"][0] < pos["Cz"][0] < pos["C4"][0]
+
+
+def test_raw_traces_are_decimated_without_losing_a_spike(qt_app):
+    """Two points per pixel column, not every sample, and a one-sample spike
+    still reaches its full height."""
+    from mne_rt.viz.raw_plot import RawPlot
+
+    w = RawPlot(CH_NAMES, sfreq=500.0)
+    w.resize(800, 600)
+    w.show()
+    qt_app.processEvents()
+    data = np.zeros((N_CH, 5000))
+    data[0, 2500] = 1e-3
+    w.push(data)
+    w._flush_data_queue()
+    x, y = w._curves[0].getData()
+    assert len(x) <= 2 * w._plot_px() < 5000
+    assert y.max() - np.median(y) == pytest.approx(1e-3 / (w._scale + 1e-300))
+
+
+def test_raw_traces_are_not_antialiased_unless_asked(qt_app):
+    from mne_rt.viz.raw_plot import RawPlot
+
+    w = RawPlot(CH_NAMES, sfreq=SFREQ)
+    assert not any(c.opts["antialias"] for c in w._curves)
+    w._chk_smooth.setChecked(True)
+    assert all(c.opts["antialias"] for c in w._curves)
+
+
+def test_raw_is_redrawn_at_a_new_width_even_while_paused(qt_app):
+    from mne_rt.viz.raw_plot import RawPlot
+
+    w = RawPlot(CH_NAMES, sfreq=500.0)
+    w.resize(500, 400)
+    w.show()
+    qt_app.processEvents()
+    w.push(np.zeros((N_CH, 5000)))
+    w._flush_data_queue()
+    narrow = len(w._curves[0].getData()[0])
+    w._paused = True
+    w.resize(1400, 400)
+    for _ in range(5):
+        qt_app.processEvents()
+    assert len(w._curves[0].getData()[0]) > narrow

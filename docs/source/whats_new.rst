@@ -13,6 +13,24 @@ Version 1.3.0
 New features
 ^^^^^^^^^^^^
 
+- **The live viewers draw 2–4× faster, and slow down instead of hanging.**
+  With the NF, raw and topomap windows open on 64-channel EEG at 500 Hz, the
+  viewers used 1.5× the Qt event loop's time, so it could never catch up; they
+  now use under three quarters of it. The pieces: :class:`~mne_rt.viz.RawPlot`
+  and :class:`~mne_rt.viz.EpochPlot` draw each trace at two points per pixel
+  (its minimum and maximum, so a one-sample spike keeps its height), and
+  RawPlot's traces are not antialiased unless *Smooth lines* is ticked;
+  :class:`~mne_rt.viz.NFPlot` rescales its y-axis only when the trace leaves
+  it, which also keeps the axis still to read; *Auto-range* no longer freezes
+  it, and the per-trace ×/÷ scale buttons, which the moving axis had cancelled
+  out, scale the trace again; :class:`~mne_rt.viz.TopomapPlot` lays out and places its sensors
+  once rather than on every frame, with an identical picture; and
+  :class:`~mne_rt.viz.TopoPlot` draws 1 px lines by default (its slider goes to
+  4 px), as any wider pen took 8× as long. On a machine that still cannot keep
+  up, ``record_main`` stretches the raw, topomap and brain viewers' refresh
+  intervals while the event loop runs late, so the windows stay responsive;
+  the NF feedback keeps its full rate.
+
 - **Opt-in causal Haar multiband GEDAI.**
   :class:`~mne_rt.tools.AdaptiveMultibandGEDAIDenoiser` uses delayed pyGEDAI
   Haar reconstruction kernels, finite trailing covariance epochs (six cycles

@@ -265,6 +265,7 @@ class NFPlot(QMainWindow):
         self._time_window = time_window
         self._n = len(modalities)
         self._channel_scales = [1.0] * self._n
+        self._manual_y = [False] * self._n  # set by a ×/÷ scale click
         self._paused = False
         self._display_alpha = float(np.clip(display_smoothing, 0.0, 1.0))
         self._ema = np.zeros(self._n)
@@ -375,7 +376,7 @@ class NFPlot(QMainWindow):
             self._curves.append(curve)
 
             pi.setXRange(0.0, self._time_window, padding=0.01)
-            pi.enableAutoRange(axis="y")
+            pi.setYRange(-0.1, 0.1, padding=0)  # followed by _follow_y from the first push
 
             # Link all X axes to the first plot
             if i > 0:
@@ -634,18 +635,38 @@ class NFPlot(QMainWindow):
             self._update_reward_regions(i)
 
     def _auto_range(self) -> None:
-        for i, pi in enumerate(self._plots):
-            row = self._buf[i][np.isfinite(self._buf[i]) & (self._buf[i] != 0)]
-            vals = list(row) if row.size > 0 else []
-            # Include the threshold line so auto-range doesn't scroll it
-            # out of view when it sits outside the trace's current span.
-            if self._threshold_active[i]:
-                vals.append(self._threshold_lines[i].value())
-            if not vals:
-                continue
-            lo, hi = min(vals), max(vals)
-            margin = (hi - lo) * 0.1 or 1.0
-            pi.setYRange(lo - margin, hi + margin, padding=0)
+        """Fit every plot's y-range to its data now; they keep following it."""
+        for i in range(self._n):
+            self._manual_y[i] = False
+            self._follow_y(i, force=True)
+
+    def _y_bounds(self, i: int) -> tuple[float, float]:
+        """What the y-range must show: the trace, the zero line and a shown threshold."""
+        row = self._buf[i][np.isfinite(self._buf[i])]
+        vals = [0.0, *((row.min(), row.max()) if row.size else ())]
+        # So the threshold is not scrolled out of view when it sits outside the
+        # trace's current span.
+        if self._threshold_active[i] and self._show_threshold:
+            vals.append(self._threshold_lines[i].value())
+        return float(min(vals)), float(max(vals))
+
+    def _follow_y(self, i: int, force: bool = False) -> None:
+        """Keep plot ``i``'s y-range on its data, rescaling only when needed.
+
+        Not pyqtgraph's continuous auto-range: that moved the range on every
+        frame, and each move rebuilt the axis ticks, labels and grid, half of a
+        frame's cost. Here the range moves when the data leaves it or fills
+        less than 1/2.5 of it, which also keeps the axis still to read.
+        """
+        if self._manual_y[i] and not force:
+            return
+        lo, hi = self._y_bounds(i)
+        span = (hi - lo) or 1.0
+        cur_lo, cur_hi = self._plots[i].viewRange()[1]
+        if not force and cur_lo <= lo and hi <= cur_hi and (cur_hi - cur_lo) <= 2.5 * span:
+            return
+        pad = 0.1 * span
+        self._plots[i].setYRange(lo - pad, hi + pad, padding=0)
 
     def _scale_up(self, idx: int) -> None:
         self._rescale(idx, 2.0)
@@ -657,6 +678,9 @@ class NFPlot(QMainWindow):
         # The history and the threshold too, not only what arrives next: the
         # trace would otherwise jump by `factor` at the point of the click.
         self._channel_scales[idx] *= factor
+        # The range stays put so the trace visibly grows or shrinks; following
+        # would refit it to the same height. Auto-range resumes following.
+        self._manual_y[idx] = True
         self._buf[idx] *= factor
         self._ema[idx] *= factor
         if self._threshold_active[idx]:
@@ -779,6 +803,7 @@ class NFPlot(QMainWindow):
                     if rwd:
                         part = "🟢 " + part
 
+            self._follow_y(i)
             status_parts.append(part)
 
         self._status.showMessage("  |  ".join(status_parts))
