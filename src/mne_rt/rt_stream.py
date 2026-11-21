@@ -76,6 +76,7 @@ from mne_rt.tools.gedai import GEDAIDenoiser
 from mne_rt.tools.maxwell import RTMaxwellFilter
 from mne_rt.tools.orica import ORICA
 from mne_rt.viz import BrainPlot, NFPlot, RawPlot, TopomapPlot
+from mne_rt.viz._pacing import LoadShedder
 from mne_rt.viz.brain_plot import N_ICO5, to_display
 
 # The report's axis labels come from the same tables the live NF window uses, so
@@ -3002,10 +3003,11 @@ class RTStream(ModalityMixin):
         if needs_qt:
             from qtpy.QtCore import QTimer
 
-            # Interpolation state [prev_vals, curr_vals, step_index]: the display ramps
-            # between NF values over winsize/2 s of 30-fps ticks.
-            _interp: list = [[], [], [0]]
-            _n_steps: int = max(1, int(30 * winsize // 2))
+            # Interpolation state [prev_vals, curr_vals, arrival time]: the display
+            # ramps between NF values over one hop, timed rather than counted in
+            # ticks, so it keeps pace when the load shedder slows the timer.
+            _interp: list = [[], [], [0.0]]
+            _ramp_s: float = max(winsize / 2, 1e-3)
             # Threshold lines and reward zones update once per analysis
             # window (not per display frame), so the latest snapshot is
             # just held as-is rather than ramped like the value trace.
@@ -3023,16 +3025,15 @@ class RTStream(ModalityMixin):
                         new_vals, new_threshs, new_rewards = nf_queue.get_nowait()
                         _interp[0] = _interp[1] if _interp[1] else new_vals
                         _interp[1] = new_vals
-                        _interp[2][0] = 0
+                        _interp[2][0] = time.perf_counter()
                         _latest_threshs[:] = new_threshs
                         _latest_rewards[:] = new_rewards
                 except Exception:
                     pass
 
                 if nf_plot is not None and _interp[1]:
-                    step = _interp[2][0]
-                    if _interp[0] and step < _n_steps:
-                        alpha = step / _n_steps
+                    alpha = min(1.0, (time.perf_counter() - _interp[2][0]) / _ramp_s)
+                    if _interp[0] and alpha < 1.0:
                         vals = [
                             _interp[0][i] * (1 - alpha) + _interp[1][i] * alpha
                             for i in range(len(_interp[1]))
@@ -3040,7 +3041,6 @@ class RTStream(ModalityMixin):
                     else:
                         vals = _interp[1]
                     nf_plot.push(vals, thresholds=_latest_threshs, rewards=_latest_rewards)
-                    _interp[2][0] += 1
 
                 if done_event.is_set():
                     signal_timer.stop()
@@ -3137,7 +3137,24 @@ class RTStream(ModalityMixin):
                 raw_timer.start()
                 raw_plot.closed.connect(raw_timer.stop)
 
-            app.exec()  # blocks here; drives all three windows in parallel
+            # On a machine too slow to draw every viewer at full rate, their
+            # timers stretch together instead of starving the event loop. Not
+            # the NF pump: NFPlot counts each push as 1/30 s, so a slower pump
+            # would put its time axis out, and it is the participant's feedback.
+            _paced = []
+            if topo_timer is not None:
+                _paced.append((topo_timer, 200))
+            if brain_timer is not None:
+                _paced.append((brain_timer, 200))
+            if raw_timer is not None:
+                _paced.append((raw_timer, 33))
+                _paced.append((raw_plot._flush_timer, 33))
+            shedder = LoadShedder(_paced)
+            shedder.start()
+            try:
+                app.exec()  # blocks here; drives all three windows in parallel
+            finally:
+                shedder.stop()
 
         else:
             # Headless: until acquisition finishes, but bounded, so that a thread

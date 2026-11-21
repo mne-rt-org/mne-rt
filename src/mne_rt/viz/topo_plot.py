@@ -233,7 +233,9 @@ class TopoPlot(QMainWindow):
 
         # Display state
         self._yscale = 1.0
-        self._linewidth = 1.6
+        # 1 px: any wider pen leaves Qt's fast path and drew the 64-channel grid
+        # 8x slower (a quarter of a second per trial); the slider goes to 4 px.
+        self._linewidth = 1.0
         self._smooth_ms = 0.0
         self._show_sem = False
         # update() is handed every epoch so far; Reset hides the first
@@ -548,10 +550,10 @@ class TopoPlot(QMainWindow):
 
         r2, l2 = _row(sb)
         l2.addWidget(_key_lbl("Line width", sb), stretch=1)
-        self._lw_lbl = _val_lbl("1.5", sb)
+        self._lw_lbl = _val_lbl(f"{self._linewidth:.1f}", sb)
         l2.addWidget(self._lw_lbl)
         ly.addWidget(r2)
-        self._lw_sl = _slider(sb, 1, 8, 3)
+        self._lw_sl = _slider(sb, 1, 8, int(round(self._linewidth / 0.5)))
         self._lw_sl.valueChanged.connect(self._on_linewidth)
         ly.addWidget(self._lw_sl)
 

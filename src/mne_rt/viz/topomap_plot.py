@@ -237,6 +237,9 @@ class TopomapPlot(QMainWindow):
             self._plot_info["bads"] = []
         else:
             logger.warning("TopomapPlot: no channel has a sensor position; nothing to draw.")
+        # Where plot_topomap puts each sensor, worked out once: given the Info,
+        # it projects every position again on each call, for every band.
+        self._topo_pos = self._sensor_positions()
         # Rows of a window holding only the good channels (what mne-lsl's
         # get_data returns), in the full info: push() puts them back in place.
         bads = set(self._info["bads"])
@@ -366,6 +369,25 @@ class TopomapPlot(QMainWindow):
             self._axes[band_name] = ax
 
         self._fig.tight_layout(pad=1.2)
+        # Laid out again after the first maps are drawn, and on a resize; not on
+        # every frame, where it measured every text again for an unchanged result.
+        self._layout_pending = True
+        self._canvas.mpl_connect("resize_event", self._on_canvas_resize)
+
+    def _on_canvas_resize(self, _event) -> None:
+        self._layout_pending = True
+
+    def _sensor_positions(self):
+        """The 2-D sensor positions plot_topomap derives from the Info, or the Info."""
+        if self._plot_info is None:
+            return None
+        try:
+            from mne.channels.layout import _find_topomap_coords
+
+            n = len(self._plot_info["ch_names"])
+            return _find_topomap_coords(self._plot_info, np.arange(n))
+        except Exception:  # a private helper: if it moves, let plot_topomap do it
+            return self._plot_info
 
     def _rebuild_canvas(self) -> None:
         old = self._canvas_layout.itemAt(0)
@@ -644,14 +666,18 @@ class TopomapPlot(QMainWindow):
                 cache = getattr(self, "_clim_cache", {})
                 vmin, vmax_use = cache.get(band_name, (-1e-20, 1e-20))
 
-            ax.clear()
-            ax.set_facecolor("#0d0d1a")
-            ax.set_title(band_name, color="#b0b0c8", fontsize=10, pad=4)
+            # The previous map's artists, not ax.clear(): that rebuilt the axes,
+            # their ticks and title on every frame, for a third of its cost.
+            for artist in [*ax.images, *ax.collections, *ax.lines, *ax.patches, *ax.texts]:
+                artist.remove()
 
             try:
                 mne.viz.plot_topomap(
                     powers,
-                    self._plot_info,
+                    self._topo_pos,
+                    # Given positions rather than the Info, plot_topomap takes
+                    # them for EEG: MEG's "auto" extrapolation would change.
+                    ch_type=self._ch_type,
                     axes=ax,
                     show=False,
                     cmap=self._cmap,
@@ -674,7 +700,9 @@ class TopomapPlot(QMainWindow):
                     wrap=True,
                 )
 
-        self._fig.tight_layout(pad=1.2)
+        if self._layout_pending:
+            self._fig.tight_layout(pad=1.2)
+            self._layout_pending = False
         self._canvas.draw_idle()
 
     # Public interface

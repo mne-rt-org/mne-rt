@@ -98,3 +98,14 @@ def test_topo_reset_does_not_hide_a_new_run(qt_app, common_kw):
     w.update(new, new_conds)
     assert sum(w._n_per.values()) == 5
     w.close()
+
+
+def test_topo_line_width_starts_at_1px_and_the_slider_agrees(qt_app, common_kw):
+    """Wider pens leave Qt's fast path: the 64-channel grid drew 8x slower. The
+    slider and its label used to start at 1.5 while the lines were 1.6."""
+    from mne_rt.viz.topo_plot import TopoPlot
+
+    w = TopoPlot(**common_kw)
+    assert w._linewidth == 1.0
+    assert w._lw_sl.value() * 0.5 == w._linewidth
+    assert w._lw_lbl.text() == "1.0"
