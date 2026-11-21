@@ -38,6 +38,7 @@ from qtpy.QtWidgets import (
 )
 
 from mne_rt._logging import logger
+from mne_rt.viz._layout import fit_to_screen
 from mne_rt.viz._smoothing import check_smoothing, ema_step
 
 # Constants
@@ -249,7 +250,7 @@ class TopomapPlot(QMainWindow):
 
         self._build_ui()
         self.setWindowTitle("MNE-RT — Topomap")
-        self.resize(1200, 540)
+        fit_to_screen(self, 1200, 540)
 
     # Setup helpers
 

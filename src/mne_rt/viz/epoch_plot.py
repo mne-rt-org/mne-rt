@@ -42,6 +42,7 @@ from qtpy.QtWidgets import (
 )
 
 from mne_rt.viz._decimate import peak_decimate
+from mne_rt.viz._layout import fit_to_screen
 
 # Colour palettes
 
@@ -286,7 +287,7 @@ class EpochPlot(QMainWindow):
         pg.setConfigOptions(antialias=True, foreground="#c0c0d8", background="#0d0d1a")
         self._build_ui()
         self.setWindowTitle("MNE-RT — Epoch Viewer")
-        self.resize(1500, 720)
+        fit_to_screen(self, 1500, 720)
 
         # 30 Hz render timer — processes queued data in the main Qt thread.
         self._render_timer = QTimer(self)

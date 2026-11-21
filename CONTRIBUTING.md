@@ -69,6 +69,9 @@ unreleased numpy, scipy, MNE and friends, which reports without blocking.
   through `pytestmark`), which runs it 10x faster than real time; sessions on a
   real LSL stream keep the real clock. Mark a test that checks timing
   precisely `real_time`.
+- A test that runs `record_main` with its Qt windows open goes in
+  `src/mne_rt/tests`, not `viz/tests`: a session's event loop runs the deferred
+  deletes of viewers torn down earlier, which segfaults the whole run.
 - Add a line to `docs/source/whats_new.rst` under the current unreleased version.
 - Public functions and methods use NumPy-style docstrings and accept a
   `verbose=` keyword, following MNE-Python's conventions.

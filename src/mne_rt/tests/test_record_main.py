@@ -1044,3 +1044,42 @@ def test_display_scales_follow_the_zscored_units(tmp_path, array_info):
         monkey.undo()
         nf.save()
     assert captured["scales"]["sensor_power"] == 1.0
+
+
+# Here, not in viz/tests: those run after viewers are torn down, and the event
+# loop of a session started then runs their deferred deletes, which segfaults
+# (see viz/tests/conftest.py's _destroy_widgets).
+
+
+def _tiled_session(tmp_path, monkeypatch, **kwargs):
+    import mne
+
+    from mne_rt import rt_stream
+
+    seen = []
+    monkeypatch.setattr(rt_stream, "tile_windows", lambda windows: seen.append(list(windows)))
+    info = mne.create_info(["Fp1", "Fp2", "C3", "C4"], 256.0, "eeg")
+    nf = _make_rt_stream(tmp_path, montage="easycap-M1")
+    nf.connect_to_array(_make_array_data(info, duration=10.0), info, n_repeat=np.inf)
+    try:
+        nf.record_main(
+            duration=1.0,
+            winsize=0.5,
+            modality="sensor_power",
+            show_nf_signal=True,
+            show_raw_signal=True,
+            **kwargs,
+        )
+    finally:
+        nf.save()
+    return seen
+
+
+def test_record_main_tiles_its_windows_nf_first(tmp_path, monkeypatch):
+    (windows,) = _tiled_session(tmp_path, monkeypatch)
+    assert type(windows[0]).__name__ == "NFPlot"
+    assert type(windows[-1]).__name__ == "RawPlot"
+
+
+def test_record_main_can_leave_the_windows_where_they_open(tmp_path, monkeypatch):
+    assert _tiled_session(tmp_path, monkeypatch, arrange_windows=False) == []

@@ -35,6 +35,7 @@ except ImportError:
 
 from mne_rt._logging import logger
 from mne_rt.tools import setup_surface
+from mne_rt.viz._layout import fit_size
 from mne_rt.viz._smoothing import check_smoothing, ema_step
 
 # Constants
@@ -348,7 +349,9 @@ class BrainPlot:
 
     def _build_plotter(self, window_size: tuple[int, int]) -> "_BackgroundPlotter":
         p = _BackgroundPlotter(
-            window_size=tuple(window_size),
+            # Capped before the window exists: 1600 x 1000 by default, more than
+            # a laptop screen holds, and shrunk once shown it stayed off-screen.
+            window_size=fit_size(*window_size),
             lighting="three lights",
             title="MNE-RT — Brain Activation",
             toolbar=False,

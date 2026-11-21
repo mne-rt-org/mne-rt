@@ -14,12 +14,9 @@ TopoPlot
 
 from __future__ import annotations
 
-import math
 from typing import Optional, Union
 
 import numpy as np
-
-from mne_rt._montage import make_standard_montage
 
 try:
     from qtpy.QtCore import QRectF, Qt, Signal
@@ -60,6 +57,8 @@ except ImportError:
     _mne_available = False
 
 from mne_rt._logging import logger, set_log_level
+from mne_rt.viz._layout import fit_to_screen
+from mne_rt.viz._sensor_selector import sensor_positions
 
 # Palette
 _BG = "#0d1117"
@@ -253,10 +252,10 @@ class TopoPlot(QMainWindow):
         self._reref_mode = "none"
         self._mastoid_idx = self._find_mastoids()
 
-        self._norm_pos = self._compute_positions(info, montage)
+        self._norm_pos = sensor_positions(self.ch_names, info, montage)
 
         self.setWindowTitle("MNE-RT — Topo ERP")
-        self.resize(*window_size)
+        fit_to_screen(self, *window_size)
         self._apply_styles()
         self._build_ui()
 
@@ -286,57 +285,6 @@ class TopoPlot(QMainWindow):
 
     def _find_mastoids(self) -> list[int]:
         return [i for i, ch in enumerate(self.ch_names) if ch in _MASTOID_NAMES]
-
-    # Scalp layout
-
-    def _compute_positions(self, info, montage_name: str) -> list[tuple[float, float]]:
-        if _mne_available:
-            if info is not None:
-                pos = self._from_layout(mne.channels.find_layout(info))
-                if pos is not None:
-                    return pos
-            try:
-                tmp = mne.create_info(self.ch_names, sfreq=1.0, ch_types="eeg", verbose=False)
-                mont = make_standard_montage(montage_name)
-                tmp.set_montage(mont, on_missing="ignore", verbose=False)
-                pos = self._from_layout(mne.channels.find_layout(tmp))
-                if pos is not None:
-                    return pos
-            except Exception as exc:
-                logger.debug("TopoPlot: montage layout failed: %s", exc)
-        logger.warning("TopoPlot: falling back to circular layout.")
-        return self._circular_fallback()
-
-    def _from_layout(self, layout) -> Optional[list[tuple[float, float]]]:
-        if layout is None:
-            return None
-        name_xy: dict[str, tuple[float, float]] = {}
-        for name, pos in zip(layout.names, layout.pos):
-            xc = float(pos[0] + pos[2] / 2.0)
-            yc = float(pos[1] + pos[3] / 2.0)
-            name_xy[name] = (xc, 1.0 - yc)
-        n_matched = sum(1 for c in self.ch_names if c in name_xy)
-        if n_matched < self._n_ch // 2:
-            return None
-        positions: list[tuple[float, float]] = []
-        fb = 0
-        for ch in self.ch_names:
-            if ch in name_xy:
-                positions.append(name_xy[ch])
-            else:
-                positions.append((0.02, fb * 0.05))
-                fb += 1
-        return positions
-
-    def _circular_fallback(self) -> list[tuple[float, float]]:
-        n = self._n_ch
-        return [
-            (
-                0.5 + 0.42 * math.cos(2 * math.pi * i / n - math.pi / 2),
-                0.5 + 0.42 * math.sin(2 * math.pi * i / n - math.pi / 2),
-            )
-            for i in range(n)
-        ]
 
     # UI build
 
