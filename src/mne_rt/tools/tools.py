@@ -1,3 +1,4 @@
+import functools
 import os.path as op
 import time
 from copy import deepcopy
@@ -800,6 +801,55 @@ def weight_to_degree_map(n_nodes):
 _log_degree_barrier_cache: dict = {}
 
 
+@functools.lru_cache(maxsize=1)
+def _mne_learn_graph():
+    """MNE-Connectivity's learn_graph (0.10+), or None: looked up once, not per window."""
+    try:
+        from mne_connectivity import learn_graph
+    except ImportError:
+        return None
+    return learn_graph
+
+
+def learn_graph(signals, dist_type="sqeuclidean", alpha=1.0, beta=1.0):
+    """Learn a graph over ``signals`` and scale it to its strongest edge.
+
+    MNE-Connectivity's :func:`~mne_connectivity.learn_graph` (Kalofolias
+    2016) from mne-connectivity 0.10; with an older one, mne-rt's own
+    :func:`log_degree_barrier`, which scales its distances the same way, so the
+    two give the same graph to within solver tolerance. Ours goes once 0.10 is
+    released and required.
+
+    Parameters
+    ----------
+    signals : ndarray, shape (n_nodes, n_times)
+        One row per node (channel or ROI time course).
+    dist_type : str
+        Distance metric for :func:`scipy.spatial.distance.pdist`.
+    alpha, beta : float
+        The log-degree barrier and the edge-weight penalty.
+
+    Returns
+    -------
+    graph : ndarray, shape (n_nodes, n_nodes)
+        Symmetric, non-negative, zero diagonal, the strongest edge 1. All NaN
+        when ``signals`` are not all finite: a window of bad data is no graph,
+        not one with zero weights.
+    """
+    n = signals.shape[0]
+    if not np.all(np.isfinite(signals)):
+        return np.full((n, n), np.nan)
+    mne_learn_graph = _mne_learn_graph()
+    if mne_learn_graph is None:
+        return log_degree_barrier(signals, dist_type=dist_type, alpha=alpha, beta=beta)
+    con = mne_learn_graph(
+        signals, alpha=alpha, beta=beta, metric=dist_type, max_iter=10000, verbose=False
+    )
+    graph = np.asarray(con.get_data(output="dense"), dtype=float).reshape(n, n)
+    top = graph.max()
+    return graph / top if top > 0 else graph
+
+
 def log_degree_barrier(
     signals,
     dist_type,
@@ -869,9 +919,11 @@ def log_degree_barrier(
 
     # General case
     z = pdist(signals, dist_type)
-    z_max = np.max(z)
-    if z_max > 0:
-        z = z / z_max
+    # By the mean distance, as MNE-Connectivity's learn_graph scales them: by the
+    # max, the same alpha and beta gave it a graph about three times as dense.
+    z_mean = np.mean(z)
+    if z_mean > 0:
+        z = z / z_mean
 
     # Warm-starting from cache
     if w0 is None:

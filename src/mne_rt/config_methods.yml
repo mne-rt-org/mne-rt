@@ -231,9 +231,11 @@ NF_modality:
 
   source_graph:
     # Graph-theoretic connectivity: learns a graph over the ROIs and reports
-    # the edge weight between the two named in `pair`.
+    # the edge weight between the two named in `pair`. At least three ROIs:
+    # over two, the one learned edge weighs the same in every window.
     frange: [8, 13]          # Hz
-    rois: ["transversetemporal-lh", "transversetemporal-rh"]
+    rois: ["transversetemporal-lh", "transversetemporal-rh",
+           "superiortemporal-lh", "superiortemporal-rh"]
     pair: ["transversetemporal-lh", "transversetemporal-rh"]
     atlas: null              # null -> the session's source_atlas
     inverse_method: "dSPM"

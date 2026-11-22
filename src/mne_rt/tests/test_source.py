@@ -823,7 +823,7 @@ def test_source_model_is_shared_across_modalities(tmp_path, monkeypatch):
     assert calls == [("LCMV", "aparc+aseg"), ("dSPM", "aparc+aseg")]
 
 
-def test_source_graph_needs_two_rois(tmp_path, stub_source):
+def test_source_graph_needs_three_rois(tmp_path, stub_source):
     obj = _modality_obj(
         tmp_path,
         {
@@ -836,7 +836,7 @@ def test_source_graph_needs_two_rois(tmp_path, stub_source):
             "inverse_method": "LCMV",
         },
     )
-    with pytest.raises(ValueError, match="at least two"):
+    with pytest.raises(ValueError, match="at least three"):
         obj._source_graph_prep()
 
 

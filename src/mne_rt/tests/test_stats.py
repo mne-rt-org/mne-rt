@@ -16,7 +16,7 @@ from mne_rt._stats import (
 NATIVE_SCALES = [
     pytest.param(3.2e-13, 7.9e-15, id="sensor_power-eeg"),
     pytest.param(4.1e-25, 9.0e-27, id="sensor_power-meg"),
-    pytest.param(2.0e-17, 5.0e-19, id="source_graph"),
+    pytest.param(2.0e-17, 5.0e-19, id="tiny-1e-17"),  # a source-space magnitude
     pytest.param(1.0, 0.25, id="o1-control"),
 ]
 

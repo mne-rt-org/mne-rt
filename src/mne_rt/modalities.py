@@ -56,7 +56,7 @@ from mne_rt.tools import (
     compute_fft,
     compute_instantaneous_phase,
     estimate_aperiodic_component,
-    log_degree_barrier,
+    learn_graph,
     resolve_connectivity_method,
     resolve_n_cycles,
     timed,
@@ -113,6 +113,16 @@ def _connectivity_values(con, take_imag: bool) -> np.ndarray:
         # e.g. "cohy" requested directly — report the real (co-coherence) part.
         return np.real(values)
     return values
+
+
+def _graph_params(params: dict, name: str) -> dict:
+    """alpha and beta, checked before the session rather than in every window."""
+    alpha, beta = float(params["alpha"]), float(params["beta"])
+    if not alpha > 0 or not beta >= 0:
+        raise ValueError(
+            f"{name}: alpha must be > 0 and beta >= 0; got alpha={alpha}, beta={beta}."
+        )
+    return {"alpha": alpha, "beta": beta}
 
 
 class EdgeValues(float):
@@ -654,6 +664,11 @@ class ModalityMixin:
             raise ValueError(
                 f"sensor_graph: channels {missing} not found in recording. Available: {ch_names}"
             )
+        if len(ch_names) < 3:
+            raise ValueError(
+                f"sensor_graph learns a graph over the channels and needs at least three; "
+                f"got {ch_names}."
+            )
         indices = tuple((ch_names.index(a), ch_names.index(b)) for a, b in pairs)
         sos = butter_bandpass(
             self.params["frange"][0],
@@ -665,8 +680,7 @@ class ModalityMixin:
             "indices": indices,
             "sos": sos,
             "dist_type": self.params["dist_type"],
-            "alpha": self.params["alpha"],
-            "beta": self.params["beta"],
+            **_graph_params(self.params, "sensor_graph"),
             "labels": pairs,
         }
 
@@ -679,9 +693,12 @@ class ModalityMixin:
             )
         common = self._source_prep_common(inverse_method=inverse_method)
         roi_names = [roi.name for roi in common["rois"]]
-        if len(roi_names) < 2:
+        if len(roi_names) < 3:
+            # Over two nodes a learned graph is one edge, whose weight does not
+            # depend on the data: the distances are scaled by their own size.
             raise ValueError(
-                f"source_graph learns a graph over ROIs and needs at least two; got {roi_names}."
+                f"source_graph learns a graph over ROIs and needs at least three; got "
+                f"{roi_names}. With two, its one edge would weigh the same in every window."
             )
 
         pair = self.params.get("pair")
@@ -692,12 +709,6 @@ class ModalityMixin:
         if missing:
             raise ValueError(f"Edge member(s) {missing} are not among the ROIs {roi_names}.")
         edge = (roi_names.index(pair[0]), roi_names.index(pair[1]))
-        if len(roi_names) == 2:
-            logger.warning(
-                "source_graph: a graph learned over two ROIs has one edge, whose weight "
-                "does not depend on the data (it is 1.0 in every window). Configure "
-                "three or more ROIs for a value that does."
-            )
 
         sos = butter_bandpass(
             self.params["frange"][0],
@@ -710,8 +721,7 @@ class ModalityMixin:
             "edge": edge,
             "sos": sos,
             "dist_type": self.params["dist_type"],
-            "alpha": self.params["alpha"],
-            "beta": self.params["beta"],
+            **_graph_params(self.params, "source_graph"),
             "labels": [tuple(pair)],
             "nodes": roi_names,
         }
@@ -945,7 +955,7 @@ class ModalityMixin:
     ) -> float:
         """Graph-theoretic connectivity from sensor-space M/EEG."""
         data_filt = sosfiltfilt(sos, data)
-        graph_matrix = log_degree_barrier(data_filt, dist_type=dist_type, alpha=alpha, beta=beta)
+        graph_matrix = learn_graph(data_filt, dist_type=dist_type, alpha=alpha, beta=beta)
         # One learned weight per configured pair: graph_matrix[array([i, j])]
         # selected two whole rows, so the value averaged 2 x n_channels weights.
         edges = np.array([graph_matrix[i, j] for i, j in indices])
@@ -971,7 +981,7 @@ class ModalityMixin:
         """Learned graph edge weight between two source-space ROIs."""
         tcs = self._roi_time_courses(model, data, kernel, ch_picks, label_operator)
         tcs_filt = sosfiltfilt(sos, tcs)
-        graph_matrix = log_degree_barrier(
+        graph_matrix = learn_graph(
             tcs_filt,
             dist_type=dist_type,
             alpha=alpha,

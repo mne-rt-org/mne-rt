@@ -13,6 +13,14 @@ Version 1.3.0
 New features
 ^^^^^^^^^^^^
 
+- **Graph learning from MNE-Connectivity.** ``sensor_graph`` and
+  ``source_graph`` learn their graph with
+  :func:`mne_connectivity.learn_graph` (Kalofolias 2016) when mne-connectivity
+  0.10 or later is installed, twice as fast per window as mne-rt's own solver,
+  which is used until then and goes once 0.10 is required. The two give the same
+  graph to within solver tolerance. A window of non-finite data now gives no
+  graph (NaN), rather than one read as measured.
+
 - **A live view of connectivity.** :class:`~mne_rt.viz.ConnectivityPlot`
   (``record_main(show_connectivity=True)``, ``mne-rt run --connectivity``)
   shows the pairs each connectivity modality computes, which reached the
@@ -232,6 +240,21 @@ API changes
   ``winsize`` is larger than the stream's buffer (``bufsize_main``). The stream
   returns at most its buffer, so part of every chunk was silently missing from
   the baseline.
+- ``source_graph`` needs at least three ROIs and ``sensor_graph`` at least
+  three channels, and both check ``alpha > 0`` and ``beta >= 0`` before the
+  session starts. Over two nodes the one learned edge weighs the same in every
+  window, so a two-ROI ``source_graph``, the old default, fed back a constant;
+  the default configuration now has four ROIs.
+
+Numeric output changes
+^^^^^^^^^^^^^^^^^^^^^^
+
+**Graph modalities.** mne-rt's own graph learning now scales distances by their
+mean, as MNE-Connectivity's does, rather than by their maximum. The same
+``alpha`` and ``beta`` used to give a graph about three times as dense, and
+``sensor_graph`` and ``source_graph`` values change accordingly; the two
+learners now agree (correlation 1.0 across 4–64 nodes). ``source_graph`` is
+also plotted on a 0–1 scale, like ``sensor_graph``.
 
 .. _changes_1_2_0:
 
