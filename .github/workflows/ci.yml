@@ -36,16 +36,16 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
         with:
           persist-credentials: false
-      - uses: astral-sh/setup-uv@v8.3.1
+      - uses: astral-sh/setup-uv@v10.3.3
         with:
           python-version: "3.11"
       # The hooks of .pre-commit-config.yaml, at the versions pinned there, so
       # CI and a contributor's commit check the same: ruff, file checks, and
       # zizmor's audit of the workflows and the Dependabot config.
-      - uses: actions/cache@v4
+      - uses: actions/cache@v6
         with:
           path: ~/.cache/pre-commit
           key: pre-commit-${{ hashFiles('.pre-commit-config.yaml') }}
@@ -73,16 +73,16 @@ jobs:
           - {os: macos-latest, python: "3.13"}
           - {os: windows-latest, python: "3.13"}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
         with:
           persist-credentials: false
       # mne-rt's live viz windows need a display even in headless CI
-      - uses: pyvista/setup-headless-display-action@v4
+      - uses: pyvista/setup-headless-display-action@v5
         with:
           qt: true
           pyvista: ${{ contains(matrix.extras, 'viz') }}
           wm: false
-      - uses: astral-sh/setup-uv@v8.3.1
+      - uses: astral-sh/setup-uv@v10.3.3
         with:
           python-version: ${{ matrix.python }}
           activate-environment: true
@@ -90,7 +90,7 @@ jobs:
       # job leaves both out.
       - run: uv pip install -e ".[dev,pyqt6,gedai${{ matrix.extras }}]" pycrostates
       # fsaverage, fetched by the source-space tests.
-      - uses: actions/cache@v4
+      - uses: actions/cache@v6
         with:
           path: ~/mne_data/MNE-fsaverage-data
           key: mne-fsaverage-v1
@@ -99,7 +99,7 @@ jobs:
           # The legacy C tracer: sys.monitoring, the 3.12+ default, interacts
           # badly with numba jitclass code.
           COVERAGE_CORE: ctrace
-      - uses: codecov/codecov-action@v5
+      - uses: codecov/codecov-action@v7
         if: matrix.coverage && (success() || failure())
         with:
           # A fork's pull request gets no OIDC token; Codecov takes it tokenless.
@@ -117,15 +117,15 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 30
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
         with:
           persist-credentials: false
-      - uses: pyvista/setup-headless-display-action@v4
+      - uses: pyvista/setup-headless-display-action@v5
         with:
           qt: true
           pyvista: false
           wm: false
-      - uses: astral-sh/setup-uv@v8.3.1
+      - uses: astral-sh/setup-uv@v10.3.3
         with:
           # oldest supported interpreter, to match the oldest dependencies
           python-version: "3.11"
@@ -133,7 +133,7 @@ jobs:
       - run: uv pip install --resolution lowest-direct -e ".[dev,pyqt6]"
       - run: uv pip list
       # fsaverage, fetched by the source-space tests.
-      - uses: actions/cache@v4
+      - uses: actions/cache@v6
         with:
           path: ~/mne_data/MNE-fsaverage-data
           key: mne-fsaverage-v1
@@ -148,15 +148,15 @@ jobs:
     # workflow, so the breakage it found is reported.
     continue-on-error: ${{ github.event_name != 'schedule' }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
         with:
           persist-credentials: false
-      - uses: pyvista/setup-headless-display-action@v4
+      - uses: pyvista/setup-headless-display-action@v5
         with:
           qt: true
           pyvista: false
           wm: false
-      - uses: astral-sh/setup-uv@v8.3.1
+      - uses: astral-sh/setup-uv@v10.3.3
         with:
           python-version: "3.13"
           activate-environment: true
@@ -168,7 +168,7 @@ jobs:
           "mne @ git+https://github.com/mne-tools/mne-python"
       - run: uv pip list
       # fsaverage, fetched by the source-space tests.
-      - uses: actions/cache@v4
+      - uses: actions/cache@v6
         with:
           path: ~/mne_data/MNE-fsaverage-data
           key: mne-fsaverage-v1
