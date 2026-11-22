@@ -516,6 +516,12 @@ def _add_run_parser(sub):
         action="store_true",
         help="Show the 3-D brain activation display.",
     )
+    p.add_argument(
+        "--connectivity",
+        action="store_true",
+        help="Show the connectivity viewer: the pairs a connectivity modality computes, "
+        "live (ConnectivityPlot).",
+    )
     # ERP / epoch plot flags
     p.add_argument(
         "--topo",
@@ -1404,6 +1410,7 @@ def _cmd_run(args) -> None:
             show_raw_signal=not args.no_raw,
             show_topo=args.topomap,
             show_brain_activation=args.brain,
+            show_connectivity=args.connectivity,
             osc_sender=osc_sender,
             lsl_sender=lsl_sender,
             protocol=protocol,

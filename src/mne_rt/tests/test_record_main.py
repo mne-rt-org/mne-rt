@@ -1077,9 +1077,61 @@ def _tiled_session(tmp_path, monkeypatch, **kwargs):
 
 def test_record_main_tiles_its_windows_nf_first(tmp_path, monkeypatch):
     (windows,) = _tiled_session(tmp_path, monkeypatch)
-    assert type(windows[0]).__name__ == "NFPlot"
-    assert type(windows[-1]).__name__ == "RawPlot"
+    shown = [type(w).__name__ for w in windows if w is not None]  # None: not opened
+    assert shown == ["NFPlot", "RawPlot"]
 
 
 def test_record_main_can_leave_the_windows_where_they_open(tmp_path, monkeypatch):
     assert _tiled_session(tmp_path, monkeypatch, arrange_windows=False) == []
+
+
+def _conn_session(tmp_path, monkeypatch, modality):
+    import mne
+
+    from mne_rt import rt_stream
+
+    pushes, made = [], []
+    real_init, real_push = rt_stream.ConnectivityPlot.__init__, rt_stream.ConnectivityPlot.push
+
+    def _init(self, *a, **k):
+        made.append(1)
+        real_init(self, *a, **k)
+
+    def _push(self, values):
+        pushes.append(values)
+        real_push(self, values)
+
+    monkeypatch.setattr(rt_stream.ConnectivityPlot, "__init__", _init)
+    monkeypatch.setattr(rt_stream.ConnectivityPlot, "push", _push)
+    names = ["F3", "F4", "C3", "C4"]
+    info = mne.create_info(names, 256.0, "eeg")
+    nf = _make_rt_stream(tmp_path, montage="easycap-M1")
+    nf.connect_to_array(_make_array_data(info, duration=20.0), info, n_repeat=np.inf)
+    try:
+        nf.record_main(
+            duration=4.0,
+            winsize=1.0,
+            modality=modality,
+            show_nf_signal=False,
+            show_raw_signal=False,
+            show_connectivity=True,
+            arrange_windows=False,
+        )
+    finally:
+        nf.save()
+    return nf, made, pushes
+
+
+def test_show_connectivity_feeds_the_viewer_each_window_s_pairs(tmp_path, monkeypatch):
+    nf, made, pushes = _conn_session(tmp_path, monkeypatch, "sensor_connectivity")
+    assert made == [1] and pushes
+    snap = pushes[-1]["sensor_connectivity"]
+    assert snap["labels"] == [("C3", "C4"), ("F3", "F4")]  # the default config's pairs
+    assert snap["value"] == pytest.approx(np.mean(snap["edges"]))
+    assert all(type(v) is float for v in nf.nf_data["sensor_connectivity"])
+
+
+def test_show_connectivity_without_a_connectivity_modality_only_warns(tmp_path, monkeypatch):
+    nf, made, pushes = _conn_session(tmp_path, monkeypatch, "sensor_power")
+    assert made == [] and pushes == []
+    assert len(nf.nf_data["sensor_power"]) > 0

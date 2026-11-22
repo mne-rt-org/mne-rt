@@ -62,7 +62,7 @@ from mne_rt._naming import MODALITY_SEP, osc_address_name, parse_modality, split
 from mne_rt._stats import ema_variance, zscore
 from mne_rt.combiners import GeometricMeanCombiner, ZScoredNormCombiner
 from mne_rt.decoding import RTDecode
-from mne_rt.modalities import ModalityMixin
+from mne_rt.modalities import EdgeValues, ModalityMixin
 from mne_rt.tools import (
     _compute_inv_operator,
     create_blink_template,
@@ -75,7 +75,7 @@ from mne_rt.tools.bids_io import _build_bids_stem, describe_nf_columns, write_nf
 from mne_rt.tools.gedai import GEDAIDenoiser
 from mne_rt.tools.maxwell import RTMaxwellFilter
 from mne_rt.tools.orica import ORICA
-from mne_rt.viz import BrainPlot, NFPlot, RawPlot, TopomapPlot
+from mne_rt.viz import BrainPlot, ConnectivityPlot, NFPlot, RawPlot, TopomapPlot
 from mne_rt.viz._layout import tile_windows
 from mne_rt.viz._pacing import LoadShedder
 from mne_rt.viz.brain_plot import N_ICO5, to_display
@@ -87,6 +87,32 @@ from mne_rt.viz.nf_plot import _label_for, _unit_for
 # Package root — resolves correctly both in editable installs and installed wheels
 _PKG_DIR = Path(__file__).resolve().parent
 _REPO_ROOT = _PKG_DIR.parent.parent  # src/ant → src → repo root
+# The modalities whose value comes from connection pairs (show_connectivity).
+_CONNECTIVITY_MODALITIES = frozenset(
+    {
+        "sensor_connectivity",
+        "source_connectivity",
+        "connectivity_ratio",
+        "sensor_graph",
+        "source_graph",
+    }
+)
+
+
+def _edge_snapshot(value: EdgeValues, t: float) -> dict:
+    """A connectivity value's pairs, as plain data for the viewer's thread."""
+    return {
+        "time": float(t),
+        "value": float(value),
+        "edges": value.edges.copy(),
+        "labels": value.labels,
+        "metric": value.metric,
+        "signed": value.signed,
+        "space": value.space,
+        "nodes": value.nodes,
+    }
+
+
 # How long record_main waits, past the end of a run, for the acquisition thread
 # to stop before it saves the session without it.
 _ACQ_STOP_TIMEOUT = 10.0
@@ -1703,6 +1729,7 @@ class RTStream(ModalityMixin):
         artifact_threshold_uv: float = 100.0,
         track_snr: bool = False,
         snr_frange: Optional[tuple] = None,
+        show_connectivity: bool = False,
         arrange_windows: bool = True,
         verbose: Union[bool, str, None] = None,
     ) -> None:
@@ -1947,6 +1974,15 @@ class RTStream(ModalityMixin):
             Frequency band ``(f_low, f_high)`` in Hz used as the "signal"
             band when ``track_snr=True``.  ``None`` defaults to the alpha
             band ``(8.0, 13.0)``.
+        show_connectivity : bool, default False
+            Show the :class:`~mne_rt.viz.ConnectivityPlot`, an experimenter's
+            view of the pairs each connectivity modality computes
+            (``sensor_connectivity``, ``source_connectivity``,
+            ``connectivity_ratio``, ``sensor_graph``, ``source_graph``): edges
+            on the head or between ROIs on a circle, and each pair's value over
+            time. Ignored, with a warning, when no such modality runs.
+
+            .. versionadded:: 1.3.0
         arrange_windows : bool, default True
             Tile the windows this opens over the screen, the NF display first
             and widest, each no larger than the screen allows. ``False``
@@ -2185,7 +2221,7 @@ class RTStream(ModalityMixin):
             "sensor_connectivity": 1.0,
             "source_connectivity": 1.0,
             "connectivity_ratio": 4.0,
-            "sensor_graph": 0.05,
+            "sensor_graph": 1.0,  # edge weights, normalised to [0, 1]
             "source_graph": 2e-17,
             "entropy": 3.0,
             "argmax_freq": 8.0,
@@ -2356,7 +2392,20 @@ class RTStream(ModalityMixin):
             self._ensure_head_model("The brain-activation display", need_inverse=True)
             brain_kernel = self._brain_kernel()
 
-        needs_qt = show_nf_signal or show_brain_activation or show_raw_signal or show_topo
+        _conn_mods = [s.name for s in specs if s.base in _CONNECTIVITY_MODALITIES]
+        if show_connectivity and not _conn_mods:
+            logger.warning(
+                "show_connectivity: none of %s computes connectivity; no connectivity window.",
+                [s.name for s in specs],
+            )
+            show_connectivity = False
+        needs_qt = (
+            show_nf_signal
+            or show_brain_activation
+            or show_raw_signal
+            or show_topo
+            or show_connectivity
+        )
         app: Optional[QtWidgets.QApplication] = None
 
         if needs_qt:
@@ -2404,6 +2453,15 @@ class RTStream(ModalityMixin):
             )
             raw_plot.show()
 
+        conn_plot: Optional[ConnectivityPlot] = None
+        if show_connectivity:
+            conn_plot = ConnectivityPlot(
+                ch_names=self._acquired_ch_names(),
+                info=self._acquired_info(),
+                rate=2.0 / winsize,  # one update per hop, half a window
+            )
+            conn_plot.show()
+
         if needs_qt and arrange_windows:
             # Tiled over the screen, the participant's NF window first, instead
             # of each at its own size wherever the window manager put it.
@@ -2413,6 +2471,7 @@ class RTStream(ModalityMixin):
                     topo_plot,
                     brain_plot.plotter.app_window if brain_plot is not None else None,
                     raw_plot,
+                    conn_plot,
                 ]
             )
 
@@ -2439,6 +2498,9 @@ class RTStream(ModalityMixin):
         )
         raw_queue: Optional[_queue.Queue] = (
             _queue.Queue(maxsize=4) if raw_plot is not None else None
+        )
+        conn_queue: Optional[_queue.Queue] = (
+            _queue.Queue(maxsize=8) if conn_plot is not None else None
         )
         done_event = threading.Event()
         # Stops an acquisition thread that outlives the join (windows closed early)
@@ -2889,8 +2951,11 @@ class RTStream(ModalityMixin):
                         for i in range(len(specs))
                     ]
                     _crossed_map: dict = {}
+                    _conn_snap: dict = {}
                     for m, fut in zip(mods, futures):
                         nf_val, m_delay = fut.result()
+                        if conn_queue is not None and isinstance(nf_val, EdgeValues):
+                            _conn_snap[m] = _edge_snapshot(nf_val, time.monotonic())
                         nf_val = _apply_zscore(m, float(nf_val))
                         # EMA smoothing: seed on first window, then blend
                         if m not in _ema:
@@ -2915,6 +2980,11 @@ class RTStream(ModalityMixin):
                         if estimate_delays:
                             _meth_delays[m].append(m_delay)
 
+                    if _conn_snap:
+                        try:
+                            conn_queue.put_nowait(_conn_snap)
+                        except _queue.Full:
+                            pass  # the viewer is behind: this window is not shown
                     if combiner is not None:
                         # Hold at 0.0 until every feature is normalised, as ZScoredNormCombiner
                         # does: combining during warmup would mix native units.
@@ -3071,6 +3141,8 @@ class RTStream(ModalityMixin):
                         brain_timer.stop()
                     if raw_timer is not None:
                         raw_timer.stop()
+                    if conn_timer is not None:
+                        conn_timer.stop()
                     QTimer.singleShot(600, app.quit)
 
             signal_timer = QTimer()
@@ -3082,6 +3154,27 @@ class RTStream(ModalityMixin):
                 # the timer keeps firing into a closed widget while other
                 # plot windows stay open, which crashes Qt/pyqtgraph.
                 nf_plot.closed.connect(signal_timer.stop)
+
+            # Connectivity: every window's pairs, in order, as they arrive.
+            conn_timer: Optional[QTimer] = None
+            if conn_plot is not None:
+                _conn_warned = [False]
+
+                def _pump_conn() -> None:
+                    try:
+                        while not conn_queue.empty():
+                            conn_plot.push(conn_queue.get_nowait())
+                    except Exception:
+                        # Once: a frozen viewer must not be the only sign.
+                        if not _conn_warned[0]:
+                            _conn_warned[0] = True
+                            logger.warning("Connectivity viewer update failed.", exc_info=True)
+
+                conn_timer = QTimer()
+                conn_timer.setInterval(250)
+                conn_timer.timeout.connect(_pump_conn)
+                conn_timer.start()
+                conn_plot.closed.connect(conn_timer.stop)
 
             # Topomap timer (~5 fps) — matplotlib redraws are slower than
             # pyqtgraph so we use a separate slower timer.
@@ -3170,6 +3263,8 @@ class RTStream(ModalityMixin):
             if raw_timer is not None:
                 _paced.append((raw_timer, 33))
                 _paced.append((raw_plot._flush_timer, 33))
+            if conn_timer is not None:
+                _paced.append((conn_timer, 250))
             shedder = LoadShedder(_paced)
             shedder.start()
             try:

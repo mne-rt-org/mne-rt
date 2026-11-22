@@ -115,6 +115,59 @@ def _connectivity_values(con, take_imag: bool) -> np.ndarray:
     return values
 
 
+class EdgeValues(float):
+    """A connectivity modality's value, carrying the per-pair values it came from.
+
+    Arithmetic on it gives a plain float, so z-scoring, smoothing, protocols and
+    saving see the value exactly as before; the connectivity viewer reads the
+    rest.
+
+    Attributes
+    ----------
+    edges : ndarray, shape (n_pairs,)
+        One value per configured pair.
+    labels : list of (str, str)
+        The pairs, as channel or ROI names.
+    metric : str
+        The connectivity method, e.g. ``"coh"``, or ``"graph"``.
+    signed : bool
+        Whether ``edges`` keep their sign (``imcoh``, ``corr``).
+    space : str
+        ``"sensor"`` or ``"source"``.
+    nodes : list of str | None
+        Every ROI of a source-space modality, for laying them out.
+    """
+
+    def __reduce__(self):
+        # float's would call __new__ with the value alone: copy and pickle failed.
+        return (
+            _edge_values,
+            (
+                float(self),
+                self.edges,
+                self.labels,
+                self.metric,
+                self.space,
+                self.signed,
+                self.nodes,
+            ),
+        )
+
+    def __new__(cls, value, edges, labels, metric, *, space, signed=True, nodes=None):
+        obj = super().__new__(cls, value)
+        obj.edges = np.atleast_1d(np.asarray(edges, dtype=float))
+        obj.labels = [tuple(pair) for pair in labels]
+        obj.metric = str(metric)
+        obj.signed = bool(signed)
+        obj.space = space
+        obj.nodes = None if nodes is None else list(nodes)
+        return obj
+
+
+def _edge_values(value, edges, labels, metric, space, signed, nodes):
+    return EdgeValues(value, edges, labels, metric, space=space, signed=signed, nodes=nodes)
+
+
 class ModalityMixin:
     """Feature-extraction engine for all MNE-RT NF modalities.
 
@@ -517,6 +570,8 @@ class ModalityMixin:
             "method": method,
             "take_imag": take_imag,
             "n_cycles": n_cycles,
+            "labels": [tuple(pair) for pair in chs],
+            "metric": self.params["method"],
         }
 
     def _source_connectivity_prep(self) -> dict:
@@ -577,14 +632,29 @@ class ModalityMixin:
             "take_imag": take_imag,
             "n_cycles": n_cycles,
             "signed": bool(self.params.get("signed", False)),
+            "labels": [(roi_names[a], roi_names[b]) for a, b in zip(seeds, targets)],
+            "metric": self.params["method"],
+            "nodes": roi_names,
         }
 
     def _sensor_graph_prep(self) -> dict:
         ch_names = self._acquired_ch_names()  # data excludes bads; rec_info does not
-        chs = self.params["channels"]
-        indices = tuple(
-            np.array([ch_names.index(ch1), ch_names.index(ch2)]) for ch1, ch2 in zip(chs[0], chs[1])
-        )
+        # A list of [ch_A, ch_B] pairs, as for sensor_connectivity: zip(chs[0],
+        # chs[1]) paired the first pair's channels with the second's.
+        pairs = [tuple(pair) for pair in self.params["channels"]]
+        bad = [list(p) for p in pairs if len(p) != 2]
+        if bad:
+            raise ValueError(
+                f"sensor_graph: 'channels' is a list of [ch_A, ch_B] pairs, as for "
+                f"sensor_connectivity; got {bad}. (It was once read as two lists of "
+                "channels, paired up by position.)"
+            )
+        missing = sorted({c for pair in pairs for c in pair} - set(ch_names))
+        if missing:
+            raise ValueError(
+                f"sensor_graph: channels {missing} not found in recording. Available: {ch_names}"
+            )
+        indices = tuple((ch_names.index(a), ch_names.index(b)) for a, b in pairs)
         sos = butter_bandpass(
             self.params["frange"][0],
             self.params["frange"][1],
@@ -597,6 +667,7 @@ class ModalityMixin:
             "dist_type": self.params["dist_type"],
             "alpha": self.params["alpha"],
             "beta": self.params["beta"],
+            "labels": pairs,
         }
 
     def _source_graph_prep(self) -> dict:
@@ -621,6 +692,12 @@ class ModalityMixin:
         if missing:
             raise ValueError(f"Edge member(s) {missing} are not among the ROIs {roi_names}.")
         edge = (roi_names.index(pair[0]), roi_names.index(pair[1]))
+        if len(roi_names) == 2:
+            logger.warning(
+                "source_graph: a graph learned over two ROIs has one edge, whose weight "
+                "does not depend on the data (it is 1.0 in every window). Configure "
+                "three or more ROIs for a value that does."
+            )
 
         sos = butter_bandpass(
             self.params["frange"][0],
@@ -635,6 +712,8 @@ class ModalityMixin:
             "dist_type": self.params["dist_type"],
             "alpha": self.params["alpha"],
             "beta": self.params["beta"],
+            "labels": [tuple(pair)],
+            "nodes": roi_names,
         }
 
     def _cfc_sensor_prep(self) -> dict:
@@ -787,6 +866,8 @@ class ModalityMixin:
         method: str,
         take_imag: bool,
         n_cycles: np.ndarray,
+        labels: list = (),
+        metric: str = "",
     ) -> float:
         """Sensor-level spectral connectivity between channel pairs."""
         con = spectral_connectivity_time(
@@ -802,7 +883,8 @@ class ModalityMixin:
             method=method,
             n_cycles=n_cycles,
         )
-        return float(_connectivity_values(con, take_imag).mean())
+        values = _connectivity_values(con, take_imag)
+        return EdgeValues(values.mean(), values, labels, metric, space="sensor")
 
     @timed
     def _source_connectivity(
@@ -822,6 +904,9 @@ class ModalityMixin:
         take_imag: bool,
         n_cycles: np.ndarray,
         signed: bool,
+        labels: list = (),
+        metric: str = "",
+        nodes: Optional[list] = None,
     ) -> float:
         """Connectivity between the configured source-space ROI pairs."""
         tcs = self._roi_time_courses(model, data, kernel, ch_picks, label_operator)
@@ -843,7 +928,9 @@ class ModalityMixin:
             # imcoh and friends are signed: the sign encodes which region leads.
             # For a reward signal the magnitude is usually what is wanted.
             values = np.abs(values)
-        return float(values.mean())
+        return EdgeValues(
+            values.mean(), values, labels, metric, space="source", signed=signed, nodes=nodes
+        )
 
     @timed
     def _sensor_graph(
@@ -854,11 +941,15 @@ class ModalityMixin:
         dist_type: str,
         alpha: float,
         beta: float,
+        labels: list = (),
     ) -> float:
         """Graph-theoretic connectivity from sensor-space M/EEG."""
         data_filt = sosfiltfilt(sos, data)
         graph_matrix = log_degree_barrier(data_filt, dist_type=dist_type, alpha=alpha, beta=beta)
-        return float(np.mean([graph_matrix[idxs] for idxs in indices]) - 0.025)
+        # One learned weight per configured pair: graph_matrix[array([i, j])]
+        # selected two whole rows, so the value averaged 2 x n_channels weights.
+        edges = np.array([graph_matrix[i, j] for i, j in indices])
+        return EdgeValues(edges.mean(), edges, labels, "graph", space="sensor")
 
     @timed
     def _source_graph(
@@ -874,6 +965,8 @@ class ModalityMixin:
         dist_type: str,
         alpha: float,
         beta: float,
+        labels: list = (),
+        nodes: Optional[list] = None,
     ) -> float:
         """Learned graph edge weight between two source-space ROIs."""
         tcs = self._roi_time_courses(model, data, kernel, ch_picks, label_operator)
@@ -884,7 +977,8 @@ class ModalityMixin:
             alpha=alpha,
             beta=beta,
         )
-        return float(graph_matrix[edge[0], edge[1]])
+        value = float(graph_matrix[edge[0], edge[1]])
+        return EdgeValues(value, [value], labels, "graph", space="source", nodes=nodes)
 
     @timed
     def _cfc_sensor(self, data: np.ndarray, comod) -> float:
@@ -1429,6 +1523,8 @@ class ModalityMixin:
         n_cycles = resolve_n_cycles(freqs, self.params.get("n_cycles", 5), self.winsize)
 
         return {
+            "labels": [tuple(self.params["channels_num"]), tuple(self.params["channels_den"])],
+            "metric": self.params["method"],
             "indices_num": indices_num,
             "indices_den": indices_den,
             "freqs": freqs,
@@ -1453,6 +1549,8 @@ class ModalityMixin:
         method: str,
         take_imag: bool,
         n_cycles: np.ndarray,
+        labels: list = (),
+        metric: str = "",
     ) -> float:
         """Ratio of functional connectivity between two channel pairs (or groups).
 
@@ -1478,8 +1576,8 @@ class ModalityMixin:
 
         conn_num = _connectivity(indices_num)
         conn_den = _connectivity(indices_den)
-
-        return float(conn_num / (conn_den + 1e-30))
+        ratio = conn_num / (conn_den + 1e-30)
+        return EdgeValues(ratio, [conn_num, conn_den], labels, metric, space="sensor")
 
     # Decoding
 

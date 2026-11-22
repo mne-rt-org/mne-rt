@@ -54,6 +54,7 @@ Visualisation
    mne_rt.viz.EpochPlot
    mne_rt.viz.BrainPlot
    mne_rt.viz.TopomapPlot
+   mne_rt.viz.ConnectivityPlot
    mne_rt.viz.TopoPlot
    mne_rt.viz.ButterflyPlot
    mne_rt.viz.TFRPlot

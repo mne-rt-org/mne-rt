@@ -4,6 +4,8 @@ Functions
 ---------
 sensor_positions
     Normalised 2-D sensor positions for a list of channels.
+head_xy, draw_head
+    Where a position sits inside a drawn head outline, and the outline.
 
 Classes
 -------
@@ -120,6 +122,37 @@ def sensor_positions(
     ]
 
 
+def head_xy(xn: float, yn: float) -> tuple[float, float]:
+    """A :func:`sensor_positions` position inside the head :func:`draw_head` draws.
+
+    Scaled into the circle, and flipped: pyqtgraph's y grows upwards, while
+    ``yn=0`` is frontal.
+    """
+    return 0.5 + (xn - 0.5) * 0.9, 1.0 - (0.5 + (yn - 0.5) * 0.9)
+
+
+def draw_head(plot, pen) -> None:
+    """Draw a head outline, nose up and ears at the sides, in the unit square.
+
+    Parameters
+    ----------
+    plot : pyqtgraph.PlotItem | pyqtgraph.PlotWidget
+        Where to draw; its view should span about ``(-0.06, 1.06)`` in x and
+        ``(-0.06, 1.14)`` in y, so the nose is not clipped.
+    pen : QPen
+        The outline's pen.
+    """
+    theta = np.linspace(0, 2 * np.pi, 160)
+    plot.plot(0.5 + 0.48 * np.cos(theta), 0.5 + 0.48 * np.sin(theta), pen=pen)
+    plot.plot([0.47, 0.5, 0.53, 0.47], [0.97, 1.06, 0.97, 0.97], pen=pen)
+    for side in (-1, 1):
+        plot.plot(
+            0.5 + np.linspace(0.48 * side, 0.56 * side, 8),
+            0.5 + 0.06 * np.sin(np.linspace(0, np.pi, 8)),
+            pen=pen,
+        )
+
+
 class _ClickableScatter(pg.ScatterPlotItem):
     """A scatter that emits :attr:`sigClicked` for right clicks as well.
 
@@ -212,16 +245,7 @@ class SensorSelector(pg.PlotWidget):
         # A small margin so the nose isn't clipped
         vb.setRange(xRange=(-0.06, 1.06), yRange=(-0.06, 1.14), padding=0)
 
-        pen = pg.mkPen(outline, width=1.5)
-        theta = np.linspace(0, 2 * np.pi, 160)
-        self.plot(0.5 + 0.48 * np.cos(theta), 0.5 + 0.48 * np.sin(theta), pen=pen)
-        self.plot([0.47, 0.5, 0.53, 0.47], [0.97, 1.06, 0.97, 0.97], pen=pen)
-        for side in (-1, 1):
-            self.plot(
-                0.5 + np.linspace(0.48 * side, 0.56 * side, 8),
-                0.5 + 0.06 * np.sin(np.linspace(0, np.pi, 8)),
-                pen=pen,
-            )
+        draw_head(self, pg.mkPen(outline, width=1.5))
 
         self._scatter = _ClickableScatter(
             hoverable=True, tip=lambda x, y, data: str(data) if data else ""
@@ -269,9 +293,7 @@ class SensorSelector(pg.PlotWidget):
     def _refresh(self) -> None:
         spots = []
         for ch, (xn, yn) in zip(self._ch_names, self._positions):
-            # Into the circle, then flip: pyqtgraph's y grows upwards, yn=0 is frontal
-            tx = 0.5 + (xn - 0.5) * 0.9
-            ty = 1.0 - (0.5 + (yn - 0.5) * 0.9)
+            tx, ty = head_xy(xn, yn)
             selected = ch in self._selected
             color = self._accent if selected else self._outline
             if ch in self._bads:
