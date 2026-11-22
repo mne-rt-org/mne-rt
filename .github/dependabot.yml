@@ -1,0 +1,16 @@
+# One pull request a week updating the GitHub Actions the workflows use, all in
+# one group; a release is offered only once it is a week old.
+version: 2
+updates:
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    groups:
+      actions:
+        patterns:
+          - "*"
+    commit-message:
+      prefix: "[dependabot]"
+    cooldown:
+      default-days: 7

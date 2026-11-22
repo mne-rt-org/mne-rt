@@ -1,0 +1,9 @@
+# zizmor audits the workflows for security problems (see the Style job).
+rules:
+  unpinned-uses:
+    config:
+      policies:
+        # A tag is enough, as in MNE-Python, and Dependabot keeps tags current.
+        # Two actions follow a branch, as their projects document:
+        # pypa/gh-action-pypi-publish@release/v1, openjournals-draft-action@master.
+        "*": ref-pin

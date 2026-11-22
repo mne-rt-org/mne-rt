@@ -5,6 +5,10 @@ on:
     types: [published]
   workflow_dispatch:
 
+# Read-only by default; publishing asks for its OIDC token itself.
+permissions:
+  contents: read
+
 jobs:
   build:
     name: Build distribution
