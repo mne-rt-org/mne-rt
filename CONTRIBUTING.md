@@ -39,10 +39,16 @@ pytest -m "not slow"
 CI runs exactly these, so run them locally first:
 
 ```bash
-ruff check src
-ruff format --check src
+pre-commit run --all-files   # the Style job: ruff, file checks, zizmor
 pytest -m "not slow"
 ```
+
+`pre-commit` comes with the `lint` extra. Run `pre-commit install` once per
+clone and the style checks run, fixing what they can, before every commit. They
+include [zizmor](https://docs.zizmor.sh), which audits the GitHub workflows for
+security problems. The tool versions are pinned in `.pre-commit-config.yaml`
+(`pre-commit autoupdate` moves them on), and Dependabot opens a weekly pull
+request updating the workflows' actions.
 
 `ruff format src` fixes formatting in place. CI additionally runs the full
 suite on Linux (Python 3.11–3.14, one job with every optional extra), macOS and
@@ -75,6 +81,23 @@ unreleased numpy, scipy, MNE and friends, which reports without blocking.
 - Add a line to `docs/source/whats_new.rst` under the current unreleased version.
 - Public functions and methods use NumPy-style docstrings and accept a
   `verbose=` keyword, following MNE-Python's conventions.
+
+## Policy on AI assistance
+
+Adapted from MNE-Python's. A neurofeedback session runs on people, so a
+change here needs human judgment about the signal processing, the real-time
+constraints and the experiment it will run in.
+
+- Do not open issues or pull requests produced by fully automated tools; they
+  may be closed without review.
+- Review every change an AI tool helped with: you should understand it, have
+  tested it, and be able to explain it on request before you submit it under
+  your name. Take care that AI-written code does not reproduce passages of a
+  specialised algorithm from elsewhere, which can break its licence.
+- Say in the pull request which tools you used, and the manner and scope of
+  their help (the pull request template has examples).
+
+This policy may change as these tools do.
 
 ## Extending MNE-RT
 

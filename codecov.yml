@@ -1,0 +1,18 @@
+# As in MNE-Python: coverage is reported as checks on a pull request, not as a
+# comment, and does not fail it; a test that is missing shows, without the PR
+# going red over it.
+comment: false
+github_checks:
+  annotations: false  # one mark per uncovered line on the diff, too noisy
+
+coverage:
+  status:
+    patch:
+      default:
+        informational: true
+        target: 90%
+    project:
+      default:
+        informational: true
+        target: auto
+        threshold: 1%

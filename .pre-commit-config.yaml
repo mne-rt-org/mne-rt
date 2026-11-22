@@ -1,0 +1,24 @@
+# Run before each commit once installed (`pre-commit install`); the same checks
+# as CI's Style job. Versions are kept current by `pre-commit autoupdate`.
+repos:
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.15.20
+    hooks:
+      - id: ruff-check
+        args: [--fix]
+        files: ^src/
+      - id: ruff-format
+        files: ^src/
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v6.0.0
+    hooks:
+      - id: check-yaml
+      - id: check-toml
+      - id: check-merge-conflict
+      - id: check-added-large-files
+        args: [--maxkb=51200]  # the demo videos and sample recording are tracked on purpose
+  - repo: https://github.com/zizmorcore/zizmor-pre-commit
+    rev: v1.30.1
+    hooks:
+      - id: zizmor
+        args: [--offline]  # as in CI, whether or not GH_TOKEN is set
