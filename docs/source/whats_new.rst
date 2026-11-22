@@ -13,6 +13,19 @@ Version 1.3.0
 New features
 ^^^^^^^^^^^^
 
+- **The viewer windows fit the screen.** ``record_main`` tiles the windows it
+  opens over the screen's free area, the NF window with the top row to itself,
+  instead of leaving each at its own size wherever the window manager put it
+  (``arrange_windows=False`` leaves them; Wayland, which does not let an
+  application place its windows, is left alone), and
+  ``mne-rt run``/``demo-erp`` do the same for the epoch viewers, which had fixed
+  positions three windows tall. Every viewer opening on its own is capped to
+  the screen: RawPlot (1500 px) and BrainPlot (1600 x 1000) were wider than a
+  laptop's. :class:`~mne_rt.viz.TopoPlot` and
+  :class:`~mne_rt.viz.ButterflyPlot` now share the sensor layout the other
+  viewers use, so one channel without a position no longer sends every
+  channel to a circle.
+
 - **The live viewers draw 2–4× faster, and slow down instead of hanging.**
   With the NF, raw and topomap windows open on 64-channel EEG at 500 Hz, the
   viewers used 1.5× the Qt event loop's time, so it could never catch up; they

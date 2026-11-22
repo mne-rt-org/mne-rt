@@ -36,6 +36,7 @@ from qtpy.QtWidgets import (
 
 from mne_rt._logging import logger
 from mne_rt.viz._decimate import peak_decimate
+from mne_rt.viz._layout import fit_to_screen
 
 # Per-channel trace colours — 20 visually distinct hues for a dark background
 
@@ -330,7 +331,7 @@ class RawPlot(QMainWindow):
         pg.setConfigOptions(antialias=True, foreground="#c0c0d8", background="#0d0d1a")
         self._build_ui()
         self.setWindowTitle("MNE-RT — Raw")
-        self.resize(1500, 720)
+        fit_to_screen(self, 1500, 720)
 
         # 30 Hz render timer — all Qt widget updates happen in the main thread.
         self._flush_timer = QTimer(self)

@@ -76,6 +76,7 @@ from mne_rt.tools.gedai import GEDAIDenoiser
 from mne_rt.tools.maxwell import RTMaxwellFilter
 from mne_rt.tools.orica import ORICA
 from mne_rt.viz import BrainPlot, NFPlot, RawPlot, TopomapPlot
+from mne_rt.viz._layout import tile_windows
 from mne_rt.viz._pacing import LoadShedder
 from mne_rt.viz.brain_plot import N_ICO5, to_display
 
@@ -1702,6 +1703,7 @@ class RTStream(ModalityMixin):
         artifact_threshold_uv: float = 100.0,
         track_snr: bool = False,
         snr_frange: Optional[tuple] = None,
+        arrange_windows: bool = True,
         verbose: Union[bool, str, None] = None,
     ) -> None:
         """Stream M/EEG, extract neural features, and drive NF visualisation.
@@ -1945,6 +1947,13 @@ class RTStream(ModalityMixin):
             Frequency band ``(f_low, f_high)`` in Hz used as the "signal"
             band when ``track_snr=True``.  ``None`` defaults to the alpha
             band ``(8.0, 13.0)``.
+        arrange_windows : bool, default True
+            Tile the windows this opens over the screen, the NF display first
+            and widest, each no larger than the screen allows. ``False``
+            leaves them where the window manager puts them, for instance to
+            arrange a participant's and an experimenter's screen by hand.
+
+            .. versionadded:: 1.3.0
         verbose : bool | str | None, default None
             Override the instance-level verbosity for this call.
 
@@ -2394,6 +2403,18 @@ class RTStream(ModalityMixin):
                 info=self._acquired_info(use_picks=False),
             )
             raw_plot.show()
+
+        if needs_qt and arrange_windows:
+            # Tiled over the screen, the participant's NF window first, instead
+            # of each at its own size wherever the window manager put it.
+            tile_windows(
+                [
+                    nf_plot,
+                    topo_plot,
+                    brain_plot.plotter.app_window if brain_plot is not None else None,
+                    raw_plot,
+                ]
+            )
 
         # Once per connection: mne-lsl appends to the filter chain and ArrayStream
         # filters its array in place, so each record_main would filter again.

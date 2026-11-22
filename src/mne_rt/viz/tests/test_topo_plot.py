@@ -109,3 +109,21 @@ def test_topo_line_width_starts_at_1px_and_the_slider_agrees(qt_app, common_kw):
     assert w._linewidth == 1.0
     assert w._lw_sl.value() * 0.5 == w._linewidth
     assert w._lw_lbl.text() == "1.0"
+
+
+def test_one_unplaced_channel_does_not_send_the_grid_to_a_circle(qt_app):
+    """TopoPlot had its own copy of the layout code, which gave up on the
+    montage, and drew every channel on a circle, when one had no position."""
+    import mne
+
+    from mne_rt._montage import make_standard_montage
+    from mne_rt.viz._sensor_selector import sensor_positions
+    from mne_rt.viz.topo_plot import TopoPlot
+
+    names = ["Fp1", "Fp2", "C3", "C4", "O1", "O2", "AUX1"]
+    info = mne.create_info(names, SFREQ, "eeg")
+    info.set_montage(make_standard_montage("colin27_1020"), on_missing="ignore")
+    w = TopoPlot(ch_names=names, sfreq=SFREQ, tmin=-0.1, tmax=0.4, event_id={"a": 1}, info=info)
+    assert w._norm_pos == sensor_positions(names, info, w.montage)
+    fp1, o1 = w._norm_pos[0], w._norm_pos[4]
+    assert fp1[1] < 0.5 < o1[1]  # frontal at the top, occipital at the bottom
