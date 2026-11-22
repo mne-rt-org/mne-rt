@@ -891,7 +891,10 @@ def log_degree_barrier(
     f1._prox = lambda w, gamma: np.maximum(0, w - 2 * gamma * z)
 
     f2 = functions.func()
-    f2._eval = lambda w: -alpha * np.sum(np.log(np.maximum(np.finfo(float).eps, k(w))))
+    # A function of the node degrees d = k(w), as its prox is: the solver
+    # evaluates it on k(w) already, and applying k again raised on any graph of
+    # more than two nodes, so sensor_graph could not run on a real recording.
+    f2._eval = lambda d: -alpha * np.sum(np.log(np.maximum(np.finfo(float).eps, d)))
     f2._prox = lambda d, gamma: np.maximum(0, 0.5 * (d + np.sqrt(d**2 + 4 * alpha * gamma)))
 
     f3 = functions.func()
@@ -915,7 +918,9 @@ def log_degree_barrier(
     if cache_key is not None:
         _log_degree_barrier_cache[cache_key] = sol.copy()
 
-    mat = squareform(sol)
+    # Weights are non-negative; the solver's last iterate is not projected back
+    # onto that constraint and can come out slightly below 0.
+    mat = squareform(np.maximum(sol, 0.0))
     if normalize:
         m = mat.max()
         if m > 0:

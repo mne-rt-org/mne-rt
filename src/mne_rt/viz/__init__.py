@@ -23,11 +23,15 @@ ButterflyPlot
 CompareEvoked
     Real-time per-channel condition comparison with SEM shading, peak
     markers, and a clickable scalp-topomap for interactive channel selection.
+ConnectivityPlot
+    The pairs a connectivity modality computes, live: edges on the head or
+    between ROIs on a circle, and each pair's value over time.
 """
 
 from .brain_plot import BrainPlot
 from .butterfly_plot import ButterflyPlot
 from .compare_evoked import CompareEvoked
+from .connectivity_plot import ConnectivityPlot
 from .epoch_plot import EpochPlot
 from .nf_plot import NFPlot
 from .raw_plot import RawPlot
@@ -45,4 +49,5 @@ __all__ = [
     "TFRPlot",
     "ButterflyPlot",
     "CompareEvoked",
+    "ConnectivityPlot",
 ]

@@ -13,6 +13,16 @@ Version 1.3.0
 New features
 ^^^^^^^^^^^^
 
+- **A live view of connectivity.** :class:`~mne_rt.viz.ConnectivityPlot`
+  (``record_main(show_connectivity=True)``, ``mne-rt run --connectivity``)
+  shows the pairs each connectivity modality computes, which reached the
+  screen before only as their mean in the NF trace: sensor pairs as edges on
+  the head, source pairs between ROIs on a circle, left hemisphere on the left,
+  coloured and sized by value, and each pair's value over the last 30 s beside
+  the modality's own. So it shows which connection drives the feedback. It is
+  an experimenter's window, off by default, and costs nothing extra: the
+  per-pair values were computed already.
+
 - **The viewer windows fit the screen.** ``record_main`` tiles the windows it
   opens over the screen's free area, the NF window with the top row to itself,
   instead of leaving each at its own size wherever the window manager put it
@@ -96,6 +106,17 @@ New features
 
 Bug fixes
 ^^^^^^^^^
+
+- **sensor_graph runs, on the pairs it is configured with.** The graph
+  learning behind it raised on any graph of more than two nodes, so it could
+  not run on a real recording: it applied the degree map twice in evaluating
+  its objective. It also paired the first configured pair's channels with the
+  second's (C3–F3 and C4–F4 for ``[["C3", "C4"], ["F3", "F4"]]``), as
+  ``sensor_connectivity`` once did, and averaged two whole rows of the graph
+  rather than the pairs' edge weights, less a constant 0.025. Its value is now
+  the mean weight, in [0, 1], of the configured edges. ``source_graph`` over
+  two ROIs, the default, now warns that its single edge's weight does not
+  depend on the data: it is 1.0 in every window.
 
 - **save_as_bids works with mne-bids installed**. With ``mne-bids`` installed,
   every call failed: the recording, made live, is in memory, which

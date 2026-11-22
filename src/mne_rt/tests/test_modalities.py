@@ -689,3 +689,103 @@ def test_cfc_says_what_to_install_when_pactools_cannot_import(monkeypatch):
     monkeypatch.setitem(sys.modules, "pactools", None)
     with pytest.raises(ImportError, match=r"scipy<2"):
         ModalityMixin._cfc_sensor_prep(object.__new__(ModalityMixin))
+
+
+# Per-pair values for the connectivity viewer
+
+
+def test_edge_values_are_the_float_they_were():
+    """Everything downstream (z-score, EMA, protocols, saving) sees a float."""
+    from mne_rt.modalities import EdgeValues
+
+    v = EdgeValues(0.5, [0.25, 0.75], [("C3", "C4"), ("F3", "F4")], "coh", space="sensor")
+    assert v == 0.5 and isinstance(v, float)
+    assert type(v * 2) is float and type(float(v)) is float
+    np.testing.assert_array_equal(v.edges, [0.25, 0.75])
+    assert v.labels == [("C3", "C4"), ("F3", "F4")]
+
+
+def test_sensor_connectivity_reports_its_pairs(nf_obj):
+    from mne_rt.tools import get_params
+
+    nf_obj.params = get_params(nf_obj.config_file, "sensor_connectivity", {})
+    nf_obj.params["channels"] = _connectivity_channels(nf_obj)
+    prep = nf_obj._sensor_connectivity_prep()
+    val, _ = nf_obj._sensor_connectivity(DATA, **prep)
+    assert val.labels == [tuple(p) for p in nf_obj.params["channels"]]
+    assert val.edges.shape == (2,)
+    assert float(val) == pytest.approx(val.edges.mean())
+    assert val.space == "sensor" and val.metric == nf_obj.params["method"]
+
+
+def test_sensor_graph_uses_the_configured_pairs_and_their_weights(nf_obj, monkeypatch):
+    """It paired the first pair's channels with the second's (C3-F3, C4-F4 for
+    [[C3, C4], [F3, F4]]), and graph_matrix[array([i, j])] took two whole rows:
+    the value averaged 2 x n_channels weights rather than the configured edges."""
+    from mne_rt import modalities
+    from mne_rt.tools import get_params
+
+    names = nf_obj.rec_info["ch_names"]
+    n = len(names)
+    graph = np.arange(n * n, dtype=float).reshape(n, n)
+    monkeypatch.setattr(modalities, "log_degree_barrier", lambda *a, **k: graph)
+    nf_obj.params = get_params(nf_obj.config_file, "sensor_graph", {})
+    nf_obj.params["channels"] = [[names[0], names[1]], [names[2], names[3]]]
+    prep = nf_obj._sensor_graph_prep()
+    assert prep["labels"] == [(names[0], names[1]), (names[2], names[3])]
+    val, _ = nf_obj._sensor_graph(DATA, **prep)
+    np.testing.assert_array_equal(val.edges, [graph[0, 1], graph[2, 3]])
+    assert float(val) == pytest.approx((graph[0, 1] + graph[2, 3]) / 2)
+
+
+def test_connectivity_ratio_reports_both_pairs(nf_obj):
+    from mne_rt.tools import get_params
+
+    names = nf_obj.rec_info["ch_names"]
+    nf_obj.params = get_params(nf_obj.config_file, "connectivity_ratio", {})
+    nf_obj.params["channels_num"] = [names[0], names[1]]
+    nf_obj.params["channels_den"] = [names[2], names[3]]
+    prep = nf_obj._connectivity_ratio_prep()
+    val, _ = nf_obj._connectivity_ratio(DATA, **prep)
+    num, den = val.edges
+    assert float(val) == pytest.approx(num / (den + 1e-30))
+    assert val.labels == [(names[0], names[1]), (names[2], names[3])]
+
+
+def test_edge_values_survive_copy_and_pickle():
+    import copy
+    import pickle
+
+    from mne_rt.modalities import EdgeValues
+
+    v = EdgeValues(0.5, [0.25, 0.75], [("C3", "C4"), ("F3", "F4")], "coh", space="sensor")
+    for w in (copy.copy(v), copy.deepcopy(v), pickle.loads(pickle.dumps(v))):
+        assert w == 0.5 and w.labels == v.labels
+        np.testing.assert_array_equal(w.edges, v.edges)
+
+
+def test_sensor_graph_explains_the_pair_format(nf_obj):
+    from mne_rt.tools import get_params
+
+    names = nf_obj.rec_info["ch_names"]
+    nf_obj.params = get_params(nf_obj.config_file, "sensor_graph", {})
+    nf_obj.params["channels"] = [names[:3], names[3:6]]  # the old two-lists form
+    with pytest.raises(ValueError, match=r"\[ch_A, ch_B\] pairs"):
+        nf_obj._sensor_graph_prep()
+
+
+def test_graph_learning_solves_graphs_of_more_than_two_nodes():
+    """The solver path raised on any graph of 3+ nodes: sensor_graph could not
+    run on a real recording. Two signals sharing a rhythm get the strongest edge."""
+    from mne_rt.tools import log_degree_barrier
+
+    rng = np.random.default_rng(0)
+    t = np.arange(250) / 250.0
+    signals = rng.standard_normal((6, 250))
+    shared = 3 * np.sin(2 * np.pi * 10 * t)
+    signals[1] += shared
+    signals[4] += shared
+    g = log_degree_barrier(signals, dist_type="sqeuclidean", alpha=1, beta=1)
+    assert g.shape == (6, 6) and np.allclose(g, g.T)
+    assert g.min() >= 0 and g.max() == pytest.approx(1.0)
+    assert g[1, 4] == pytest.approx(g.max())
