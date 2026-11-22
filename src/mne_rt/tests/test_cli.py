@@ -433,3 +433,24 @@ def test_surf_choices(parser):
 def test_invalid_surf_raises(parser):
     with pytest.raises(SystemExit):
         parser.parse_args(["demo", "--surf", "banana"])
+
+
+def test_epoch_windows_are_shown_then_tiled(monkeypatch):
+    """Shown first, so the frames exist when they are measured; None skipped."""
+    from mne_rt import cli
+    from mne_rt.viz import _layout
+
+    calls = []
+
+    class _Window:
+        def __init__(self, name):
+            self.name = name
+
+        def show(self):
+            calls.append(("show", self.name))
+
+    monkeypatch.setattr(
+        _layout, "tile_windows", lambda ws: calls.append(("tile", [w.name for w in ws]))
+    )
+    cli._show_epoch_windows(_Window("epoch"), None, _Window("tfr"))
+    assert calls == [("show", "epoch"), ("show", "tfr"), ("tile", ["epoch", "tfr"])]

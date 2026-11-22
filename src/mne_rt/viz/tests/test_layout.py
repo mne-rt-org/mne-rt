@@ -68,3 +68,51 @@ def test_tiled_windows_fill_the_screen_without_overlapping(qt_app):
     assert (wins[3].width(), wins[3].height()) == (300, 200)  # never enlarged
     assert rects[0].topLeft() == geo.topLeft()
     assert rects[0].width() == 1440  # alone in the top row: its full width
+
+
+def test_on_a_real_screen_the_windows_are_tiled_and_tiled_again(qt_app, monkeypatch):
+    """There, frames may come after show() (X11): tiled once now, once later."""
+    from qtpy.QtCore import QRect, QTimer
+
+    geo = QRect(0, 0, 1600, 900)
+    later = []
+    monkeypatch.setattr(_layout, "can_arrange_windows", lambda: True)
+    monkeypatch.setattr(_layout, "available_geometry", lambda widget=None: geo)
+    monkeypatch.setattr(QTimer, "singleShot", lambda ms, fn: later.append((ms, fn)))
+    wins = _windows([(1440, 800), (1200, 540), (1500, 720)])
+    for w in wins:
+        w.show()
+    tile_windows(wins)
+    assert wins[0].frameGeometry().topLeft() == geo.topLeft()  # the frame, not the client area
+    assert [ms for ms, _ in later] == [_layout._RETILE_MS]
+    wins[1].move(900, 800)  # say, where a window manager put it
+    later[0][1]()
+    assert geo.contains(wins[1].frameGeometry())
+
+
+def test_the_second_pass_skips_windows_closed_in_between(qt_app, monkeypatch):
+    from qtpy.QtCore import QRect
+
+    monkeypatch.setattr(_layout, "available_geometry", lambda widget=None: QRect(0, 0, 800, 600))
+    wins = _windows([(300, 200), (300, 200)])
+    wins[0].show()
+    _layout._retile(wins, gap=6)  # the hidden one is left out, not moved
+    assert wins[0].frameGeometry().topLeft().isNull()
+    wins[0].hide()
+    _layout._retile(wins, gap=6)  # nothing left to tile
+
+
+def test_tiling_is_skipped_where_windows_cannot_be_placed(qt_app):
+    wins = _windows([(300, 200), (300, 200)])
+    for w in wins:
+        w.move(50, 60)
+    tile_windows(wins)  # headless here: no screen to tile over
+    assert [w.pos().x() for w in wins] == [50, 50]
+
+
+def test_the_screen_is_the_window_s_own_once_shown(qt_app):
+    (win,) = _windows([(200, 100)])
+    unshown = _layout.available_geometry(win)
+    win.show()
+    assert _layout.available_geometry(win) == win.screen().availableGeometry()
+    assert unshown.width() > 0
