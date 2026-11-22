@@ -166,6 +166,7 @@ jobs:
           --extra-index-url https://pypi.anaconda.org/scientific-python-nightly-wheels/simple
           numpy scipy matplotlib pandas scikit-learn mne-lsl
           "mne @ git+https://github.com/mne-tools/mne-python"
+          "mne-connectivity @ git+https://github.com/mne-tools/mne-connectivity"
       - run: uv pip list
       # fsaverage, fetched by the source-space tests.
       - uses: actions/cache@v6

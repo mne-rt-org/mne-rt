@@ -1,5 +1,6 @@
 """Unit tests for NF modality computations with synthetic data."""
 
+import sys
 from pathlib import Path
 
 import numpy as np
@@ -728,7 +729,7 @@ def test_sensor_graph_uses_the_configured_pairs_and_their_weights(nf_obj, monkey
     names = nf_obj.rec_info["ch_names"]
     n = len(names)
     graph = np.arange(n * n, dtype=float).reshape(n, n)
-    monkeypatch.setattr(modalities, "log_degree_barrier", lambda *a, **k: graph)
+    monkeypatch.setattr(modalities, "learn_graph", lambda *a, **k: graph)
     nf_obj.params = get_params(nf_obj.config_file, "sensor_graph", {})
     nf_obj.params["channels"] = [[names[0], names[1]], [names[2], names[3]]]
     prep = nf_obj._sensor_graph_prep()
@@ -789,3 +790,121 @@ def test_graph_learning_solves_graphs_of_more_than_two_nodes():
     assert g.shape == (6, 6) and np.allclose(g, g.T)
     assert g.min() >= 0 and g.max() == pytest.approx(1.0)
     assert g[1, 4] == pytest.approx(g.max())
+
+
+@pytest.fixture()
+def fake_mne_connectivity(monkeypatch):
+    """Install a stand-in mne_connectivity; the learner lookup is cached, so reset it."""
+    import types
+
+    from mne_rt.tools import tools
+
+    def install(**attrs):
+        monkeypatch.setitem(sys.modules, "mne_connectivity", types.SimpleNamespace(**attrs))
+        tools._mne_learn_graph.cache_clear()
+
+    yield install
+    tools._mne_learn_graph.cache_clear()
+
+
+def test_learn_graph_uses_mne_connectivity_s_learner(fake_mne_connectivity):
+    """MNE-Connectivity's learn_graph when it is there, scaled to its strongest edge."""
+    from mne_rt.tools import learn_graph
+
+    calls = []
+
+    class _Con:
+        def __init__(self, dense):
+            self._dense = dense
+
+        def get_data(self, output):
+            assert output == "dense"
+            return self._dense
+
+    def fake(signals, **kwargs):
+        calls.append(kwargs)
+        n = signals.shape[0]
+        dense = np.full((n, n), 2.0)
+        np.fill_diagonal(dense, 0.0)
+        dense[0, 1] = dense[1, 0] = 4.0
+        return _Con(dense)
+
+    fake_mne_connectivity(learn_graph=fake)
+    g = learn_graph(np.zeros((3, 10)), dist_type="sqeuclidean", alpha=1.0, beta=0.5)
+    assert calls == [
+        {"alpha": 1.0, "beta": 0.5, "metric": "sqeuclidean", "max_iter": 10000, "verbose": False}
+    ]
+    assert g.max() == 1.0 and g[0, 1] == 1.0 and g[0, 2] == 0.5
+
+
+def test_learn_graph_falls_back_to_mne_rt_s_own(fake_mne_connectivity):
+    from mne_rt.tools import tools
+
+    fake_mne_connectivity()  # an mne-connectivity without learn_graph
+    signals = np.random.default_rng(0).standard_normal((4, 100))
+    np.testing.assert_allclose(
+        tools.learn_graph(signals),
+        tools.log_degree_barrier(signals, dist_type="sqeuclidean", alpha=1.0, beta=1.0),
+    )
+
+
+def test_a_window_of_bad_data_gives_no_graph():
+    """Not a graph of zeros, which would read as a measured value."""
+    from mne_rt.tools import learn_graph
+
+    signals = np.random.default_rng(0).standard_normal((4, 100))
+    signals[2, 50] = np.nan
+    assert np.all(np.isnan(learn_graph(signals)))
+
+
+def test_mne_rt_s_learner_matches_mne_connectivity_s():
+    """Both scale distances by their mean: with the same alpha and beta they
+    give the same graph (by the max, ours was about three times as dense)."""
+    mne_connectivity = pytest.importorskip("mne_connectivity")
+    if not hasattr(mne_connectivity, "learn_graph"):
+        pytest.skip("mne-connectivity < 0.10 has no learn_graph")
+    from scipy.signal import sosfiltfilt
+
+    from mne_rt.tools import butter_bandpass, log_degree_barrier
+
+    sos = butter_bandpass(8, 13, 250.0, order=5)
+    x = sosfiltfilt(sos, np.random.default_rng(0).standard_normal((20, 250)))
+    ours = log_degree_barrier(x, dist_type="sqeuclidean", alpha=1.0, beta=1.0)
+    con = mne_connectivity.learn_graph(x, alpha=1.0, beta=1.0, max_iter=10000, verbose=False)
+    theirs = np.asarray(con.get_data(output="dense")).reshape(20, 20)
+    theirs = theirs / theirs.max()
+    assert np.corrcoef(ours.ravel(), theirs.ravel())[0, 1] > 0.99
+    assert np.abs(ours - theirs).max() < 0.05
+
+
+def test_graph_modalities_check_alpha_and_beta_before_the_session(nf_obj):
+    from mne_rt.tools import get_params
+
+    names = nf_obj.rec_info["ch_names"]
+    nf_obj.params = get_params(nf_obj.config_file, "sensor_graph", {})
+    nf_obj.params["channels"] = [[names[0], names[1]]]
+    nf_obj.params["alpha"] = 0
+    with pytest.raises(ValueError, match="alpha must be > 0"):
+        nf_obj._sensor_graph_prep()
+
+
+def test_graph_modalities_need_three_nodes(nf_obj, monkeypatch):
+    """Over two nodes a learned graph is one edge whose weight does not depend
+    on the data (source_graph's default config had two ROIs: 1.0 every window)."""
+    import types
+
+    from mne_rt.tools import get_params
+
+    nf_obj.params = get_params(nf_obj.config_file, "source_graph", {})
+    rois = [types.SimpleNamespace(name=n) for n in ("a-lh", "a-rh")]
+    monkeypatch.setattr(type(nf_obj), "_source_prep_common", lambda self, **k: {"rois": rois})
+    nf_obj.params["pair"] = ["a-lh", "a-rh"]
+    with pytest.raises(ValueError, match="at least three"):
+        nf_obj._source_graph_prep()
+
+    names = nf_obj.rec_info["ch_names"]
+    monkeypatch.setattr(type(nf_obj), "_acquired_ch_names", lambda self, **k: names[:2])
+    nf_obj.params = get_params(nf_obj.config_file, "sensor_graph", {})
+    nf_obj.params["channels"] = [[names[0], names[1]]]
+    with pytest.raises(ValueError, match="at least three"):
+        nf_obj._sensor_graph_prep()

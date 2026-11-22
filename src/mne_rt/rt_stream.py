@@ -2222,7 +2222,7 @@ class RTStream(ModalityMixin):
             "source_connectivity": 1.0,
             "connectivity_ratio": 4.0,
             "sensor_graph": 1.0,  # edge weights, normalised to [0, 1]
-            "source_graph": 2e-17,
+            "source_graph": 1.0,  # edge weights, scaled to [0, 1]
             "entropy": 3.0,
             "argmax_freq": 8.0,
             "peak_alpha_freq": 13.0,

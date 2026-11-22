@@ -560,28 +560,35 @@ functional connectivity graph :math:`\mathcal{G} = (\mathcal{V}, \mathbf{W})`
 :footcite:p:`kalofolias2016learn` :footcite:p:`shabestari2026shared`.
 
 Given a signal matrix :math:`\mathbf{X} \in \mathbb{R}^{p \times n}`
-(:math:`p` sensor channels, :math:`n` samples), MNE-RT solves the
-**log-degree barrier** optimisation problem:
+(:math:`p` sensor channels, :math:`n` samples), MNE-RT learns a weighted
+adjacency matrix :math:`\mathbf{W}` by solving the **log-degree barrier**
+problem:
 
 .. math::
 
-   \min_{\mathbf{W} \geq 0,\,\mathbf{W} = \mathbf{W}^\top}
-   \;\alpha \operatorname{tr}(\mathbf{X}^\top \mathbf{L} \mathbf{X})
-   \;-\; \beta \mathbf{1}^\top \log(\mathbf{W}\mathbf{1})
-   \;+\; \tfrac{1}{2}\|\mathbf{W}\|_F^2
+   \min_{\mathbf{W} \geq 0,\,\mathbf{W} = \mathbf{W}^\top,\,\operatorname{diag}\mathbf{W} = 0}
+   \;\|\mathbf{W} \circ \mathbf{Z}\|_{1,1}
+   \;-\; \alpha\, \mathbf{1}^\top \log(\mathbf{W}\mathbf{1})
+   \;+\; \beta\, \|\mathbf{W}\|_F^2
 
-where :math:`\mathbf{L} = \operatorname{Diag}(\mathbf{W}\mathbf{1}) - \mathbf{W}`
-is the combinatorial graph Laplacian and the log-degree term prevents
-degenerate (all-zero) solutions.
+where :math:`Z_{ij}` is the distance between the signals of nodes :math:`i`
+and :math:`j` (squared Euclidean by default, ``dist_type``), scaled by the mean
+distance, so the first term is the smoothness of :math:`\mathbf{X}` on the
+graph, :math:`2\operatorname{tr}(\mathbf{X}^\top \mathbf{L} \mathbf{X})` with
+:math:`\mathbf{L} = \operatorname{Diag}(\mathbf{W}\mathbf{1}) - \mathbf{W}`.
 
-* :math:`\alpha` — data-fidelity weight (larger → smoother, more connected graph)
-* :math:`\beta` — log-degree regularisation (larger → more uniform node degrees)
+* :math:`\alpha` (``alpha``, > 0) — the log-degree barrier: larger → higher
+  node degrees, a more connected graph; every node keeps at least one edge.
+* :math:`\beta` (``beta``, ≥ 0) — the penalty on the weights' size: larger →
+  a denser graph with more even weights; 0 → the sparsest one.
 
-The feature value is the edge weight :math:`W_{ij}` between two specified sensor
-nodes (e.g. a left–right electrode pair), centred by subtracting a small
-offset so that values oscillate around zero.
-The optimisation is solved via the proximal splitting scheme of 
-`pyunlocbox <https://pyunlocbox.readthedocs.io/en/stable/>`_.
+The graph is learned over all channels, scaled so that its strongest edge is 1,
+and the feature value is the mean weight of the configured pairs. It needs at
+least three channels: over two, the one edge weighs the same in every window.
+The problem is solved by :func:`mne_connectivity.learn_graph` from
+mne-connectivity 0.10, and before it by MNE-RT's own solver, built on
+`pyunlocbox <https://pyunlocbox.readthedocs.io/en/stable/>`_, which gives the
+same graph to within solver tolerance.
 
 ----
 
@@ -673,15 +680,11 @@ the same optimisation as :ref:`modality-sensor_graph` is solved on the
 source time-series matrix :math:`\hat{\mathbf{J}} \in \mathbb{R}^{q \times n}`
 :footcite:p:`kalofolias2016learn` :footcite:p:`shabestari2026shared`:
 
-.. math::
-
-   \min_{\mathbf{W} \geq 0,\,\mathbf{W} = \mathbf{W}^\top}
-   \;\alpha \operatorname{tr}(\hat{\mathbf{J}}^\top \mathbf{L} \hat{\mathbf{J}})
-   \;-\; \beta \mathbf{1}^\top \log(\mathbf{W}\mathbf{1})
-   \;+\; \tfrac{1}{2}\|\mathbf{W}\|_F^2
-
-The feature value is the learned edge weight :math:`W_{ij}` between two specified
-brain atlas parcels or source vertices.
+with :math:`Z_{ij}` the distance between the time courses of ROIs :math:`i`
+and :math:`j`. The feature value is the learned edge weight :math:`W_{ij}`
+between the two ROIs named in ``pair``, in a graph learned over all the
+configured ROIs and scaled so that its strongest edge is 1. It needs at least
+three ROIs.
 Anatomical accuracy is improved relative to sensor-space graph learning
 because volume conduction is partially mitigated by the inverse solution.
 
