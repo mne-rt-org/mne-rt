@@ -17,19 +17,19 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 40
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
         with:
           persist-credentials: false
       # The gallery runs in parallel worker processes, which import the real Qt
       # rather than conf.py's mocks: they need a binding and its system libraries.
       # A pull request runs no example, so it needs neither.
-      - uses: pyvista/setup-headless-display-action@v4
+      - uses: pyvista/setup-headless-display-action@v5
         if: github.event_name != 'pull_request'
         with:
           qt: true
           pyvista: false
           wm: false
-      - uses: astral-sh/setup-uv@v8.3.1
+      - uses: astral-sh/setup-uv@v10.3.3
         with:
           python-version: "3.11"
           activate-environment: true
@@ -38,7 +38,7 @@ jobs:
       # fsaverage anatomy simulate_raw builds its recordings on. Bump the key
       # when MNE moves to a new dataset version, as a saved cache is never
       # replaced.
-      - uses: actions/cache@v4
+      - uses: actions/cache@v6
         if: github.event_name != 'pull_request'
         with:
           path: |
@@ -70,7 +70,7 @@ jobs:
           MPLBACKEND: Agg
           QT_QPA_PLATFORM: offscreen
           MNE_RT_PLOT_GALLERY: ${{ github.event_name == 'pull_request' && '0' || '1' }}
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
         with:
           name: html
@@ -88,7 +88,7 @@ jobs:
     permissions:
       contents: write  # pushes the built site to gh-pages
     steps:
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@v8
         with:
           name: html
           path: html
