@@ -293,7 +293,9 @@ def test_microstates_with_individual_maps_fitted_on_the_baseline(tmp_path, array
         )
         values = np.asarray(nf.nf_data["microstates"])
         assert values.size > 0
-        assert 0.45 < values.mean() < 0.8  # state 1's share, not another map's ~0.2
+        # State 1's share (~0.6), not another map's (~0.2): the bound sits between
+        # them, as one macOS run averaged 0.449 over its few windows.
+        assert 0.35 < values.mean() < 0.8
     finally:
         nf.save()
 

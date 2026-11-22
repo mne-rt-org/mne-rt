@@ -99,12 +99,14 @@ jobs:
           # The legacy C tracer: sys.monitoring, the 3.12+ default, interacts
           # badly with numba jitclass code.
           COVERAGE_CORE: ctrace
+      # Not for Dependabot: its runs get no OIDC token or secret, Codecov refuses
+      # a tokenless upload from a branch of this repo, and its pull requests
+      # change only the workflows, which coverage does not measure.
       - uses: codecov/codecov-action@v7
-        if: matrix.coverage && (success() || failure())
+        if: matrix.coverage && github.actor != 'dependabot[bot]' && (success() || failure())
         with:
           # A fork's pull request gets no OIDC token; Codecov takes it tokenless.
-          # Dependabot's runs may not be given one either.
-          use_oidc: ${{ !github.event.pull_request.head.repo.fork && github.actor != 'dependabot[bot]' }}
+          use_oidc: ${{ !github.event.pull_request.head.repo.fork }}
           files: coverage.xml
           disable_search: true
 
