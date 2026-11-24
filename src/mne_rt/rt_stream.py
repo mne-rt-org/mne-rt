@@ -110,6 +110,7 @@ def _edge_snapshot(value: EdgeValues, t: float) -> dict:
         "signed": value.signed,
         "space": value.space,
         "nodes": value.nodes,
+        "sides": value.sides,
     }
 
 

@@ -33,7 +33,9 @@ atlas label name is also accepted directly.
 
 from __future__ import annotations
 
+import re
 from dataclasses import dataclass
+from functools import lru_cache
 from pathlib import Path
 from typing import Optional, Sequence, Union
 from warnings import warn
@@ -48,6 +50,7 @@ __all__ = [
     "ROI",
     "ROI_ALIASES",
     "SourceModel",
+    "atlas_nodes",
     "list_rois",
     "resolve_rois",
 ]
@@ -200,6 +203,102 @@ def _atlas_label_names(*, atlas: str, subject: str, subjects_dir) -> list[str]:
             subject=subject, parc=atlas, subjects_dir=subjects_dir, verbose=False
         )
     ]
+
+
+# Atlas labels that are not grey matter: no use as a connectivity node.
+_NOT_A_NODE = re.compile(
+    r"unknown|\?\?\?|medial_wall|corpuscallosum|white-?matter|wm-hypointensities|"
+    r"^wm[-_]|ventricle|vent$|csf|vessel|choroid|optic-chiasm|^cc_",
+    re.IGNORECASE,
+)
+# A hemisphere in a label name: insula-lh, lh.V1, ctx-lh-insula, ctx_lh_G_insular,
+# Left-Hippocampus.
+_LEFT = re.compile(r"(^|[-_.])(lh|left)([-_.]|$)", re.IGNORECASE)
+_RIGHT = re.compile(r"(^|[-_.])(rh|right)([-_.]|$)", re.IGNORECASE)
+
+
+def _name_hemisphere(name: str) -> int:
+    """-1 for a left-hemisphere label name, 1 for a right one, 0 when it says neither."""
+    if _LEFT.search(name):
+        return -1
+    if _RIGHT.search(name):
+        return 1
+    return 0
+
+
+def _roi_sides(rois: Sequence[ROI]) -> dict[str, int]:
+    """The hemisphere of each ROI whose name does not say, from its atlas labels."""
+    sides = {}
+    for roi in rois:
+        if _name_hemisphere(roi.name):
+            continue
+        members = {_name_hemisphere(m) for m in roi.members}
+        if len(members) == 1 and 0 not in members:
+            sides[roi.name] = members.pop()
+    return sides
+
+
+def _volume_front_to_back(atlas: str, subject: str, subjects_dir, names: list) -> list:
+    """A volume atlas's labels by their centres, front to back."""
+    import mne
+    import nibabel as nib
+    from scipy import ndimage
+
+    img = nib.load(str(_volume_atlas_path(atlas, subject, subjects_dir)))
+    data = np.asarray(img.dataobj).astype(np.int32)
+    lut, _ = mne.read_freesurfer_lut()
+    names = [n for n in names if n in lut]
+    centres = ndimage.center_of_mass(data > 0, data, [lut[n] for n in names])
+    y = nib.affines.apply_affine(img.affine, np.asarray(centres, dtype=float))[:, 1]
+    return [names[i] for i in np.argsort(-y, kind="stable")]
+
+
+@lru_cache(maxsize=8)
+def _atlas_nodes(atlas: str, subject: str, subjects_dir: Optional[str]) -> tuple[str, ...]:
+    """An atlas's grey-matter labels, front to back."""
+    if _is_volume_atlas(atlas):
+        names = _atlas_label_names(atlas=atlas, subject=subject, subjects_dir=subjects_dir)
+        names = [n for n in names if not _NOT_A_NODE.search(n)]
+        try:
+            names = _volume_front_to_back(atlas, subject, subjects_dir, names)
+        except Exception as exc:  # the colour table's order is still every label
+            logger.info("Atlas %r: labels in table order (%s).", atlas, exc)
+    else:
+        labels = read_labels_from_annot(
+            subject=subject, parc=atlas, subjects_dir=subjects_dir, verbose=False
+        )
+        # Front to back, as MNE-Connectivity's circle examples order them.
+        labels = sorted(labels, key=lambda label: -float(np.mean(label.pos[:, 1])))
+        names = [label.name for label in labels]
+    return tuple(n for n in names if not _NOT_A_NODE.search(n))
+
+
+def atlas_nodes(rois: Sequence[ROI], *, atlas: str, subject: str, subjects_dir=None) -> list[str]:
+    """Every ROI of the atlas, for a connectivity viewer's circle.
+
+    The atlas's grey-matter labels, front to back, with
+    each configured ROI that is not one of them (an alias such as ``"Broca"``)
+    placed beside its first member label. Just the configured ROIs when the
+    atlas cannot be read.
+    """
+    names = [roi.name for roi in rois]
+    try:
+        nodes = list(
+            _atlas_nodes(
+                str(atlas), str(subject), None if subjects_dir is None else str(subjects_dir)
+            )
+        )
+    except Exception as exc:  # only drawn: never worth failing a session over
+        logger.info(
+            "Atlas %r labels unavailable for the viewer (%s); drawing the ROIs only.", atlas, exc
+        )
+        return names
+    for roi in rois:
+        if roi.name in nodes:
+            continue
+        at = next((nodes.index(m) for m in roi.members if m in nodes), len(nodes) - 1)
+        nodes.insert(at + 1, roi.name)
+    return nodes
 
 
 def resolve_rois(

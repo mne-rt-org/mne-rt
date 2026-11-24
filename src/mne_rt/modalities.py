@@ -49,7 +49,7 @@ from scipy.optimize import curve_fit
 from scipy.signal import butter, sosfiltfilt, welch
 
 from mne_rt._logging import logger
-from mne_rt.source import SourceModel, resolve_rois
+from mne_rt.source import SourceModel, _roi_sides, atlas_nodes, resolve_rois
 from mne_rt.tools import (
     butter_bandpass,
     compute_bandpower,
@@ -145,7 +145,11 @@ class EdgeValues(float):
     space : str
         ``"sensor"`` or ``"source"``.
     nodes : list of str | None
-        Every ROI of a source-space modality, for laying them out.
+        A source-space modality's nodes for the viewer's circle: every ROI of
+        its atlas, the configured ones among them.
+    sides : dict | None
+        The hemisphere (-1 left, 1 right) of each node whose name does not say,
+        such as ``"Broca"``, from its atlas labels.
     """
 
     def __reduce__(self):
@@ -160,10 +164,11 @@ class EdgeValues(float):
                 self.space,
                 self.signed,
                 self.nodes,
+                self.sides,
             ),
         )
 
-    def __new__(cls, value, edges, labels, metric, *, space, signed=True, nodes=None):
+    def __new__(cls, value, edges, labels, metric, *, space, signed=True, nodes=None, sides=None):
         obj = super().__new__(cls, value)
         obj.edges = np.atleast_1d(np.asarray(edges, dtype=float))
         obj.labels = [tuple(pair) for pair in labels]
@@ -171,11 +176,14 @@ class EdgeValues(float):
         obj.signed = bool(signed)
         obj.space = space
         obj.nodes = None if nodes is None else list(nodes)
+        obj.sides = dict(sides) if sides else None
         return obj
 
 
-def _edge_values(value, edges, labels, metric, space, signed, nodes):
-    return EdgeValues(value, edges, labels, metric, space=space, signed=signed, nodes=nodes)
+def _edge_values(value, edges, labels, metric, space, signed, nodes, sides=None):
+    return EdgeValues(
+        value, edges, labels, metric, space=space, signed=signed, nodes=nodes, sides=sides
+    )
 
 
 class ModalityMixin:
@@ -347,12 +355,25 @@ class ModalityMixin:
         )
         return legacy
 
-    def _source_prep_common(self, *, inverse_method: str) -> dict:
-        """Resolve ROIs and build the cached sensor → ROI operator."""
+    def _source_atlas(self) -> str:
         # `atlas: null` in the config means "use the session's", which is what
         # makes RTStream(source_space="volume") pick a volumetric atlas without
         # every modality having to restate it.
-        atlas = self.params.get("atlas") or getattr(self, "source_atlas", None) or "aparc"
+        return self.params.get("atlas") or getattr(self, "source_atlas", None) or "aparc"
+
+    def _circle_nodes(self, rois) -> dict:
+        """The atlas's ROIs and their hemispheres, for the connectivity viewer's circle."""
+        nodes = atlas_nodes(
+            rois,
+            atlas=self._source_atlas(),
+            subject=self.subject_fs_id,
+            subjects_dir=self.subjects_fs_dir,
+        )
+        return {"nodes": nodes, "sides": _roi_sides(rois)}
+
+    def _source_prep_common(self, *, inverse_method: str) -> dict:
+        """Resolve ROIs and build the cached sensor → ROI operator."""
+        atlas = self._source_atlas()
         model = self._get_source_model(method=inverse_method, atlas=atlas)
         rois = resolve_rois(
             self._roi_names("brain_label", "brain_label_1", "brain_label_2"),
@@ -644,7 +665,7 @@ class ModalityMixin:
             "signed": bool(self.params.get("signed", False)),
             "labels": [(roi_names[a], roi_names[b]) for a, b in zip(seeds, targets)],
             "metric": self.params["method"],
-            "nodes": roi_names,
+            **self._circle_nodes(rois),
         }
 
     def _sensor_graph_prep(self) -> dict:
@@ -723,7 +744,7 @@ class ModalityMixin:
             "dist_type": self.params["dist_type"],
             **_graph_params(self.params, "source_graph"),
             "labels": [tuple(pair)],
-            "nodes": roi_names,
+            **self._circle_nodes(common["rois"]),
         }
 
     def _cfc_sensor_prep(self) -> dict:
@@ -917,6 +938,7 @@ class ModalityMixin:
         labels: list = (),
         metric: str = "",
         nodes: Optional[list] = None,
+        sides: Optional[dict] = None,
     ) -> float:
         """Connectivity between the configured source-space ROI pairs."""
         tcs = self._roi_time_courses(model, data, kernel, ch_picks, label_operator)
@@ -939,7 +961,14 @@ class ModalityMixin:
             # For a reward signal the magnitude is usually what is wanted.
             values = np.abs(values)
         return EdgeValues(
-            values.mean(), values, labels, metric, space="source", signed=signed, nodes=nodes
+            values.mean(),
+            values,
+            labels,
+            metric,
+            space="source",
+            signed=signed,
+            nodes=nodes,
+            sides=sides,
         )
 
     @timed
@@ -977,6 +1006,7 @@ class ModalityMixin:
         beta: float,
         labels: list = (),
         nodes: Optional[list] = None,
+        sides: Optional[dict] = None,
     ) -> float:
         """Learned graph edge weight between two source-space ROIs."""
         tcs = self._roi_time_courses(model, data, kernel, ch_picks, label_operator)
@@ -988,7 +1018,7 @@ class ModalityMixin:
             beta=beta,
         )
         value = float(graph_matrix[edge[0], edge[1]])
-        return EdgeValues(value, [value], labels, "graph", space="source", nodes=nodes)
+        return EdgeValues(value, [value], labels, "graph", space="source", nodes=nodes, sides=sides)
 
     @timed
     def _cfc_sensor(self, data: np.ndarray, comod) -> float:
