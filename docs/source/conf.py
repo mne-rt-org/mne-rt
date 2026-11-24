@@ -85,7 +85,7 @@ autodoc_mock_imports = _MOCK_MODULES
 project = 'MNE-RT'
 copyright = '2024-2026, Payam S. Shabestari'
 author = 'Payam S. Shabestari'
-release = '1.2.0'
+release = '1.3.0'
 
 # General configuration
 
