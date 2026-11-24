@@ -8,10 +8,18 @@ What's new
 Version 1.3.0
 --------------
 
-*unreleased*
+*2026-11-24*
 
 New features
 ^^^^^^^^^^^^
+
+- **EEG microstates as a modality.** ``microstates`` feeds back one metric of
+  one microstate per window (time coverage, mean duration, occurrences, GEV or
+  mean correlation): each sample of the band-passed, average-referenced window
+  is assigned to the template map it correlates with best, ignoring polarity,
+  as pycrostates backfits. The templates come as an array or a fitted
+  pycrostates ``ModKMeans``, and ``microstates@A``/``microstates@C`` feed back
+  two states at once. See :ref:`modality-microstates`.
 
 - **Graph learning from MNE-Connectivity.** ``sensor_graph`` and
   ``source_graph`` learn their graph with
@@ -115,6 +123,11 @@ New features
   ``True``): bad channels are estimated from the good ones by spherical-spline
   interpolation and drawn like the other sensors. Its ``push`` accepts a window
   of the good channels only, as ``StreamLSL.get_data`` returns by default.
+
+- **Tested on Linux, macOS and Windows**, on Python 3.11–3.14, and against both
+  the oldest dependency versions mne-rt allows and the coming ones (nightly
+  NumPy, SciPy, Matplotlib and MNE). This found the SciPy 2.0 and MNE 1.14
+  breakages fixed below.
 
 Bug fixes
 ^^^^^^^^^
