@@ -25,11 +25,15 @@ New features
   (``record_main(show_connectivity=True)``, ``mne-rt run --connectivity``)
   shows the pairs each connectivity modality computes, which reached the
   screen before only as their mean in the NF trace: sensor pairs as edges on
-  the head, source pairs between ROIs on a circle, left hemisphere on the left,
-  coloured and sized by value, and each pair's value over the last 30 s beside
-  the modality's own. So it shows which connection drives the feedback. It is
-  an experimenter's window, off by default, and costs nothing extra: the
-  per-pair values were computed already.
+  MNE's head (:func:`mne.viz.plot_sensors`), source pairs on
+  MNE-Connectivity's circle plot of every ROI of the atlas, homologous ROIs
+  facing each other; each edge's colour and width follow its value, read on a
+  colour bar scaled to the values on show; and beside them each pair's value over
+  time, with the modality's own. A side panel, as RawPlot's, picks the
+  modality, the time window (10–120 s) and the pairs shown, and pauses it. So
+  it shows which connection drives the feedback. An experimenter's window, off
+  by default; it costs nothing extra, as the per-pair values were computed
+  already.
 
 - **The viewer windows fit the screen.** ``record_main`` tiles the windows it
   opens over the screen's free area, the NF window with the top row to itself,

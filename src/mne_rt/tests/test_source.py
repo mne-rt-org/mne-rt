@@ -1047,3 +1047,60 @@ def test_two_bands_share_one_source_model_and_kernel(tmp_path, monkeypatch):
     assert n_model_builds[0] == 2  # memoised inside _get_source_model itself
     assert n_kernel_builds[0] == 1
     assert theta["kernel"] is alpha["kernel"]
+
+
+def test_the_viewer_circle_falls_back_to_the_rois_without_an_atlas(tmp_path):
+    from mne_rt.source import atlas_nodes
+
+    rois = [
+        ROI("Broca", ("parsopercularis-lh",), "surface"),
+        ROI("insula-rh", ("insula-rh",), "surface"),
+    ]
+    assert atlas_nodes(rois, atlas="aparc", subject="nobody", subjects_dir=tmp_path) == [
+        "Broca",
+        "insula-rh",
+    ]
+
+
+def test_the_viewer_circle_has_every_atlas_roi():
+    """All of aparc, front to back, an alias beside its first label."""
+    mne = pytest.importorskip("mne")
+    try:
+        subjects_dir = mne.datasets.fetch_fsaverage(verbose=False).parent
+    except Exception as exc:  # pragma: no cover - network/OSF dependent
+        pytest.skip(f"fsaverage unavailable: {exc}")
+    from mne_rt.source import atlas_nodes
+
+    rois = resolve_rois(
+        ["Broca", "insula-lh"], atlas="aparc", subject="fsaverage", subjects_dir=subjects_dir
+    )
+    nodes = atlas_nodes(rois, atlas="aparc", subject="fsaverage", subjects_dir=subjects_dir)
+    assert len(nodes) == 69  # aparc's 68 labels and Broca
+    assert not any("unknown" in n for n in nodes)
+    assert nodes[nodes.index("Broca") - 1] == "parsopercularis-lh"
+    assert nodes.index("frontalpole-lh") < nodes.index("lateraloccipital-lh")
+
+
+def test_an_roi_takes_its_labels_hemisphere_when_its_name_does_not_say():
+    from mne_rt.source import _roi_sides
+
+    rois = [
+        ROI("LangL", ("parsopercularis-lh", "parstriangularis-lh"), "surface"),
+        ROI("Both", ("insula-lh", "insula-rh"), "surface"),
+        ROI("insula-rh", ("insula-rh",), "surface"),
+    ]
+    assert _roi_sides(rois) == {"LangL": -1}
+
+
+@pytest.mark.slow
+def test_a_volume_atlas_circle_runs_front_to_back(fsaverage_volume_model):
+    _, _, subjects_dir = fsaverage_volume_model
+    from mne_rt.source import atlas_nodes
+
+    rois = resolve_rois(
+        ["ctx-lh-insula"], atlas="aparc+aseg", subject="fsaverage", subjects_dir=subjects_dir
+    )
+    nodes = atlas_nodes(rois, atlas="aparc+aseg", subject="fsaverage", subjects_dir=subjects_dir)
+    assert nodes.index("ctx-lh-frontalpole") < nodes.index("ctx-lh-lateraloccipital")
+    assert not any("White-Matter" in n or "Ventricle" in n for n in nodes)
+    assert "Left-VentralDC" in nodes  # the ventral diencephalon: grey matter
