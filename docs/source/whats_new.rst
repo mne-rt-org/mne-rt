@@ -8,7 +8,7 @@ What's new
 Version 1.3.1
 --------------
 
-*unreleased*
+*2026-11-26*
 
 Bug fixes
 ^^^^^^^^^
@@ -24,6 +24,17 @@ Bug fixes
   ``DeprecationWarning`` that specparam replaces it, at every ``import mne_rt``
   and every ``mne-rt`` command. fooof is now imported when an aperiodic fit is
   made (``individual_peak_power``, ``argmax_freq``), without the notice.
+- **The connectivity viewer's time axis matches the other viewers.**
+  :class:`~mne_rt.viz.ConnectivityPlot` showed time before now (−60 to 0 s);
+  it now runs from 0 to the time window's length, the newest values at its
+  end, as :class:`~mne_rt.viz.NFPlot` and :class:`~mne_rt.viz.RawPlot` do.
+
+Documentation
+^^^^^^^^^^^^^
+
+- The :ref:`visualization` guide presents
+  :class:`~mne_rt.viz.ConnectivityPlot`, with a video, as it does the other
+  viewers.
 
 .. _changes_1_3_0:
 

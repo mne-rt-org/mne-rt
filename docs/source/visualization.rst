@@ -647,3 +647,71 @@ all rendering happens on the main Qt thread via an internal 30 Hz timer.
          brain.update(stc)        # one frame of an fsaverage SourceEstimate
 
       See :class:`mne_rt.viz.BrainPlot` for the full API reference.
+
+   .. tab:: ConnectivityPlot
+
+      .. raw:: html
+
+         <div class="viz-tab-card">
+           <div class="viz-tab-header">
+             <div class="viz-tab-title-row">
+               <h3 class="viz-tab-title">ConnectivityPlot</h3>
+             </div>
+             <p class="viz-tab-subtitle">The pairs each connectivity modality computes, live</p>
+           </div>
+           <div class="viz-tab-body">
+             <p class="viz-tab-desc">
+               An experimenter's view of connectivity neurofeedback: the pairs each
+               connectivity modality computes, which otherwise reach the screen only
+               as their mean in the NF trace.  Sensor pairs are drawn as edges on
+               MNE's head, source pairs on MNE-Connectivity's circle of every ROI of
+               the atlas; each edge's colour and width follow its value.  Beside them,
+               each pair's value over time and the modality's own, so it shows which
+               connection drives the feedback.  It costs the real-time loop nothing:
+               the per-pair values are computed already.
+             </p>
+             <div class="viz-feature-grid">
+               <div class="viz-feature-item">
+                 <span class="viz-fi-icon">✓</span>
+                 <span class="viz-fi-text"><strong>Sensor pairs on MNE's head</strong> — as <code>mne.viz.plot_sensors</code> draws it, bad channels outlined</span>
+               </div>
+               <div class="viz-feature-item">
+                 <span class="viz-fi-icon">✓</span>
+                 <span class="viz-fi-text"><strong>Source pairs on the atlas circle</strong> — every ROI, homologous ones facing each other</span>
+               </div>
+               <div class="viz-feature-item">
+                 <span class="viz-fi-icon">✓</span>
+                 <span class="viz-fi-text"><strong>Edges follow their values</strong> — colour and width, on a colour bar of the values on show</span>
+               </div>
+               <div class="viz-feature-item">
+                 <span class="viz-fi-icon">✓</span>
+                 <span class="viz-fi-text"><strong>Each pair over time</strong> — with the modality's value, 10 s to 120 s</span>
+               </div>
+               <div class="viz-feature-item">
+                 <span class="viz-fi-icon">✓</span>
+                 <span class="viz-fi-text"><strong>Pick the pairs shown</strong> — in the side panel or the legend</span>
+               </div>
+               <div class="viz-feature-item">
+                 <span class="viz-fi-icon">✓</span>
+                 <span class="viz-fi-text"><strong>Every connectivity modality</strong> — one selector, pause while the data keeps coming</span>
+               </div>
+             </div>
+             <div class="viz-media-wrap">
+               <video autoplay muted loop playsinline>
+                 <source src="_static/ConnectivityPlot.mp4" type="video/mp4">
+               </video>
+             </div>
+           </div>
+         </div>
+
+      .. code-block:: python
+
+         # Opened by record_main, fed every analysis window:
+         nf.record_main(
+             duration=300,
+             modality=["sensor_connectivity", "source_connectivity"],
+             show_connectivity=True,
+         )
+
+      From the command line: ``mne-rt run ... --connectivity``. See
+      :class:`mne_rt.viz.ConnectivityPlot` for the full API reference.

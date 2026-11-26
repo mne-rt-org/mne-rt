@@ -10,8 +10,8 @@ abstract: >-
   visualisation, feedback output over LSL and OSC, and BIDS-compatible session
   saving.
 type: software
-version: 1.3.0
-date-released: 2026-11-24
+version: 1.3.1
+date-released: 2026-11-26
 # TODO: add the Zenodo DOI once a release is archived
 # doi: 10.5281/zenodo.XXXXXXX
 license: BSD-3-Clause
