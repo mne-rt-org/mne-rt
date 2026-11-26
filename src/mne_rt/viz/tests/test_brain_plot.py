@@ -213,7 +213,7 @@ def test_brain_blanks_a_vertex_with_no_value_this_frame(brain):
 
 
 def test_to_display_places_values_by_vertex_number():
-    from mne_rt.viz.brain_plot import N_ICO5, to_display
+    from mne_rt.viz._brain_data import N_ICO5, to_display
 
     lh, rh = to_display(np.array([1.0, 2.0, 3.0]), [np.array([0, 5]), np.array([7])])
     assert lh.shape == rh.shape == (N_ICO5,)

@@ -153,8 +153,8 @@ Quick install
 
       .. code-block:: bash
 
-          pip install mne-rt                 # core  (MNE, LSL, OSC included)
-          pip install "mne-rt[full]"         # + 3-D viz, dev tools, docs
+          pip install "mne-rt[pyqt6]"        # with a Qt binding, for the live windows
+          pip install "mne-rt[full,pyqt6]"   # + 3-D viz, dev tools, docs
 
    .. tab:: uv
 
@@ -163,18 +163,18 @@ Quick install
           # Install uv once
           curl -LsSf https://astral.sh/uv/install.sh | sh
 
-          uv pip install mne-rt
-          uv pip install "mne-rt[full]"      # + 3-D viz, dev tools, docs
+          uv pip install "mne-rt[pyqt6]"
+          uv pip install "mne-rt[full,pyqt6]"   # + 3-D viz, dev tools, docs
 
           # Editable install from source
-          git clone https://github.com/payamsash/mne-rt.git
-          cd mne-rt && uv pip install -e ".[dev]"
+          git clone https://github.com/mne-rt-org/mne-rt.git
+          cd mne-rt && uv pip install -e ".[dev,pyqt6]"
 
    .. tab:: conda / mamba
 
       .. code-block:: bash
 
-          mamba install -c conda-forge mne-rt
+          mamba install -c conda-forge mne-rt pyqt6
 
 See :doc:`install` for full instructions.
 

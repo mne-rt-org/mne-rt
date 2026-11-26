@@ -290,7 +290,7 @@ def test_create_report_renders_instanced_names_and_the_combined_trace(tmp_path):
     assert "sensor_power@theta" in html
     # _label_for already appends the instance label; adding it again rendered
     # "Power (alpha)\n(alpha)" on the y-axis.
-    from mne_rt.viz.nf_plot import _label_for
+    from mne_rt.viz._labels import _label_for
 
     assert _label_for("sensor_power@alpha").count("alpha") == 1
     # The combined trace is the signal the subject actually saw; it is not in

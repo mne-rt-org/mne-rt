@@ -17,20 +17,27 @@ pip (recommended)
 
 .. code-block:: bash
 
-    # Latest release (OSC output included)
-    pip install mne-rt
+    # Latest release, with a Qt binding for the live windows
+    pip install "mne-rt[pyqt6]"
 
     # All optional extras (viz, dev, docs)
-    pip install "mne-rt[full]"
+    pip install "mne-rt[full,pyqt6]"
+
+.. note::
+
+   The live windows need a Qt binding: PyQt6 (``mne-rt[pyqt6]``) or PySide6
+   (``mne-rt[pyside6]``). ``pip install mne-rt`` alone installs none, which
+   suits a session without windows, analysis and the CLI; opening a window
+   then says which to install.
 
 Editable / development install
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 .. code-block:: bash
 
-    git clone https://github.com/payamsash/mne-rt.git
+    git clone https://github.com/mne-rt-org/mne-rt.git
     cd mne-rt
-    pip install -e ".[dev]"
+    pip install -e ".[dev,pyqt6]"
 
 uv — recommended fast installer
 ---------------------------------
@@ -45,13 +52,13 @@ directly and handles all extras.
     curl -LsSf https://astral.sh/uv/install.sh | sh
 
     # Install mne-rt into an active environment
-    uv pip install mne-rt
-    uv pip install "mne-rt[full]"   # all extras (viz, dev, docs)
+    uv pip install "mne-rt[pyqt6]"
+    uv pip install "mne-rt[full,pyqt6]"   # all extras (viz, dev, docs)
 
     # Editable install from source (recommended for development)
-    git clone https://github.com/payamsash/mne-rt.git
+    git clone https://github.com/mne-rt-org/mne-rt.git
     cd mne-rt
-    uv pip install -e ".[dev]"
+    uv pip install -e ".[dev,pyqt6]"
 
 .. note::
 
@@ -70,11 +77,11 @@ because it uses a faster C++ dependency solver.
     # Install mamba into base (once)
     conda install -n base -c conda-forge mamba
 
-    # Install the latest release
-    mamba install -c conda-forge mne-rt
+    # Install the latest release, with a Qt binding for the live windows
+    mamba install -c conda-forge mne-rt pyqt6
 
     # Or with plain conda (slower)
-    conda install -c conda-forge mne-rt
+    conda install -c conda-forge mne-rt pyqt6
 
 Development environment
 ^^^^^^^^^^^^^^^^^^^^^^^^

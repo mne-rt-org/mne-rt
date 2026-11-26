@@ -99,3 +99,86 @@ def test_mne_rt_imports_when_pactools_cannot():
     code = "import sys; sys.modules['pactools'] = None; import mne_rt"
     result = subprocess.run([sys.executable, "-c", code], capture_output=True, text=True)
     assert result.returncode == 0, result.stderr[-2000:]
+
+
+def test_mne_rt_imports_without_a_qt_binding():
+    """`pip install mne-rt` installs no Qt binding: importing mne_rt, the CLI
+    and the report's labels must work without one, and a viewer must say how
+    to install one."""
+    import subprocess
+    import sys
+
+    code = """
+import sys
+for binding in ("PyQt6", "PySide6", "PyQt5", "PySide2"):
+    sys.modules[binding] = None  # as if not installed
+import mne_rt
+from mne_rt.cli import main
+from mne_rt.viz._labels import _label_for
+assert mne_rt.RTStream and _label_for("sensor_power@alpha")
+assert "pyqtgraph" not in sys.modules and "qtpy" not in sys.modules
+try:
+    mne_rt.RawPlot
+except ImportError as exc:
+    assert "mne-rt[pyqt6]" in str(exc), exc
+else:
+    raise AssertionError("RawPlot imported without Qt")
+sys.argv = ["mne-rt", "--help"]
+try:
+    main()
+except SystemExit as exc:
+    assert exc.code == 0, exc.code
+"""
+    result = subprocess.run([sys.executable, "-c", code], capture_output=True, text=True)
+    assert result.returncode == 0, result.stderr[-2000:]
+
+
+def test_importing_mne_rt_does_not_print_fooof_s_notice():
+    """fooof warns on import that specparam replaces it: every `import mne_rt`
+    and CLI call printed it."""
+    import subprocess
+    import sys
+
+    code = "import warnings; warnings.simplefilter('always'); import mne_rt"
+    result = subprocess.run([sys.executable, "-c", code], capture_output=True, text=True)
+    assert result.returncode == 0, result.stderr[-2000:]
+    assert "fooof" not in result.stderr
+
+
+def test_the_viewers_are_still_public_api():
+    import mne_rt
+    from mne_rt import viz
+
+    assert {"RawPlot", "NFPlot", "BrainPlot"} <= set(dir(mne_rt))
+    assert "ConnectivityPlot" in dir(viz)
+    assert mne_rt.RawPlot is viz.RawPlot
+    with pytest.raises(AttributeError):
+        viz.NoSuchPlot
+
+
+def test_an_aperiodic_fit_does_not_print_fooof_s_notice():
+    """fooof sets an 'always' filter just before it warns: an 'ignore' filter
+    around its import let the notice through."""
+    import subprocess
+    import sys
+
+    code = (
+        "import warnings; warnings.simplefilter('default')\n"
+        "from mne_rt.tools.tools import _spectral_model\n"
+        "_spectral_model()\n"
+    )
+    result = subprocess.run([sys.executable, "-c", code], capture_output=True, text=True)
+    assert result.returncode == 0, result.stderr[-2000:]
+    assert "fooof" not in result.stderr
+
+
+def test_windows_without_qt_say_how_to_install_it(monkeypatch):
+    """record_main and the CLI check before importing Qt: pyqtgraph's and
+    qtpy's own errors do not say how to install a binding for mne-rt."""
+    from mne_rt import viz
+
+    monkeypatch.setattr(viz, "_has_qt", lambda: False)
+    with pytest.raises(ImportError, match=r"record_main's windows.*mne-rt\[pyqt6\]"):
+        viz.require_qt("record_main's windows")
+    monkeypatch.setattr(viz, "_has_qt", lambda: True)
+    viz.require_qt("record_main's windows")  # a binding: nothing to say

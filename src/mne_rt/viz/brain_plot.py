@@ -35,6 +35,7 @@ except ImportError:
 
 from mne_rt._logging import logger
 from mne_rt.tools import setup_surface
+from mne_rt.viz._brain_data import N_ICO5, to_display  # noqa: F401
 from mne_rt.viz._layout import fit_size
 from mne_rt.viz._smoothing import check_smoothing, ema_step
 
@@ -186,23 +187,11 @@ _BACKGROUNDS: dict[str, tuple[str, str]] = {
 _DEFAULT_BG = "Midnight"
 
 
-#: Vertices per hemisphere of the ico-5 cortex the display draws.
-N_ICO5 = 10242
+def _qt_hint() -> str:
+    """The Qt binding pyvistaqt also needs, when none is installed."""
+    from mne_rt.viz import _has_qt
 
-
-def to_display(values: np.ndarray, vertices: list[np.ndarray]) -> tuple[np.ndarray, np.ndarray]:
-    """One value per source, as ``(lh, rh)`` arrays over the display's vertices.
-
-    ``vertices`` are the source estimate's vertex numbers per hemisphere; a
-    display vertex without a source is NaN, drawn without activity.
-    """
-    n_lh = len(vertices[0])
-    out = []
-    for vertno, part in zip(vertices, (values[:n_lh], values[n_lh:])):
-        full = np.full(N_ICO5, np.nan)
-        full[vertno] = part
-        out.append(full)
-    return out[0], out[1]
+    return "" if _has_qt() else ", and a Qt binding:  pip install 'mne-rt[pyqt6]'"
 
 
 def _lut(cmap: str) -> np.ndarray:
@@ -279,7 +268,7 @@ class BrainPlot:
         if not _pyvista_available or not _pyvistaqt_available:
             raise ImportError(
                 "pyvista and pyvistaqt are required for BrainPlot. "
-                "Install them with:  pip install 'mne-rt[viz]'"
+                "Install them with:  pip install 'mne-rt[viz]'" + _qt_hint()
             )
         from mne_rt._logging import set_log_level
 

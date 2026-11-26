@@ -634,3 +634,24 @@ def test_resolve_n_cycles_matches_upstream_constraint():
     np.testing.assert_allclose(resolve_n_cycles(freqs, n_cycles, winsize), n_cycles)
     with pytest.raises(ValueError):
         resolve_n_cycles(freqs, n_cycles * 1.01, winsize)
+
+
+def test_aperiodic_fit_finds_the_slope_and_the_alpha_peak():
+    """fooof (or specparam) is imported when a fit is made, not with mne_rt."""
+    import mne
+
+    from mne_rt.tools.tools import estimate_aperiodic_component
+
+    sfreq, n = 250.0, 250 * 60
+    rng = np.random.default_rng(0)
+    # 1/f (pink) noise and a 10 Hz rhythm, on four channels.
+    spectrum = np.fft.rfft(rng.standard_normal((4, n)), axis=1)
+    freqs = np.fft.rfftfreq(n, 1 / sfreq)
+    spectrum[:, 1:] /= np.sqrt(freqs[1:])
+    t = np.arange(n) / sfreq
+    data = np.fft.irfft(spectrum, n=n, axis=1) + 0.5 * np.sin(2 * np.pi * 10 * t)
+    raw = mne.io.RawArray(data * 1e-6, mne.create_info(4, sfreq, "eeg"), verbose=False)
+
+    aperiodic, peaks = estimate_aperiodic_component(raw, picks="eeg", method="welch")
+    assert 0.6 < aperiodic[1] < 1.4  # the 1/f exponent
+    assert any(abs(p[0] - 10) < 1 for p in peaks)

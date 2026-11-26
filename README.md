@@ -70,31 +70,35 @@ BIDS-compatible session saving, and a full CLI.
 ## Installation
 
 ```bash
-pip install mne-rt                 # core package
-pip install "mne-rt[full]"         # + 3-D viz, dev tools, docs
+pip install "mne-rt[pyqt6]"        # with a Qt binding, for the live windows
+pip install "mne-rt[full,pyqt6]"   # + 3-D viz, dev tools, docs
 ```
+
+The live windows need a Qt binding: PyQt6 (`mne-rt[pyqt6]`) or PySide6
+(`mne-rt[pyside6]`). `pip install mne-rt` alone installs none, which suits a
+session without windows, analysis and the CLI.
 
 <details>
 <summary>Other installation methods</summary>
 
 **conda / mamba ([conda-forge](https://anaconda.org/conda-forge/mne-rt)):**
 ```bash
-mamba install -c conda-forge mne-rt
+mamba install -c conda-forge mne-rt pyqt6
 # or, with plain conda:
-conda install -c conda-forge mne-rt
+conda install -c conda-forge mne-rt pyqt6
 ```
 
 **uv (fast Rust-based installer):**
 ```bash
-uv pip install mne-rt
-uv pip install "mne-rt[full]"
+uv pip install "mne-rt[pyqt6]"
+uv pip install "mne-rt[full,pyqt6]"
 ```
 
 **Development install from source:**
 ```bash
 git clone https://github.com/mne-rt-org/mne-rt.git
 cd mne-rt
-pip install -e ".[dev]"
+pip install -e ".[dev,pyqt6]"
 ```
 
 </details>

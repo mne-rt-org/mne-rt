@@ -13,6 +13,7 @@ os.environ.setdefault("QT_QPA_PLATFORM", "offscreen")
 import numpy as np
 import pytest
 
+from mne_rt import viz
 from mne_rt._montage import make_standard_montage
 
 DSI24_SCALP = "P3 C3 F3 Fz F4 C4 P4 Cz Pz Fp1 Fp2 T3 T5 O1 O2 F7 F8 T6 T4".split()
@@ -130,18 +131,18 @@ def test_viewers_cover_all_channels_when_picks_is_set(tmp_path, monkeypatch):
 
     pushed = {"raw": [], "topo": []}
 
-    class SpyRaw(rs.RawPlot):
+    class SpyRaw(viz.RawPlot):
         def push(self, chunk):
             pushed["raw"].append((self._n_ch, chunk.shape[0]))
             super().push(chunk)
 
-    class SpyTopo(rs.TopomapPlot):
+    class SpyTopo(viz.TopomapPlot):
         def push(self, window):
             pushed["topo"].append((len(self._topo_picks), window.shape[0]))
             super().push(window)
 
-    monkeypatch.setattr(rs, "RawPlot", SpyRaw)
-    monkeypatch.setattr(rs, "TopomapPlot", SpyTopo)
+    monkeypatch.setattr(viz, "RawPlot", SpyRaw)
+    monkeypatch.setattr(viz, "TopomapPlot", SpyTopo)
 
     nf = RTStream("sub01", "01", str(tmp_path), montage=None)
     nf.connect_to_array(data, info, n_repeat=np.inf)
@@ -213,14 +214,14 @@ def test_record_main_topomap_interpolates_bad_channels(tmp_path, monkeypatch):
 
     seen = {}
 
-    class SpyTopo(rs.TopomapPlot):
+    class SpyTopo(viz.TopomapPlot):
         # After push, which puts the good-channel window back into full rows.
         def _update_topomaps(self, window):
             seen.setdefault("shapes", []).append(window.shape[0])
             seen["interp"] = [self._info["ch_names"][i] for i in self._interp_picks]
             super()._update_topomaps(window)
 
-    monkeypatch.setattr(rs, "TopomapPlot", SpyTopo)
+    monkeypatch.setattr(viz, "TopomapPlot", SpyTopo)
 
     nf = RTStream("sub01", "01", str(tmp_path), montage=None)
     nf.connect_to_array(data, info, n_repeat=np.inf)
@@ -480,12 +481,12 @@ def test_record_main_topomap_with_a_type_string_picks_and_other_channel_types(
     data = np.random.default_rng(4).standard_normal((len(names), 250 * 24)) * 1e-5
     shapes = []
 
-    class SpyTopo(rs.TopomapPlot):
+    class SpyTopo(viz.TopomapPlot):
         def _update_topomaps(self, window):
             shapes.append(window.shape[0])
             super()._update_topomaps(window)
 
-    monkeypatch.setattr(rs, "TopomapPlot", SpyTopo)
+    monkeypatch.setattr(viz, "TopomapPlot", SpyTopo)
     nf = RTStream("sub01", "01", str(tmp_path), montage=None)
     nf.connect_to_array(data, info, n_repeat=np.inf)
     nf.rec_info["bads"] = ["P3"]

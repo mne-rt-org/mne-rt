@@ -12,6 +12,7 @@ from pathlib import Path
 import numpy as np
 import pytest
 
+from mne_rt import viz
 from mne_rt.tests._helpers import (
     _HEADLESS,
     _CountingProtocol,
@@ -1021,7 +1022,7 @@ def test_display_scales_follow_the_zscored_units(tmp_path, array_info):
     import mne_rt.rt_stream as rs
 
     captured = {}
-    real_init = rs.NFPlot.__init__
+    real_init = viz.NFPlot.__init__
 
     def _spy(self, modalities, scales_dict, *a, **kw):
         captured["scales"] = dict(scales_dict)
@@ -1031,7 +1032,7 @@ def test_display_scales_follow_the_zscored_units(tmp_path, array_info):
     data = _make_array_data(array_info, duration=10.0)
     nf.connect_to_array(data, array_info, n_repeat=np.inf)
     monkey = pytest.MonkeyPatch()
-    monkey.setattr(rs.NFPlot, "__init__", _spy)
+    monkey.setattr(viz.NFPlot, "__init__", _spy)
     try:
         nf.record_main(
             duration=2.0,
@@ -1093,7 +1094,7 @@ def _conn_session(tmp_path, monkeypatch, modality):
     from mne_rt import rt_stream
 
     pushes, made = [], []
-    real_init, real_push = rt_stream.ConnectivityPlot.__init__, rt_stream.ConnectivityPlot.push
+    real_init, real_push = viz.ConnectivityPlot.__init__, viz.ConnectivityPlot.push
 
     def _init(self, *a, **k):
         made.append(1)
@@ -1103,8 +1104,8 @@ def _conn_session(tmp_path, monkeypatch, modality):
         pushes.append(values)
         real_push(self, values)
 
-    monkeypatch.setattr(rt_stream.ConnectivityPlot, "__init__", _init)
-    monkeypatch.setattr(rt_stream.ConnectivityPlot, "push", _push)
+    monkeypatch.setattr(viz.ConnectivityPlot, "__init__", _init)
+    monkeypatch.setattr(viz.ConnectivityPlot, "push", _push)
     names = ["F3", "F4", "C3", "C4"]
     info = mne.create_info(names, 256.0, "eeg")
     nf = _make_rt_stream(tmp_path, montage="easycap-M1")

@@ -14,23 +14,12 @@ from scipy.signal import butter, get_window, periodogram, welch
 from scipy.spatial.distance import pdist, squareform
 
 try:
-    from specparam import SpectralModel as FOOOF
-except ImportError:
-    from fooof import FOOOF  # legacy name
-try:
     from pyunlocbox import functions
     from pyunlocbox import solvers as _pux_solvers
 
     _pyunlocbox_available = True
 except Exception:
     _pyunlocbox_available = False
-try:
-    import pyvista as pv
-
-    _pyvista_available = True
-except ImportError:
-    pv = None  # type: ignore[assignment]
-    _pyvista_available = False
 import mne
 from mne import (
     compute_raw_covariance,
@@ -514,6 +503,29 @@ def butter_bandpass(l_freq, h_freq, sfreq, order):
     return sos
 
 
+def _spectral_model():
+    """specparam's SpectralModel, or fooof's FOOOF before it.
+
+    Imported here, when a fit is made, not with mne_rt: importing fooof warns
+    that specparam replaces it, which every ``import mne_rt`` and CLI call
+    printed. That notice is for mne-rt to act on (it moves to specparam once
+    specparam 2.0 is released), so it is not passed on.
+    """
+    try:
+        from specparam import SpectralModel
+
+        return SpectralModel
+    except ImportError:
+        import warnings
+
+        # Recorded and dropped: fooof sets an "always" filter just before it
+        # warns, which would put its notice ahead of any "ignore" filter.
+        with warnings.catch_warnings(record=True):
+            from fooof import FOOOF
+
+        return FOOOF
+
+
 def estimate_aperiodic_component(raw_baseline, picks, method, freq_range=(1, 20), verbose=None):
     """
     Estimate the aperiodic (1/f) component of a PSD using FOOOF.
@@ -540,7 +552,7 @@ def estimate_aperiodic_component(raw_baseline, picks, method, freq_range=(1, 20)
             Parameters of oscillatory peaks identified in the spectrum.
     """
     spectrum = raw_baseline.compute_psd(picks=picks, method=method, fmax=80)
-    fm = FOOOF(verbose=verbose)
+    fm = _spectral_model()(verbose=verbose)
 
     fm.fit(spectrum.freqs, spectrum.get_data().mean(axis=0), freq_range=freq_range)
     return fm.aperiodic_params_, fm.peak_params_
@@ -1200,11 +1212,13 @@ def setup_surface(subjects_dir=None, hemi_distance=20.0, surf="inflated", grade=
             Used to spread source-space values to the full mesh so that
             the activity overlay looks smooth rather than point-like.
     """
-    if not _pyvista_available:
+    try:  # here, not with mne_rt: it loads VTK, and Qt through pyvistaqt
+        import pyvista as pv
+    except ImportError as exc:
         raise ImportError(
             "pyvista is required for brain surface visualisation. "
-            "Install it with:  pip install 'ANT[viz]'"
-        )
+            "Install it with:  pip install 'mne-rt[viz]'"
+        ) from exc
     from scipy.spatial import cKDTree
 
     fs_dir = Path(fetch_fsaverage(verbose=False))
@@ -1280,6 +1294,8 @@ def setup_surface(subjects_dir=None, hemi_distance=20.0, surf="inflated", grade=
 
 def setup_plotter(mesh, clim=[0, 0.6], camera_position="yz", azimuth=45):
     """Initialize PyVista plotter, add mesh, and set camera."""
+    import pyvista as pv
+
     plotter = pv.Plotter(window_size=(1800, 1200), lighting="three lights")
     plotter.set_background("black")
 
