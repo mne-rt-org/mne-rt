@@ -88,17 +88,33 @@ from mne_rt.tools.asr import ASRDenoiser
 from mne_rt.tools.bad_channel_detector import BadChannelDetector
 from mne_rt.tools.lms import AdaptiveLMSFilter
 from mne_rt.tools.maxwell import RTMaxwellFilter
-from mne_rt.viz import (
-    BrainPlot,
-    ButterflyPlot,
-    CompareEvoked,
-    EpochPlot,
-    NFPlot,
-    RawPlot,
-    TFRPlot,
-    TopomapPlot,
-    TopoPlot,
+
+# The viewers, from mne_rt.viz when first used: they need Qt, and importing
+# mne_rt must not (a session without windows, the report, the CLI's help).
+_VIEWERS = (
+    "BrainPlot",
+    "ButterflyPlot",
+    "CompareEvoked",
+    "EpochPlot",
+    "NFPlot",
+    "RawPlot",
+    "TFRPlot",
+    "TopomapPlot",
+    "TopoPlot",
 )
+
+
+def __getattr__(name: str):
+    if name in _VIEWERS:
+        from mne_rt import viz
+
+        return getattr(viz, name)
+    raise AttributeError(f"module {__name__!r} has no attribute {name!r}")
+
+
+def __dir__():
+    return sorted(set(globals()) | set(_VIEWERS))
+
 
 __all__ = [
     "RTStream",

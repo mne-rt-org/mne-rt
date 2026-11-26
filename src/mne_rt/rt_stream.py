@@ -32,7 +32,7 @@ import time
 import uuid
 from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
-from typing import Any, Literal, Optional, Sequence, Union
+from typing import TYPE_CHECKING, Any, Literal, Optional, Sequence, Union
 from warnings import warn
 
 import matplotlib.pyplot as plt
@@ -54,7 +54,6 @@ from mne.minimum_norm import (
 from mne_lsl.lsl import local_clock
 from mne_lsl.player import PlayerLSL as Player
 from mne_lsl.stream import StreamLSL as Stream
-from pyqtgraph.Qt import QtWidgets
 
 from mne_rt._logging import logger, set_log_level, verbose
 from mne_rt._montage import builtin_montage
@@ -75,14 +74,16 @@ from mne_rt.tools.bids_io import _build_bids_stem, describe_nf_columns, write_nf
 from mne_rt.tools.gedai import GEDAIDenoiser
 from mne_rt.tools.maxwell import RTMaxwellFilter
 from mne_rt.tools.orica import ORICA
-from mne_rt.viz import BrainPlot, ConnectivityPlot, NFPlot, RawPlot, TopomapPlot
-from mne_rt.viz._layout import tile_windows
-from mne_rt.viz._pacing import LoadShedder
-from mne_rt.viz.brain_plot import N_ICO5, to_display
+from mne_rt.viz._brain_data import N_ICO5, to_display
+
+if TYPE_CHECKING:  # the viewers need Qt: imported where record_main opens them
+    from mne_rt.viz import BrainPlot, ConnectivityPlot, NFPlot, RawPlot, TopomapPlot
 
 # The report's axis labels come from the same tables the live NF window uses, so
 # the two cannot describe the same modality differently.
-from mne_rt.viz.nf_plot import _label_for, _unit_for
+from mne_rt.viz._labels import _label_for, _unit_for
+from mne_rt.viz._layout import tile_windows
+from mne_rt.viz._pacing import LoadShedder
 
 # Package root — resolves correctly both in editable installs and installed wheels
 _PKG_DIR = Path(__file__).resolve().parent
@@ -2407,13 +2408,21 @@ class RTStream(ModalityMixin):
             or show_topo
             or show_connectivity
         )
-        app: Optional[QtWidgets.QApplication] = None
+        app = None
 
         if needs_qt:
+            # Here, not at module level: mne_rt imports without a Qt binding, and
+            # only a session that opens windows needs one. The viewers are read
+            # off mne_rt.viz, where the tests replace them.
+            from mne_rt import viz
+
+            viz.require_qt("record_main's windows")
+            from pyqtgraph.Qt import QtWidgets
+
             app = QtWidgets.QApplication.instance() or QtWidgets.QApplication([])
 
         if show_nf_signal:
-            nf_plot = NFPlot(
+            nf_plot = viz.NFPlot(
                 modalities=_display_mods,
                 scales_dict=scales_dict,
                 sfreq=30.0,  # pump timer rate drives display at 30 fps
@@ -2425,7 +2434,7 @@ class RTStream(ModalityMixin):
         if show_topo:
             # Every channel, bads included, which the topomap interpolates; it
             # is fed windows of the good ones and puts them in place itself.
-            topo_plot = TopomapPlot(
+            topo_plot = viz.TopomapPlot(
                 info=self.rec_info,
                 sfreq=self._sfreq,
                 bands=topo_bands,
@@ -2436,7 +2445,7 @@ class RTStream(ModalityMixin):
         if show_brain_activation:
             if self.subjects_fs_dir is None:
                 raise ValueError("subjects_fs_dir must be set to use brain activation display.")
-            brain_plot = BrainPlot(
+            brain_plot = viz.BrainPlot(
                 subjects_fs_dir=self.subjects_fs_dir,
                 clim=[0, 0.6],
                 surf=brain_surf,
@@ -2447,7 +2456,7 @@ class RTStream(ModalityMixin):
         if show_raw_signal:
             # Every good channel, not just `picks`: the viewer is for checking
             # the whole recording, and its feed below fetches without picks.
-            raw_plot = RawPlot(
+            raw_plot = viz.RawPlot(
                 ch_names=self._acquired_ch_names(use_picks=False),
                 sfreq=self._sfreq,
                 info=self._acquired_info(use_picks=False),
@@ -2456,7 +2465,7 @@ class RTStream(ModalityMixin):
 
         conn_plot: Optional[ConnectivityPlot] = None
         if show_connectivity:
-            conn_plot = ConnectivityPlot(
+            conn_plot = viz.ConnectivityPlot(
                 ch_names=self._acquired_ch_names(),
                 info=self._acquired_info(),
                 rate=2.0 / winsize,  # one update per hop, half a window

@@ -932,6 +932,9 @@ def _cmd_demo_erp(args) -> None:
     raw_demo.save(mock_path, overwrite=True, verbose=False)
     print(f"  Saved {raw_demo.times[-1]:.0f} s demo file -> {mock_path}")
 
+    from mne_rt.viz import require_qt
+
+    require_qt("The demo's windows")
     from qtpy.QtWidgets import QApplication
 
     app = QApplication.instance() or QApplication(sys.argv)

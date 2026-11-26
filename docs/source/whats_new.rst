@@ -3,6 +3,28 @@
 What's new
 ==========
 
+.. _changes_1_3_1:
+
+Version 1.3.1
+--------------
+
+*unreleased*
+
+Bug fixes
+^^^^^^^^^
+
+- **mne-rt imports without a Qt binding.** ``pip install mne-rt`` installs no
+  Qt binding, but ``import mne_rt``, and so the ``mne-rt`` command, raised
+  pyqtgraph's ``ImportError`` without one. The viewers are now imported when
+  first used: a session without windows, the report and the CLI work without
+  Qt, and opening a window without a binding says to install
+  ``mne-rt[pyqt6]`` or ``mne-rt[pyside6]``. The installation instructions now
+  install one.
+- **No fooof notice on every import.** Importing mne-rt printed fooof's
+  ``DeprecationWarning`` that specparam replaces it, at every ``import mne_rt``
+  and every ``mne-rt`` command. fooof is now imported when an aperiodic fit is
+  made (``individual_peak_power``, ``argmax_freq``), without the notice.
+
 .. _changes_1_3_0:
 
 Version 1.3.0
