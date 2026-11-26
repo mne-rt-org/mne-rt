@@ -82,6 +82,32 @@ unreleased numpy, scipy, MNE and friends, which reports without blocking.
 - Public functions and methods use NumPy-style docstrings and accept a
   `verbose=` keyword, following MNE-Python's conventions.
 
+## Releasing
+
+For maintainers.
+
+1. Open a release pull request:
+   - set the version in `pyproject.toml`, `docs/source/conf.py` (`release`) and
+     `CITATION.cff` (`version`, `date-released`);
+   - date the version in `docs/source/whats_new.rst`;
+   - for a new `X.Y` (not a patch release), update
+     `docs/source/_static/versions.json`, the version switcher's list: add
+     `X.Y (stable)` with the `stable/` URL and `"preferred": true`, and move
+     the previous stable to its own folder (`.../mne-rt/<previous X.Y>/`),
+     without "(stable)" or `preferred`.
+2. Once it is merged, tag it and publish the GitHub release:
+   `git tag -a vX.Y.Z -m "MNE-RT X.Y.Z"`, `git push origin vX.Y.Z`, then
+   `gh release create vX.Y.Z --verify-tag`. Publishing runs
+   `.github/workflows/release.yml`, which uploads to PyPI.
+3. Publish its docs as `X.Y/` and `stable/`:
+   `gh workflow run docs.yml --ref vX.Y.Z -f release=X.Y`.
+4. conda-forge's bot opens a pull request on
+   [mne-rt-feedstock](https://github.com/conda-forge/mne-rt-feedstock) within
+   a day: check its dependencies against `pyproject.toml`, and merge it.
+
+The docs of `main` are published as `dev/` on every merge; step 3 publishes
+a version's docs again whenever needed.
+
 ## Policy on AI assistance
 
 Adapted from MNE-Python's. A neurofeedback session runs on people, so a

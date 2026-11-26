@@ -1,13 +1,34 @@
 name: Build and deploy docs
+# A pull request's or main's newer run replaces the older one; a manual run
+# (a release's docs) is never cancelled, nor cancels a push's.
 concurrency:
-  group: ${{ github.workflow }}-${{ github.event.number }}-${{ github.event.ref }}
-  cancel-in-progress: true
+  group: ${{ github.workflow }}-${{ github.event_name }}-${{ github.event.number || github.ref }}-${{ inputs.release }}
+  cancel-in-progress: ${{ github.event_name != 'workflow_dispatch' }}
 
+# Each version of the docs has its own folder on gh-pages, as MNE's site does:
+#   dev/        main, on every push
+#   X.Y/        each release, run by hand on its tag with `release` set to X.Y
+#               (gh workflow run docs.yml --ref vX.Y.Z -f release=X.Y); not on
+#               the release event, as zizmor rightly flags a cache in a
+#               workflow that runs on one
+#   stable/     the same, for the release versions.json marks preferred
+# The root holds versions.json (the version switcher's list, from main), the
+# viewer videos all versions share (_media/), a redirect to stable/ for each
+# page, so the links made before versions keep working, and a 404 page that
+# sends any other old link to stable/.
 on:
   push:
     branches: [main]
   pull_request:
   workflow_dispatch:   # allow manual trigger from the Actions tab
+    inputs:
+      release:
+        description: >-
+          Publish this build as release X.Y, e.g. 1.3: from its tag vX.Y.Z (or
+          from main, once, to publish a first release's docs). Empty: publish
+          main as dev/, or on another branch only build.
+        required: false
+        default: ""
 
 permissions:
   contents: read
@@ -16,10 +37,37 @@ jobs:
   build:
     runs-on: ubuntu-latest
     timeout-minutes: 40
+    outputs:
+      version: ${{ steps.version.outputs.version }}
     steps:
       - uses: actions/checkout@v7
         with:
           persist-credentials: false
+      # What this build is published as: "dev", or "X.Y" for a release.
+      - id: version
+        env:
+          INPUT: ${{ inputs.release }}
+          REF: ${{ github.ref }}
+        run: |
+          version=dev
+          if [ -n "$INPUT" ]; then
+            version="$INPUT"
+            if ! [[ "$version" =~ ^[0-9]+\.[0-9]+$ ]]; then
+              echo "::error::A release version is X.Y, e.g. 1.3; got '$version'"; exit 1
+            fi
+            case "$REF" in
+              refs/heads/main) ;;
+              refs/tags/v*)
+                tag="${REF#refs/tags/v}"
+                if [ "${tag%.*}" != "$version" ]; then
+                  echo "::error::Tag v$tag is release ${tag%.*}, not $version"; exit 1
+                fi ;;
+              *) echo "::error::A release is published from its tag (or main), not $REF"; exit 1 ;;
+            esac
+          fi
+          echo "version=$version" >> "$GITHUB_OUTPUT"
+          echo "MNE_RT_DOCS_VERSION=$version" >> "$GITHUB_ENV"
+          echo "Building the docs as: $version"
       # The gallery runs in parallel worker processes, which import the real Qt
       # rather than conf.py's mocks: they need a binding and its system libraries.
       # A pull request runs no example, so it needs neither.
@@ -37,9 +85,10 @@ jobs:
       # The datasets the examples use: MNE sample (1.5 GB), EEGBCI, and the
       # fsaverage anatomy simulate_raw builds its recordings on. Bump the key
       # when MNE moves to a new dataset version, as a saved cache is never
-      # replaced.
+      # replaced. Not for a release's docs: those fetch the datasets afresh
+      # rather than trust a cache.
       - uses: actions/cache@v6
-        if: github.event_name != 'pull_request'
+        if: github.event_name != 'pull_request' && inputs.release == ''
         with:
           path: |
             ~/mne_data/MNE-sample-data
@@ -60,8 +109,8 @@ jobs:
             sleep 30
           done
           exit 1
-      # A pull request skips the examples and fails on any warning; main runs
-      # every example, four at a time, and deploys.
+      # A pull request skips the examples and fails on any warning; the others
+      # run every example, four at a time.
       - name: Build Sphinx docs
         run: >-
           sphinx-build -b html docs/source docs/_build/html -q -j auto
@@ -70,20 +119,28 @@ jobs:
           MPLBACKEND: Agg
           QT_QPA_PLATFORM: offscreen
           MNE_RT_PLOT_GALLERY: ${{ github.event_name == 'pull_request' && '0' || '1' }}
+      # The videos go to the site's root, shared by every version.
+      - run: cp -r docs/source/_media docs/_build/html/_media
+        if: github.event_name != 'pull_request'
       - uses: actions/upload-artifact@v7
-        if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
+        if: github.event_name != 'pull_request'
         with:
           name: html
           path: docs/_build/html
 
-  # main only: a manual run on another branch builds the full gallery, to try
-  # it, without publishing that branch's docs.
+  # dev/ from main; X.Y/ (and stable/) from a release. A manual run on another
+  # branch without a release builds the full gallery, to try it, and stops.
   deploy:
     needs: build
-    if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
+    if: >-
+      (github.event_name == 'push' && github.ref == 'refs/heads/main')
+      || (github.event_name == 'workflow_dispatch'
+          && (inputs.release != '' || github.ref == 'refs/heads/main'))
     runs-on: ubuntu-latest
+    # One queue per version, so a release's deploy waiting behind a dev one is
+    # not dropped for the next dev one; the push below is safe between queues.
     concurrency:
-      group: gh-pages
+      group: gh-pages-${{ needs.build.outputs.version }}
       cancel-in-progress: false
     permissions:
       contents: write  # pushes the built site to gh-pages
@@ -91,9 +148,127 @@ jobs:
       - uses: actions/download-artifact@v8
         with:
           name: html
-          path: html
-      - uses: peaceiris/actions-gh-pages@v4
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: html
-          force_orphan: true   # keep gh-pages branch clean (no history)
+          path: build
+      - name: Publish to gh-pages
+        env:
+          VERSION: ${{ needs.build.outputs.version }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          REPO: ${{ github.repository }}
+          SHA: ${{ github.sha }}
+        run: |
+          # Run as its own script, so that set -e stops a failed attempt.
+          cat > publish.sh <<'SH'
+          set -euo pipefail
+          # A fresh copy of the build each attempt: an attempt moves parts of it.
+          rm -rf html site && cp -R build html
+          git clone --quiet --depth 1 --branch gh-pages "https://github.com/$REPO.git" site
+          base="$(git -C site rev-parse HEAD)"
+
+          # The release versions.json marks preferred is also stable/. The
+          # site's versions.json, from main, says which; a first release's
+          # docs, before the site has one, go by their own.
+          json=site/versions.json; dests="$VERSION"
+          [ -f "$json" ] || json=html/_static/versions.json
+          if [ "$VERSION" != dev ]; then
+            preferred="$(python3 -c 'import json, sys; print(next((v["version"] for v in json.load(open(sys.argv[1])) if v.get("preferred")), ""))' "$json")"
+            if [ "$VERSION" = "$preferred" ]; then dests="$VERSION stable"; fi
+          fi
+          # main's versions.json is the switcher's list; a release's is not
+          # (republishing an old one would bring back its old list), unless
+          # the site has none yet.
+          if [ "$VERSION" = dev ] || [ ! -f site/versions.json ]; then
+            cp html/_static/versions.json site/
+          fi
+          # Videos are added, never removed: older versions still show them.
+          # A changed video gets a new name.
+          mkdir -p site/_media
+          if [ -d html/_media ]; then cp -R html/_media/. site/_media/; rm -rf html/_media; fi
+
+          for dest in $dests; do rm -rf "site/$dest"; cp -R html "site/$dest"; done
+
+          # Until the first release is published the root is left as it is:
+          # the site before versions keeps working beside dev/.
+          if [ -d site/stable ]; then
+            # The root is rebuilt: keep the versions and the shared files,
+            # drop the rest (the redirects, and the site before versions).
+            shopt -s dotglob
+            for entry in site/*; do
+              name="${entry#site/}"
+              case "$name" in .git|dev|stable|_media|versions.json) continue ;; esac
+              if [[ "$name" =~ ^[0-9]+\.[0-9]+$ ]]; then continue; fi
+              rm -rf "$entry"
+            done
+            shopt -u dotglob
+            python3 - <<'PY'
+          import os
+
+          root, target = "site", "stable"
+          base = "https://mne-rt-org.github.io/mne-rt"
+
+
+          def redirect(url, canonical):
+              return (
+                  '<!DOCTYPE html><html><head><meta charset="utf-8">'
+                  f"<title>Redirecting to {canonical}</title>"
+                  f'<link rel="canonical" href="{base}/{canonical}">'
+                  f'<script>location.replace("{url}" + location.search + location.hash)</script>'
+                  f'<meta http-equiv="refresh" content="0; url={url}">'
+                  f'</head><body><a href="{url}">{canonical}</a></body></html>\n'
+              )
+
+
+          # A redirect at the root for each page of stable/, keeping the #anchor.
+          for folder, dirs, files in os.walk(os.path.join(root, target)):
+              dirs[:] = [d for d in dirs if d != "_static"]  # the theme's files
+              for name in files:
+                  if not name.endswith(".html"):
+                      continue
+                  page = os.path.relpath(os.path.join(folder, name), os.path.join(root, target))
+                  stub = os.path.join(root, page)
+                  os.makedirs(os.path.dirname(stub), exist_ok=True)
+                  with open(stub, "w") as f:
+                      f.write(redirect("../" * page.count("/") + f"{target}/{page}", f"{target}/{page}"))
+
+          # Any other old link (a download, an image, a page since removed): GitHub
+          # serves the root's 404.html, which tries it in stable/, once.
+          with open(os.path.join(root, "404.html"), "w") as f:
+              f.write(
+                  '<!DOCTYPE html><html><head><meta charset="utf-8"><title>Not found</title>'
+                  "<script>"
+                  'const prefix = "/mne-rt/";'
+                  "const path = location.pathname.startsWith(prefix)"
+                  " ? location.pathname.slice(prefix.length) : null;"
+                  r"if (path !== null && !/^(dev|stable|\d+\.\d+)\//.test(path)) {"
+                  '  location.replace(prefix + "stable/" + path + location.search + location.hash);'
+                  "}"
+                  "</script></head><body><p>This page does not exist. "
+                  f'<a href="{base}/stable/">MNE-RT documentation</a></p></body></html>\n'
+              )
+          PY
+            # Kept at the root too, for intersphinx links made to the root.
+            cp site/stable/objects.inv site/
+          fi
+          touch site/.nojekyll
+
+          # One commit with no history, as before: the site never grows with
+          # past deploys. The push only lands if gh-pages is still the commit
+          # cloned above; else another deploy came first, and this one is
+          # made again on top of it.
+          (
+            cd site
+            git config user.name "github-actions[bot]"
+            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            git checkout --quiet --orphan deploy
+            git add -A
+            git commit --quiet -m "Deploy the docs ($dests) from $SHA"
+            git push --quiet --force-with-lease="gh-pages:$base" \
+              "https://x-access-token:$GH_TOKEN@github.com/$REPO.git" deploy:gh-pages
+          )
+          echo "Published: $dests"
+          SH
+          for attempt in 1 2 3 4 5; do
+            if bash publish.sh; then exit 0; fi
+            echo "Deploy attempt $attempt failed (gh-pages changed under it?); trying again"
+            sleep $((attempt * 15))
+          done
+          exit 1

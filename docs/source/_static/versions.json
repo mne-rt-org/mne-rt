@@ -1,0 +1,13 @@
+[
+  {
+    "name": "dev",
+    "version": "dev",
+    "url": "https://mne-rt-org.github.io/mne-rt/dev/"
+  },
+  {
+    "name": "1.3 (stable)",
+    "version": "1.3",
+    "url": "https://mne-rt-org.github.io/mne-rt/stable/",
+    "preferred": true
+  }
+]

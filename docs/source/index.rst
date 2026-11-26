@@ -6,8 +6,9 @@
 
 **MNE-RT** is an open-source Python library for
 **real-time M/EEG signal processing and analysis**, built on
-`MNE-Python <https://mne.tools>`_ and
-`MNE-LSL <https://mne.tools/mne-lsl>`_.
+`MNE-Python <https://mne.tools>`_,
+`MNE-LSL <https://mne.tools/mne-lsl>`_ and
+`MNE-Connectivity <https://mne.tools/mne-connectivity>`_.
 It covers the full real-time pipeline — from amplifier to 3-D brain display, 
 in a single, researcher-friendly API designed for neurofeedback, BCI,
 and clinical or basic-science monitoring applications.
@@ -24,10 +25,11 @@ Key capabilities
    :header-rows: 0
 
    * - ✔
-     - **Multiple real-time feature modalities** — sensor power, ERD/ERS, Hjorth parameters,
-       spectral centroid and peak, band ratio, cross-frequency coupling (CFC),
-       connectivity, instantaneous phase (Hilbert analytic signal),
-       graph-theory metrics, and more.
+     - **22 real-time feature modalities** — sensor power, ERD/ERS, Hjorth parameters,
+       spectral centroid and peak, band ratio, EEG microstates, cross-frequency
+       coupling (CFC), instantaneous phase (Hilbert analytic signal), and
+       sensor- and source-space connectivity and learned graphs (with
+       MNE-Connectivity), among others.
        See :doc:`modalities` for the full list.
 
    * - ✔
@@ -39,7 +41,8 @@ Key capabilities
      - **Live artifact correction** —
        :class:`~mne_rt.tools.ORICA` (online ICA),
        :class:`~mne_rt.tools.AdaptiveLMSFilter` (adaptive least-mean-squares),
-       :class:`~mne_rt.tools.GEDAIDenoiser` (generalised eigendecomposition),
+       :class:`~mne_rt.tools.GEDAIDenoiser` (generalised eigendecomposition) and its
+       causal multiband variant :class:`~mne_rt.tools.AdaptiveMultibandGEDAIDenoiser`,
        :class:`~mne_rt.tools.ASRDenoiser` (artifact subspace reconstruction), and
        :class:`~mne_rt.tools.RTMaxwellFilter` (real-time Maxwell/SSS filtering for MEG).
        See :doc:`denoising` for algorithm details and benchmarks.
@@ -83,7 +86,7 @@ Key capabilities
        estimator).  See :doc:`tutorial` for usage examples.
 
    * - ✔
-     - **Nine real-time visualisation windows** — a scrolling NF
+     - **Ten real-time visualisation windows** — a scrolling NF
        :class:`~mne_rt.viz.NFPlot`, a scrolling raw :class:`~mne_rt.viz.RawPlot`
        (with bad-channel marking and bad-segment annotation),
        a continuous :class:`~mne_rt.viz.EpochPlot` with trigger/epoch overlays,
@@ -93,8 +96,12 @@ Key capabilities
        re-referencing, an all-channel :class:`~mne_rt.viz.ButterflyPlot` with
        region-colour coding, a per-channel :class:`~mne_rt.viz.CompareEvoked`
        with peak markers, and a Morlet-wavelet :class:`~mne_rt.viz.TFRPlot`
-       (time-frequency heatmaps, induced or evoked mode).  All plots
-       update live and support EEG and MEG data.
+       (time-frequency heatmaps, induced or evoked mode), and a
+       :class:`~mne_rt.viz.ConnectivityPlot` showing the connections a
+       connectivity modality feeds back on: edges on the head or on the atlas's
+       circle of regions, and each pair's value over time.  All plots update
+       live, support EEG and MEG data, and tile to fit the screen.
+       See :doc:`visualization` for videos of each.
 
    * - ✔
      - **Dual feedback output** — broadcast values via OSC (Max/MSP,
@@ -216,7 +223,7 @@ Pipeline overview
      <tr style="background:#eff6ff;">
        <td style="padding:7px 14px;border-bottom:1px solid #dbeafe;font-weight:600;white-space:nowrap;">① Acquisition</td>
        <td style="padding:7px 14px;border-bottom:1px solid #dbeafe;"><code>RTStream.connect_to_lsl()</code></td>
-       <td style="padding:7px 14px;border-bottom:1px solid #dbeafe;">Hardware amplifier or mock replay via mne-lsl <code>StreamInlet</code></td>
+       <td style="padding:7px 14px;border-bottom:1px solid #dbeafe;">Any LSL amplifier (Wearable Sensing DSI headsets included) or mock replay via mne-lsl <code>StreamInlet</code></td>
      </tr>
      <tr style="background:#f0fdf4;">
        <td style="padding:7px 14px;border-bottom:1px solid #dcfce7;font-weight:600;white-space:nowrap;">② Baseline</td>
@@ -230,7 +237,7 @@ Pipeline overview
      </tr>
      <tr style="background:#fffbeb;">
        <td style="padding:7px 14px;border-bottom:1px solid #fef3c7;font-weight:600;white-space:nowrap;">④ Artifact correction</td>
-       <td style="padding:7px 14px;border-bottom:1px solid #fef3c7;"><code>ORICA</code> · <code>AdaptiveLMS</code> · <code>GEDAIDenoiser</code> · <code>ASRDenoiser</code> · <code>RTMaxwellFilter</code></td>
+       <td style="padding:7px 14px;border-bottom:1px solid #fef3c7;"><code>ORICA</code> · <code>AdaptiveLMS</code> · <code>GEDAIDenoiser</code> · <code>AdaptiveMultibandGEDAIDenoiser</code> · <code>ASRDenoiser</code> · <code>RTMaxwellFilter</code></td>
        <td style="padding:7px 14px;border-bottom:1px solid #fef3c7;">One or more methods selected per session; all operate sample-by-sample</td>
      </tr>
      <tr style="background:#f5f3ff;">
@@ -245,8 +252,8 @@ Pipeline overview
      </tr>
      <tr style="background:#eff6ff;">
        <td style="padding:7px 14px;border-bottom:1px solid #dbeafe;font-weight:600;white-space:nowrap;">⑦ Visualisation</td>
-       <td style="padding:7px 14px;border-bottom:1px solid #dbeafe;"><code>NFPlot</code> · <code>RawPlot</code> · <code>EpochPlot</code> · <code>TopomapPlot</code> · <code>BrainPlot</code> · <code>TopoPlot</code> · <code>ButterflyPlot</code> · <code>CompareEvoked</code> · <code>TFRPlot</code></td>
-       <td style="padding:7px 14px;border-bottom:1px solid #dbeafe;">Scrolling signal · epoch overlays · scalp topo · 3-D brain · scalp-layout ERP · butterfly overlay · per-channel comparison · TFR heatmaps</td>
+       <td style="padding:7px 14px;border-bottom:1px solid #dbeafe;"><code>NFPlot</code> · <code>RawPlot</code> · <code>EpochPlot</code> · <code>TopomapPlot</code> · <code>BrainPlot</code> · <code>TopoPlot</code> · <code>ButterflyPlot</code> · <code>CompareEvoked</code> · <code>TFRPlot</code> · <code>ConnectivityPlot</code></td>
+       <td style="padding:7px 14px;border-bottom:1px solid #dbeafe;">Scrolling signal · epoch overlays · scalp topo · 3-D brain · scalp-layout ERP · butterfly overlay · per-channel comparison · TFR heatmaps · live connectivity</td>
      </tr>
      <tr style="background:#f0fdf4;">
        <td style="padding:7px 14px;font-weight:600;white-space:nowrap;">⑧ Feedback output</td>

@@ -3,6 +3,26 @@
 What's new
 ==========
 
+.. _changes_1_4_0:
+
+Version 1.4.0
+--------------
+
+*unreleased*
+
+Documentation
+^^^^^^^^^^^^^
+
+- **A version switcher.** The documentation is published for each version,
+  as MNE's is: ``stable/`` (the latest release), ``dev/`` (``main``) and one
+  folder per release (``1.3/``), picked from the menu at the top of every
+  page. The development version says it is one, with a link to the stable
+  documentation. Links made before keep working: each page at the site's
+  root sends to the stable version of it.
+- The front page and the README present what 1.3 added: the connectivity
+  viewer, EEG microstates, learned graphs with MNE-Connectivity, the multiband
+  GEDAI denoiser and DSI headsets.
+
 .. _changes_1_3_1:
 
 Version 1.3.1
