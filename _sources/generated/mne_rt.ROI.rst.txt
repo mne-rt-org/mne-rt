@@ -1,0 +1,30 @@
+﻿mne\_rt.ROI
+===========
+
+.. currentmodule:: mne_rt
+
+.. autoclass:: ROI
+
+   
+   .. automethod:: __init__
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+   
+      ~ROI.__init__
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+   
+      ~ROI.name
+      ~ROI.members
+      ~ROI.kind
+   
+   

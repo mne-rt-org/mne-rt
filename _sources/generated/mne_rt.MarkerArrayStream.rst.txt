@@ -1,0 +1,33 @@
+﻿mne\_rt.MarkerArrayStream
+=========================
+
+.. currentmodule:: mne_rt
+
+.. autoclass:: MarkerArrayStream
+
+   
+   .. automethod:: __init__
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+   
+      ~MarkerArrayStream.__init__
+      ~MarkerArrayStream.connect
+      ~MarkerArrayStream.disconnect
+      ~MarkerArrayStream.get_data
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+   
+      ~MarkerArrayStream.connected
+      ~MarkerArrayStream.info
+      ~MarkerArrayStream.n_new_samples
+   
+   

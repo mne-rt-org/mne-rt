@@ -1,0 +1,30 @@
+﻿mne\_rt.viz.ConnectivityPlot
+============================
+
+.. currentmodule:: mne_rt.viz
+
+.. autoclass:: ConnectivityPlot
+
+   
+   .. automethod:: __init__
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+   
+      ~ConnectivityPlot.__init__
+      ~ConnectivityPlot.closeEvent
+      ~ConnectivityPlot.push
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+   
+      ~ConnectivityPlot.closed
+   
+   

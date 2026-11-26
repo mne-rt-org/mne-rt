@@ -1,0 +1,37 @@
+﻿mne\_rt.protocols.TransferProtocol
+==================================
+
+.. currentmodule:: mne_rt.protocols
+
+.. autoclass:: TransferProtocol
+
+   
+   .. automethod:: __init__
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+   
+      ~TransferProtocol.__init__
+      ~TransferProtocol.evaluate
+      ~TransferProtocol.reset
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+   
+      ~TransferProtocol.current_threshold
+      ~TransferProtocol.mean_
+      ~TransferProtocol.n_evaluated
+      ~TransferProtocol.n_prior
+      ~TransferProtocol.prior_mean
+      ~TransferProtocol.prior_std
+      ~TransferProtocol.std_
+      ~TransferProtocol.zscore
+   
+   
