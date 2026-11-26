@@ -134,7 +134,7 @@ def test_the_time_window_is_chosen_in_the_side_panel(qt_app):
         qt_app.processEvents()
     w._cmb_window.setCurrentIndex(w._cmb_window.findData(30))
     lo, hi = w._trend.viewRange()[0]
-    assert lo == pytest.approx(-30, abs=1) and hi == pytest.approx(0, abs=1)
+    assert lo == pytest.approx(0, abs=1) and hi == pytest.approx(30, abs=1)  # as NFPlot's
 
 
 def test_each_pair_keeps_its_history_and_a_dropped_window_leaves_a_gap(qt_app):
@@ -143,7 +143,7 @@ def test_each_pair_keeps_its_history_and_a_dropped_window_leaves_a_gap(qt_app):
         w.push({"x": _snap([v, 0.5], t=t)})
         qt_app.processEvents()
     x, y = w._curves[0].getData()
-    np.testing.assert_allclose(x, [-2.0, -1.5, 0.0])
+    np.testing.assert_allclose(x, [58.0, 58.5, 60.0])  # the newest at the 60 s window's end
     np.testing.assert_allclose(y, [0.1, 0.2, 0.3])
     assert "0.3" in w._legend.items[0][1].text
 

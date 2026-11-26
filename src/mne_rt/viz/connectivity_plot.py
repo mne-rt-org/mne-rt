@@ -597,7 +597,8 @@ class ConnectivityPlot(QMainWindow):
         self._status.showMessage(f"{state} {stamp}   {values}   value {value[-1]:.3g}")
 
     def _draw_trend(self, series, t, hist, value, edges) -> None:
-        x = t - t[-1]
+        # As NFPlot and RawPlot: 0 to the window's length, the newest at its end.
+        x = t - t[-1] + self._window
         for k, curve in enumerate(self._curves):
             curve.setData(x, hist[k])
             if k in self._legend_rows:
@@ -608,7 +609,10 @@ class ConnectivityPlot(QMainWindow):
         self._value_curve.setData(x, value)
         if "value" in self._legend_rows:
             self._legend_rows["value"].setText(f"modality value   {value[-1]:.3g}")
-        self._trend.setXRange(-self._window, 0, padding=0.01)
+        self._trend.setXRange(0.0, self._window, padding=0.01)
+        # NFPlot's tick spacing for the same window lengths.
+        major = 2.0 if self._window <= 10 else 5.0 if self._window <= 30 else 10.0
+        self._trend.getAxis("bottom").setTickSpacing(major=major, minor=major / 5)
 
     def _draw_space(self, series: _Series, edges: np.ndarray, until) -> None:
         lo, hi = series.color_range(self._window, until)
