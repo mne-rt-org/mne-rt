@@ -74,7 +74,7 @@ all rendering happens on the main Qt thread via an internal 30 Hz timer.
              </div>
              <div class="viz-media-wrap">
                <video autoplay muted loop playsinline>
-                 <source src="_static/RawPlot.mp4" type="video/mp4">
+                 <source src="https://mne-rt-org.github.io/mne-rt/_media/RawPlot.mp4" type="video/mp4">
                </video>
              </div>
            </div>
@@ -146,7 +146,7 @@ all rendering happens on the main Qt thread via an internal 30 Hz timer.
              </div>
              <div class="viz-media-wrap">
                <video autoplay muted loop playsinline>
-                 <source src="_static/EpochPlot.mp4" type="video/mp4">
+                 <source src="https://mne-rt-org.github.io/mne-rt/_media/EpochPlot.mp4" type="video/mp4">
                </video>
              </div>
            </div>
@@ -220,7 +220,7 @@ all rendering happens on the main Qt thread via an internal 30 Hz timer.
              </div>
              <div class="viz-media-wrap">
                <video autoplay muted loop playsinline>
-                 <source src="_static/NFPlot.mp4" type="video/mp4">
+                 <source src="https://mne-rt-org.github.io/mne-rt/_media/NFPlot.mp4" type="video/mp4">
                </video>
              </div>
            </div>
@@ -293,7 +293,7 @@ all rendering happens on the main Qt thread via an internal 30 Hz timer.
              </div>
              <div class="viz-media-wrap">
                <video autoplay muted loop playsinline>
-                 <source src="_static/ButterflyPlot.mp4" type="video/mp4">
+                 <source src="https://mne-rt-org.github.io/mne-rt/_media/ButterflyPlot.mp4" type="video/mp4">
                </video>
              </div>
            </div>
@@ -356,7 +356,7 @@ all rendering happens on the main Qt thread via an internal 30 Hz timer.
              </div>
              <div class="viz-media-wrap">
                <video autoplay muted loop playsinline>
-                 <source src="_static/CompareEvoked.mp4" type="video/mp4">
+                 <source src="https://mne-rt-org.github.io/mne-rt/_media/CompareEvoked.mp4" type="video/mp4">
                </video>
              </div>
            </div>
@@ -423,7 +423,7 @@ all rendering happens on the main Qt thread via an internal 30 Hz timer.
              </div>
              <div class="viz-media-wrap">
                <video autoplay muted loop playsinline>
-                 <source src="_static/TopoPlot.mp4" type="video/mp4">
+                 <source src="https://mne-rt-org.github.io/mne-rt/_media/TopoPlot.mp4" type="video/mp4">
                </video>
              </div>
            </div>
@@ -482,7 +482,7 @@ all rendering happens on the main Qt thread via an internal 30 Hz timer.
              </div>
            <div class="viz-media-wrap">
                <video autoplay muted loop playsinline>
-                 <source src="_static/TopomapPlot.mp4" type="video/mp4">
+                 <source src="https://mne-rt-org.github.io/mne-rt/_media/TopomapPlot.mp4" type="video/mp4">
                </video>
              </div>
            </div>
@@ -552,7 +552,7 @@ all rendering happens on the main Qt thread via an internal 30 Hz timer.
              </div>
              <div class="viz-media-wrap">
                <video autoplay muted loop playsinline>
-                 <source src="_static/TFRPlot.mp4" type="video/mp4">
+                 <source src="https://mne-rt-org.github.io/mne-rt/_media/TFRPlot.mp4" type="video/mp4">
                </video>
              </div>
            </div>
@@ -629,7 +629,7 @@ all rendering happens on the main Qt thread via an internal 30 Hz timer.
              </div>
              <div class="viz-media-wrap">
                <video autoplay muted loop playsinline>
-                 <source src="_static/BrainPlot.mp4" type="video/mp4">
+                 <source src="https://mne-rt-org.github.io/mne-rt/_media/BrainPlot.mp4" type="video/mp4">
                </video>
              </div>
            </div>
@@ -698,7 +698,7 @@ all rendering happens on the main Qt thread via an internal 30 Hz timer.
              </div>
              <div class="viz-media-wrap">
                <video autoplay muted loop playsinline>
-                 <source src="_static/ConnectivityPlot.mp4" type="video/mp4">
+                 <source src="https://mne-rt-org.github.io/mne-rt/_media/ConnectivityPlot.mp4" type="video/mp4">
                </video>
              </div>
            </div>

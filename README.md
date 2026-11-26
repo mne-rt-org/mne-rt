@@ -18,8 +18,9 @@
 ---
 
 **MNE-RT** is an open-source Python library for **real-time M/EEG signal
-processing**, built on [MNE-Python](https://mne.tools) and
-[MNE-LSL](https://mne.tools/mne-lsl). It covers the full closed-loop pipeline —
+processing**, built on [MNE-Python](https://mne.tools),
+[MNE-LSL](https://mne.tools/mne-lsl) and
+[MNE-Connectivity](https://mne.tools/mne-connectivity). It covers the full closed-loop pipeline —
 from amplifier to 3-D brain display — in a single API designed for neurofeedback,
 BCI, and clinical or basic-science monitoring.
 
@@ -60,7 +61,7 @@ BIDS-compatible session saving, and a full CLI.
 | **22 NF modalities** | Band power, ERD/ERS, laterality, Hjorth, spectral centroid, microstates, CFC, connectivity, graph Laplacian — sensor and source space |
 | **10 adaptive protocols** | Z-score, threshold, percentile, staircase, operant, RL, sham, multi-band, and cross-session transfer |
 | **5 artifact correction methods** | ASR, adaptive LMS, GEDAI, ORICA, real-time Maxwell/SSS (MEG) |
-| **9 live visualisation windows** | Scrolling raw · NF signal · epoch overlays · scalp topo · 3-D brain · butterfly · ERP comparison · TFR heatmaps |
+| **10 live visualisation windows** | Scrolling raw · NF signal · epoch overlays · scalp topo · 3-D brain · butterfly · ERP comparison · TFR heatmaps · live connectivity |
 | **Feature combiners** | Weighted sum, geometric mean, z-scored norm, or any sklearn estimator |
 | **External feedback output** | OSC (Max/MSP, SuperCollider) and LSL outlet (PsychoPy, OpenViBE, BCI2000) |
 | **BIDS-compatible saving** | Session JSON + TSV with full metadata, artifact rate, and SNR |

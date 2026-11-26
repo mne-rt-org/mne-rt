@@ -127,7 +127,7 @@ lint = [
 # Documentation build tooling (heavy — only needed to build the docs)
 docs = [
     "sphinx>=7",
-    "pydata-sphinx-theme>=0.14",
+    "pydata-sphinx-theme>=0.15.1",  # show_version_warning_banner
     "sphinx-gallery>=0.17",  # its `parallel` option
     "numpydoc>=1.6",
     "sphinx-autodoc-typehints>=1.25",
@@ -157,7 +157,7 @@ full = [
     "pre-commit",
     # docs
     "sphinx>=7",
-    "pydata-sphinx-theme>=0.14",
+    "pydata-sphinx-theme>=0.15.1",  # show_version_warning_banner
     "sphinx-gallery>=0.17",  # its `parallel` option
     "numpydoc>=1.6",
     "sphinx-autodoc-typehints>=1.25",

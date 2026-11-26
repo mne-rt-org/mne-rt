@@ -134,13 +134,34 @@ html_title = "MNE-RT"
 html_static_path = ['_static']
 html_css_files = ['custom.css']
 
+# The version this build is published as: "dev" (main) or "X.Y" (a release,
+# also published as stable/). The docs workflow sets it; the version switcher
+# marks it, and every version reads the site's one versions.json, so older
+# versions list the newer ones.
+docs_version = os.environ.get("MNE_RT_DOCS_VERSION", "dev")
+# The theme's version banner compares `release` with versions.json's preferred
+# "version": X.Y on a release's docs (stable says nothing, an older X.Y says it
+# is old), and "dev" in it on main's (it says it is a development version).
+release = docs_version if docs_version != "dev" else f"{release}.dev0"
+
 html_theme_options = {
     "logo": {
         "image_light": "_static/mne_rt_logo.svg",
         "image_dark":  "_static/mne_rt_logo.svg",
     },
     "github_url": "https://github.com/mne-rt-org/mne-rt",
-    "navbar_end": ["navbar-icon-links"],
+    "switcher": {
+        # MNE_RT_DOCS_SWITCHER_URL: another list, e.g. to preview the site locally.
+        "json_url": os.environ.get(
+            "MNE_RT_DOCS_SWITCHER_URL", "https://mne-rt-org.github.io/mne-rt/versions.json"
+        ),
+        "version_match": docs_version,
+    },
+    # Not fetched at build time: a pull request's build runs before the site has it.
+    "check_switcher": False,
+    # dev and older versions say so, and link to the stable one.
+    "show_version_warning_banner": True,
+    "navbar_end": ["version-switcher", "navbar-icon-links"],
     "secondary_sidebar_items": ["page-toc", "edit-this-page"],
     "show_toc_level": 2,
     "navigation_depth": 3,
